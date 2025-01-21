@@ -11,13 +11,17 @@
     --InputColor: hsl(0, 0%, 97%); /* Un blanco ligeramente azulado para campos de entrada */
 }
 
-.footer{
-    height: 33vh;
-    background: linear-gradient(rgba(33,33,33,0.522), rgba(33,33,33,0.522)),url(../img/footer.jpg);
-    box-shadow: 0 2px 8px 2px rgba(178, 178, 178, 0.334); 
-    padding: 1rem 0;
+.footer {
+    height: 30vh; /* Altura del footer */
+    background: linear-gradient(rgba(33, 33, 33, 0.522), rgba(33, 33, 33, 0.522)), url(../img/Muli2.webp);
+    background-size: cover; /* Hace que la imagen cubra todo el contenedor */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center; /* Centra la imagen dentro del contenedor */
+    box-shadow: 0 2px 8px 2px rgba(178, 178, 178, 0.334);
+    padding: 0.3rem 0;
     margin-bottom: 0%;
 }
+
 .secContainer{
         gap: 1.5rem;
         justify-content: center;
@@ -83,3 +87,18 @@ a, .phone, .email{
     font-weight: 500;
 }
         
+.footer-image-container {
+    width: 100%; /* Abarca todo el ancho del contenedor */
+    height: 100%; /* Abarca todo el alto del contenedor */
+    overflow: hidden; /* Evita que el contenido sobresalga */
+    display: flex; /* Asegura que el contenido se alinee correctamente */
+    justify-content: center; /* Centra la imagen horizontalmente */
+    align-items: center; /* Centra la imagen verticalmente */
+}
+
+.footer-image-container img {
+    width: 100%; /* Ajusta el ancho de la imagen al 100% del contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionarse */
+}
+

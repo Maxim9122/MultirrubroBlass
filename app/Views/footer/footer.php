@@ -12,13 +12,13 @@
 <body>
 
         <div class="footer">
-            <div class="secContainer container grid">
+        <div class="footer-image-container">
                 <div class="logoDiv">
                     <div class="footerLogo">
-                        <a href="<?= base_url('catalogo')?>" class="logo">
-                            <strong class="nombreLogo">Mercadito JyR</strong>
+                        
+                            <strong class="nombreLogo">Multirubro Blass</strong>
                         <!-- <img src={img1} alt="logoimg"/> -->
-                        </a>
+                        
                     </div>
                     <div class="socials flex">
                     <i class="fa fa-facebook icon" aria-hidden="true"></i>
@@ -29,7 +29,7 @@
                 <div class="footerLinks">
                     
                     <span>
-                        Sitio web desarrollado por <span>Luna Maximiliano</span>
+                        Sitio web desarrollado por <span>Luna Maximiliano / Luis Nuñez</span>
                     </span>
                 </div>
             </div>

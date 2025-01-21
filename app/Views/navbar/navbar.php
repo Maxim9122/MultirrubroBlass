@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mercadito JyR</title>
+  <title>Multirubro Blass</title>
   <link rel="icon" href="<?php echo base_url('./assets/img/carrito2.png');?>">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/navbar.css">
   <script src="https://kit.fontawesome.com/a25933befb.js" crossorigin="anonymous"></script>
@@ -18,9 +18,9 @@
   <section class="navBarSection">
     <div class="headernav">
       <div class="logoDiv">
-        <a href="<?= base_url('catalogo')?>" class="logo">
-          <strong class="nombreLogo">Mercadito JyR</strong>
-        </a>
+        <section class="ImgNav">
+          <img src="<?php echo base_url('./assets/img/Multi.webp');?>" alt="">
+          </section>
       </div>
       <div id="navBar" class="navBar">
         <ul class="navList flex">
