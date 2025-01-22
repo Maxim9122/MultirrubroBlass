@@ -1,0 +1,35 @@
+ERROR - 2024-11-24 06:23:46 --> Error connecting to the database: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+ERROR - 2024-11-24 06:23:46 --> Error connecting to the database: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+CRITICAL - 2024-11-24 06:23:46 --> Unable to connect to the database.
+Main connection [MySQLi]: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(577): CodeIgniter\Database\BaseConnection->initialize()
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#2 C:\xampp\htdocs\BarberiaKing\app\Models\turnos_model.php(60): CodeIgniter\Database\BaseBuilder->get()
+#3 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(26): App\Models\Turnos_model->obtenerTurnos(Array)
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2024-11-24 06:23:46 --> Unable to connect to the database.
+Main connection [MySQLi]: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(577): CodeIgniter\Database\BaseConnection->initialize()
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#2 C:\xampp\htdocs\BarberiaKing\app\Models\turnos_model.php(60): CodeIgniter\Database\BaseBuilder->get()
+#3 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(26): App\Models\Turnos_model->obtenerTurnos(Array)
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2024-11-24 10:51:48 --> Undefined variable $servicios
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\nuevoTurno_view.php(55): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 55)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/nuevoTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(77): view('turnos/nuevoTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->RegistrarTurno()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

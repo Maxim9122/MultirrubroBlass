@@ -18,10 +18,7 @@
                 <?php endif;?>
             <form action="<?php echo base_url('enviarlogin');?>" method="post">
                 <div class="input-group">
-                    <!-- <div class="input-field">
-                        <i class="fa-solid fa-user"></i>
-                        <input id="nameInput" type="text" placeholder="nombre">
-                    </div> -->
+                    
                     <div class="input-field">
                         <i class="fa-solid fa-envelope"></i>
                         <input type="text" placeholder="correo" name= "email">
@@ -33,8 +30,8 @@
                     
                 </div>
                 <div class="">
-                    <!-- <button id="signUp" type="button"> Registrate </button> -->
-                    <button type="submit" class="success"> Ingresar </button>
+                    <!-- Boton de ingresar -->
+                    <button type="submit" class="button2"> Ingresar </button>
                 </div>
             </form>
         </div>

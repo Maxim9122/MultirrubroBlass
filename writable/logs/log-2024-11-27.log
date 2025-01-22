@@ -1,0 +1,66 @@
+ERROR - 2024-11-27 09:44:36 --> You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '.`id_barber`, `turnos`.`hora_turno`, `turnos`.`estado`, `turnos`.`fecha_regis...' at line 1
+CRITICAL - 2024-11-27 09:44:36 --> You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '.`id_barber`, `turnos`.`hora_turno`, `turnos`.`estado`, `turnos`.`fecha_regis...' at line 1
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `turnos`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `turnos`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `turnos`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `turnos`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\system\Model.php(183): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(584): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\BarberiaKing\app\Models\turnos_model.php(97): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(233): App\Models\Turnos_model->obtenerTurnosCompletados()
+#8 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turnosCompletados()
+#9 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#10 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#12 {main}
+CRITICAL - 2024-11-27 12:59:52 --> Undefined variable $Turnos_model
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(223): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 223)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->Turno_completado('46')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-27 13:01:30 --> Undefined variable $TurnosModel
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(223): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 223)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->Turno_completado('46')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+ERROR - 2024-11-27 13:22:39 --> Cannot add or update a child row: a foreign key constraint fails (`barberiaking`.`turnos`, CONSTRAINT `turnos_ibfk_2` FOREIGN KEY (`id_barber`) REFERENCES `usuarios` (`id`))
+CRITICAL - 2024-11-27 13:22:39 --> Cannot add or update a child row: a foreign key constraint fails (`barberiaking`.`turnos`, CONSTRAINT `turnos_ibfk_2` FOREIGN KEY (`id_barber`) REFERENCES `usuarios` (`id`))
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('UPDATE `turnos`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `turnos`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `turnos`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1913): CodeIgniter\Database\BaseConnection->query('UPDATE `turnos`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Models\turnos_model.php(18): CodeIgniter\Database\BaseBuilder->update(Array)
+#5 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(223): App\Models\Turnos_model->actualizar_turno('47', Array)
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->Turno_completado('47')
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#8 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2024-11-27 14:04:57 --> Undefined variable $ttrn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\turnosDeDiaDistinto_alActual.php(92): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 92)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/turnosDe...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): view('turnos/turnosDe...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->TurnosTodos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-27 14:23:04 --> Unknown column 'id_turno' in 'where clause'
+CRITICAL - 2024-11-27 14:23:04 --> Unknown column 'id_turno' in 'where clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('DELETE FROM `tu...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('DELETE FROM `tu...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('DELETE FROM `tu...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(2225): CodeIgniter\Database\BaseConnection->query('DELETE FROM `tu...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Models\turnos_model.php(103): CodeIgniter\Database\BaseBuilder->delete(Array)
+#5 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(237): App\Models\Turnos_model->eliminarTurno('57')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->Turno_cancelado('57')
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#8 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}

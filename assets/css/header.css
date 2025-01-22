@@ -1,3 +1,44 @@
+/* Estilos para la barra de desplazamiento */
+::-webkit-scrollbar {
+    width: 15px; /* Ancho del scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Color de fondo del track (opcional) */
+}
+
+::-webkit-scrollbar-thumb {
+    background: repeating-linear-gradient(
+        45deg,
+        white 0%, white 12.5%, 
+        red 12.5%, red 25%, 
+        white 25%, white 37.5%, 
+        blue 37.5%, blue 50%, 
+        white 50%, white 62.5%, 
+        red 62.5%, red 75%, 
+        white 75%, white 87.5%, 
+        blue 87.5%, blue 100%
+    );
+    border-radius: 6px;
+    border: 2px solid #f0f0f0;
+    transition: 0.3s ease-in-out; /* Suaviza el cambio */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: repeating-linear-gradient(
+        45deg,
+        blue 0%, blue 12.5%, 
+        white 12.5%, white 25%, 
+        red 25%, red 37.5%, 
+        white 37.5%, white 50%, 
+        blue 50%, blue 62.5%, 
+        white 62.5%, white 75%, 
+        red 75%, red 87.5%, 
+        white 87.5%, white 100%
+    ); /* Invierte el orden de colores */
+}
+
+
 /* estilos para el header */
 :root {
     --PrimaryColor: #560319; /* Borgoña oscuro */

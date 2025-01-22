@@ -6,33 +6,34 @@
     <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/footer.css">
     <!-- <link rel="stylesheet" href="../../assets/css/bootstrap-grid.css"> -->
     <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/general.css">
-    <script src="https://kit.fontawesome.com/a25933befb.js" crossorigin="anonymous"></script>
+
     <title>Footer</title>
 </head>
 <body>
-
+       
         <div class="footer">
-        <div class="footer-image-container">
-                <div class="logoDiv">
-                    <div class="footerLogo">
-                        
-                            <strong class="nombreLogo">Multirubro Blass</strong>
-                        <!-- <img src={img1} alt="logoimg"/> -->
-                        
-                    </div>
-                    <div class="socials flex">
-                    <i class="fa fa-facebook icon" aria-hidden="true"></i>
-                    <i class="fa fa-instagram icon" aria-hidden="true"></i>
-                    </div>
-                <!-- </div> -->
-                <br>
-                <div class="footerLinks">
-                    
-                    <span>
-                        Sitio web desarrollado por <span>Luna Maximiliano / Luis Nuñez</span>
-                    </span>
-                </div>
+    <div class="secContainer container grid">
+        <div class="logoDiv">
+            <div class="footerLogo">
+                <a href="<?= base_url('catalogo')?>" class="logo">
+                    <strong class="nombreLogo">Barberia King</strong>
+                </a>
+            </div>
+            
+            <div class="socials flex">
+                <i class="fa fa-facebook icon" aria-hidden="true"></i>
+                <i class="fa fa-instagram icon" aria-hidden="true"></i>
+            </div>
+            
+            <div class="desarrollador">
+                <span>
+                    Desarrollado por <span>Maximiliano Luna (Tel:3841-670079)</span>
+                </span>
             </div>
         </div>
+    </div>
+</div>
+
+
 </body>
 </html>

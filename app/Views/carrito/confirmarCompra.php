@@ -1,5 +1,5 @@
 <br>
-<?php $cart = \Config\Services::cart(); ?>
+ <?php $cart = \Config\Services::cart(); ?>
  <?php $session = session();
           $nombre= $session->get('nombre');
           $apellido = $session->get('apellido');
@@ -9,7 +9,7 @@
           $direccion=$session->get('direccion');
           ?>
  <?php
- //print_r($session);
+ //print_r($clientes);
  //exit;
     $gran_total = 0;
 
@@ -19,7 +19,7 @@
             $gran_total = $gran_total + $item['subtotal'];
         endforeach;
     endif;
-?>
+ ?>
 
 <div class="comprados" style="width:40%;">
     <div id="">
@@ -49,12 +49,23 @@
                 </tr>
                 <tr>
                     <td style="color: #2BD5C3;">
-                        Apellido:
-                    </td>
-                    <td>
-                        <?php echo($apellido) ?>
-                    </td>
-                </tr>
+                                Cliente:
+                         </td>
+                            <td>
+                                <?php if ($clientes): ?>
+                                    <select name="cliente_id">
+                                        <option value="Anonimo">Seleccione un cliente</option>
+                                            <?php foreach ($clientes as $cl): ?>
+                                            <option value="<?php echo $cl['id_cliente']; ?>">
+                                                <?php echo $cl['nombre'] . ' - ' . $cl['id_cliente']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php else: ?>
+                                    <span>No hay clientes disponibles</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
                 <tr>
                     <td style="color: #2BD5C3;">
                         Dirección:
@@ -79,7 +90,7 @@
             </table>
             <br> <br>
             <a class='btn' href="<?php echo base_url('CarritoList') ?>">Volver</a>
-            <?php echo form_submit('confirmar', 'Confirmar',"class='success'"); ?>
+            <?php echo form_submit('confirmar', 'Confirmar',"class='btn'"); ?>
             <br> <br>
         </div>
     </div>

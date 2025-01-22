@@ -33,13 +33,30 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Login_controller');
 
+//Todo sobre Turnos
+$routes->get('/turnosCompletados', 'Turnos_controller::TurnosCompletados');
+$routes->post('/filtrarTurnos', 'Turnos_controller::filtrarTurnos');
+$routes->get('/turnos', 'Turnos_controller::ListarTurnos');
+$routes->get('/turnosTodos', 'Turnos_controller::TurnosTodos');
+$routes->get('/nuevoTurno', 'Turnos_controller::nuevoTurno');
+$routes->post('/RegistrarTurno', 'Turnos_controller::RegistrarTurno');
+$routes->post('turno_actualizar/(:num)', 'Turnos_controller::turno_actualizar/$1');
+$routes->post('clienteListo/(:num)', 'Turnos_controller::Turno_completado/$1');
+$routes->get('cancelar/(:num)', 'Turnos_controller::Turno_cancelado/$1');
+$routes->post('turnoClienteRegistrado', 'Turnos_controller::turnoClienteRegistrado');
 
-//agregamos las rutas
-$routes->add('/comercializacion', 'Home::comercializacion');
-$routes->add('/quienes_somos', 'Home::quienes_somos');
-$routes->add('/contacto', 'Home::contacto');
-$routes->add('/terminos_usos', 'Home::terminos_usos');
+//Servicios
+$routes->get('/Lista_servicios', 'Servicios_controller::Servicios');
+$routes->get('/new_Servicio', 'Servicios_controller::new_Servicio');
+$routes->post('/agregar_Servicio', 'Servicios_controller::agregar_Servicio');
+$routes->get('/editarServi/(:num)', 'Servicios_controller::editarServi/$1');
+$routes->post('/edicionServiOk', 'Servicios_controller::edicionServiOk');
 
+
+//clientes
+$routes->get('/clientes', 'Clientes_controller::ListarClientes');
+$routes->get('/editarCliente/(:num)', 'Clientes_controller::editarCliente/$1');
+$routes->post('/edicionOk', 'Clientes_controller::EdicionOk');
 
 //usuarios
 $routes->get('/registro', 'Usuario_controller::create');
@@ -65,6 +82,7 @@ $routes->get('/usuarios-list', 'Datatable_controller::index');
 $routes->get('/editoMisDatos/(:num)','Datatable_controller::editoMisDatos/$1');
 $routes->get('/habilitarUs/(:num)', 'Usuario_controller::habilitar/$1');
 $routes->get('/editarUs/(:num)', 'Datatable_controller::editar/$1');
+$routes->get('/delete/(:num)', 'Usuario_controller::delete/$1');
 $routes->post('/enviarEdicion', 'Usuario_controller::formValidationEdit');
 $routes->get('/eliminados', 'Usuario_controller::usuariosEliminados');
 
@@ -98,7 +116,6 @@ $routes->get('consultasResueltas', 'Contactocontroller::Datos_consultasResueltas
 //Rutas del Login / Registro
 $routes->get('/login', 'Login_controller');
 $routes->post('/enviarlogin','Login_controller::auth');
-$routes->get('/panel', 'Panel_controller::index');
 $routes->get('/logout', 'Login_controller::logout');
 
 //Carrito
@@ -110,13 +127,13 @@ $routes->get('carrito_elimina/(:any)', 'Carrito_controller::remove/$1');
 $routes->post('carrito_actualiza', 'Carrito_controller::actualiza_carrito');
 $routes->get('comprar', 'Carrito_controller::muestra_Compra');
 $routes->post('confirma_compra', 'Carrito_controller::guarda_compra');
-$routes->get('compras', 'Carrito_controller::ListComprasCabecera');
+$routes->get('compras', 'Carrito_controller::ListVentasCabecera');
 $routes->get('DetalleVta/(:num)', 'Carrito_controller::ListCompraDetalle/$1');
 $routes->get('Gracias', 'Carrito_controller::GraciasPorSuCompra');
 
 //Facturacion y Reportes
 $routes->get('PDF/(:num)', 'Carrito_controller::FacturaAdmin/$1');
-$routes->get('misCompras/(:num)', 'Carrito_controller::ListComprasCabeceraCliente/$1');
+$routes->get('turnos/(:num)', 'Carrito_controller::ListaTurnosCabeceraCliente/$1');
 $routes->get('factura/(:num)', 'Carrito_controller::FacturaCliente/$1');
 
 

@@ -14,7 +14,7 @@
     width: 100%;
     height: 80vh;
     
-        background: linear-gradient(rgba(33,33,33,0.522), rgba(33,33,33,0.522)),url(../img/fondo.jpg);
+        
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -42,7 +42,7 @@
 .form-content h1{
     font-size: 30px;
     margin-bottom: 60px;
-    color: var(--PrimaryColor);
+    color: #ffff;
     position: relative;
 }
 

@@ -3,14 +3,15 @@
       <?php echo session("msg"); ?>
       </div>
   <?php endif?> 
-<div class="container mt-5 fondo3 rounded"> 
-  <br>
+<div class="container mt-5 fondo3 rounded">
+<h3 class="titulo-vidrio">Productos Eliminados</h3> 
+  <br><br>
   <a class="btn btn-primary float-end" href="<?php echo base_url('Lista_Productos');?>" tabindex="-1" aria-disabled="true">
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
   <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
   </svg>Volver</a>
+  <br><br>
   <div class="mt-3 text">
-  <h3 class="text-center Btext text-dark">Productos Eliminados</h3>
   <table class="table table-responsive table-hover" id="users-list">
        <thead>
           <tr class="bg-success">
@@ -34,20 +35,15 @@
              $categoria='';
              switch ($prod['categoria_id']) {
                 case 1:
-                    $categoria = 'Microprocesador';
+                    $categoria = 'Makinas';
                     break;
                 case 2:
-                    $categoria = 'Motherboard';
+                    $categoria = 'Perfumes';
                     break;
                 case 3:
-                    $categoria = 'RAM';
+                    $categoria = 'Ropa';
                     break;
-                case 4:
-                    $categoria = 'Fuentes';
-                    break;
-                case 5:
-                    $categoria = 'Otros';
-                    break;
+              
               }?>
              <td><?php echo $categoria ?></td>
              <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>

@@ -1,3 +1,4 @@
+
 :root {
     --PrimaryColor: #560319; /* Borgoña oscuro */
     --HoverColor: hsl(330, 19%, 89%); /* Un tono más oscuro para el hover */
@@ -43,28 +44,7 @@
     color: azure;
 }
 
-.ImgNav {
-    display: flex; /* Centra la imagen si es necesario */
-    align-items: center; /* Centra verticalmente */
-    width: 80px; /* Ancho del contenedor */
-    height: 80px; /* Alto del contenedor */
-    overflow: hidden; /* Oculta los bordes sobrantes de la imagen */
-    border-radius: 30%; /* Hace que el contenedor sea circular */
-    
-}
 
-.ImgNav img {
-    width: 100%; /* Ajusta el ancho de la imagen al contenedor */
-    height: 100%; /* Ajusta el alto de la imagen al contenedor */
-    object-fit: cover; /* Asegura que la imagen cubra completamente el contenedor */
-}
-
-
-.nombreLogo{
-    color: #017274;
-    text-shadow: 2px 2px 2px #e4e7e7;
-    font-size: 50px;
-}
 
 .navBarSection .headernav .logoDiv .logo {
     color: var(--HoverColor);
