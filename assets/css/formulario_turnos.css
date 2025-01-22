@@ -93,7 +93,7 @@
     right: -4px;
     bottom: -4px;
     z-index: -1;
-    background: linear-gradient(45deg, 
+   /* background: linear-gradient(45deg, 
     white 0%, white 12.5%, 
     red 12.5%, red 25%, 
     white 25%, white 37.5%, 
@@ -102,7 +102,7 @@
     red 62.5%, red 75%, 
     white 75%, white 87.5%, 
     blue 87.5%, blue 100%
-);
+);*/
 
 
     background-size: 400%;

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barberia King</title>
-  <link rel="icon" href="<?php echo base_url('./assets/img/iconoBK.png');?>">
+  <title>Multirubro Blass</title>
+  <link rel="icon" href="<?php echo base_url('./assets/img/carrito2.png');?>">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/clock.css">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/mensajesTemporales.css">

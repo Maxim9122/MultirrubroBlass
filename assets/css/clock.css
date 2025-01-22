@@ -31,7 +31,7 @@
     right: -4px;
     bottom: -4px;
     z-index: -1;
-    background: linear-gradient(45deg, 
+    /*background: linear-gradient(45deg, 
     white 0%, white 12.5%, 
     red 12.5%, red 25%, 
     white 25%, white 37.5%, 
@@ -43,7 +43,7 @@
     background-size: 400%;
     border-radius: 12px;
     filter: blur(8px);
-    animation: glowing 20s linear infinite;
+    animation: glowing 20s linear infinite;*/
 }
 
 @keyframes glowing {
