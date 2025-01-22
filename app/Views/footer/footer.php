@@ -16,7 +16,7 @@
         <div class="logoDiv">
             <div class="footerLogo">
                 <a href="<?= base_url('catalogo')?>" class="logo">
-                    <strong class="nombreLogo">Barberia King</strong>
+                    <strong class="nombreLogo">Multirubro Blass</strong>
                 </a>
             </div>
             
@@ -27,7 +27,7 @@
             
             <div class="desarrollador">
                 <span>
-                    Desarrollado por <span>Maximiliano Luna (Tel:3841-670079)</span>
+                    Desarrollado por <span>Maximiliano Luna / Luis Nuñez (Tel:3841-670079)</span>
                 </span>
             </div>
         </div>

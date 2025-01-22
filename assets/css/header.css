@@ -10,14 +10,14 @@
 ::-webkit-scrollbar-thumb {
     background: repeating-linear-gradient(
         45deg,
-        white 0%, white 12.5%, 
-        red 12.5%, red 25%, 
-        white 25%, white 37.5%, 
-        blue 37.5%, blue 50%, 
-        white 50%, white 62.5%, 
-        red 62.5%, red 75%, 
-        white 75%, white 87.5%, 
-        blue 87.5%, blue 100%
+        #204620 0%, #204620 12.5%, 
+        #24581A 12.5%, #285523 25%, 
+        #204620 25%, #204620 37.5%, 
+        #1B5227 37.5%, #144E1D 50%, 
+        #204620 50%, #204620 62.5%, 
+        #204620 62.5%, #204620 75%, 
+        #144E1D 75%, #144E1D 87.5%, 
+        #204620 87.5%, #204620 100%
     );
     border-radius: 6px;
     border: 2px solid #f0f0f0;
@@ -27,14 +27,14 @@
 ::-webkit-scrollbar-thumb:hover {
     background: repeating-linear-gradient(
         45deg,
-        blue 0%, blue 12.5%, 
-        white 12.5%, white 25%, 
-        red 25%, red 37.5%, 
-        white 37.5%, white 50%, 
-        blue 50%, blue 62.5%, 
-        white 62.5%, white 75%, 
-        red 75%, red 87.5%, 
-        white 87.5%, white 100%
+        #144E1D 0%, #144E1D 12.5%, 
+        #204620 12.5%, #204620 25%, 
+        #285523 25%, #285523 37.5%, 
+        #204620 37.5%, #204620 50%, 
+        #1B5227 50%, #1B5227 62.5%, 
+        #204620 62.5%, #204620 75%, 
+        #285523 75%, #285523 87.5%, 
+        #204620 87.5%, #204620 100%
     ); /* Invierte el orden de colores */
 }
 
