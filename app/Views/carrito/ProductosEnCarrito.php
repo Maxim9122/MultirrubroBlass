@@ -1,49 +1,43 @@
 <?php $cart = \Config\Services::cart(); ?>
 
+<!-- Mensajes temporales -->
 <?php if (session()->getFlashdata('msg')): ?>
-    <div id="flash-message" class="success" style="width: 30%;">
-        <?= session()->getFlashdata('msg') ?>
-    </div>
+        <div id="flash-message" class="flash-message success">
+            <?= session()->getFlashdata('msg') ?>
+        </div>
+    <?php endif; ?>
+    <?php if (session("msgEr")): ?>
+        <div id="flash-message" class="flash-message danger">
+            <?php echo session("msgEr"); ?>
+        </div>
+    <?php endif; ?>
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
-        }, 2000); // 2000 milisegundos = 2 segundos
+        }, 3000); // 3000 milisegundos = 3 segundos
     </script>
-<?php endif; ?>
-  <?php if(session("msgEr")):?>
-   <div class="secondary" style="width: 30%;">
-      <?php echo session("msgEr"); ?>
-      </div>
-  <?php endif?>
+<!-- Fin de los mensajes temporales -->
 <br>
 
 <div class="comprados" style="width:100%;">
 
 <div class="cart" >
         <div class = "heading">
-            <u><i><h2>Productos Seleccionados</h2></i></u>
+            <u><i><h2>Productos En Carrito</h2></i></u>
         </div>
+        <br>
         <div class="texto-negrita" align="center" >
 
             <?php  
             // Si el carrito está vacio, mostrar el siguiente mensaje
             if (empty($carrito))
             {
-                echo 'Para agregar productos al carrito, click en "Comprar"';
+                echo 'No hay productos agregados Todavia.!"';
                 
             }
             ?>
         </div>
-       <!-- Formulario para agregar un Gastos de productos no registrados-->
-    <form action="<?php echo base_url('Otros_gastos');?>" method="post" class="alineacion_Y_texto">
-    <input type="hidden" name="id" value="10000">
-    <label for="nombre_producto">Otros Gastos:</label>
-    <input type="text" name="nombre" id="nombre_producto" class="no-border-input" placeholder="Nombre" required>
-    <label for="precio_producto">Monto/Precio:</label>
-    <input type="text" name="precio_vta" id="precio_producto" class="no-border-input" placeholder="Importe en $" required>    
-    <button class="success margenArriba" type="submit" >Agregar y Sumar</button>
-    </form>
-<br>
+   
 
 <?php
 // Asegúrate de definir $gran_total antes de este script
@@ -89,13 +83,21 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         </td>
                         <td class="separador">
                         <?php 
-                                if($item['id'] < 10000){
-                                echo form_input('cart[' . $item['id'] . '][qty]', $item['qty'],
-                                'maxlength="3" size="1" style="text-align: right"');
-                            }else{
+                            if ($item['id'] < 10000) {
+                                echo form_input([
+                                    'name' => 'cart[' . $item['id'] . '][qty]',
+                                    'value' => $item['qty'],
+                                    'type' => 'number',
+                                    'min' => '1',
+                                    'maxlength' => '3',
+                                    'size' => '1',
+                                    'style' => 'text-align: right; width: 50px;',
+                                    'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
+                                ]);
+                            } else {
                                 echo number_format($item['qty']);
                             }
-                        ?>
+                            ?>
                         </td>
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
                         <td class="separador">

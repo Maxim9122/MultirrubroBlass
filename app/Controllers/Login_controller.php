@@ -37,7 +37,6 @@ class Login_controller extends Controller
                     'nombre' => $data['nombre'],
                     'apellido'=> $data['apellido'],
                     'email' =>  $data['email'],
-                    'usuario' => $data['usuario'],
                     'telefono' => $data['telefono'],
                     'direccion' => $data['direccion'],
                     'perfil_id'=> $data['perfil_id'],
@@ -45,7 +44,7 @@ class Login_controller extends Controller
                 ];
                 $session->set($ses_data);
                 if($ses_data['perfil_id'] == 2){
-                return redirect()->to('/catalogo');
+                return redirect()->to('turnos');
                 }else{
                 return redirect()->to('/Lista_Productos');
                 }

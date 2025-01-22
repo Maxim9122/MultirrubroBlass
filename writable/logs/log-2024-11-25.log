@@ -1,0 +1,28 @@
+CRITICAL - 2024-11-25 08:24:44 --> Undefined variable $perfil
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(2): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 2)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(76): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->editarServi('1')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-25 14:13:11 --> Unsupported operand types: string * string
+#0 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->actualiza_carrito()
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2024-11-25 19:32:52 --> Undefined array key "fecha_turo"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(131): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 131)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->TurnosTodos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

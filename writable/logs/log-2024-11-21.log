@@ -1,0 +1,118 @@
+CRITICAL - 2024-11-21 08:37:51 --> Undefined array key "total_venta"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\CompraDetalle_view.php(54): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 54)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(83): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListCompraDetalle('25')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-21 12:24:42 --> Undefined variable $barbers
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(41): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 41)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(65): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-21 12:36:50 --> Undefined array key "barber_id"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(42): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 42)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(69): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-21 13:00:19 --> Undefined array key "id_barber"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(50): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 50)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(69): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-21 19:32:55 --> Class "App\Models\VentaDetalle_model" not found
+#0 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2024-11-21 20:12:05 --> Class "App\Models\VentaDetalle_model" not found
+#0 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2024-11-21 17:38:11 --> Undefined array key "nombre"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(65): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 65)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(70): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-21 19:11:19 --> Undefined property: App\Controllers\Turnos_controller::$load
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(167): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined prope...', 'C:\\xampp\\htdocs...', 167)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-21 19:13:12 --> Undefined property: App\Controllers\Turnos_controller::$input
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(170): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined prope...', 'C:\\xampp\\htdocs...', 170)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-21 19:18:34 --> Undefined property: App\Controllers\Turnos_controller::$input
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(172): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined prope...', 'C:\\xampp\\htdocs...', 172)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-21 19:19:25 --> Array callback must have exactly two elements
+#0 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2024-11-21 19:20:36 --> Undefined property: App\Controllers\Turnos_controller::$input
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(173): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined prope...', 'C:\\xampp\\htdocs...', 173)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-21 19:21:22 --> Call to undefined method CodeIgniter\Database\MySQLi\Connection::where()
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(184): App\Models\Turnos_model->actualizar_turno('9', Array)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->turno_actualizar('9')
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-21 19:58:58 --> Call to undefined function bse_url()
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include()
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#2 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('header/header', Array, true)
+#3 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(71): view('header/header', Array)
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}

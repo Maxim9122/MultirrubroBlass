@@ -1,6 +1,11 @@
 <br>
-<div class="container mt-1 mb-0 comprados">
-  <div class="comprados" style="width: 50%;" >
+<?php $session = session();
+          $nombre= $session->get('nombre');
+          $perfil=$session->get('perfil_id');
+          $id=$session->get('id');?>  
+ <?php if($perfil == 1){  ?>
+<div class="container mt-1 mb-0 nuevoTurno">
+  <div class=""  >
     <div class= "card-header text-center">
       <h2>Editar Usuarios</h2>
     </div>
@@ -17,7 +22,7 @@
   <div class="mb-2">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
    <input name="nombre" type="text"  class="form-control" placeholder="nombre" 
-   value="<?php echo $data['nombre']?>">
+   value="<?php echo $data['nombre']?>" required>
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -27,7 +32,7 @@
   </div>
   <div class="mb-3">
    <label for="exampleFormControlTextarea1" class="form-label">Apellido</label>
-    <input type="text" name="apellido"class="form-control" placeholder="apellido" value="<?php echo $data['apellido'] ?>">
+    <input type="text" name="apellido" required class="form-control" placeholder="apellido" value="<?php echo $data['apellido'] ?>" >
     <!-- Error -->
         <?php if($validation->getError('apellido')) {?>
             <div class='alert alert-danger mt-2'>
@@ -37,21 +42,11 @@
     </div>
     <div class="mb-3">
        <label for="exampleFormControlInput1" class="form-label">email</label>
-   <input name="email"  type="femail" class="form-control"  placeholder="correo@algo.com" value="<?php echo $data['email']?>" >
+   <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" value="<?php echo $data['email']?>" >
     <!-- Error -->
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
               <?= $error = $validation->getError('email'); ?>
-            </div>
-        <?php }?>
-  </div>
-    <div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Usuario</label>
-   <input  type="text" name="usuario" class="form-control" placeholder="usuario" value="<?php echo $data['usuario']?>">
-   <!-- Error -->
-        <?php if($validation->getError('usuario')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('usuario'); ?>
             </div>
         <?php }?>
   </div>
@@ -79,8 +74,8 @@
   </div>
   
   <div class="mb-3">
-   <label for="exampleFormControlInput1" class="form-label">Password</label>
-   <input name="pass" type="txt" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>">
+   
+   <input name="pass" type="hidden" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>">
    <!-- Error -->
         <?php if($validation->getError('pass')) {?>
             <div class='alert alert-danger mt-2'>
@@ -97,14 +92,14 @@
         $perfil = 'Admin';
         break;
     case 2:
-        $perfil = 'Cliente';
+        $perfil = 'Barber';
         break;
 }?>
    <label for="exampleFormControlInput1" class="form-label">Categoria</label>
    <select name="perfil_id">
     <option value="<?php echo $data['perfil_id']?>"><?php echo $perfil ?></option>
     <option value="1">Admin</option>
-    <option value="2">Cliente</option>
+    <option value="2">Barber</option>
     </select>
    <!-- Error -->
         <?php if($validation->getError('perfil_id')) {?>
@@ -128,11 +123,18 @@
   <input type="hidden" name="id" value="<?php echo $data['id']?>">
 
   <br>
-           <input type="submit" value="Editar" class="btn btn-outline-success float-end">
-            <a type="reset" href="<?php echo base_url('usuarios-list');?>" class="btn btn-outline-danger float-end">Cancelar</a>
-      <br><br>
+  <div style="text-align: end;">
+            <a type="reset" href="<?php echo base_url('usuarios-list');?>" class="btn" style="text-align: end;">Cancelar</a>
+            <input type="submit" value="Editar" class="btn" >
+  </div>
+
  </div>
 </form>
+<?php }else{ ?>
+  <h2>Su perfil no tiene acceso a esta parte,
+    Vuelva a alguna seccion de Empleado!
+  </h2>
+<?php }?>
 </div>
 </div>
 <br>

@@ -1,0 +1,89 @@
+ERROR - 2024-11-12 07:23:10 --> Error connecting to the database: Unknown database 'barberiaking'
+CRITICAL - 2024-11-12 07:23:10 --> Unable to connect to the database.
+Main connection [MySQLi]: Unknown database 'barberiaking'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(577): CodeIgniter\Database\BaseConnection->initialize()
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#2 C:\xampp\htdocs\BarberiaKing\system\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+#3 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(622): CodeIgniter\Model->doFirst()
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Login_controller.php(26): CodeIgniter\BaseModel->first()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Login_controller->auth()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-12 07:25:01 --> Table 'barberking.usuarios' doesn't exist
+CRITICAL - 2024-11-12 07:25:01 --> Table 'barberking.usuarios' doesn't exist
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\system\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(622): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\BarberiaKing\app\Controllers\Login_controller.php(26): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Login_controller->auth()
+#8 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#9 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#11 {main}
+ERROR - 2024-11-12 07:25:09 --> Table 'barberking.usuarios' doesn't exist
+CRITICAL - 2024-11-12 07:25:09 --> Table 'barberking.usuarios' doesn't exist
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\system\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(622): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\BarberiaKing\app\Controllers\Login_controller.php(26): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Login_controller->auth()
+#8 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#9 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#11 {main}
+ERROR - 2024-11-12 07:39:08 --> Unknown column 'u.hora' in 'field list'
+CRITICAL - 2024-11-12 07:39:08 --> Unknown column 'u.hora' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(93): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabeceraCliente('57')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-12 07:44:57 --> Unknown column 'u.hora' in 'field list'
+CRITICAL - 2024-11-12 07:44:57 --> Unknown column 'u.hora' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(93): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabeceraCliente('57')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-12 07:45:05 --> Unknown column 'u.hora' in 'field list'
+CRITICAL - 2024-11-12 07:45:05 --> Unknown column 'u.hora' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(93): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabeceraCliente('57')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-12 07:48:14 --> Unknown column 'u.hora' in 'field list'
+CRITICAL - 2024-11-12 07:48:14 --> Unknown column 'u.hora' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(93): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabeceraCliente('57')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

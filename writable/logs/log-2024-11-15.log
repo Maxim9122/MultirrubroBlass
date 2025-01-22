@@ -1,0 +1,571 @@
+ERROR - 2024-11-15 06:58:15 --> Unknown column 'usuario_id' in 'where clause'
+CRITICAL - 2024-11-15 06:58:15 --> Unknown column 'usuario_id' in 'where clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(55): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListaTurnosCabeceraCliente('2')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:06:36 --> Unknown column 'usuario_id' in 'where clause'
+CRITICAL - 2024-11-15 07:06:36 --> Unknown column 'usuario_id' in 'where clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(55): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListaTurnosCabeceraCliente('2')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:35:50 --> Unknown column 'u.id_usuario' in 'on clause'
+CRITICAL - 2024-11-15 07:35:50 --> Unknown column 'u.id_usuario' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(51): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:42:58 --> Unknown column 'u.usuario_id' in 'on clause'
+CRITICAL - 2024-11-15 07:42:58 --> Unknown column 'u.usuario_id' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(26): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:45:17 --> Unknown column 'u.usuario_id' in 'on clause'
+CRITICAL - 2024-11-15 07:45:17 --> Unknown column 'u.usuario_id' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(26): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:45:52 --> Unknown column 'u.usuario_id' in 'on clause'
+CRITICAL - 2024-11-15 07:45:52 --> Unknown column 'u.usuario_id' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(26): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 07:46:55 --> Invalid file: comprasXcliente/ListaCompras_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('comprasXcliente...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-15 07:48:38 --> Invalid file: comprasXcliente/ListaVentas_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('comprasXcliente...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-15 07:50:36 --> Undefined variable $turnos
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(37): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 37)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListComprasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 07:54:18 --> Undefined variable $trn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(40): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 40)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:56:27 --> Unknown column 'd.telefono' in 'field list'
+CRITICAL - 2024-11-15 07:56:27 --> Unknown column 'd.telefono' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(26): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 07:56:49 --> Unknown column 'c.id' in 'on clause'
+CRITICAL - 2024-11-15 07:56:49 --> Unknown column 'c.id' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(26): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 07:57:23 --> Undefined variable $trn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(40): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 40)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 08:01:52 --> Undefined array key "id"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(40): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 40)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 08:02:24 --> Undefined array key "tipo_servicio"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(46): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 46)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 08:03:11 --> Undefined variable $trn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\comprasXcliente\ListaVentas_view.php(49): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 49)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('comprasXcliente...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(35): view('comprasXcliente...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->ListVentasCabecera()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 11:46:27 --> Unknown column 'usuario_id' in 'field list'
+CRITICAL - 2024-11-15 11:46:27 --> Unknown column 'usuario_id' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('INSERT INTO `ve...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ve...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ve...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1771): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ve...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\system\Model.php(239): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(738): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\BarberiaKing\system\Model.php(625): CodeIgniter\BaseModel->insert(Array, false)
+#7 C:\xampp\htdocs\BarberiaKing\system\BaseModel.php(658): CodeIgniter\Model->insert(Array, false)
+#8 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(240): CodeIgniter\BaseModel->save(Array)
+#9 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#10 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#11 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#13 {main}
+CRITICAL - 2024-11-15 09:20:08 --> Undefined array key "id"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\carrito\confirmarCompra.php(57): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 57)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('carrito/confirm...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Carrito_controller.php(224): view('carrito/confirm...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->muestra_compra()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:17:14 --> Undefined variable $trn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\ListaClientes.php(43): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 43)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/ListaC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(25): view('clientes/ListaC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->ListarClientes()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:17:15 --> Undefined variable $trn
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\ListaClientes.php(43): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 43)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/ListaC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(25): view('clientes/ListaC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->ListarClientes()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:17:27 --> Undefined array key "id"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\ListaClientes.php(43): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 43)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/ListaC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(25): view('clientes/ListaC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->ListarClientes()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:35:03 --> Undefined array key "apellido"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\editoCliente.php(31): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 31)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/editoC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(35): view('clientes/editoC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->editarCliente('1')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:36:11 --> Undefined array key "id"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\editoCliente.php(41): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 41)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/editoC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(35): view('clientes/editoC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->editarCliente('1')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 10:39:33 --> Undefined variable $cl
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\editoCliente.php(43): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 43)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/editoC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(35): view('clientes/editoC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->editarCliente('1')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 11:02:50 --> valid_telefono is not a valid rule.
+#0 C:\xampp\htdocs\BarberiaKing\system\Validation\Validation.php(300): CodeIgniter\Validation\Exceptions\ValidationException::forRuleNotFound('valid_telefono')
+#1 C:\xampp\htdocs\BarberiaKing\system\Validation\Validation.php(157): CodeIgniter\Validation\Validation->processRules('telefono', 'telefono', '1234567890', Array, Array)
+#2 C:\xampp\htdocs\BarberiaKing\system\Controller.php(160): CodeIgniter\Validation\Validation->run()
+#3 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(42): CodeIgniter\Controller->validate(Array)
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->EdicionOk()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2024-11-15 12:00:18 --> Undefined array key "fot"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\ListaClientes.php(40): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 40)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/ListaC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(25): view('clientes/ListaC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->ListarClientes()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 12:05:56 --> Undefined array key "foto"
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Clientes_controller.php(69): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 69)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Clientes_controller->EdicionOk()
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clientes_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+ERROR - 2024-11-15 12:26:12 --> Table 'barberiaking.servicio' doesn't exist
+CRITICAL - 2024-11-15 12:26:12 --> Table 'barberiaking.servicio' doesn't exist
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(53): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:28:52 --> Unknown column 's.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:28:52 --> Unknown column 's.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:29:10 --> Unknown column 't.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:29:10 --> Unknown column 't.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:29:13 --> Unknown column 't.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:29:13 --> Unknown column 't.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:29:50 --> Unknown column 't.tipo_servicio' in 'field list'
+CRITICAL - 2024-11-15 12:29:50 --> Unknown column 't.tipo_servicio' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:30:21 --> Unknown column 't.tipo_servicio' in 'field list'
+CRITICAL - 2024-11-15 12:30:21 --> Unknown column 't.tipo_servicio' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:30:23 --> Unknown column 't.tipo_servicio' in 'field list'
+CRITICAL - 2024-11-15 12:30:23 --> Unknown column 't.tipo_servicio' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:30:56 --> Unknown column 't.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:30:56 --> Unknown column 't.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:30:58 --> Unknown column 't.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:30:58 --> Unknown column 't.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:32:20 --> Unknown column 't.id_servicio' in 'on clause'
+CRITICAL - 2024-11-15 12:32:20 --> Unknown column 't.id_servicio' in 'on clause'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(54): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-11-15 12:34:20 --> Unknown column 's.drescripcion' in 'field list'
+CRITICAL - 2024-11-15 12:34:20 --> Unknown column 's.drescripcion' in 'field list'
+#0 C:\xampp\htdocs\BarberiaKing\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\BarberiaKing\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\BarberiaKing\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Turnos_controller.php(56): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 16:45:46 --> Undefined variable $turnos
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\turnos\ListaTurnos_view.php(37): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 37)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(26): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->Servicios()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 16:47:00 --> Undefined variable $servicios
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\servicios_view.php(33): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 33)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/servi...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(26): view('servicios/servi...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->Servicios()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 16:48:53 --> Undefined variable $servicios
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\servicios_view.php(33): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 33)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/servi...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(26): view('servicios/servi...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->Servicios()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 17:02:27 --> Undefined variable $datos
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(35): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 35)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->new_Servicio()
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-15 17:18:41 --> Unmatched '}'
+#0 C:\xampp\htdocs\BarberiaKing\system\Autoloader\Autoloader.php(241): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\xampp\\htdocs...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Autoloader\Autoloader.php(219): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers...')
+#2 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers...')
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(797): class_exists('\\App\\Controller...', true)
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(406): CodeIgniter\CodeIgniter->startController()
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-15 18:02:01 --> Undefined array key "nombre"
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\clientes\editoCliente.php(21): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 21)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('clientes/editoC...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(76): view('clientes/editoC...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->editarServi('1')
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 18:03:07 --> Invalid file: servicios/editoServicio.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('servicios/edito...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(76): view('servicios/edito...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->editarServi('1')
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-15 18:14:51 --> Undefined variable $datos
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(99): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 99)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-15 18:17:43 --> Undefined variable $datos
+#0 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(100): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 100)
+#1 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#2 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2024-11-15 18:17:55 --> Trying to access array offset on value of type null
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(20): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to acces...', 'C:\\xampp\\htdocs...', 20)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(96): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 18:19:25 --> Trying to access array offset on value of type null
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(20): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to acces...', 'C:\\xampp\\htdocs...', 20)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(96): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 18:20:12 --> Trying to access array offset on value of type null
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(20): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to acces...', 'C:\\xampp\\htdocs...', 20)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(96): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 18:20:50 --> Trying to access array offset on value of type null
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(20): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to acces...', 'C:\\xampp\\htdocs...', 20)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(96): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-11-15 18:23:33 --> Trying to access array offset on value of type null
+#0 C:\xampp\htdocs\BarberiaKing\app\Views\servicios\editoServicio_view.php(20): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to acces...', 'C:\\xampp\\htdocs...', 20)
+#1 C:\xampp\htdocs\BarberiaKing\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\BarberiaKing\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('servicios/edito...', Array, true)
+#4 C:\xampp\htdocs\BarberiaKing\app\Controllers\Servicios_controller.php(96): view('servicios/edito...', Array)
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Servicios_controller->edicionServiOk()
+#6 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Servicios_controller))
+#7 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

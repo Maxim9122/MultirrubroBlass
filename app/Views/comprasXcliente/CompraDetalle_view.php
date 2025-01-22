@@ -18,10 +18,6 @@
   <?php }?>
   <br><br>
 
-  <?php $totalVentaProdRegistrados = 0; ?>
-  <?php $totalTodo = 0;?>
-  <?php $TotalOtrosProd = 0;?>
-
   <div class="comprados">
   <h2 class="">Detalle de la Compra</h2>
   
@@ -45,24 +41,10 @@
              <td class="text-center bg-light"><?php echo $vta['precio']; ?></td>
              <td class="text-center bg-light"><?php echo $vta['total']; ?></td>
             </tr>
-            <?php $totalVentaProdRegistrados= $totalVentaProdRegistrados + $vta['total']; ?>
+           
          <?php endforeach; ?>
          <?php endif; ?>
-          <!-- Hago los calculos para mostrar el monto gastado en productos no registrados y muestro-->
-         <?php if($Totalcv): ?>
-         <?php foreach($Totalcv as $vta): ?>
-         <td>Otros Gastos</td>
-         <td>Productos no registrados</td>
-         <!-- Este monto es el monto total de la venta cabecera de esta venta detalle y aparte escrino Kg -->
-         <td><?php $totalTodo = $vta['total_venta'];?>Por Kg</td>
-         <td><?php $TotalOtrosProd = $totalTodo - $totalVentaProdRegistrados?></td>
-         <td><?php echo $TotalOtrosProd ?>.00</td>
-         <?php endforeach; ?>
-         <?php endif; ?>
-         <br>
-         <!-- Este total se muestra antes de la tabla-->
-         <h4>Total de la compra: $<?php echo $vta['total_venta']; ?></h4>
-         <br>
+         
      </table>
      <br>
   </div>

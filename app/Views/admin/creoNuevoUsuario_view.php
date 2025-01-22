@@ -1,8 +1,8 @@
 <br>
-<div class="nuevoProd">
+<div class="nuevoTurno">
   <div class="" style="width: 100%;" >
     <div class= "">
-      <h2>Nuevo Usuario</h2>
+      <h2>Nuevo Usuario/Barber</h2>
     </div>
   
  <?php $validation = \Config\Services::validation(); ?>
@@ -36,22 +36,12 @@
         <?php }?>
     </div>
     <div class="">
-       <label for="exampleFormControlInput1" class="form-label">email</label>
-   <input name="email"  type="femail" class="form-control"  placeholder="correo@algo.com" >
+       <label for="exampleFormControlInput1" class="">email</label>
+   <input name="email"  type="femail" class=""  placeholder="correo@algo.com" >
     <!-- Error -->
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
               <?= $error = $validation->getError('email'); ?>
-            </div>
-        <?php }?>
-  </div>
-    <div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Usuario</label>
-   <input  type="text" name="usuario" class="form-control" placeholder="usuario">
-   <!-- Error -->
-        <?php if($validation->getError('usuario')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('usuario'); ?>
             </div>
         <?php }?>
   </div>
@@ -79,8 +69,7 @@
   </div>
 
   <div class="mb-3">
-   <label for="exampleFormControlInput1" class="form-label">Password</label>
-   <input name="pass" type="txt" class="form-control"  placeholder="password">
+   <input name="pass" type="hidden" class=""  placeholder="password" value="123">
    <!-- Error -->
         <?php if($validation->getError('pass')) {?>
             <div class='alert alert-danger mt-2'>
@@ -93,8 +82,8 @@
    <label for="exampleFormControlInput1" class="form-label">Perfil:</label>
    <select name="perfil_id">
     <option>Seleccione Perfil</option>
-    <option value="1">Admin</option>
-    <option value="2">Cliente</option>
+    <option value="2">Barber</option>
+    <option value="2">Vendedor</option>
     </select>
    <!-- Error -->
         <?php if($validation->getError('perfil_id')) {?>
@@ -104,9 +93,11 @@
         <?php }?>
   </div>
   <br>
-          <input type="submit" value="Crear" class="btn btn-outline-success float-end">
-          <a type="reset" href="<?php echo base_url('usuarios-list');?>" class="btn btn-outline-danger float-end">Cancelar</a>
-      <br><br>
+  <div class="button-container">
+          <a type="reset" href="<?php echo base_url('usuarios-list');?>" class="button2">Cancelar</a>
+          <button type="submit" class="button2">Crear US</button>
+      <br>
+        </div>
  </div>
 </form>
 </div>

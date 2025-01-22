@@ -26,7 +26,6 @@ class Usuario_controller extends Controller{
             'nombre'   => 'required|min_length[3]',
             'apellido' => 'required|min_length[3]|max_length[25]',
             'email'    => 'required|min_length[4]|max_length[100]|valid_email|is_unique[usuarios.email]',
-            'usuario'  => 'required|min_length[3]',
             'telefono'  => 'required|min_length[10]|max_length[10]',
             'direccion'  => 'required|max_length[100]',
             'pass'     => 'required|min_length[3]|max_length[10]'
@@ -43,7 +42,6 @@ class Usuario_controller extends Controller{
             $formModel->save([
                 'nombre' => $this->request->getVar('nombre'),
                 'apellido' => $this->request->getVar('apellido'),
-                'usuario' => $this->request->getVar('usuario'),
                 'telefono' => $this->request->getVar('telefono'),
                 'direccion' => $this->request->getVar('direccion'),
                 'email'  => $this->request->getVar('email'),
@@ -71,7 +69,6 @@ class Usuario_controller extends Controller{
             'nombre'   => 'required|min_length[3]',
             'apellido' => 'required|min_length[3]|max_length[25]',
             'email'    => 'required|min_length[4]|max_length[100]|valid_email|is_unique[usuarios.email]',
-            'usuario'  => 'required|min_length[3]',
             'telefono'  => 'required|min_length[10]|max_length[10]',
             'direccion'  => 'required|max_length[100]',
             'pass'     => 'required|min_length[3]|max_length[10]',
@@ -90,7 +87,6 @@ class Usuario_controller extends Controller{
             $formModel->save([
                 'nombre' => $this->request->getVar('nombre'),
                 'apellido' => $this->request->getVar('apellido'),
-                'usuario' => $this->request->getVar('usuario'),
                 'telefono' => $this->request->getVar('telefono'),
                 'direccion' => $this->request->getVar('direccion'),
                 'email'  => $this->request->getVar('email'),
@@ -105,28 +101,32 @@ class Usuario_controller extends Controller{
 
     public function formValidationEdit() {
         
-        //print_r($_POST);exit;
         
         $input = $this->validate([
-            'nombre'   => 'required|min_length[3]|string',
-            'apellido' => 'required|min_length[3]|max_length[25]',
-            'email'    => 'required|min_length[4]|max_length[100]|valid_email',
-            'usuario'  => 'required|min_length[3]',
-            'telefono'  => 'required|min_length[10]|max_length[10]',
-            'direccion'  => 'required|max_length[100]',
-            'pass'     => 'required|min_length[3]',
-            'perfil_id'=> 'required|max_length[1]',
-            'baja'  => 'required|max_length[2]'
+            'nombre'    => 'required|min_length[3]',
+            'apellido'  => 'required|min_length[3]|max_length[25]',
+            'email'     => 'required|min_length[4]|max_length[100]|valid_email',
+            'telefono'  => 'required|exact_length[10]',
+            'direccion' => 'required|max_length[100]',
+            'pass'      => 'required|min_length[3]',
+            'perfil_id' => 'required|is_natural_no_zero|max_length[1]',
+            'baja'      => 'required|max_length[2]'
         ]);
+        
         $Model = new Usuarios_model();
-        $id=$_POST['id'];
+        $id = $_POST['id'];
+        
         if (!$input) {
-            $data=$Model->getUsuario($id);
-            $dato['titulo']='Editar Usuario'; 
-                echo view('navbar/navbar');
-                echo view('header/header',$dato);                
-                echo view('back/Admin/editarUsuarios_view',compact('data'));
-                echo view('footer');
+            $data = $Model->getUsuario($id);
+            if (!$data) {
+                return redirect()->to('/admin/usuarios')->with('error', 'Usuario no encontrado');
+            }
+        
+            $dato['titulo'] = 'Editar Usuario'; 
+            echo view('navbar/navbar');
+            echo view('header/header', $dato);                
+            echo view('admin/editarUsuarios_view', ['validation' => $this->validator,'data' => $data]);
+            echo view('footer/footer');
         } else {
             $data=$Model->getUsuario($id);
             $pass=$data['pass'];
@@ -137,7 +137,6 @@ class Usuario_controller extends Controller{
                 'nombre' =>$_POST['nombre'],
                 'apellido' => $_POST['apellido'],
                 'email' => $_POST['email'],
-                'usuario'  => $_POST['usuario'],
                 'telefono'  => $_POST['telefono'],
                 'direccion'  => $_POST['direccion'],
                 'pass' => $_POST['pass'],
@@ -150,7 +149,6 @@ class Usuario_controller extends Controller{
                 'nombre' =>$_POST['nombre'],
                 'apellido' => $_POST['apellido'],
                 'email' => $_POST['email'],
-                'usuario'  => $_POST['usuario'],
                 'telefono'  => $_POST['telefono'],
                 'direccion'  => $_POST['direccion'],
                 'pass' => password_hash($_POST['pass'],PASSWORD_DEFAULT),
@@ -185,7 +183,6 @@ class Usuario_controller extends Controller{
             'nombre'   => 'required|min_length[3]',
             'apellido' => 'required|min_length[3]|max_length[25]',
             'email'    => 'required|min_length[4]|max_length[100]|valid_email',
-            'usuario'  => 'required|min_length[3]',
             'telefono'  => 'required|min_length[10]|max_length[10]',
             'direccion'  => 'required|max_length[100]',
             'pass'     => 'required|min_length[3]'
@@ -209,7 +206,6 @@ class Usuario_controller extends Controller{
                 'nombre' =>$_POST['nombre'],
                 'apellido' => $_POST['apellido'],
                 'email' => $_POST['email'],
-                'usuario'  => $_POST['usuario'],
                 'telefono'  => $_POST['telefono'],
                 'direccion'  => $_POST['direccion'],
                 'pass' => $_POST['pass'],
@@ -221,7 +217,6 @@ class Usuario_controller extends Controller{
                 'nombre' =>$_POST['nombre'],
                 'apellido' => $_POST['apellido'],
                 'email' => $_POST['email'],
-                'usuario'  => $_POST['usuario'],
                 'telefono'  => $_POST['telefono'],
                 'direccion'  => $_POST['direccion'],
                 'pass' => password_hash($_POST['pass'],PASSWORD_DEFAULT),

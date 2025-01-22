@@ -1,0 +1,117 @@
+CRITICAL - 2024-11-23 08:14:06 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:19:43 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:24:09 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:35:04 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:40:09 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(124): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:42:59 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:44:55 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array, Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:54:33 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array, Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 08:57:05 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(123): view('back/Admin/edit...', Array, Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 09:03:05 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(128): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 09:04:15 --> Invalid file: back/Admin/editarUsuarios_view.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(128): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 09:08:19 --> Invalid file: footer.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('footer.php')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('footer', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(132): view('footer')
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2024-11-23 09:08:36 --> Invalid file: footer.php
+#0 C:\xampp\htdocs\BarberiaKing\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('footer.php')
+#1 C:\xampp\htdocs\BarberiaKing\system\Common.php(1089): CodeIgniter\View\View->render('footer', Array, true)
+#2 C:\xampp\htdocs\BarberiaKing\app\Controllers\Usuario_controller.php(132): view('footer')
+#3 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(832): App\Controllers\Usuario_controller->formValidationEdit()
+#4 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Usuario_controller))
+#5 C:\xampp\htdocs\BarberiaKing\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\BarberiaKing\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}

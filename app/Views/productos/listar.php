@@ -2,21 +2,30 @@
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
           $id=$session->get('id');?>
+          
+<!-- Mensajes temporales -->
 <?php if (session()->getFlashdata('msg')): ?>
-    <div id="flash-message" class="success" style="width: 30%;">
-        <?= session()->getFlashdata('msg') ?>
-    </div>
+        <div id="flash-message" class="flash-message success">
+            <?= session()->getFlashdata('msg') ?>
+        </div>
+    <?php endif; ?>
+    <?php if (session("msgEr")): ?>
+        <div id="flash-message" class="flash-message danger">
+            <?php echo session("msgEr"); ?>
+        </div>
+    <?php endif; ?>
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
     </script>
-<?php endif; ?>
+<!-- Fin de los mensajes temporales -->
 <br>
 <div class="" style="width: 100%;">
   <div class="">
   <h2 class="textoColor" align="center">Listado de Productos</h2>
   <br>
+
   <section class="buscador">
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
@@ -45,6 +54,7 @@
 </form>
 
     </section>
+  
   <table class="" id="users-list">
        <thead>
           <tr class="colorTexto2">
@@ -64,13 +74,16 @@
              <td><?php echo $prod['precio_vta']; ?></td>
              <?php  switch ($prod['categoria_id']) {
                 case 1:
-                    $categoria = 'Bebidas';
+                    $categoria = 'Maquinas';
                     break;
                 case 2:
-                    $categoria = 'Mercaderia';
+                    $categoria = 'Perfumes';
                     break;
                 case 3:
-                    $categoria = 'Carniceria';
+                    $categoria = 'Ropa';
+                    break;
+                case 4:
+                    $categoria = 'Otros';
                     break;
                 
             }?>
@@ -106,7 +119,7 @@
                                                       
                                                                         $btn = array(
                                                                          'onclick'=> 'comprar()',
-                                                 'class' => 'success',
+                                                 'class' => 'btn',
                                                    'value' => 'Agregar',
                                                    'name' => 'action'
                                                            );

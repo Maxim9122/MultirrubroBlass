@@ -1,5 +1,9 @@
-     
-   <div class="nuevoProd">   
+<?php $session = session();
+          $nombre= $session->get('nombre');
+          $perfil=$session->get('perfil_id');
+          $id=$session->get('id');?>  
+ <?php if($perfil == 1){  ?>
+   <div class="nuevoTurno">   
       <h2>Editar Producto</h2>
  <?php $validation = \Config\Services::validation(); ?>
      <form method="post" enctype="multipart/form-data" action="<?php echo base_url('/enviarEdicionProd') ?>">
@@ -93,21 +97,25 @@
   $categoria='';
   switch ($data['categoria_id']) {
     case 1:
-      $categoria = 'Bebidas';
+      $categoria = 'Makinas';
       break;
   case 2:
-      $categoria = 'Mercaderia';
+      $categoria = 'Perfumes';
       break;
   case 3:
-      $categoria = 'Carniceria';
+      $categoria = 'Ropa';
+      break;
+  case 4:
+      $categoria = 'Otros';
       break;
 }?>
    <label for="exampleFormControlInput1" class="form-label">Categoria</label>
    <select name="categoria_id">
     <option value="<?php echo $data['categoria_id']?>"><?php echo $categoria ?></option>
-    <option value="1">Bebidas</option>
-    <option value="2">Mercaderia</option>
-    <option value="3">Carniceria</option>
+    <option value="1">Maquinas</option>
+    <option value="2">Perfumes</option>
+    <option value="3">Ropa</option>
+    <option value="4">Otros</option>
     
     </select>
    <!-- Error -->
@@ -132,11 +140,20 @@
   <input type="hidden" name="id" value="<?php echo $data['id']?>">
 
   <br>
-           <input type="submit" value="Modificar" class="btn btn-outline-success float-end">
-            <a type="reset" href="<?php echo base_url('Lista_Productos');?>" class="btn btn-outline-danger float-end">Cancelar</a>
-      <br><br>
+  <div class="button-container">
+           
+            <a type="reset" href="<?php echo base_url('Lista_Productos');?>" class="btn">Cancelar</a>
+            <input type="submit" value="Modificar" class="btn">
+            <br><br>
+        </div>
  </div>
 </form>
+
+<?php }else{ ?>
+  <h2>Su perfil no tiene acceso a esta parte,
+    Vuelva a alguna seccion de Empleado!
+  </h2>
+<?php }?>
         </div>
         <br>
         
