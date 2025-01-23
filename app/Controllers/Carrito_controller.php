@@ -1,11 +1,17 @@
 <?php
 namespace App\Controllers;
+
+require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
 Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
-//use Dompdf\Dompdf;
+use App\Models\Usuarios_model;
+
 
 class Carrito_controller extends Controller{
 
@@ -205,10 +211,11 @@ public function ListCompraDetalle($id)
     // Recuperar datos del formulario usando $this->request->getPost()
     $id_cliente = $this->request->getPost('cliente_id');
 	//print_r($id_cliente);
-		//exit;
+	//exit;
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
+	
     $tipo_pago = $this->request->getPost('tipo_pago');
     $total = $this->request->getPost('total_venta');
 
@@ -256,7 +263,8 @@ public function ListCompraDetalle($id)
     // Limpiar el carrito y redirigir con mensaje
     $cart->destroy();
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
-    return redirect()->to(base_url('/catalogo'));
+    // Redirige a la vista de la factura
+    return redirect()->to('Carrito_controller/verFactura/' . $id_cabecera);
 }
 
 
@@ -290,11 +298,7 @@ public function ListCompraDetalle($id)
 		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
 		echo view('footer/footer');
 
-		//$html = view('back/Admin/facturacion_view',$datos2+$datos);
-		//$dompdf->loadHtml('Hola loco');
-		//$dompdf->setPaper('A4', 'landscape');
-		//$dompdf->render();
-		//$dompdf->stream('demoFactura.pdf',['attachment' => false]);
+		
 	}
 
 	function FacturaCliente($id)
@@ -326,10 +330,100 @@ public function ListCompraDetalle($id)
 		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
 		echo view('footer/footer');
 
-		//$html = view('back/Admin/facturacion_view',$datos2+$datos);
-		//$dompdf->loadHtml('Hola loco');
-		//$dompdf->setPaper('A4', 'landscape');
-		//$dompdf->render();
-		//$dompdf->stream('demoFactura.pdf',['attachment' => false]);
+		
 	}
+
+	//Genero factura de la compra
+public function verfactura($id)
+{
+    $facturaModel = new Cabecera_model();
+    $detalleModel = new VentaDetalle_model();
+    $productoModel = new Productos_model();
+    $clienteModel = new Clientes_model(); // Suponiendo que tienes un modelo de usuarios
+    
+    // Obtener la cabecera de la venta
+    $cabecera = $facturaModel->find($id);
+    
+    // Obtener los detalles de la venta
+    $detalles = $detalleModel->where('venta_id', $id)->findAll();
+    
+    // Obtener detalles del usuario
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    //print_r($cliente);
+	//exit;
+    // Obtener detalles de los productos
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $producto = $productoModel->find($detalle['producto_id']);
+        $productos[] = $producto;
+    }
+    
+    // Pasar los datos a la vista
+    return view('facturacion/factura_compra', [
+        'cabecera' => $cabecera,
+        'detalles' => $detalles,
+        'usuario' => $cliente, // Detalles del usuario
+        'productos' => $productos, // Detalles de los productos
+    ]);
+}
+
+
+//Genero el pdf a partir de la vista
+public function generarPDF($id_venta)
+{
+    // Cargar el modelo para obtener la información de la venta
+    $ventaModel = new \App\Models\Cabecera_model();
+    $detalleModel = new \App\Models\VentaDetalle_model();
+    $productoModel = new \App\Models\Productos_model();
+    $clienteModel = new \App\Models\Clientes_model();
+
+    // Obtener la cabecera de la venta
+    $cabecera = $ventaModel->find($id_venta);
+
+    // Obtener los detalles de la venta
+    $detalles = $detalleModel->where('venta_id', $id_venta)->findAll();
+
+    // Obtener los productos relacionados
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $productos[] = $productoModel->find($detalle['producto_id']);
+    }
+
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+
+    // Cargar la vista HTML para generar el contenido del PDF
+    $html = view('facturacion/impresion_PDF', [
+        'cabecera' => $cabecera,
+        'detalles' => $detalles,
+        'productos' => $productos,
+        'usuario' => $cliente
+    ]);
+
+    // Configurar Dompdf
+    $options = new \Dompdf\Options();
+    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isPhpEnabled', true);
+    $dompdf = new \Dompdf\Dompdf($options);
+
+    // Cargar el HTML y renderizar el PDF
+    $dompdf->loadHtml($html);
+    $dompdf->render();
+
+    // Ruta donde se guardará el PDF en la carpeta Descargas del usuario
+    $downloadDirectory = getenv('USERPROFILE') . '\\Downloads';  // Directorio Descargas en Windows
+    $pdf_path = $downloadDirectory . '\\factura_venta_' . $cabecera['id'] . '.pdf';
+
+    // Guardar el PDF en la carpeta Descargas
+    file_put_contents($pdf_path, $dompdf->output());
+
+    // Forzar la descarga del PDF
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="factura_venta_' . $cabecera['id'] . '.pdf"');
+    echo $dompdf->output();
+
+    // Redirigir al carrito después de la descarga
+    return redirect()->to(base_url('catalogo'));
+}
+
 }
