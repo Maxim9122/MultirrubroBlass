@@ -42,6 +42,7 @@ class Login_controller extends Controller
                     'perfil_id'=> $data['perfil_id'],
                     'logged_in'     => TRUE
                 ];
+                
                 $session->set($ses_data);
                 if($ses_data['perfil_id'] == 2){
                 return redirect()->to('catalogo');
