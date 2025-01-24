@@ -21,5 +21,22 @@ class Usuarios_model extends Model
 
     	return $this->where('baja',$baja)->findAll();
     }
+    /**
+     * Obtener sesiones con datos del usuario.
+     */
+    public function getSesionesConUsuarios()
+    {
+        return $this->db->table('sesiones')
+            ->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.email')
+            ->join('usuarios', 'usuarios.id = sesiones.id_usuario')
+            ->get()
+            ->getResult();
+    }
+    //funcion para guarda la sesion cuando inicia el usuario
+        public function guardar_sesion($registro_sesion){
+            $db = \Config\Database::connect();
+            $builder = $db->table('sesiones');
+            $builder->insert($registro_sesion);
+    }
 
 }
