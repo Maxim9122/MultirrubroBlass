@@ -401,16 +401,22 @@ public function generarPDF($id_venta)
     ]);
 
     // Configurar Dompdf
-    $options = new \Dompdf\Options();
-    $options->set('isHtml5ParserEnabled', true);
-    $options->set('isPhpEnabled', true);
-    $dompdf = new \Dompdf\Dompdf($options);
-
+    //$options = new \Dompdf\Options();
+    //$options->set('isHtml5ParserEnabled', true);
+    //$options->set('isPhpEnabled', true);
+    $dompdf = new Dompdf();
+	
     // Cargar el HTML y renderizar el PDF
     $dompdf->loadHtml($html);
-    $dompdf->render();
+    //$dompdf->render();
 
-    // Ruta donde se guardará el PDF en la carpeta Descargas del usuario
+	$height = 150; // Altura en mm
+	$width = 78;  // Ancho en mm (típico para tickets térmicos)
+	$paper_format = array(0, 0, ($width / 25.4) * 72, ($height / 25.4) * 72);
+	$type = "portrait"; // Orientación vertical
+	$dompdf->setPaper($paper_format, $type);
+	$dompdf->render();
+	// Ruta donde se guardará el PDF en la carpeta Descargas del usuario
     $downloadDirectory = getenv('USERPROFILE') . '\\Downloads';  // Directorio Descargas en Windows
     $pdf_path = $downloadDirectory . '\\factura_venta_' . $cabecera['id'] . '.pdf';
 
@@ -421,7 +427,7 @@ public function generarPDF($id_venta)
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="factura_venta_' . $cabecera['id'] . '.pdf"');
     echo $dompdf->output();
-
+	
     // Redirigir al carrito después de la descarga
     return redirect()->to(base_url('catalogo'));
 }

@@ -5,84 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Venta</title>
     <style>
-        /* Tu estilo personalizado para la factura */
+        /* Estilos generales */
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            width: 200px;
-            padding: 0;
-            background-color: #f4f4f4; /* Fondo gris tenue */
+            padding: auto;
+            background-color: #f4f4f4;
+            margin: auto; /* Margen general */
+            
         }
         .reporte-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .reporte-header h1 {
-            font-size: 24px;
+            font-size: 18px;
             margin: 0;
-        }
-        .venta-detalle {
-            margin-bottom: 20px;
         }
         .venta-detalle p {
             margin: 5px 0;
+            font-size: 12px; /* Tamaño reducido */
         }
         .table-wrapper {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            margin: 10px 0;
         }
         .table-wrapper table {
             width: 100%;
+            margin: auto;
             border: 1px solid #ddd;
             border-collapse: collapse;
-            background-color: white; /* Fondo blanco para la tabla */
+            font-size: 12px; /* Tamaño reducido para impresión */
         }
         .table-wrapper th, .table-wrapper td {
-            padding: 10px;
-            text-align: left;
+            padding: 5px; /* Reducir espacio en celdas */
+            text-align: center;
             border: 1px solid #ddd;
         }
-        .table-wrapper th {
-            background-color: #f4f4f4;
+        .total-pagar p {
+            font-size: 14px;
+            text-align: right;
         }
-        .boton-descargar {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .boton-descargar button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .boton-descargar button:hover {
-            background-color: #0056b3;
-        }
-        /* Ocultar el botón de descarga en el PDF */
-        .no-print {
-            display: none;
+
+        /* Estilos específicos para impresión */
+        @media print {
+            body {
+                margin: 0; /* Sin margen al imprimir */
+                padding: 0;
+            }
+            .reporte-header, .venta-detalle, .table-wrapper, .total-pagar {
+                
+                margin: 0;
+                padding: 0;
+            }
+            .table-wrapper table {
+                width: 100%; /* Usar el 100% del ancho del papel */
+                margin: auto;
+            }
+            .boton-descargar {
+                display: none; /* Ocultar botones no necesarios en impresión */
+            }
         }
     </style>
 </head>
 <body>
     <div class="reporte-header">
-    <h1>Multirubro Blass</h1>
+        <h1>Multirubro Blass</h1>
     </div>
 
     <div class="venta-detalle">
         <p><strong>Numero de Ticket:</strong> <?= $cabecera['id']; ?></p>
         <p><strong>Cliente:</strong> <?= $usuario['nombre']; ?></p>
         <p><strong>Fecha:</strong> <?= $cabecera['fecha']; ?> <strong>Hora:</strong> <?= $cabecera['hora']; ?></p>
-        
     </div>
 
     <div class="table-wrapper">
-        <h2>Detalles de los Productos</h2>
+        <h4>Detalles de la Compra</h4>
         <table>
             <thead>
                 <tr>
@@ -103,19 +100,8 @@
         </table>
     </div>
 
-    <!-- Campo Total a Pagar -->
     <div class="total-pagar">
         <p><strong>Total a Pagar:</strong> <?= $cabecera['total_venta']; ?></p>
     </div>
-
-    <?php if (isset($_GET['pdf_url'])): ?>
-    <div class="boton-descargar">
-        <a href="<?= base_url($_GET['pdf_url']); ?>" target="_blank">
-            <button type="button">Ver PDF en nueva pestaña</button>
-        </a>
-    </div>
-    <?php endif; ?>
-
-
 </body>
 </html>
