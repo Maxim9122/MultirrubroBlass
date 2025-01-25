@@ -12,8 +12,9 @@ class Sesion_model extends Model
     public function getSesionesConUsuarios()
     {
         return $this->db->table('sesiones')
-            ->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.email')
+            ->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.apellido')
             ->join('usuarios', 'usuarios.id = sesiones.id_usuario')
+            ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor
             ->get()
             ->getResult();
     }

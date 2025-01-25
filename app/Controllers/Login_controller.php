@@ -42,7 +42,7 @@ class Login_controller extends Controller
                     'estado' => 'activa'
                 ]); 
                 
-                $id_regSesion = $registro_sesion->getInsertID();
+                $id_regSesion = $registro_sesion->getInsertID(); 
 
                 $ses_data = [
                     'id' => $data['id'],

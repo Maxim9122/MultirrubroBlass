@@ -27,7 +27,7 @@
   <strong class="titulo-vidrio">Lista de Clientes</strong>
   </section>
   <div style="text-align: end;">
-  <strong class="nombreLogo" >Barber King</strong>
+  <strong class="nombreLogo" >Multirubro Blass</strong>
   <br><br>
   
   <?php $Recaudacion = 0; ?>
