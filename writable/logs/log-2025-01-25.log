@@ -1,0 +1,224 @@
+CRITICAL - 2025-01-25 07:14:04 --> Undefined variable $productos
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(76): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 76)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(35): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 07:32:46 --> Undefined variable $cliente
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(66): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 66)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 07:37:34 --> Class "ClienteModel" not found
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include()
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#2 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#3 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2025-01-25 07:39:11 --> Class "ClienteModel" not found
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include()
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#2 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#3 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2025-01-25 07:39:42 --> Class "Clientes_model" not found
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include()
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#2 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#3 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#8 {main}
+CRITICAL - 2025-01-25 07:57:44 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 07:58:46 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 08:00:21 --> htmlspecialchars(): Argument #1 ($string) must be of type string, array given
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): htmlspecialchars(Array)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 08:00:54 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 08:03:50 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 08:04:00 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 08:04:01 --> Array to string conversion
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\turnos\ListaTurnos_view.php(67): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Array to string...', 'C:\\xampp\\htdocs...', 67)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('turnos/ListaTur...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Turnos_controller.php(39): view('turnos/ListaTur...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Turnos_controller->ListarTurnos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Turnos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 09:24:16 --> Undefined variable $cart_info
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(211): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 211)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-25 09:24:53 --> foreach() argument must be of type array|object, null given
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(212): CodeIgniter\Debug\Exceptions->errorHandler(2, 'foreach() argum...', 'C:\\xampp\\htdocs...', 212)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-25 09:25:05 --> foreach() argument must be of type array|object, null given
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(212): CodeIgniter\Debug\Exceptions->errorHandler(2, 'foreach() argum...', 'C:\\xampp\\htdocs...', 212)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-25 09:25:58 --> Cannot access offset of type string on string
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2025-01-25 09:31:16 --> Call to a member function update() on array
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2025-01-25 09:50:52 --> foreach() argument must be of type array|object, null given
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(201): CodeIgniter\Debug\Exceptions->errorHandler(2, 'foreach() argum...', 'C:\\xampp\\htdocs...', 201)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->muestra_compra()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-25 11:17:30 --> Undefined variable $stock
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(79): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 11:17:51 --> Undefined variable $stock
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(79): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 11:19:04 --> Undefined array key "options"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(79): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 11:19:06 --> Undefined array key "options"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(79): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-25 11:21:12 --> Undefined array key "options"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(79): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

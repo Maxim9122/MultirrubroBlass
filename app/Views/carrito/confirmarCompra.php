@@ -1,4 +1,37 @@
 <br>
+
+<!-- Mensajes temporales -->
+<?php if (session()->getFlashdata('msg')): ?>
+    <div id="flash-message-success" class="flash-message success">
+        <?= session()->getFlashdata('msg') ?>
+    </div>
+<?php endif; ?>
+<?php if (session("msgEr")): ?>
+    <div id="flash-message-danger" class="flash-message danger">
+        <?= session("msgEr"); ?>
+    </div>
+<?php endif; ?>
+
+<script>
+    // Ocultar mensaje de éxito después de 3 segundos
+    setTimeout(function() {
+        const successMessage = document.getElementById('flash-message-success');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 3000);
+
+    // Ocultar mensaje de error después de 3 segundos
+    setTimeout(function() {
+        const errorMessage = document.getElementById('flash-message-danger');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 3000);
+</script>
+
+<!-- Fin de los mensajes temporales -->
+<br>
  <?php $cart = \Config\Services::cart(); ?>
  <?php $session = session();
           $nombre= $session->get('nombre');

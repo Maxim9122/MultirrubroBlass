@@ -29,10 +29,14 @@ class Turnos_controller extends Controller{
         $datos3['servicios'] = (new Servicios_model())->getServicio();
         $datos4['clientes'] = (new Clientes_model())->getClientes();
 
+        $ProductosModel = new Productos_model();
+        $eliminado='NO';
+        $datos5['productos'] = $ProductosModel->getProdBaja($eliminado);
+
         $data['titulo'] = 'Listado de Turnos';
         echo view('navbar/navbar');
         echo view('header/header', $data);
-        echo view('turnos/ListaTurnos_view', $datos + $datos2 + $datos3 + $datos4);
+        echo view('turnos/ListaTurnos_view', $datos + $datos2 + $datos3 + $datos4 + $datos5);
         echo view('footer/footer');
     }
 
@@ -148,9 +152,6 @@ class Turnos_controller extends Controller{
     //Verifica y guarda los turnos de clientes ya registrados
     public function turnoClienteRegistrado() {
 
-        $turnosModel = new Turnos_model();
-        $clienteModel = new Clientes_model();
-
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fecha = date('d-m-Y');
 
@@ -160,6 +161,19 @@ class Turnos_controller extends Controller{
          // Convertir la fecha al formato dd-mm-yyyy
          $fecha_turno = $this->request->getVar('fecha_turno');
          $fecha_turno_formateada = date('d-m-Y', strtotime($fecha_turno));
+
+        $session = session();
+
+        // Guardar datos del formulario en la sesión
+        $session->set('id_cliente', $this->request->getPost('id_cliente'));
+        $session->set('fecha_turno', $fecha_turno_formateada);
+        $session->set('hora_turno', $this->request->getPost('hora_turno'));
+
+        $turnosModel = new Turnos_model();
+        $clienteModel = new Clientes_model();
+        $cliente = $clienteModel->getCliente($this->request->getPost('id_cliente'));
+        $nombre_cliente = $cliente['nombre'];  // Suponiendo que 'nombre' es el campo que contiene el nombre del cliente
+        $session->set('nombre_cliente', $nombre_cliente);
  
          // Guardar el turno en la base de datos
          $turnosModel->save([
