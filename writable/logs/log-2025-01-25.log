@@ -222,3 +222,14 @@ CRITICAL - 2025-01-25 11:21:12 --> Undefined array key "options"
 #7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
 #8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
 #9 {main}
+CRITICAL - 2025-01-25 18:44:17 --> Undefined array key 0
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\facturacion\factura_compra.php(110): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 110)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('facturacion/fac...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(422): view('facturacion/fac...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->verfactura('62')
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}

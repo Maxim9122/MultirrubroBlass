@@ -259,47 +259,25 @@ public function ListCompraDetalle($id)
 
     public function guarda_compra()
 {
-    $cartTest = \Config\Services::cart()->contents();
+    
     $cart = \Config\Services::cart();
     $session = session();   
-    foreach( $cartTest as $id => $carrito)
-		{   
-			$prod = new Productos_model();
-			$idprod = $prod->getProducto($carrito['id']);
-			if($carrito['id'] < 100000){
-			$stock = $idprod['stock'];
-			}
- 		    $rowid = $carrito['rowid'];
-	    	$price = $carrito['price'];
-	    	$amount = $price * $carrito['qty'];
-	    	$qty = $carrito['qty'];
-
-			if($carrito['id'] < 100000){
-			if($qty <= $stock && $qty >= 1){ 
-            $cart->update(array(
-                'rowid'   => $rowid,
-                'price'   => $price,
-                'amount' =>  $amount,
-                'qty'     => $qty
-                ));	    	
-			}else{
-				session()->setFlashdata('msgEr','La Cantidad Solicitada de algunos productos no estan disponibles o SELECCIONASTE 0!');
-                return redirect()->to(base_url('CarritoList'));
-            }
-			}
-		    
-	    }
+    
     // Recuperar datos del formulario usando $this->request->getPost()
     $id_cliente = $this->request->getPost('cliente_id');
-	//print_r($id_cliente);
-	//exit;
+	
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 	
     $tipo_pago = $this->request->getPost('tipo_pago');
     $total = $this->request->getPost('total_venta');
-
+    $total_conDescuento = $this->request->getPost('total_con_descuento');
+    if(!$total_conDescuento){
+        $total_conDescuento = $total;
+    }
+    //print_r($total_conDescuento);
+	//exit;
     // Establecer zona horaria y obtener fecha/hora en formato correcto
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
@@ -313,6 +291,7 @@ public function ListCompraDetalle($id)
         'id_cliente'   => $id_cliente,
         'total_venta'  => $total,
         'tipo_pago'    => $tipo_pago,
+        'total_bonificado' => $total_conDescuento,
     ]);
 
     // Obtener ID de la cabecera guardada
