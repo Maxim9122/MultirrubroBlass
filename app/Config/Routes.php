@@ -34,16 +34,16 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Login_controller');
 
 //Todo sobre Turnos
-$routes->get('/turnosCompletados', 'Turnos_controller::TurnosCompletados');
-$routes->post('/filtrarTurnos', 'Turnos_controller::filtrarTurnos');
-$routes->get('/turnos', 'Turnos_controller::ListarTurnos');
-$routes->get('/turnosTodos', 'Turnos_controller::TurnosTodos');
-$routes->get('/nuevoTurno', 'Turnos_controller::nuevoTurno');
-$routes->post('/RegistrarTurno', 'Turnos_controller::RegistrarTurno');
-$routes->post('turno_actualizar/(:num)', 'Turnos_controller::turno_actualizar/$1');
-$routes->post('clienteListo/(:num)', 'Turnos_controller::Turno_completado/$1');
-$routes->get('cancelar/(:num)', 'Turnos_controller::Turno_cancelado/$1');
-$routes->post('turnoClienteRegistrado', 'Turnos_controller::turnoClienteRegistrado');
+$routes->get('/pedidosCompletados', 'Pedidos_controller::PedidosCompletados');
+$routes->post('/filtrarPedidos', 'Pedidos_controller::filtrarPedidos');
+$routes->get('/pedidos', 'Pedidos_controller::ListarPedidos');
+$routes->get('/pedidosTodos', 'Pedidos_controller::PedidosTodos');
+$routes->get('/nuevoPedido', 'Pedidos_controller::nuevoPedido');
+$routes->post('/RegistrarPedido', 'Pedidos_controller::RegistrarPedido');
+$routes->post('pedido_actualizar/(:num)', 'Pedidos_controller::pedido_actualizar/$1');
+$routes->post('clienteListo/(:num)', 'Pedidos_controller::Pedido_completado/$1');
+$routes->get('cancelar/(:num)', 'Pedidos_controller::Pedido_cancelado/$1');
+$routes->post('pedidoClienteRegistrado', 'Pedidos_controller::pedidoClienteRegistrado');
 
 //Servicios
 $routes->get('/Lista_servicios', 'Servicios_controller::Servicios');
