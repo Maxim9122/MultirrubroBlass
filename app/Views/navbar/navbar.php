@@ -30,7 +30,6 @@
         <span class="colon" id="colon">:</span>
         <div id="minutes"></div>
         </div>
-
         </a>
 
       </div>

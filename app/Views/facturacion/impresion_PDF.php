@@ -86,6 +86,7 @@
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Precio</th>
+                    <th>Subtotal</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,14 +95,19 @@
                         <td><?= $productos[$key]['nombre']; ?></td>
                         <td><?= $detalle['cantidad']; ?></td>
                         <td><?= $detalle['precio']; ?></td>
+                        <td>$<?= $detalle['cantidad'] * $detalle['precio']; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 
+    <!-- Campo Total a Pagar -->
     <div class="total-pagar">
-        <p><strong>Total a Pagar:</strong> <?= $cabecera['total_venta']; ?></p>
+        <?php if($cabecera['tipo_pago'] == 'Efectivo'):?>
+        <p><strong>Descuento:</strong> $<?= $descuento = $cabecera['total_venta'] * 0.10;?>
+        <?php endif; ?>
+        <p><strong>Total a Pagar:</strong> $<?= $cabecera['total_bonificado']; ?></p>
     </div>
 </body>
 </html>

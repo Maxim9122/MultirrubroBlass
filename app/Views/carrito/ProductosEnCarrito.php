@@ -73,7 +73,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                 </tr>
                 
             <?php // Crea un formulario php y manda los valores a carrito_controller/actualiza carrito
-            echo form_open('carrito_actualiza');
+            echo form_open('carrito/procesarCarrito', ['id' => 'carrito_form']); // Deja vacío para enviar al mismo controlador
                 $gastos = 0;
                 $i = 1;
 
@@ -86,16 +86,16 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             ?>
                     <tr style="color: black;" >
                         
-                        <td  class="separador">
+                        <td  class="separador" style="color: #ffff;">
                             <?php echo $i++; ?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                             <?php echo $item['name']; ?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         $ARS <?php  echo number_format($item['price'], 2);?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         <?php 
                             if ($item['id'] < 10000) {
                                 echo form_input([
@@ -107,17 +107,18 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                     'size' => '1',
                                     'style' => 'text-align: right; width: 50px;',
                                     'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
-                                ]);
-                            } else {
+                                ]);?>
+                                <span class="stock-disponible"> (Disponibles: <?php echo  $item['options']['stock']; ?>) </span>
+                            <?php } else {
                                 echo number_format($item['qty']);
                             }
                             ?>
                         </td>
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         $ARS <?php echo number_format($item['subtotal'], 2) ?>
                         </td>
-                        <td class="imagenCarrito separador">
+                        <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
                                 $path = '<img src= '. base_url('assets/img/icons/basura3.png') . ' width="10px" height="10px">';
                                 echo anchor('carrito_elimina/'. $item['rowid'], $path);
@@ -153,17 +154,21 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <h4 class="cambio">Cambio: $ <span id="cambio">0.00</span></h4>
                         <br>
 
+                        <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Borrar carrito usa mensaje de confirmacion javascript implementado en partes/head_view -->
                         <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="success"  >
                         Borrar Todo</a>
 
                         <!-- Submit boton. Actualiza los datos en el carrito -->
-                        <button type="submit" class="success" onclick="actualizar()">                        
-                        Actualizar Importes</button>
-                        <br><br>
+                        <button type="submit" class="success" onclick="setAccion('actualizar')">
+                            Actualizar Importes
+                        </button>
+                            <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
-                        <a href="<?php echo base_url('comprar');?>" class ="success">Confirmar Compra</a>
+                        <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Confirmar Compra</a>
+
+
                     </td>
                 </tr>
                 <?php echo form_close();
@@ -192,6 +197,17 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
         const cambio = pago - granTotal;
         document.getElementById('cambio').textContent = cambio >= 0 ? cambio.toLocaleString('de-DE', { minimumFractionDigits: 2 }) : "0.00";
     }
+</script>
+
+<script>
+    function setAccion(accion) {
+    // Asignamos la acción al campo oculto
+    document.getElementById('accion').value = accion;
+
+    // Enviamos el formulario
+    document.getElementById('carrito_form').submit();
+}
+
 </script>
 
 <br>
