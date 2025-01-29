@@ -74,8 +74,8 @@
   </div>
   
   <div class="mb-3">
-   
-   <input name="pass" type="hidden" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>">
+  <label for="exampleFormControlInput1" class="form-label">Pass</label>
+   <input name="pass" type="text" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>">
    <!-- Error -->
         <?php if($validation->getError('pass')) {?>
             <div class='alert alert-danger mt-2'>

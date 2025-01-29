@@ -221,7 +221,7 @@ class Pedidos_controller extends Controller{
     {
         $pedidosModel = new Cabecera_model();
 
-        $pedidosModel->cambiarEstado($id_pedido, 'Listo');
+        $pedidosModel->cambiarEstado($id_pedido, 'Entregado');
         session()->setFlashdata('msg', 'Pedido Completado!');
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
@@ -247,7 +247,7 @@ class Pedidos_controller extends Controller{
     public function pedidosCompletados()
     {
         $filtros = [
-            'estado' => 'Listo',
+            'estado' => 'Entregado',
             'fecha_hoy' => '',            
         ];
         // Instanciar el modelo
@@ -278,7 +278,7 @@ public function filtrarPedidos()
     $cabeceraModel = new Cabecera_model();
     $filtros = [
         'fecha_hoy' => '',
-        'estado' => 'Listo',
+        'estado' => 'Entregado',
         'fecha_desde' => $this->request->getVar('fecha_desde'),
         'fecha_hasta' => $this->request->getVar('fecha_hasta'),
         'id_usuario' => $this->request->getVar('id_usuario'),
