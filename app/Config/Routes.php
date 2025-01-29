@@ -87,6 +87,7 @@ $routes->post('/enviarEdicion', 'Usuario_controller::formValidationEdit');
 $routes->get('/eliminados', 'Usuario_controller::usuariosEliminados');
 
 
+
 //Rutas del ADMIN (Productos)
 $routes->get('/nuevoProducto', 'Producto_controller::nuevoProducto');
 $routes->post('/ProductoValidation', 'Producto_controller::ProductoValidation');
@@ -117,6 +118,7 @@ $routes->get('consultasResueltas', 'Contactocontroller::Datos_consultasResueltas
 $routes->get('/login', 'Login_controller');
 $routes->post('/enviarlogin','Login_controller::auth');
 $routes->get('/logout', 'Login_controller::logout');
+$routes->get('/sesiones', 'Login_controller::mostrarSesiones');
 
 //Carrito
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');
