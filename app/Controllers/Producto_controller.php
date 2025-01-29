@@ -80,12 +80,23 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $ProductosModel = new Productos_model();
-        $eliminado='NO';
-        $data['productos'] = $ProductosModel->getProdBaja($eliminado);
+        $eliminado = 'NO';
+        $productos = $ProductosModel->getProdBaja($eliminado);
+    
+        // Verificar si algún producto tiene stock bajo
+        $productos_bajo_stock = array_filter($productos, function($producto) {
+            return $producto['stock'] <= $producto['stock_min'];
+        });
+    
+        // Si hay productos con stock bajo, guardamos un mensaje en sesión
+        if (!empty($productos_bajo_stock)) {
+            $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
+        }
+
         $dato['titulo']='Lista de Productos'; 
+        $data['productos'] = $productos;
         echo view('navbar/navbar');
         echo view('header/header',$dato);
-        
          echo view('admin/Productos_view', $data);
           echo view('footer/footer');
        
@@ -93,20 +104,34 @@ class Producto_controller extends Controller{
 
 	public function ProductosDisp(){
         $session = session();
-        // Verifica si el usuario está logueado
+        
         if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+            return redirect()->to(base_url('login'));
         }
+    
         $ProductosModel = new Productos_model();
-        $eliminado='NO';
-        $data['productos'] = $ProductosModel->getProdBaja($eliminado);
-        $dato['titulo']='Productos Disponibles'; 
+        $eliminado = 'NO';
+        $productos = $ProductosModel->getProdBaja($eliminado);
+    
+        // Verificar si algún producto tiene stock bajo
+        $productos_bajo_stock = array_filter($productos, function($producto) {
+            return $producto['stock'] <= $producto['stock_min'];
+        });
+    
+        // Si hay productos con stock bajo, guardamos un mensaje en sesión
+        if (!empty($productos_bajo_stock)) {
+            $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
+        }
+    
+        $dato['titulo'] = 'Productos Disponibles'; 
+        $data['productos'] = $productos;
+    
         echo view('navbar/navbar');
-        echo view('header/header',$dato);        
-         echo view('productos/listar', $data);
-          echo view('footer/footer');
-       
+        echo view('header/header', $dato);        
+        echo view('productos/listar', $data);
+        echo view('footer/footer');
     }
+    
 
     public function Indumentaria(){
         $ProductosModel = new Productos_model();

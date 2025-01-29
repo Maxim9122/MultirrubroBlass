@@ -161,8 +161,8 @@ class Pedidos_controller extends Controller{
          // Convertir la fecha al formato dd-mm-yyyy
          $fecha_turno = $this->request->getVar('fecha_turno');
          $fecha_turno_formateada = date('d-m-Y', strtotime($fecha_turno));
-
         $session = session();
+        
 
         // Guardar datos del formulario en la sesión
         $session->set('id_cliente', $this->request->getPost('id_cliente'));
