@@ -74,7 +74,7 @@
           <a href="<?php echo base_url('CarritoList') ?>"> <img src=" <?php echo base_url('assets/img/icons/carrito2.png')?>"> </a>
           </li>
           <li class="nnavItem">
-            <a class="button" href="<?php echo base_url('turnos');?>">Pedidos</a>
+            <a class="button" href="<?php echo base_url('pedidos');?>">Pedidos</a>
             <li class="navItem">
             <button class="btn signUp">
               <a href="<?= base_url('/logout')?>" class="signUp">Salir</a>

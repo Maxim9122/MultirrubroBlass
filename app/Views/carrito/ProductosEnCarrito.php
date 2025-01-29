@@ -148,12 +148,6 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             
                         </h4>
                         <br>
-                        <label for="pago" class="cambio">Paga con: $</label>
-                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" oninput="formatearMiles()" onkeyup="calcularCambio()">
-
-                        <h4 class="cambio">Cambio: $ <span id="cambio">0.00</span></h4>
-                        <br>
-
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Borrar carrito usa mensaje de confirmacion javascript implementado en partes/head_view -->
@@ -176,28 +170,6 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
         </table>
     </div>
 </div>
-
-<script>
-    // Define el total de PHP en JavaScript
-    const granTotal = <?= $gran_total ?>;
-
-    function formatearMiles() {
-        const input = document.getElementById('pago');
-        let valor = input.value.replace(/\./g, ''); // Quita los puntos
-        if (valor === '') {
-            input.value = '';
-            return;
-        }
-        valor = parseFloat(valor).toLocaleString('de-DE'); // Agrega el formato de miles con puntos
-        input.value = valor;
-    }
-
-    function calcularCambio() {
-        const pago = parseFloat(document.getElementById('pago').value.replace(/\./g, '')) || 0;
-        const cambio = pago - granTotal;
-        document.getElementById('cambio').textContent = cambio >= 0 ? cambio.toLocaleString('de-DE', { minimumFractionDigits: 2 }) : "0.00";
-    }
-</script>
 
 <script>
     function setAccion(accion) {
