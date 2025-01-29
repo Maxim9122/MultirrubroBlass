@@ -13,7 +13,11 @@ class Producto_controller extends Controller{
 
 
 	public function nuevoProducto(){
-
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
 		$data['titulo']='Nuevo Producto'; 
                 echo view('navbar/navbar');
                 echo view('header/header',$data);
@@ -22,7 +26,11 @@ class Producto_controller extends Controller{
 	}
 
 	public function ProductoValidation() {
-        
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $input = $this->validate([
             'nombre'   => 'required|min_length[3]',
             'descripcion'   => 'required',
@@ -66,6 +74,11 @@ class Producto_controller extends Controller{
     }
 
     public function ListaProductos(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $ProductosModel = new Productos_model();
         $eliminado='NO';
         $data['productos'] = $ProductosModel->getProdBaja($eliminado);
@@ -79,6 +92,11 @@ class Producto_controller extends Controller{
     } 
 
 	public function ProductosDisp(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $ProductosModel = new Productos_model();
         $eliminado='NO';
         $data['productos'] = $ProductosModel->getProdBaja($eliminado);
@@ -127,6 +145,11 @@ class Producto_controller extends Controller{
     }
 
     public function getProductoEdit($id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     	$Model = new Productos_model();
     	$data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
@@ -137,6 +160,11 @@ class Producto_controller extends Controller{
     }
 
     public function ProductoDetalle($id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     	$Model = new Productos_model();
     	$data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
@@ -147,7 +175,11 @@ class Producto_controller extends Controller{
     }
 
     public function ProdValidationEdit() {
-        
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         //print_r($_POST);exit;
         
         $input = $this->validate([
@@ -216,7 +248,11 @@ class Producto_controller extends Controller{
     }
 
     public function deleteProd($id){
-    
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $Model=new Productos_model();
         $data=$Model->getProducto($id);
         $datos=[
@@ -232,6 +268,11 @@ class Producto_controller extends Controller{
     }
 
     public function ListaProductosElim(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $userModel = new Productos_model();
         $eliminado='SI';
         $data['productos'] = $userModel->getProdBaja($eliminado);
@@ -243,7 +284,11 @@ class Producto_controller extends Controller{
     }
 
     public function habilitarProd($id){
-    
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $Model=new Productos_model();
         $data=$Model->getProducto($id);
         $datos=[
