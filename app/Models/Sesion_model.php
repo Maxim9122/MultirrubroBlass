@@ -28,4 +28,17 @@ class Sesion_model extends Model
         ->where('id_sesion', $id_sesion) // Condición si son iguales actualiza
         ->update($data); // Actualización
     }
+
+    //buscador y filtro para sesion
+    public function buscarYFiltrar($filter)
+    {
+        // Usar el Query Builder del modelo
+    return $this->db->table('sesiones')
+    ->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.apellido')
+    ->join('usuarios', 'usuarios.id = sesiones.id_usuario', 'left') // Unir con la tabla usuarios
+    ->where('sesiones.estado', $filter) // Filtrar por estado
+    ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor
+    ->get()
+    ->getResult();
 }
+    }

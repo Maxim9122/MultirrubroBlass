@@ -96,13 +96,25 @@ class Login_controller extends Controller
     public function mostrarSesiones()
     {
         $usuarioModel = new Sesion_model();
+        // Obtener parámetros de búsqueda y filtro
+        $filter = $this->request->getVar('filter'); // Para filtrar por estado
+       // $search = $this->request->getVar('search'); // Para filtrar por busqueda
+        //print_r($search);
+        //exit;
+        // Pasar los parámetros al modelo
+        if($filter){
+            $data['sesiones'] = $usuarioModel->buscarYFiltrar($filter);
+        }else{
+            $data['sesiones'] = $usuarioModel->getSesionesConUsuarios();
+        }
+        
        // $sesiones = $usuarioModel->getSesionesConUsuarios();
-        $data['sesiones'] = $usuarioModel->getSesionesConUsuarios();
+       
         $dato['titulo']='Sesiones';
         echo view('navbar/navbar'); 
         echo view('header/header',$dato);
          echo view('Login/sesiones',$data);
-          echo view('footer/footer');
+       echo view('footer/footer');
        // return view('sesiones', ['sesiones' => $sesiones]);
     }
 } 
