@@ -1,0 +1,370 @@
+ERROR - 2025-01-28 09:31:49 --> Unknown column 't.id_usuario' in 'field list'
+CRITICAL - 2025-01-28 09:31:49 --> Unknown column 't.id_usuario' in 'field list'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(95): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(26): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2025-01-28 09:33:08 --> Unknown column 't.id_usuario' in 'field list'
+CRITICAL - 2025-01-28 09:33:08 --> Unknown column 't.id_usuario' in 'field list'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `t`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `t`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `t`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `t`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(95): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(26): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 09:42:02 --> syntax error, unexpected token "endif", expecting end of file
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#1 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(39): view('pedidos/ListaPe...', Array)
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2025-01-28 09:58:17 --> Undefined variable $pedidos
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(69): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 69)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 09:58:35 --> Undefined array key "cliente_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 73)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:03:37 --> Undefined array key "cliente_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 73)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:04:12 --> Undefined array key "cliente_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 73)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:07:16 --> Undefined array key "cliente_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 73)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:07:30 --> Undefined array key "cliente_telefono"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(74): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 74)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:07:51 --> Undefined variable $usuarios
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(81): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 81)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:09:41 --> Undefined array key "nombre_us"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(80): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 80)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:09:59 --> Undefined array key "hora_turno"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(85): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 85)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:12:31 --> Undefined array key "usuario_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(80): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 80)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2025-01-28 10:18:32 --> Unknown column 'u.total_venta' in 'field list'
+CRITICAL - 2025-01-28 10:18:32 --> Unknown column 'u.total_venta' in 'field list'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`nom...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`nom...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`nom...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`nom...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(89): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2025-01-28 10:18:55 --> Not unique table/alias: 'u'
+CRITICAL - 2025-01-28 10:18:55 --> Not unique table/alias: 'u'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(89): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 10:25:07 --> Unclosed '{' on line 5
+#0 C:\xampp\htdocs\MultirubroBlass\system\Autoloader\Autoloader.php(241): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\xampp\\htdocs...')
+#1 C:\xampp\htdocs\MultirubroBlass\system\Autoloader\Autoloader.php(219): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Models\\Cabe...')
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(26): CodeIgniter\Autoloader\Autoloader->loadClass('App\\Models\\Cabe...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+ERROR - 2025-01-28 10:27:57 --> Unknown column 'c.nomre' in 'field list'
+CRITICAL - 2025-01-28 10:27:57 --> Unknown column 'c.nomre' in 'field list'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(72): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 10:33:15 --> Undefined array key "usuario_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(80): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 80)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 10:40:09 --> Undefined array key "estado"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(70): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 70)
+#1 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#5 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#6 {main}
+ERROR - 2025-01-28 10:41:13 --> Unknown column 'd.nombre' in 'field list'
+CRITICAL - 2025-01-28 10:41:13 --> Unknown column 'd.nombre' in 'field list'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(73): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 10:50:28 --> Undefined array key "usuario_nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(80): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 80)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2025-01-28 10:54:40 --> Table 'multirubro.usuario' doesn't exist
+CRITICAL - 2025-01-28 10:54:40 --> Table 'multirubro.usuario' doesn't exist
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(74): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2025-01-28 10:54:58 --> Unknown column 'usuarios.id_usuario' in 'on clause'
+CRITICAL - 2025-01-28 10:54:58 --> Unknown column 'usuarios.id_usuario' in 'on clause'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(74): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(29): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 10:55:37 --> Undefined array key "nombre"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\ListaPedidos_view.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 73)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/ListaPe...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(36): view('pedidos/ListaPe...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->ListarPedidos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 13:25:14 --> Call to undefined method App\Models\Pedidos_model::eliminrPedido
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(248): CodeIgniter\Model->__call('eliminrPedido', Array)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->Pedido_cancelado('75')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-28 13:51:24 --> Undefined array key "fecha_hoy"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(72): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 72)
+#1 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(50): App\Models\Cabecera_model->obtenerPedidos(Array)
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->PedidosTodos()
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#5 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#6 {main}
+CRITICAL - 2025-01-28 13:52:58 --> Undefined array key "fecha_hoy"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(72): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 72)
+#1 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(50): App\Models\Cabecera_model->obtenerPedidos(Array)
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->PedidosTodos()
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#5 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#6 {main}
+CRITICAL - 2025-01-28 13:57:52 --> Undefined variable $clientes
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\pedidosDeDiaDistinto_alActual.php(33): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 33)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/pedidos...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(58): view('pedidos/pedidos...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->PedidosTodos()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 20:44:30 --> Undefined array key "nombre_cliente"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\pedidosCompletados.php(80): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 80)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/pedidos...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(268): view('pedidos/pedidos...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->pedidosCompletados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 20:49:11 --> Undefined variable $usuarios
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\pedidos\pedidosCompletados.php(42): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 42)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('pedidos/pedidos...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(267): view('pedidos/pedidos...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->pedidosCompletados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-28 20:58:19 --> Undefined array key "fecha_hoy"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(72): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 72)
+#1 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(286): App\Models\Cabecera_model->obtenerPedidos(Array)
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->filtrarPedidos()
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#5 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#6 {main}
+ERROR - 2025-01-28 20:59:22 --> Unknown column 't.fecha_turno' in 'where clause'
+CRITICAL - 2025-01-28 20:59:22 --> Unknown column 't.fecha_turno' in 'where clause'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(85): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(287): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->filtrarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2025-01-28 21:00:18 --> Unknown column 't.fecha_pedido' in 'where clause'
+CRITICAL - 2025-01-28 21:00:18 --> Unknown column 't.fecha_pedido' in 'where clause'
+#0 C:\xampp\htdocs\MultirubroBlass\system\Database\MySQLi\Connection.php(292): mysqli->query('SELECT `u`.`id`...', 0)
+#1 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(670): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `u`.`id`...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseConnection.php(598): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `u`.`id`...')
+#3 C:\xampp\htdocs\MultirubroBlass\system\Database\BaseBuilder.php(1455): CodeIgniter\Database\BaseConnection->query('SELECT `u`.`id`...', Array, false)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(85): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(287): App\Models\Cabecera_model->obtenerPedidos(Array)
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->filtrarPedidos()
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#8 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#10 {main}
+CRITICAL - 2025-01-28 21:00:50 --> Undefined variable $datos3
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(294): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 294)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->filtrarPedidos()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}

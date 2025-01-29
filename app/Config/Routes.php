@@ -33,17 +33,17 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Login_controller');
 
-//Todo sobre Turnos
-$routes->get('/turnosCompletados', 'Turnos_controller::TurnosCompletados');
-$routes->post('/filtrarTurnos', 'Turnos_controller::filtrarTurnos');
-$routes->get('/turnos', 'Turnos_controller::ListarTurnos');
-$routes->get('/turnosTodos', 'Turnos_controller::TurnosTodos');
-$routes->get('/nuevoTurno', 'Turnos_controller::nuevoTurno');
-$routes->post('/RegistrarTurno', 'Turnos_controller::RegistrarTurno');
-$routes->post('turno_actualizar/(:num)', 'Turnos_controller::turno_actualizar/$1');
-$routes->post('clienteListo/(:num)', 'Turnos_controller::Turno_completado/$1');
-$routes->get('cancelar/(:num)', 'Turnos_controller::Turno_cancelado/$1');
-$routes->post('turnoClienteRegistrado', 'Turnos_controller::turnoClienteRegistrado');
+//Todo sobre Pedidos
+$routes->get('/pedidosCompletados', 'Pedidos_controller::PedidosCompletados');
+$routes->post('/filtrarPedidos', 'Pedidos_controller::filtrarPedidos');
+$routes->get('/pedidos', 'Pedidos_controller::ListarPedidos');
+$routes->get('/pedidosTodos', 'Pedidos_controller::PedidosTodos');
+$routes->get('/nuevoPedido', 'Pedidos_controller::nuevoPedido');
+$routes->post('/RegistrarPedido', 'Pedidos_controller::RegistrarPedido');
+$routes->post('pedido_actualizar/(:num)', 'Pedidos_controller::pedido_actualizar/$1');
+$routes->post('clienteListo/(:num)', 'Pedidos_controller::Pedido_completado/$1');
+$routes->get('cancelar/(:num)', 'Pedidos_controller::Pedido_cancelado/$1');
+$routes->post('pedidoClienteRegistrado', 'Pedidos_controller::pedidoClienteRegistrado');
 
 //Servicios
 $routes->get('/Lista_servicios', 'Servicios_controller::Servicios');
@@ -127,7 +127,9 @@ $routes->post('Agregamos', 'Carrito_controller::agregarDesdeListaProd');
 $routes->post('Otros_gastos', 'Carrito_controller::agregar');
 $routes->get('carrito_elimina/(:any)', 'Carrito_controller::remove/$1');
 $routes->post('carrito_actualiza', 'Carrito_controller::actualiza_carrito');
-$routes->get('comprar', 'Carrito_controller::muestra_Compra');
+$routes->post('comprar', 'Carrito_controller::actualiza_carrito_antesDeConfirmar');
+$routes->post('carrito/procesarCarrito', 'Carrito_controller::procesarCarrito');
+$routes->get('casiListo', 'Carrito_controller::muestra_compra');
 $routes->post('confirma_compra', 'Carrito_controller::guarda_compra');
 $routes->get('compras', 'Carrito_controller::ListVentasCabecera');
 $routes->get('DetalleVta/(:num)', 'Carrito_controller::ListCompraDetalle/$1');

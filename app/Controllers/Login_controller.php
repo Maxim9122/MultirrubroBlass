@@ -56,8 +56,6 @@ class Login_controller extends Controller
                     'logged_in'     => TRUE
                 ];
                 
-                //print_r($ses_data['id_session']);
-                //exit;
 
                 $session->set($ses_data);
                 if($ses_data['perfil_id'] == 2){

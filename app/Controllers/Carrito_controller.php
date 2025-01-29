@@ -1,11 +1,17 @@
 <?php
 namespace App\Controllers;
+
+require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
 Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
-//use Dompdf\Dompdf;
+use App\Models\Usuarios_model;
+
 
 class Carrito_controller extends Controller{
 
@@ -84,7 +90,8 @@ public function ListCompraDetalle($id)
             'qty'     => 1,
             'price'   => $_POST['precio_vta'],
             'name'    => $_POST['nombre'],
-            
+            'options' => array(               // Datos adicionales
+                        'stock' => $_POST['stock'])           // Almacena el stock disponible
          ));
 		 session()->setFlashdata('msg','Producto Agregado!');
         // Redirige a la misma página que se encuentra
@@ -124,7 +131,7 @@ public function ListCompraDetalle($id)
          ));
 		 session()->setFlashdata('msg','Producto Agregado!');
         // Redirige a la misma página que se encuentra
-		return redirect()->to(base_url('catalogo'));
+		return redirect()->to($this->request->getHeader('referer')->getValue());
 	}
 
     //Elimina elemento del carrito o el carrito entero
@@ -146,44 +153,97 @@ public function ListCompraDetalle($id)
 		return redirect()->to(base_url('CarritoList'));
 	}
 
-    //Actualiza el carrito que se muestra
-	function actualiza_carrito()
+    public function procesarCarrito()
     {
-        $cart = \Config\Services::cart();
-	    // Recibe los datos del carrito, calcula y actualiza
-       	$cart_info = $this->request->getPost('cart');
-		
-		foreach( $cart_info as $id => $carrito)
-		{   
-			$prod = new Productos_model();
-			$idprod = $prod->getProducto($carrito['id']);
-			if($carrito['id'] < 100000){
-			$stock = $idprod['stock'];
-			}
- 		    $rowid = $carrito['rowid'];
-	    	$price = $carrito['price'];
-	    	$amount = $price * $carrito['qty'];
-	    	$qty = $carrito['qty'];
+        $accion = $this->request->getPost('accion');
+    
+        if ($accion == 'actualizar') {
+            
+            $cart = \Config\Services::cart();
+            // Recibe los datos del carrito, calcula y actualiza
+               $cart_info = $this->request->getPost('cart');
+            
+            foreach( $cart_info as $id => $carrito)
+            {   
+                $prod = new Productos_model();
+                $idprod = $prod->getProducto($carrito['id']);
+                if($carrito['id'] < 100000){
+                $stock = $idprod['stock'];
+                }
+                 $rowid = $carrito['rowid'];
+                $price = $carrito['price'];
+                $amount = $price * $carrito['qty'];
+                $qty = $carrito['qty'];
+    
+                if($carrito['id'] < 100000){
+                if($qty <= $stock && $qty >= 1){ 
+                $cart->update(array(
+                    'rowid'   => $rowid,
+                    'price'   => $price,
+                    'amount' =>  $amount,
+                    'qty'     => $qty
+                    ));	    	
+                }else{
+                    session()->setFlashdata('msgEr','La Cantidad Solicitada de algunos productos no estan disponibles o SELECCIONASTE 0!');
+                }
+                }
+                
+            }
+    
+            session()->setFlashdata('msg','Carrito Actualizado!');
+            // Redirige a la misma página que se encuentra
+            return redirect()->to(base_url('CarritoList'));
 
-			if($carrito['id'] < 100000){
-			if($qty <= $stock && $qty >= 1){ 
-            $cart->update(array(
-                'rowid'   => $rowid,
-                'price'   => $price,
-                'amount' =>  $amount,
-                'qty'     => $qty
-                ));	    	
-			}else{
-				session()->setFlashdata('msgEr','La Cantidad Solicitada de algunos productos no estan disponibles o SELECCIONASTE 0!');
-			}
-			}
-		    
-	    }
 
-		session()->setFlashdata('msg','Carrito Actualizado!');
-		// Redirige a la misma página que se encuentra
-		return redirect()->to(base_url('CarritoList'));
-	}
+        } elseif ($accion == 'confirmar') {
+            
+            $cart = \Config\Services::cart();
+            // Recibe los datos del carrito, calcula y actualiza
+               $cart_info = $this->request->getPost('cart');
+               $errores_stock = false; // Variable para controlar si hay errores de stock
+
+            foreach( $cart_info as $id => $carrito)
+            {   
+                $prod = new Productos_model();
+                $idprod = $prod->getProducto($carrito['id']);
+                if($carrito['id'] < 100000){
+                $stock = $idprod['stock'];
+                }
+                 $rowid = $carrito['rowid'];
+                $price = $carrito['price'];
+                $amount = $price * $carrito['qty'];
+                $qty = $carrito['qty'];
+    
+                if($carrito['id'] < 100000){
+                if($qty <= $stock && $qty >= 1){ 
+                $cart->update(array(
+                    'rowid'   => $rowid,
+                    'price'   => $price,
+                    'amount' =>  $amount,
+                    'qty'     => $qty
+                    ));	    	
+                }else{
+                    // Si hay un error de stock, marca la variable de error y guarda el mensaje
+                    $errores_stock = true;
+                    session()->setFlashdata('msgEr','La Cantidad Solicitada de algunos productos no estan disponibles o SELECCIONASTE 0!');
+                }
+                }
+                
+            }
+            
+            // Si hubo errores de stock, redirige a la página de carrito
+            if ($errores_stock) {
+            return redirect()->to(base_url('CarritoList'));
+            }
+            // Redirige a la página de confirmacion de compra si los calculos de stock estan bien.
+            return redirect()->to(base_url('casiListo'));
+
+
+        } else {
+            log_message('error', 'Acción no reconocida: ' . $accion);
+        }
+    }
+
 
     //Muestra los detalles de la venta y confirma(función guarda_compra())
 	function muestra_compra()
@@ -199,34 +259,66 @@ public function ListCompraDetalle($id)
 
     public function guarda_compra()
 {
+    
     $cart = \Config\Services::cart();
-    $session = session();
-	
+    $session = session();   
+    
+    $id_ususario = $session->get('id');
+    //print_r($id_ususario);
+    //exit;
     // Recuperar datos del formulario usando $this->request->getPost()
     $id_cliente = $this->request->getPost('cliente_id');
-	//print_r($id_cliente);
-		//exit;
+	
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
+	
     $tipo_pago = $this->request->getPost('tipo_pago');
     $total = $this->request->getPost('total_venta');
-
+    $total_conDescuento = $this->request->getPost('total_con_descuento');
+    if(!$total_conDescuento){
+        $total_conDescuento = $total;
+    }
     // Establecer zona horaria y obtener fecha/hora en formato correcto
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
     $fecha = date('d-m-Y'); // Formato DATE
 
-    // Guardar cabecera de la venta
+    $tipo_compra = $this->request->getPost('tipo_compra_input');
+    $fecha_pedido = $this->request->getPost('fecha_pedido_input');
+    $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
+    //print_r($fecha_formateada);
+	//exit;
+if(!$fecha_pedido){ 
+    // Guardar cabecera de la venta tipo compra normal
     $cabecera_model = new Cabecera_model();
     $ventas_id = $cabecera_model->save([
         'fecha'        => $fecha,
         'hora'         => $hora,
         'id_cliente'   => $id_cliente,
+        'id_usuario'   => $id_ususario,
         'total_venta'  => $total,
         'tipo_pago'    => $tipo_pago,
+        'total_bonificado' => $total_conDescuento,
+        'tipo_compra' => $tipo_compra,
+        'estado' => 'Realizada'
     ]);
-
+}else{
+    // Guardar cabecera de la venta tipo pedido
+    $cabecera_model = new Cabecera_model();
+    $ventas_id = $cabecera_model->save([
+        'fecha'        => $fecha,
+        'hora'         => $hora,
+        'id_cliente'   => $id_cliente,
+        'id_usuario'   => $id_ususario,
+        'total_venta'  => $total,
+        'tipo_pago'    => $tipo_pago,
+        'total_bonificado' => $total_conDescuento,
+        'tipo_compra' => $tipo_compra,
+        'fecha_pedido' => $fecha_pedido_formateada,
+        'estado' => 'Pendiente'
+    ]);
+}
     // Obtener ID de la cabecera guardada
     $id_cabecera = $cabecera_model->getInsertID();
 
@@ -255,8 +347,14 @@ public function ListCompraDetalle($id)
 
     // Limpiar el carrito y redirigir con mensaje
     $cart->destroy();
+    if($tipo_compra == 'Pedido'){
+        session()->setFlashdata('msg', 'Pedido Guardado con Éxito!');
+        
+        return redirect()->to('catalogo');
+    }
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
-    return redirect()->to(base_url('/catalogo'));
+    // Redirige a la vista de la factura
+    return redirect()->to('Carrito_controller/verFactura/' . $id_cabecera);
 }
 
 
@@ -290,11 +388,7 @@ public function ListCompraDetalle($id)
 		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
 		echo view('footer/footer');
 
-		//$html = view('back/Admin/facturacion_view',$datos2+$datos);
-		//$dompdf->loadHtml('Hola loco');
-		//$dompdf->setPaper('A4', 'landscape');
-		//$dompdf->render();
-		//$dompdf->stream('demoFactura.pdf',['attachment' => false]);
+		
 	}
 
 	function FacturaCliente($id)
@@ -326,10 +420,106 @@ public function ListCompraDetalle($id)
 		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
 		echo view('footer/footer');
 
-		//$html = view('back/Admin/facturacion_view',$datos2+$datos);
-		//$dompdf->loadHtml('Hola loco');
-		//$dompdf->setPaper('A4', 'landscape');
-		//$dompdf->render();
-		//$dompdf->stream('demoFactura.pdf',['attachment' => false]);
+		
 	}
+
+	//Genero factura de la compra
+public function verfactura($id)
+{
+    $facturaModel = new Cabecera_model();
+    $detalleModel = new VentaDetalle_model();
+    $productoModel = new Productos_model();
+    $clienteModel = new Clientes_model(); // Suponiendo que tienes un modelo de usuarios
+    
+    // Obtener la cabecera de la venta
+    $cabecera = $facturaModel->find($id);
+    
+    // Obtener los detalles de la venta
+    $detalles = $detalleModel->where('venta_id', $id)->findAll();
+    
+    // Obtener detalles del usuario
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    //print_r($cliente);
+	//exit;
+    // Obtener detalles de los productos
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $producto = $productoModel->find($detalle['producto_id']);
+        $productos[] = $producto;
+    }
+    
+    // Pasar los datos a la vista
+    return view('facturacion/factura_compra', [
+        'cabecera' => $cabecera,
+        'detalles' => $detalles,
+        'usuario' => $cliente, // Detalles del usuario
+        'productos' => $productos, // Detalles de los productos
+    ]);
+}
+
+
+//Genero el pdf a partir de la vista
+public function generarPDF($id_venta)
+{
+    // Cargar el modelo para obtener la información de la venta
+    $ventaModel = new \App\Models\Cabecera_model();
+    $detalleModel = new \App\Models\VentaDetalle_model();
+    $productoModel = new \App\Models\Productos_model();
+    $clienteModel = new \App\Models\Clientes_model();
+
+    // Obtener la cabecera de la venta
+    $cabecera = $ventaModel->find($id_venta);
+
+    // Obtener los detalles de la venta
+    $detalles = $detalleModel->where('venta_id', $id_venta)->findAll();
+
+    // Obtener los productos relacionados
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $productos[] = $productoModel->find($detalle['producto_id']);
+    }
+
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+
+    // Cargar la vista HTML para generar el contenido del PDF
+    $html = view('facturacion/impresion_PDF', [
+        'cabecera' => $cabecera,
+        'detalles' => $detalles,
+        'productos' => $productos,
+        'usuario' => $cliente
+    ]);
+
+    // Configurar Dompdf
+    //$options = new \Dompdf\Options();
+    //$options->set('isHtml5ParserEnabled', true);
+    //$options->set('isPhpEnabled', true);
+    $dompdf = new Dompdf();
+	
+    // Cargar el HTML y renderizar el PDF
+    $dompdf->loadHtml($html);
+    //$dompdf->render();
+
+	$height = 150; // Altura en mm
+	$width = 78;  // Ancho en mm (típico para tickets térmicos)
+	$paper_format = array(0, 0, ($width / 25.4) * 72, ($height / 25.4) * 72);
+	$type = "portrait"; // Orientación vertical
+	$dompdf->setPaper($paper_format, $type);
+	$dompdf->render();
+	// Ruta donde se guardará el PDF en la carpeta Descargas del usuario
+    $downloadDirectory = getenv('USERPROFILE') . '\\Downloads';  // Directorio Descargas en Windows
+    $pdf_path = $downloadDirectory . '\\factura_venta_' . $cabecera['id'] . '.pdf';
+
+    // Guardar el PDF en la carpeta Descargas
+    file_put_contents($pdf_path, $dompdf->output());
+
+    // Forzar la descarga del PDF
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="factura_venta_' . $cabecera['id'] . '.pdf"');
+    echo $dompdf->output();
+	
+    // Redirigir al carrito después de la descarga
+    return redirect()->to(base_url('catalogo'));
+}
+
 }

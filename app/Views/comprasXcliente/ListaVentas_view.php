@@ -8,7 +8,7 @@
   <strong class="titulo-vidrio">Lista de Productos Vendidos</strong>
   </section>
   <div style="text-align: end;">
-  <strong class="nombreLogo" >Barber King</strong>
+  
   
   <br><br>
   <?php $Recaudacion = 0; ?>
@@ -32,7 +32,7 @@
              <td><?php echo $vta['id']; ?></td>
              <td><?php echo $vta['nombre']; ?></td>
              <td><?php echo $vta['telefono']; ?></td>
-             <td><?php echo $vta['total_venta']; ?></td>
+             <td><?php echo $vta['total_bonificado']; ?></td>
              <td><?php echo $vta['fecha']; ?></td>
              <td><?php echo $vta['hora']; ?></td>
              <td><?php echo $vta['tipo_pago']; ?></td>

@@ -2,20 +2,34 @@
 
 <!-- Mensajes temporales -->
 <?php if (session()->getFlashdata('msg')): ?>
-        <div id="flash-message" class="flash-message success">
-            <?= session()->getFlashdata('msg') ?>
-        </div>
-    <?php endif; ?>
-    <?php if (session("msgEr")): ?>
-        <div id="flash-message" class="flash-message danger">
-            <?php echo session("msgEr"); ?>
-        </div>
-    <?php endif; ?>
-    <script>
-        setTimeout(function() {
-            document.getElementById('flash-message').style.display = 'none';
-        }, 3000); // 3000 milisegundos = 3 segundos
-    </script>
+    <div id="flash-message-success" class="flash-message success">
+        <?= session()->getFlashdata('msg') ?>
+    </div>
+<?php endif; ?>
+<?php if (session("msgEr")): ?>
+    <div id="flash-message-danger" class="flash-message danger">
+        <?= session("msgEr"); ?>
+    </div>
+<?php endif; ?>
+
+<script>
+    // Ocultar mensaje de éxito después de 3 segundos
+    setTimeout(function() {
+        const successMessage = document.getElementById('flash-message-success');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 3000);
+
+    // Ocultar mensaje de error después de 3 segundos
+    setTimeout(function() {
+        const errorMessage = document.getElementById('flash-message-danger');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 3000);
+</script>
+
 <!-- Fin de los mensajes temporales -->
 <br>
 
@@ -59,7 +73,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                 </tr>
                 
             <?php // Crea un formulario php y manda los valores a carrito_controller/actualiza carrito
-            echo form_open('carrito_actualiza');
+            echo form_open('carrito/procesarCarrito', ['id' => 'carrito_form']); // Deja vacío para enviar al mismo controlador
                 $gastos = 0;
                 $i = 1;
 
@@ -72,16 +86,16 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             ?>
                     <tr style="color: black;" >
                         
-                        <td  class="separador">
+                        <td  class="separador" style="color: #ffff;">
                             <?php echo $i++; ?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                             <?php echo $item['name']; ?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         $ARS <?php  echo number_format($item['price'], 2);?>
                         </td>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         <?php 
                             if ($item['id'] < 10000) {
                                 echo form_input([
@@ -93,17 +107,18 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                     'size' => '1',
                                     'style' => 'text-align: right; width: 50px;',
                                     'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
-                                ]);
-                            } else {
+                                ]);?>
+                                <span class="stock-disponible"> (Disponibles: <?php echo  $item['options']['stock']; ?>) </span>
+                            <?php } else {
                                 echo number_format($item['qty']);
                             }
                             ?>
                         </td>
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
-                        <td class="separador">
+                        <td class="separador" style="color: #ffff;">
                         $ARS <?php echo number_format($item['subtotal'], 2) ?>
                         </td>
-                        <td class="imagenCarrito separador">
+                        <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
                                 $path = '<img src= '. base_url('assets/img/icons/basura3.png') . ' width="10px" height="10px">';
                                 echo anchor('carrito_elimina/'. $item['rowid'], $path);
@@ -133,23 +148,21 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             
                         </h4>
                         <br>
-                        <label for="pago" class="cambio">Paga con: $</label>
-                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" oninput="formatearMiles()" onkeyup="calcularCambio()">
-
-                        <h4 class="cambio">Cambio: $ <span id="cambio">0.00</span></h4>
-                        <br>
-
+                        <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Borrar carrito usa mensaje de confirmacion javascript implementado en partes/head_view -->
                         <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="success"  >
                         Borrar Todo</a>
 
                         <!-- Submit boton. Actualiza los datos en el carrito -->
-                        <button type="submit" class="success" onclick="actualizar()">                        
-                        Actualizar Importes</button>
-                        <br><br>
+                        <button type="submit" class="success" onclick="setAccion('actualizar')">
+                            Actualizar Importes
+                        </button>
+                            <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
-                        <a href="<?php echo base_url('comprar');?>" class ="success">Confirmar Compra</a>
+                        <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Confirmar Compra</a>
+
+
                     </td>
                 </tr>
                 <?php echo form_close();
@@ -159,25 +172,14 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
 </div>
 
 <script>
-    // Define el total de PHP en JavaScript
-    const granTotal = <?= $gran_total ?>;
+    function setAccion(accion) {
+    // Asignamos la acción al campo oculto
+    document.getElementById('accion').value = accion;
 
-    function formatearMiles() {
-        const input = document.getElementById('pago');
-        let valor = input.value.replace(/\./g, ''); // Quita los puntos
-        if (valor === '') {
-            input.value = '';
-            return;
-        }
-        valor = parseFloat(valor).toLocaleString('de-DE'); // Agrega el formato de miles con puntos
-        input.value = valor;
-    }
+    // Enviamos el formulario
+    document.getElementById('carrito_form').submit();
+}
 
-    function calcularCambio() {
-        const pago = parseFloat(document.getElementById('pago').value.replace(/\./g, '')) || 0;
-        const cambio = pago - granTotal;
-        document.getElementById('cambio').textContent = cambio >= 0 ? cambio.toLocaleString('de-DE', { minimumFractionDigits: 2 }) : "0.00";
-    }
 </script>
 
 <br>
