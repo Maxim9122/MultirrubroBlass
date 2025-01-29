@@ -18,44 +18,44 @@ class Pedidos_controller extends Controller{
 
     public function ListarPedidos()
     {
-        $pedidosModel = new Pedidos_model();
         $filtros = [
             'estado' => 'Pendiente',
-            'fecha_turno' => date('d-m-Y'),
+            'fecha_hoy' => date('d-m-Y'), 
         ];
-        $datos['pedidos'] = $pedidosModel->obtenerPedidos($filtros);
-
-        $datos2['usuarios'] = (new Usuarios_model())->getUsBaja('NO');
-        $datos3['servicios'] = (new Servicios_model())->getServicio();
-        $datos4['clientes'] = (new Clientes_model())->getClientes();
-
-        $ProductosModel = new Productos_model();
-        $eliminado='NO';
-        $datos5['productos'] = $ProductosModel->getProdBaja($eliminado);
+        
+        // Instanciar el modelo
+        $cabeceraModel = new Cabecera_model();
+    
+        // Llamar al método del modelo para obtener las ventas con clientes
+        $datos['pedidos'] = $cabeceraModel->obtenerPedidos($filtros);
+        //print_r($datos);
+        //exit;
 
         $data['titulo'] = 'Listado de Pedidos';
         echo view('navbar/navbar');
         echo view('header/header', $data);
-        echo view('pedidos/ListaPedidos_view', $datos + $datos2 + $datos3 + $datos4 + $datos5);
+        echo view('pedidos/ListaPedidos_view', $datos);
         echo view('footer/footer');
     }
 
     public function PedidosTodos()
     {
-        $pedidosModel = new Pedidos_model();
         $filtros = [
-            'estado' => 'Pendiente'
+            'estado' => 'Pendiente',
+            'fecha_hoy' => '',            
         ];
-        $datos['pedidos'] = $pedidosModel->obtenerPedidos($filtros);
-
-        $datos2['usuarios'] = (new Usuarios_model())->getUsBaja('NO');
-        $datos3['servicios'] = (new Servicios_model())->getServicio();
-        $datos4['clientes'] = (new Clientes_model())->getClientes();
+        // Instanciar el modelo
+        $cabeceraModel = new Cabecera_model();
+    
+        // Llamar al método del modelo para obtener las ventas con clientes
+        $datos['pedidos'] = $cabeceraModel->obtenerPedidos($filtros);
+        //print_r($datos);
+        //exit;
 
         $data['titulo'] = 'Listado de Pedidos';
         echo view('navbar/navbar');
         echo view('header/header', $data);
-        echo view('pedidos/pedidosDeDiaDistinto_alActual', $datos + $datos2 + $datos3 + $datos4);
+        echo view('pedidos/pedidosDeDiaDistinto_alActual', $datos);
         echo view('footer/footer');
     }
 
@@ -219,22 +219,7 @@ class Pedidos_controller extends Controller{
     //Guarda el pedido Completado
     public function Pedido_completado($id_pedido)
     {
-        $pedidosModel = new Pedidos_model();
-
-        // Capturar los datos enviados desde el formulario
-     $id_usuario = $this->request->getPost('id_usuario');
-     $hora_turno = $this->request->getPost('hora_turno');
-     $id_servi = $this->request->getPost('id_servi');
-
-     // Preparar los datos para actualizar
-     $data = array(
-         'id_usuario' => $id_usuario,
-         'hora_turno' => $hora_turno,
-         'id_servi' => $id_servi
-     );
-
-     // Actualiza el pedido en la base de datos antes de cambiar el estado a Listo
-     $pedidosModel->actualizar_pedido($id_pedido, $data);
+        $pedidosModel = new Cabecera_model();
 
         $pedidosModel->cambiarEstado($id_pedido, 'Listo');
         session()->setFlashdata('msg', 'Pedido Completado!');
@@ -245,8 +230,9 @@ class Pedidos_controller extends Controller{
     //Elimina el pedido Cancelado
     public function Pedido_cancelado($id_pedido)
     {
-    $pedidosModel = new Pedidos_model();
-    
+    $pedidosModel = new Cabecera_model();
+    //print_r($id_pedido);
+    //exit;
     // Eliminar el pedido de la base de datos por completo, no de forma logica.
     if ($pedidosModel->eliminarPedido($id_pedido)) {
         session()->setFlashdata('msgEr', 'Pedido Eliminado!');
@@ -260,18 +246,21 @@ class Pedidos_controller extends Controller{
     //Muestra todos los pedidos realizados    
     public function pedidosCompletados()
     {
-        $PedidosModel = new Pedidos_model();
-        $UsuariosModel = new Usuarios_model();
-        $ServiciosModel = new Servicios_model();
-        $ClientesModel = new Clientes_model();
-
-        // Obtener turnos completados desde el modelo
-        $datos['pedidos'] = $PedidosModel->obtenerPedidosCompletados();
+        $filtros = [
+            'estado' => 'Listo',
+            'fecha_hoy' => '',            
+        ];
+        // Instanciar el modelo
+        $cabeceraModel = new Cabecera_model();
+    
+        // Llamar al método del modelo para obtener las ventas con clientes
+        $datos['pedidos'] = $cabeceraModel->obtenerPedidos($filtros);
+        //print_r($datos);
+        //exit;
+        $UsuariosModel = new Usuarios_model();     
 
         // Obtener barberos, servicios y clientes
-        $datos['usuarios'] = $UsuariosModel->getUsBaja('NO');
-        $datos['servicios'] = $ServiciosModel->getServicio();
-        $datos['clientes'] = $ClientesModel->getClientes();
+        $datos['usuarios'] = $UsuariosModel->getUsBaja('NO');       
 
         // Preparar datos para la vista
         $data['titulo'] = 'Listado de Pedidos Completados';
@@ -286,23 +275,23 @@ class Pedidos_controller extends Controller{
 //Filtrado de pedidos por fecha y barber
 public function filtrarPedidos()
 {
-    $pedidosModel = new Pedidos_model();
+    $cabeceraModel = new Cabecera_model();
     $filtros = [
+        'fecha_hoy' => '',
         'estado' => 'Listo',
         'fecha_desde' => $this->request->getVar('fecha_desde'),
         'fecha_hasta' => $this->request->getVar('fecha_hasta'),
         'id_usuario' => $this->request->getVar('id_usuario'),
     ];
-    $datos['pedidos'] = $pedidosModel->obtenerPedidos($filtros);
+
+    $datos['pedidos'] = $cabeceraModel->obtenerPedidos($filtros);
     //Creo un objeto del tipo modelo y en la misma linea ejecuto una funcion de ese modelo.
     $datos2['usuarios'] = (new Usuarios_model())->getUsBaja('NO');
-    $datos3['servicios'] = (new Servicios_model())->getServicio();
-    $datos4['clientes'] = (new Clientes_model())->getClientes();
 
-    $data['titulo'] = 'Listado de Turnos Filtrados';
+    $data['titulo'] = 'Listado de Pedidos Filtrados';
     echo view('navbar/navbar');
     echo view('header/header', $data);
-    echo view('pedidos/pedidosCompletados', $datos + $datos2 + $datos3 + $datos4);
+    echo view('pedidos/pedidosCompletados', $datos + $datos2);
     echo view('footer/footer');
 }
 

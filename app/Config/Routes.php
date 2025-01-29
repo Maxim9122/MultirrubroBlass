@@ -33,7 +33,7 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Login_controller');
 
-//Todo sobre Turnos
+//Todo sobre Pedidos
 $routes->get('/pedidosCompletados', 'Pedidos_controller::PedidosCompletados');
 $routes->post('/filtrarPedidos', 'Pedidos_controller::filtrarPedidos');
 $routes->get('/pedidos', 'Pedidos_controller::ListarPedidos');

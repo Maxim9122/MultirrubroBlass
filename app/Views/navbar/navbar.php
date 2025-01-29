@@ -24,7 +24,7 @@
     <div class="headernav">
       <div class="logoDiv">
         <a href="<?= base_url('turnos')?>" class="logo">
-        <div class="clck">
+        <div class="clock">
         <div id="day" class="day"></div>
         <div id="hours"></div>
         <span class="colon" id="colon">:</span>

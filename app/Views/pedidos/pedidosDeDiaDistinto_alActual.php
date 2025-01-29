@@ -2,7 +2,7 @@
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
           $id=$session->get('id');?>
-<section class="Fon">
+<section>
 <!-- Mensajes temporales -->
     <?php if (session()->getFlashdata('msg')): ?>
         <div id="flash-message" class="flash-message success">
@@ -21,38 +21,17 @@
     </script>
 <!-- Fin de los mensajes temporales -->
 
+        <?php
+        $session = session();
+        $id_cliente_seleccionado = $session->get('id_cliente') ?? '';
+        $nombre_cliente = $session->get('nombre_cliente') ?? '';
+        $fecha_turno = $session->get('fecha_turno') ?? '';
+        $hora_turno = $session->get('hora_turno') ?? '';
+        ?>
 
-<div class="" style="width: 100%;">
-        <section class="contenedor-titulo">
-        
-        
-        <!-- Formulario para turno para Clientes Registrados -->
-        <form class="estiloTurno" action="<?php echo base_url('pedidoClienteRegistrado'); ?>" method="POST">
-        <select class="form-control" name="id_cliente" id="id_cliente" required>
-            <option value="">Seleccione un cliente</option>
-            <?php foreach ($clientes as $cliente): ?>
-                <option value="<?= $cliente['id_cliente']; ?>">
-                <?= $cliente['nombre']; ?>
-                </option>
-            <?php endforeach; ?>
-            </select>
-            
-            <select name="tipo_servicio" class="form-control" required>
-            <option value="">Seleccione un servicio</option>
-            <?php foreach($servicios as $servicio): ?>
-                <option value="<?= $servicio['id_servi']; ?>"><?= $servicio['descripcion']; ?> - $<?= $servicio['precio']; ?></option>
-            <?php endforeach; ?>
-            </select>
-            
-            <label for="fecha" class="label-inline">Fecha:</label>
-            <input type="date" class="form-control" id="fecha" name="fecha_turno">
-            
-            <label for="hora" class="label-inline">Hora:</label>
-            <input type="time" class="form-control" id="hora" name="hora_turno">
-            
-            <button type="submit" class="btn btn-submit">Agendar</button>
-        </form>
-        </section>
+<div style="width: 100%;">
+    
+        <br>
   <div style="text-align: end;">
   
   <br>
@@ -65,20 +44,19 @@
                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
                 <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
                 <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
-    </svg> Pedidos Para Hoy</a>
+    </svg> Pedidos para Hoy</a>
   <br><br>
   <?php $Recaudacion = 0; ?>
-  
   <table class="table table-responsive table-hover" id="users-list">
        <thead>
           <tr class="colorTexto2">
-             <th>Nro Turno</th>
+             <th>Nro Pedido</th>
              <th>Cliente</th>
              <th>Teléfono</th>
-             <th>Barber</th>
-             <th>Hora Turno</th>
-             <th>Servicio</th>
-             <th>Precio</th>             
+             <th>Vendedor</th>
+             <th>Total</th>
+             <th>Fecha de Entrega</th>
+             <th>Estado</th>                          
              <th>Acciones</th>
           </tr>
        </thead>
@@ -87,45 +65,17 @@
             <?php foreach($pedidos as $p): ?>
     <tr>
         <td><?php echo $p['id']; ?></td>
-        <td><?php echo $p['cliente_nombre']; ?></td>
-        <td><?php echo $p['cliente_telefono']; ?></td>
-
+        <td><?php echo $p['nombre_cliente']; ?></td>
+        <td><?php echo $p['telefono']; ?></td>
+        <td><?php echo $p['nombre_usuario'];?></td>
+        <td>$<?php echo $p['total_bonificado'];?></td>
+        <td><?php echo $p['fecha_pedido'];?></td>
+        <td><?php echo $p['estado'];?></td>
         <!-- Formulario por cada turno -->
         <form id="pedidoForm" action="<?php echo base_url('pedido_actualizar/'.$p['id']); ?>" method="POST">
-            <!-- Dropdown para el barbero -->
-            <td>
-                <select class="form-control btn" name="id_usuario">
-                    <?php foreach ($usuarios as $us): ?>
-                        <option value="<?= $us['id']; ?>" <?= $us['id'] == $p['id_usuario'] ? 'selected' : ''; ?>>
-                            <?= $us['nombre']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-
-            <!-- Campo editable para la hora del turno -->
-            <td>
-                <input type="time" class="form-control btn" name="hora_turno" value="<?= $p['hora_turno']; ?>">
-            </td>
-
-            <!-- Dropdown para el servicio -->
-            <td>
-                <select class="form-control btn" name="id_servi">
-                    <?php foreach ($servicios as $servicio): ?>
-                        <option value="<?= $servicio['id_servi']; ?>" <?= $servicio['id_servi'] == $p['id_servi'] ? 'selected' : ''; ?>>
-                            <?= $servicio['descripcion']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-
-            <!-- Campo solo de visualización del precio -->
-            <td>$ <?php echo $p['precio']; ?></td>
-
+            
             
             <td>
-                <!-- Botón para enviar la actualización -->
-                <button type="submit" class="btn btn-actualizar">Editar</button>
                 
                 <!-- Botón para eliminar o cancelar un turno -->
                 <a class="btn btn-completar" href="<?php echo base_url('cancelar/'.$p['id']); ?>" 
@@ -133,6 +83,18 @@
                 Cancelar
                 </a>
 
+                        
+                <!-- Botón para terminar un turno (Concretado o Completado) -->
+                <button 
+                    type="button" 
+                    class="btn btn-completar" 
+                    onclick="confirmarYEnviar('<?php echo base_url('clienteListo/'.$p['id']); ?>')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                        <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                    Listo
+                </button>
 
             </td>
             
@@ -164,13 +126,13 @@
           <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
           <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
           <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
+<!-- Para la tabla de turnos-->
 <script>
-    
     $(document).ready( function () {
       $('#users-list').DataTable( {
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Sin Resultados! No hay turnos agendados.",
+            "zeroRecords": "Sin Resultados! No hay pedidos agendados.",
             "info": "Mostrando la página _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
@@ -278,4 +240,247 @@ function cerrarConfirmacion() {
 </script>
 
 
+
+<!-- Buscador de clientes -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const buscarInput = document.getElementById("buscar_cliente");
+    const clienteSelect = document.getElementById("id_cliente");
+
+    // Mostrar opciones al escribir en el buscador
+    buscarInput.addEventListener("input", function() {
+        const filter = buscarInput.value.toLowerCase();
+        const options = clienteSelect.querySelectorAll("option:not(.search-box)");
+
+        let hasMatches = false; // Bandera para saber si hay coincidencias
+
+        options.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(filter)) {
+                option.style.display = "block"; // Mostrar coincidencias
+                hasMatches = true;
+            } else {
+                option.style.display = "none"; // Ocultar otras
+            }
+        });
+
+        // Mostrar solo si hay coincidencias y el filtro no está vacío
+        if (filter.length > 0 && hasMatches) {
+            clienteSelect.classList.add("show-options");
+        } else {
+            clienteSelect.classList.remove("show-options");
+        }
+    });
+
+    // Ocultar opciones al borrar todo el buscador
+    buscarInput.addEventListener("keydown", function(event) {
+        if (event.key === "Escape" || buscarInput.value === "") {
+            buscarInput.value = "";
+            clienteSelect.classList.remove("show-options");
+            const options = clienteSelect.querySelectorAll("option:not(.search-box)");
+            options.forEach(option => {
+                option.style.display = "none";
+            });
+        }
+    });
+
+    // Actualizar selección al hacer clic en una opción
+    clienteSelect.addEventListener("change", function() {
+        const selectedOption = clienteSelect.options[clienteSelect.selectedIndex];
+        if (!selectedOption.classList.contains("search-box")) {
+            buscarInput.value = selectedOption.textContent; // Mostrar el texto seleccionado en el buscador
+            clienteSelect.classList.remove("show-options"); // Ocultar opciones
+        }
+    });
+
+    // Enfocar el buscador automáticamente
+    clienteSelect.addEventListener("focus", function() {
+        buscarInput.focus();
+    });
+});
+</script>
+
+<!-- Cartel de la funcion que actualiza los campos de Barber Hora y Servicio 
+ si se modificaron antes de guardar el turno Completado-->
+<script>
+
+function confirmarYEnviar(url) {
+    // Detener la acción predeterminada del enlace (si es necesario, en un evento de tipo 'click')
+    event.preventDefault();
+
+    // Mostrar el cuadro de diálogo
+    const dialog = document.getElementById('confirm-dialog');
+    const messageElement = document.getElementById('confirm-message');
+    const yesButton = document.getElementById('confirm-yes');
+    const noButton = document.getElementById('confirm-no');
+
+    messageElement.textContent = 'Marcar Pedido como completado?';
+    dialog.style.display = 'flex';
+
+    // Acción para confirmar
+    yesButton.onclick = function () {
+        enviarFormulario(url);
+    };
+
+    // Acción para cancelar
+    noButton.onclick = cerrarConfirmacion;
+
+    // Detectar clics fuera del cuadro de diálogo
+    window.onclick = function (e) {
+        if (e.target === dialog) {
+            cerrarConfirmacion();
+        }
+    };
+
+    // Detectar las teclas Enter y Escape
+    window.onkeydown = function (e) {
+        if (e.key === "Escape") {
+            cerrarConfirmacion();
+        } else if (e.key === "Enter") {
+            enviarFormulario(url);
+        }
+    };
+}
+
+function enviarFormulario(url) {
+    // Enviar el formulario al hacer clic en "Sí"
+    const formulario = document.getElementById('pedidoForm');
+    formulario.action = url; // Cambiar la acción del formulario
+    formulario.submit(); // Enviar el formulario
+    cerrarConfirmacion(); // Cerrar el cuadro de confirmación
+}
+
+function cerrarConfirmacion() {
+    const dialog = document.getElementById('confirm-dialog');
+    dialog.style.display = 'none';
+
+    // Eliminar los eventos para evitar interferencias en el futuro
+    window.onclick = null;
+    window.onkeydown = null;
+}
+
+</script>
+
+<script>
+//Todo sobre buscador de productos.
+const input = document.getElementById('product_input');
+const select = document.getElementById('product_select');
+const form = document.getElementById('product_form'); // Obtener el formulario
+
+// Filtrar opciones al escribir en el input
+input.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const options = select.options;
+
+    let hasOptions = false; // Para mostrar/ocultar el select
+    let firstMatchIndex = -1; // Para recordar la primera coincidencia
+
+    for (let i = 1; i < options.length; i++) { // Comenzar desde 1 para omitir la opción por defecto
+        const optionText = options[i].text.toLowerCase();
+        options[i].style.display = optionText.includes(searchTerm) ? 'block' : 'none';
+        if (options[i].style.display === 'block') {
+            hasOptions = true; // Hay opciones que coinciden
+            if (firstMatchIndex === -1) {
+                firstMatchIndex = i; // Guarda la primera coincidencia
+            }
+        }
+    }
+
+    // Mostrar el select solo si hay opciones y se ha ingresado al menos una letra
+    select.style.display = hasOptions && searchTerm.length > 0 ? 'block' : 'none';
+
+    // Si hay opciones que coinciden, selecciona la primera
+    if (firstMatchIndex !== -1) {
+        select.selectedIndex = firstMatchIndex; // Selecciona la primera opción que coincide
+    } else {
+        select.selectedIndex = 0; // Reinicia la selección si no hay coincidencias
+    }
+});
+
+// Manejar la selección al cambiar el select
+select.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const nombre = selectedOption.getAttribute('data-nombre');
+    const precio = selectedOption.getAttribute('data-precio');
+
+    // Actualizar los campos ocultos
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('precio_vta').value = precio;
+    document.getElementById('product_id').value = selectedOption.value;
+
+    // Reiniciar el campo de búsqueda
+    input.value = nombre; // Para que el input muestre el nombre del producto
+    select.style.display = 'none'; // Ocultar el select
+    highlightedIndex = -1; // Reiniciar el índice
+});
+
+// Navegación con flechas y selección con Enter
+let highlightedIndex = -1;
+input.addEventListener('keydown', function(event) {
+    const options = Array.from(select.options).filter(option => option.style.display === 'block');
+
+    if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (highlightedIndex < options.length - 1) {
+            highlightedIndex++;
+        }
+        updateHighlight(options);
+    } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (highlightedIndex > 0) {
+            highlightedIndex--;
+        }
+        updateHighlight(options);
+    } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < options.length) {
+            select.value = options[highlightedIndex].value; // Asignar el valor al select
+            select.dispatchEvent(new Event('change')); // Despachar evento de cambio
+            select.style.display = 'none'; // Ocultar el select
+            form.submit(); // Enviar el formulario
+        }
+    }
+});
+
+// Función para actualizar el resaltado de las opciones
+function updateHighlight(options) {
+    for (let i = 0; i < options.length; i++) {
+        options[i].style.backgroundColor = i === highlightedIndex ? '#5bb852' : ''; // Color de resaltado
+    }
+}
+
+// Ocultar el select si se hace clic fuera de él
+document.addEventListener('click', function(event) {
+    if (!input.contains(event.target) && !select.contains(event.target)) {
+        select.style.display = 'none';
+    }
+});
+
+// Enviar el formulario cuando se presiona Enter después de seleccionar un producto
+form.addEventListener('submit', function(event) {
+    const productId = document.getElementById('product_id').value;
+    if (!productId) {
+        event.preventDefault(); // Prevenir el envío si no hay un ID de producto
+        alert('Por favor, selecciona un producto antes de agregar al carrito.'); // Mensaje de error
+    } else {
+        // Reiniciar el estado después del envío
+        input.value = '';
+        select.value = ''; // Reiniciar el select
+        highlightedIndex = -1; // Reiniciar el índice destacado
+        Array.from(select.options).forEach(option => option.style.display = 'block'); // Mostrar todas las opciones
+        select.style.display = 'none'; // Asegurarse de que el select esté oculto
+    }
+});
+
+// Al cargar el documento
+document.addEventListener("DOMContentLoaded", function() {
+    const productInput = document.getElementById('product_input');
+    productInput.focus();  // Enfoca el input
+    productInput.select(); // Selecciona el texto en el input
+});
+
+
+
+
+</script>
 <br><br>

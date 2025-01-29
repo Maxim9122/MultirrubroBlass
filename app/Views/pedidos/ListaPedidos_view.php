@@ -30,72 +30,8 @@
         ?>
 
 <div style="width: 100%;">
-    <?php if(!$id_cliente_seleccionado):?>
-        <section class="contenedor-titulo">
-        <!-- <strong class="nombreLogo">Multirubro Blass</strong> -->
-        
-        <!-- Formulario para turno para Clientes Registrados -->
-        <form class="estiloTurno" action="<?php echo base_url('pedidoClienteRegistrado'); ?>" method="POST">
-        <!--Selector/Buscador de clientes -->
-        <select class="form-control" name="id_cliente" id="id_cliente" required>
-            <option value="">Seleccione un cliente</option>
-            <?php foreach ($clientes as $cliente): ?>
-                <option value="<?= $cliente['id_cliente']; ?>">
-                <?= $cliente['nombre']; ?>
-                </option>
-            <?php endforeach; ?>
-            </select>
-            
-            <select name="tipo_servicio" class="form-control" required>
-            <option value="">Seleccione un servicio</option>
-            <?php foreach($servicios as $servicio): ?>
-                <option value="<?= $servicio['id_servi']; ?>"><?= $servicio['descripcion']; ?> - $<?= $servicio['precio']; ?></option>
-            <?php endforeach; ?>
-            </select>
-            
-            <label for="fecha" class="label-inline">Fecha:</label>
-            <input type="date" class="form-control" id="fecha" name="fecha_turno">
-            
-            <label for="hora" class="label-inline">Hora:</label>
-            <input type="time" class="form-control" id="hora" name="hora_turno">
-            
-            <button type="submit" class="btn btn-submit">Agendar</button>
-        </form>
-        </section>
-        <?php endif;?>
-        <?php if($id_cliente_seleccionado):?>
-            <br>
-            <h2>Cliente seleccionado para Pedido: <?php echo $nombre_cliente?></h2>
-            <h2>Para el día: <?php echo $fecha_turno?></h2>
-            <section class="buscador">
-  
-  <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <button type="submit" class="success">Buscar y Agregar</button>
-  <br>
-    <div style="position: relative; display: inline-block;">
-        <input type="text" id="product_input" placeholder="Buscar producto..." autocomplete="off" required onfocus="this.value=''" />
-        <select id="product_select" name="product_id" required size="3">
-            <option class="separador">Seleccione un Producto!</option>
-            <?php if ($productos): ?>
-                
-                <?php foreach ($productos as $prod): ?>
-                  <?php if($prod['stock'] != 0) {?>
-                    <option class="product-option" value="<?php echo $prod['id']; ?>" data-nombre="<?php echo $prod['nombre']; ?>" data-precio="<?php echo $prod['precio_vta']; ?>">
-                        <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
-                    </option>
-                    <?php  } ?>
-                <?php endforeach; ?>
-                
-            <?php endif; ?>
-        </select>
-        <input type="hidden" name="nombre" id="nombre">
-        <input type="hidden" name="precio_vta" id="precio_vta">
-        <input type="hidden" name="id" id="product_id">
-    </div>
-</form>
-
-    </section>
-        <?php endif;?>
+    <br>
+<h2 class="textoColor" align="center">Listado de Pedidos para Hoy</h2>
         <br>
   <div style="text-align: end;">
   
@@ -110,23 +46,18 @@
                 <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
                 <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
     </svg> Pedidos Completados</a>
-    <a class="button" href="<?php echo base_url('nuevoPedido');?>">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
-                <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
-    </svg> Pedido Cliente Nuevo</a>
   <br><br>
   <?php $Recaudacion = 0; ?>
   <table class="table table-responsive table-hover" id="users-list">
        <thead>
           <tr class="colorTexto2">
-             <th>Nro Turno</th>
+             <th>Nro Pedido</th>
              <th>Cliente</th>
              <th>Teléfono</th>
-             <th>Barber</th>
-             <th>Hora Turno</th>
-             <th>Servicio</th>
-             <th>Precio</th>             
+             <th>Vendedor</th>
+             <th>Total</th>
+             <th>Fecha de Entrega</th>
+             <th>Estado</th>                          
              <th>Acciones</th>
           </tr>
        </thead>
@@ -135,45 +66,17 @@
             <?php foreach($pedidos as $p): ?>
     <tr>
         <td><?php echo $p['id']; ?></td>
-        <td><?php echo $p['cliente_nombre']; ?></td>
-        <td><?php echo $p['cliente_telefono']; ?></td>
-
+        <td><?php echo $p['nombre_cliente']; ?></td>
+        <td><?php echo $p['telefono']; ?></td>
+        <td><?php echo $p['nombre_usuario'];?></td>
+        <td>$<?php echo $p['total_bonificado'];?></td>
+        <td><?php echo $p['fecha_pedido'];?></td>
+        <td><?php echo $p['estado'];?></td>
         <!-- Formulario por cada turno -->
         <form id="pedidoForm" action="<?php echo base_url('pedido_actualizar/'.$p['id']); ?>" method="POST">
-            <!-- Dropdown para el barbero -->
-            <td>
-                <select class="form-control btn" name="id_usuario">
-                    <?php foreach ($usuarios as $us): ?>
-                        <option value="<?= $us['id']; ?>" <?= $us['id'] == $p['id_usuario'] ? 'selected' : ''; ?>>
-                            <?= $us['nombre']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-
-            <!-- Campo editable para la hora del turno -->
-            <td>
-                <input type="time" class="form-control btn" name="hora_turno" value="<?= $p['hora_turno']; ?>">
-            </td>
-
-            <!-- Dropdown para el servicio -->
-            <td>
-                <select class="form-control btn" name="id_servi">
-                    <?php foreach ($servicios as $servicio): ?>
-                        <option value="<?= $servicio['id_servi']; ?>" <?= $servicio['id_servi'] == $p['id_servi'] ? 'selected' : ''; ?>>
-                            <?= $servicio['descripcion']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-
-            <!-- Campo solo de visualización del precio -->
-            <td>$ <?php echo $p['precio']; ?></td>
-
+            
             
             <td>
-                <!-- Botón para enviar la actualización -->
-                <button type="submit" class="btn btn-actualizar">Editar</button>
                 
                 <!-- Botón para eliminar o cancelar un turno -->
                 <a class="btn btn-completar" href="<?php echo base_url('cancelar/'.$p['id']); ?>" 
@@ -230,7 +133,7 @@
       $('#users-list').DataTable( {
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Sin Resultados! No hay turnos agendados para Hoy.",
+            "zeroRecords": "Sin Resultados! No hay pedidos agendados para Hoy.",
             "info": "Mostrando la página _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",

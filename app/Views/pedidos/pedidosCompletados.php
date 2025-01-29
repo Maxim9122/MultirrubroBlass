@@ -65,30 +65,24 @@
           <tr class="colorTexto2">
              <th>Nro Pedido</th>
              <th>Cliente</th>
-             <th>Telefono</th>
-             <th>Empleado</th>
-             <th>Hora Pedido</th>
-             <th>Fecha Pedido</th>
-             <th>Servicio</th>
-             <th>Precio</th>             
-             
+             <th>Teléfono</th>
+             <th>Vendedor</th>
+             <th>Total</th>
+             <th>Fecha de Entrega</th>                          
+             <th>Estado</th>
           </tr>
        </thead>
        <tbody>
           <?php if($pedidos): ?>
-            <?php foreach($pedidos as $trn): ?>
+            <?php foreach($pedidos as $p): ?>
     <tr>
-        <td><?php echo $trn['id']; ?></td>
-        <td><?php echo $trn['cliente_nombre']; ?></td>
-        <td><?php echo $trn['cliente_telefono']; ?></td>          
-        <td><?php echo $trn['usuario_nombre']; ?></td>
-        <td><?php echo $trn['hora_turno']; ?></td>
-        <td><?php echo $trn['fecha_turno']; ?></td>
-        <td><?php echo $trn['descripcion']; ?></td>
-        <td>$<?php echo $trn['precio']; ?></td>
-            <!-- Calculo lo recaudado -->            
-        <?php $Recaudacion = $Recaudacion + $trn['precio'];?>
-         
+        <td><?php echo $p['id']; ?></td>
+        <td><?php echo $p['nombre_cliente']; ?></td>
+        <td><?php echo $p['telefono']; ?></td>
+        <td><?php echo $p['nombre_usuario'];?></td>
+        <td>$<?php echo $p['total_bonificado'];?></td>
+        <td><?php echo $p['fecha_pedido'];?></td>
+        <td><?php echo $p['estado'];?></td>
          </tr>
          <?php endforeach; ?>
 
