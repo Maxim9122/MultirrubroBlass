@@ -26,6 +26,8 @@
   <?php endif?>
 
 <div class="" style="width: 100%;">
+    <br>
+<h2 class="textoColor" align="center">Listado de Pedidos Realizados/Entregados</h2>
         <section class="contenedor-titulo">
 
         <div class="estiloTurno">
@@ -48,6 +50,7 @@
         </form>
 
         </div>
+        
   <div style="text-align: end;">
   
   <br>
@@ -89,12 +92,7 @@
          <?php endif; ?>
        
      </table>
-            <!-- Muestro la Recaudacion de los turnos completado que se trajo del filtro o de todos-->
-     <section class="estiloTurno textColor">
-     <h3 class="estiloTurno textColor day">Recaudacion total: $ <?php echo $Recaudacion ?></h3>
-     <?php $Recaudacion = $Recaudacion * 0.6 ;?>
-     <h3 class="estiloTurno textColor day">Le corresponde al Barber: $ <?php echo $Recaudacion ?></h3>
-     </section>
+     
      
   </div>
 </div>

@@ -30,7 +30,8 @@
         ?>
 
 <div style="width: 100%;">
-    
+    <br>
+<h2 class="textoColor" align="center">Listado de todos los Pedidos Pendientes</h2>
         <br>
   <div style="text-align: end;">
   
