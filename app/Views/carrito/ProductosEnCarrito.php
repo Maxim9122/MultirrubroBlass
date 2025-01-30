@@ -32,6 +32,19 @@
 
 <!-- Fin de los mensajes temporales -->
 <br>
+<?php
+// Obtener los datos del carrito
+$id_cliente = '';
+// Añadido para el tipo de compra
+
+$cart_items = $cart->contents(); // Obtener los artículos del carrito
+if (!empty($cart_items)) {
+    // Tomamos los datos de las opciones del primer artículo del carrito
+    $first_item = reset($cart_items); // Obtener el primer ítem del carrito
+    $id_cliente = isset($first_item['options']['id_cliente']) ? $first_item['options']['id_cliente'] : '';
+    
+}
+?>
 
 <div class="comprados" style="width:100%;">
 
@@ -147,22 +160,31 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             ?>
                             
                         </h4>
+
+                        <h4></h4>
                         <br>
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Borrar carrito usa mensaje de confirmacion javascript implementado en partes/head_view -->
-                        <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="success"  >
+                        <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
                         Borrar Todo</a>
 
                         <!-- Submit boton. Actualiza los datos en el carrito -->
                         <button type="submit" class="success" onclick="setAccion('actualizar')">
                             Actualizar Importes
                         </button>
+                        <!-- Cancelar edicion de pedido -->
+                        <?php if($id_cliente){ ?>
+
+                        <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
+                        Cancelar Edicion de Pedido</a>
+                        <?php  } ?>
+                        
                             <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Confirmar Compra</a>
 
-
+                        
                     </td>
                 </tr>
                 <?php echo form_close();

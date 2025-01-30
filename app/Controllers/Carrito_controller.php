@@ -274,67 +274,105 @@ public function ListCompraDetalle($id)
 
     public function guarda_compra()
 {
-    
     $cart = \Config\Services::cart();
-    $session = session();   
+    $session = session();
     
-    $id_ususario = $session->get('id');
-    //print_r($id_ususario);
-    //exit;
-    // Recuperar datos del formulario usando $this->request->getPost()
+    $id_usuario = $session->get('id');
     $id_cliente = $this->request->getPost('cliente_id');
-	
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
-	
+
+
+    
     $tipo_pago = $this->request->getPost('tipo_pago');
     $total = $this->request->getPost('total_venta');
     $total_conDescuento = $this->request->getPost('total_con_descuento');
-    if(!$total_conDescuento){
+    if (!$total_conDescuento) {
         $total_conDescuento = $total;
     }
+    
     // Establecer zona horaria y obtener fecha/hora en formato correcto
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
     $fecha = date('d-m-Y'); // Formato DATE
-
-    $tipo_compra = $this->request->getPost('tipo_compra_input');
+    $tipo_compra = $this->request->getVar('tipo_compra');
+    //$tipo_compra = $this->request->getPost('tipo_compra_input');
+    
     $fecha_pedido = $this->request->getPost('fecha_pedido_input');
+    if (!$fecha_pedido){
+        $fecha_pedido = date('d-m-Y');
+    }
+    //print_r($fecha_pedido);
+    //exit;
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
-    //print_r($fecha_formateada);
-	//exit;
-if(!$fecha_pedido){ 
-    // Guardar cabecera de la venta tipo compra normal
-    $cabecera_model = new Cabecera_model();
-    $ventas_id = $cabecera_model->save([
-        'fecha'        => $fecha,
-        'hora'         => $hora,
-        'id_cliente'   => $id_cliente,
-        'id_usuario'   => $id_ususario,
-        'total_venta'  => $total,
-        'tipo_pago'    => $tipo_pago,
-        'total_bonificado' => $total_conDescuento,
-        'tipo_compra' => $tipo_compra,
-        'estado' => 'Realizada'
-    ]);
-}else{
-    // Guardar cabecera de la venta tipo pedido
-    $cabecera_model = new Cabecera_model();
-    $ventas_id = $cabecera_model->save([
-        'fecha'        => $fecha,
-        'hora'         => $hora,
-        'id_cliente'   => $id_cliente,
-        'id_usuario'   => $id_ususario,
-        'total_venta'  => $total,
-        'tipo_pago'    => $tipo_pago,
-        'total_bonificado' => $total_conDescuento,
-        'tipo_compra' => $tipo_compra,
-        'fecha_pedido' => $fecha_pedido_formateada,
-        'estado' => 'Pendiente'
-    ]);
-}
-    // Obtener ID de la cabecera guardada
+    
+    // Obtener el id_venta del carrito del pedido modificado
+    $id_venta_anterior = null;
+    foreach ($cart->contents() as $item) {
+        if (isset($item['options']['id_venta'])) {
+            $id_venta_anterior = $item['options']['id_venta'];
+            break; // No es necesario seguir recorriendo si ya encontramos el id_venta
+        }
+    }
+    
+    
+    if ($id_venta_anterior) {
+        // Eliminar el pedido anterior, restaurar stock
+        $VentaDetalle_model = new VentaDetalle_model();
+        $Producto_model = new Productos_model();
+
+        // Obtener detalles de los productos de la venta anterior
+        $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_venta_anterior)->findAll();
+        
+        foreach ($detalles_venta_anterior as $detalle) {
+            // Restaurar el stock de los productos
+            $producto = $Producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $stock_edit = $producto['stock'] + $detalle['cantidad'];
+                $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
+            }
+        }
+
+        // Eliminar los detalles y la cabecera de la venta anterior
+        $VentaDetalle_model->where('venta_id', $id_venta_anterior)->delete();
+        $Cabecera_model = new Cabecera_model();
+        $Cabecera_model->delete($id_venta_anterior);
+    }
+    
+    // Guardar la nueva cabecera de la venta
+    if (!$fecha_pedido) { 
+        // Guardar cabecera de la venta tipo compra normal
+        $cabecera_model = new Cabecera_model();
+        $ventas_id = $cabecera_model->save([
+            'fecha'        => $fecha,
+            'hora'         => $hora,
+            'id_cliente'   => $id_cliente,
+            'id_usuario'   => $id_usuario,
+            'total_venta'  => $total,
+            'tipo_pago'    => $tipo_pago,
+            'total_bonificado' => $total_conDescuento,
+            'tipo_compra' => $tipo_compra,
+            'estado' => 'Realizada'
+        ]);
+    } else {
+        // Guardar cabecera de la venta tipo pedido
+        $cabecera_model = new Cabecera_model();
+        $ventas_id = $cabecera_model->save([
+            'fecha'        => $fecha,
+            'hora'         => $hora,
+            'id_cliente'   => $id_cliente,
+            'id_usuario'   => $id_usuario,
+            'total_venta'  => $total,
+            'tipo_pago'    => $tipo_pago,
+            'total_bonificado' => $total_conDescuento,
+            'tipo_compra' => $tipo_compra,
+            'fecha_pedido' => $fecha_pedido_formateada,
+            'estado' => 'Pendiente'
+        ]);
+    }
+
+    // Obtener ID de la nueva cabecera guardada
     $id_cabecera = $cabecera_model->getInsertID();
 
     // Guardar detalles de la venta si el carrito no está vacío
@@ -362,11 +400,11 @@ if(!$fecha_pedido){
 
     // Limpiar el carrito y redirigir con mensaje
     $cart->destroy();
-    if($tipo_compra == 'Pedido'){
+    if ($tipo_compra == 'Pedido') {
         session()->setFlashdata('msg', 'Pedido Guardado con Éxito!');
-        
         return redirect()->to('catalogo');
     }
+
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
     // Redirige a la vista de la factura
     return redirect()->to('Carrito_controller/verFactura/' . $id_cabecera);

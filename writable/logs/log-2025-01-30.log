@@ -26,3 +26,78 @@ CRITICAL - 2025-01-30 07:05:30 --> Undefined array key "stock"
 #3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
 #4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
 #5 {main}
+CRITICAL - 2025-01-30 09:36:09 --> Undefined array key "options"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(89): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-30 09:36:48 --> Undefined array key "options"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(89): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-30 10:17:41 --> Undefined array key "estado2"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Models\Cabecera_model.php(74): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 74)
+#1 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(304): App\Models\Cabecera_model->obtenerPedidos(Array)
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->pedidosCompletados()
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#5 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#6 {main}
+CRITICAL - 2025-01-30 10:58:19 --> Undefined variable $cart2
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Pedidos_controller.php(245): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 245)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->cargar_pedido_en_carrito('87')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-30 11:16:38 --> Class "App\Controllers\VentaCabecera_model" not found
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Pedidos_controller->cargar_pedido_en_carrito('87')
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pedidos_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+ERROR - 2025-01-30 11:43:14 --> Acción no reconocida: 
+ERROR - 2025-01-30 11:44:13 --> Acción no reconocida: 
+ERROR - 2025-01-30 11:45:58 --> Acción no reconocida: 
+ERROR - 2025-01-30 11:47:02 --> Acción no reconocida: 
+CRITICAL - 2025-01-30 11:57:25 --> Only variables should be passed by reference
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\confirmarCompra.php(18): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Only variables ...', 'C:\\xampp\\htdocs...', 18)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/confirm...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(271): view('carrito/confirm...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->muestra_compra()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-30 11:58:01 --> Only variables should be passed by reference
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\confirmarCompra.php(18): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Only variables ...', 'C:\\xampp\\htdocs...', 18)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/confirm...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(271): view('carrito/confirm...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->muestra_compra()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-30 15:51:02 --> Call to undefined method CodeIgniterCart\Cart::getData()
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->guarda_compra()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}

@@ -123,7 +123,7 @@ $routes->get('/sesiones', 'Login_controller::mostrarSesiones');
 
 //Carrito
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');
-$routes->get('cargar_pedido/(:num)', 'Carrito_controller::cargar_pedido_en_carrito/$1');
+$routes->get('cargar_pedido/(:num)', 'Pedidos_controller::cargar_pedido_en_carrito/$1');
 $routes->post('Carrito_agrega', 'Carrito_controller::add');
 $routes->post('Agregamos', 'Carrito_controller::agregarDesdeListaProd');
 $routes->post('Otros_gastos', 'Carrito_controller::agregar');

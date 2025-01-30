@@ -231,8 +231,17 @@ class Pedidos_controller extends Controller{
 {
     $cart = \Config\Services::cart();
     $detalle_model = new VentaDetalle_model();
+    $cabecera_model = new Cabecera_model(); // Asegúrate de tener este modelo
     $producto_model = new Productos_model();
 
+    // Obtener los datos de la cabecera de la venta para obtener el id_cliente
+    $cabecera = $cabecera_model->find($id_pedido);
+    $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
+    $id_pedido = $cabecera ? $cabecera['id'] : null;
+    $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
+    $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
+    //print_r($fecha_pedido);
+    //exit;
     // Obtener los productos del pedido
     $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
 
@@ -246,15 +255,22 @@ class Pedidos_controller extends Controller{
                 'id'    => $producto['id'],
                 'qty'   => $detalle['cantidad'],
                 'price' => $detalle['precio'],
-                'name'  => $producto['nombre']
+                'name'  => $producto['nombre'],
+                'options' => array(
+                    'stock' => $producto['stock'],
+                    'id_cliente' => $id_cliente, // Guardar el id_cliente en las opciones
+                    'id_venta'  =>  $id_pedido,
+                    'fecha_pedido' => $fecha_pedido,
+                    'tipo_compra' => $tipo_compra
+                    
+                )
             ]);
         }
     }
 
     // Redirigir a la vista de edición del pedido
     return redirect()->to('CarritoList');
-}
-
+    }
 
     //Elimina el pedido Cancelado
     public function Pedido_cancelado($id_pedido)
@@ -293,6 +309,7 @@ class Pedidos_controller extends Controller{
     {
         $filtros = [
             'estado' => 'Entregado',
+            'estado2' => 'Cancelado',
             'fecha_hoy' => '',            
         ];
         // Instanciar el modelo

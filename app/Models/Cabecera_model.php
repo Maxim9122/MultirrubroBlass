@@ -68,7 +68,13 @@ class Cabecera_model extends Model
          $builder->select('u.id, c.nombre AS nombre_cliente, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado, u.estado, u.fecha_pedido, usuarios.nombre AS nombre_usuario');
          $builder->join('cliente c', 'u.id_cliente = c.id_cliente'); // Relación con cliente
          $builder->join('usuarios usuarios', 'u.id_usuario = usuarios.id'); // Relación con usuario
-         $builder->where('u.estado', $filtros['estado']);
+         if (!empty($filtros['estado']) && !empty($filtros['estado2'])) {
+            $builder->whereIn('u.estado', [$filtros['estado'], $filtros['estado2']]);
+        } elseif (!empty($filtros['estado'])) {
+            $builder->where('u.estado', $filtros['estado']);
+        } elseif (!empty($filtros['estado2'])) {
+            $builder->where('u.estado', $filtros['estado2']);
+        }        
          if($filtros['fecha_hoy']){
             $builder->where('u.fecha_pedido', $filtros['fecha_hoy']);
          }
