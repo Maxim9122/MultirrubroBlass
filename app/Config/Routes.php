@@ -57,7 +57,8 @@ $routes->post('/edicionServiOk', 'Servicios_controller::edicionServiOk');
 $routes->get('/clientes', 'Clientes_controller::ListarClientes');
 $routes->get('/editarCliente/(:num)', 'Clientes_controller::editarCliente/$1');
 $routes->post('/edicionOk', 'Clientes_controller::EdicionOk');
-
+$routes->get('/nuevo-cliente', 'Clientes_controller::nuevo_cliente');
+$routes->post('/validar', 'Clientes_controller::formValidation');
 //usuarios
 $routes->get('/registro', 'Usuario_controller::create');
 $routes->post('/enviar-form', 'Usuario_controller::formValidation');

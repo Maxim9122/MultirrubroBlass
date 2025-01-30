@@ -28,7 +28,7 @@
   </section>
   <div style="text-align: end;">
 
-  <strong class="nombreLogo" >Multirubro Blass</strong>
+  <a href="<?= base_url('/nuevo-cliente')?>" class="button">Nuevo Cliente</a>
 
   <br><br>
   
@@ -39,7 +39,7 @@
              <th>Nro Cliente</th>
              <th>Nombre/Apodo</th>
              <th>Telefono</th>
-             <th>Foto</th>
+             <th>Cuil</th>
              <th>Acciones</th>
           </tr>
        </thead>
@@ -50,7 +50,7 @@
              <td><?php echo $cl['id_cliente']; ?></td>
              <td><?php echo $cl['nombre']; ?></td>
              <td><?php echo $cl['telefono']; ?></td>
-             <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$cl['foto']);?>"></td>
+             <td><?php echo $cl['cuil']; ?></td>
              
              <td class="row">
                <a class="btn btn-outline-primary" href="<?php echo base_url('editarCliente/'.$cl['id_cliente']);?>">
