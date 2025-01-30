@@ -179,7 +179,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
                         Cancelar Edicion de Pedido</a>
                         <?php  } ?>
-                        
+
                             <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Confirmar Compra</a>
