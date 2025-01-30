@@ -100,9 +100,9 @@ public function ListCompraDetalle($id)
             'qty'     => 1,
             'price'   => $_POST['precio_vta'],
             'name'    => $_POST['nombre'],
-            'options' => array(               // Datos adicionales
-                        'stock' => $_POST['stock'])           // Almacena el stock disponible
-         ));
+            'options' => array('stock' => $_POST['stock']))
+        );           // Almacena el stock disponible
+         
 		 session()->setFlashdata('msg','Producto Agregado!');
         // Redirige a la misma página que se encuentra
 		return redirect()->to(base_url('catalogo'));

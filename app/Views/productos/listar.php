@@ -70,18 +70,24 @@
             <?php if ($productos): ?>
                 
                 <?php foreach ($productos as $prod): ?>
-                  <?php if($prod['stock'] != 0) {?>
-                    <option class="product-option" value="<?php echo $prod['id']; ?>" data-nombre="<?php echo $prod['nombre']; ?>" data-precio="<?php echo $prod['precio_vta']; ?>">
-                        <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
-                    </option>
-                    <?php  } ?>
+                    <?php if ($prod['stock'] != 0) { ?>
+                        <option class="product-option" 
+                                value="<?php echo $prod['id']; ?>" 
+                                data-nombre="<?php echo $prod['nombre']; ?>" 
+                                data-precio="<?php echo $prod['precio_vta']; ?>" 
+                                data-stock="<?php echo $prod['stock']; ?>">  <!-- Agregamos data-stock -->
+                            <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
+                        </option>
+                    <?php } ?>
                 <?php endforeach; ?>
+
                 
             <?php endif; ?>
         </select>
         <input type="hidden" name="nombre" id="nombre">
         <input type="hidden" name="precio_vta" id="precio_vta">
         <input type="hidden" name="id" id="product_id">
+        <input type="hidden" name="stock" id="producto_stock">
     </div>
 </form>
 
