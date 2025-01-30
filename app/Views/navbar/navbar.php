@@ -65,6 +65,9 @@
             <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?></h5>
           </li>
           <li class="nnavItem">
+            <a class="btn signUp" href="<?php echo base_url('clientes');?>">CLIENTES</a>
+          </li>
+          <li class="nnavItem">
             <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
           </li>
           <li class="navItem">

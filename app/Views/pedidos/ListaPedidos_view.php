@@ -72,7 +72,9 @@
         <td>$<?php echo $p['total_bonificado'];?></td>
         <td><?php echo $p['fecha_pedido'];?></td>
         <td><?php echo $p['estado'];?></td>
+
         <!-- Formulario de acciones por cada pedido -->
+
         <form id="pedidoForm" action="<?php echo base_url('pedido_actualizar/'.$p['id']); ?>" method="POST">
             
             
@@ -134,7 +136,7 @@
           <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
           <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
           <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
-<!-- Para la tabla de turnos-->
+<!-- Para la tabla de pedido-->
 <script>
     $(document).ready( function () {
       $('#users-list').DataTable( {
@@ -183,7 +185,7 @@ document.getElementById('hora').value = formattedTime;
 
 </script>
 
-<!-- Esta parte es del cartel de confirmacion de Cancelar Turno o Turno Listo-->
+<!-- Esta parte es del cartel de confirmacion de Cancelar pedido o pedido Listo-->
 <script>
 function mostrarConfirmacion(event, mensaje, url) {
     event.preventDefault(); // Previene la acción por defecto del enlace
@@ -309,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <!-- Cartel de la funcion que actualiza los campos de Barber Hora y Servicio 
- si se modificaron antes de guardar el turno Completado-->
+ si se modificaron antes de guardar el pedido Completado-->
 <script>
 
 function confirmarYEnviar(url) {
