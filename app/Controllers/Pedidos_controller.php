@@ -161,8 +161,8 @@ class Pedidos_controller extends Controller{
          // Convertir la fecha al formato dd-mm-yyyy
          $fecha_turno = $this->request->getVar('fecha_turno');
          $fecha_turno_formateada = date('d-m-Y', strtotime($fecha_turno));
-
         $session = session();
+        
 
         // Guardar datos del formulario en la sesión
         $session->set('id_cliente', $this->request->getPost('id_cliente'));
@@ -227,20 +227,65 @@ class Pedidos_controller extends Controller{
     }
 
 
+    public function cargar_pedido_en_carrito($id_pedido)
+{
+    $cart = \Config\Services::cart();
+    $detalle_model = new VentaDetalle_model();
+    $producto_model = new Productos_model();
+
+    // Obtener los productos del pedido
+    $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+
+    // Limpiar el carrito antes de cargar los productos
+    $cart->destroy();
+
+    foreach ($detalles as $detalle) {
+        $producto = $producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $cart->insert([
+                'id'    => $producto['id'],
+                'qty'   => $detalle['cantidad'],
+                'price' => $detalle['precio'],
+                'name'  => $producto['nombre']
+            ]);
+        }
+    }
+
+    // Redirigir a la vista de edición del pedido
+    return redirect()->to('CarritoList');
+}
+
+
     //Elimina el pedido Cancelado
     public function Pedido_cancelado($id_pedido)
     {
-    $pedidosModel = new Cabecera_model();
-    //print_r($id_pedido);
-    //exit;
-    // Eliminar el pedido de la base de datos por completo, no de forma logica.
-    if ($pedidosModel->eliminarPedido($id_pedido)) {
-        session()->setFlashdata('msgEr', 'Pedido Eliminado!');
-    } else {
-        session()->setFlashdata('msgEr', 'Error al eliminar el pedido.');
-    }
+        $cabecera_model = new Cabecera_model();
+        $detalle_model = new VentaDetalle_model();
+        $producto_model = new Productos_model();
     
-    return redirect()->to($this->request->getHeader('referer')->getValue());
+        // Obtener los detalles del pedido
+        $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+    
+        if (!$detalles) {
+            session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+            return redirect()->to($this->request->getHeader('referer')->getValue());
+        }
+    
+        // Restaurar el stock de cada producto
+        foreach ($detalles as $detalle) {
+            $producto = $producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+                $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+            }
+        }
+    
+        // Actualizar el estado del pedido a "Cancelado"
+        $cabecera_model->update($id_pedido, ['estado' => 'Cancelado']);
+    
+        session()->setFlashdata('msg', 'Pedido cancelado y stock restaurado con éxito.');
+    
+        return redirect()->to($this->request->getHeader('referer')->getValue());
     }
     
     //Muestra todos los pedidos realizados    

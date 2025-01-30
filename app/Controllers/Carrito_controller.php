@@ -21,6 +21,11 @@ class Carrito_controller extends Controller{
 
 	public function ListVentasCabecera()
 {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     // Instanciar el modelo
     $cabeceraModel = new Cabecera_model();
     
@@ -56,6 +61,11 @@ public function ListaComprasCabeceraCliente($id)
 
 public function ListCompraDetalle($id)
 {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     // Instanciar el modelo
     $cabeceraModel = new Cabecera_model();
 
@@ -90,9 +100,9 @@ public function ListCompraDetalle($id)
             'qty'     => 1,
             'price'   => $_POST['precio_vta'],
             'name'    => $_POST['nombre'],
-            'options' => array(               // Datos adicionales
-                        'stock' => $_POST['stock'])           // Almacena el stock disponible
-         ));
+            'options' => array('stock' => $_POST['stock']))
+        );           // Almacena el stock disponible
+         
 		 session()->setFlashdata('msg','Producto Agregado!');
         // Redirige a la misma página que se encuentra
 		return redirect()->to(base_url('catalogo'));
@@ -248,6 +258,11 @@ public function ListCompraDetalle($id)
     //Muestra los detalles de la venta y confirma(función guarda_compra())
 	function muestra_compra()
 	{
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
 		$ClientesModel = new Clientes_model();
         $datos['clientes'] = $ClientesModel->getClientes();
 		$data['titulo'] = 'Confirmar compra';

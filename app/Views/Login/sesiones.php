@@ -7,7 +7,7 @@
     <title>Sesiones</title>
     
 </head>
-<body class="container">
+<body>
     <h1>Lista Sessiones</h1>
 
     <!-- Formulario de búsqueda y filtro -->
@@ -20,7 +20,7 @@
         <button class="btn" type="submit">Buscar</button>
     </form>
 
-    <div class="table-container">
+    <div class="table-container container">
         <table id="users-list">
             <thead>
                 <tr>

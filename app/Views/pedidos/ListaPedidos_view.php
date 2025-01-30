@@ -72,7 +72,9 @@
         <td>$<?php echo $p['total_bonificado'];?></td>
         <td><?php echo $p['fecha_pedido'];?></td>
         <td><?php echo $p['estado'];?></td>
-        <!-- Formulario por cada pedido -->
+
+        <!-- Formulario de acciones por cada pedido -->
+
         <form id="pedidoForm" action="<?php echo base_url('pedido_actualizar/'.$p['id']); ?>" method="POST">
             
             
@@ -104,6 +106,7 @@
                 </ul>
             </div>
         </td>
+
             
          </form>
          
@@ -485,9 +488,7 @@ document.addEventListener("DOMContentLoaded", function() {
     productInput.focus();  // Enfoca el input
     productInput.select(); // Selecciona el texto en el input
 });
-
-
-
-
 </script>
+
+
 <br><br>

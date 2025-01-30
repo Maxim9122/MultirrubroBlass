@@ -54,6 +54,11 @@ class Usuario_controller extends Controller{
 
 
     public function nuevoUsuario() {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
          $data['titulo']='Crear Nuevo Usuario'; 
          echo view('navbar/navbar');
          echo view('header/header',$data);        
@@ -165,6 +170,11 @@ class Usuario_controller extends Controller{
     }
 
     public function usuariosEliminados(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $userModel = new Usuarios_model();
         $baja='SI';
         $data['usuarios'] = $userModel->getUsBaja($baja);

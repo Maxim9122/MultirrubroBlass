@@ -75,6 +75,10 @@ class Login_controller extends Controller
     public function logout()
     {
         $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
                 date_default_timezone_set('America/Argentina/Buenos_Aires');
@@ -93,6 +97,11 @@ class Login_controller extends Controller
     //muestra las sesiones de los usuarios
     public function mostrarSesiones()
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $usuarioModel = new Sesion_model();
         // Obtener parámetros de búsqueda y filtro
         $filter = $this->request->getVar('filter'); // Para filtrar por estado

@@ -4,6 +4,38 @@
           $id=$session->get('id');?>
           
 <!-- Mensajes temporales -->
+<?php if(session()->getFlashdata('mensaje_stock')): ?>
+    <div id="msg_stock">
+        <?= session()->getFlashdata('mensaje_stock'); ?>
+    </div>
+<?php endif; ?>
+
+<style>
+    #msg_stock {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: black; /* Fondo oscuro para destacar el mensaje */
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: 3px solid #ff073a; /* Rojo flúor */
+        border-radius: 5px;
+        text-align: center;
+        z-index: 1000;
+        box-shadow: 0px 0px 10px #ff073a; /* Efecto neón */
+    }
+</style>
+
+<script>
+    setTimeout(function() {
+        let msg = document.getElementById('msg_stock');
+        if (msg) {
+            msg.style.display = 'none';
+        }
+    }, 3000); // Se oculta después de 3 segundos
+</script>
 <?php if (session()->getFlashdata('msg')): ?>
         <div id="flash-message" class="flash-message success">
             <?= session()->getFlashdata('msg') ?>
@@ -38,18 +70,24 @@
             <?php if ($productos): ?>
                 
                 <?php foreach ($productos as $prod): ?>
-                  <?php if($prod['stock'] != 0) {?>
-                    <option class="product-option" value="<?php echo $prod['id']; ?>" data-nombre="<?php echo $prod['nombre']; ?>" data-precio="<?php echo $prod['precio_vta']; ?>">
-                        <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
-                    </option>
-                    <?php  } ?>
+                    <?php if ($prod['stock'] != 0) { ?>
+                        <option class="product-option" 
+                                value="<?php echo $prod['id']; ?>" 
+                                data-nombre="<?php echo $prod['nombre']; ?>" 
+                                data-precio="<?php echo $prod['precio_vta']; ?>" 
+                                data-stock="<?php echo $prod['stock']; ?>">  <!-- Agregamos data-stock -->
+                            <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
+                        </option>
+                    <?php } ?>
                 <?php endforeach; ?>
+
                 
             <?php endif; ?>
         </select>
         <input type="hidden" name="nombre" id="nombre">
         <input type="hidden" name="precio_vta" id="precio_vta">
         <input type="hidden" name="id" id="product_id">
+        <input type="hidden" name="stock" id="producto_stock">
     </div>
 </form>
 
