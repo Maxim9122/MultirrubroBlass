@@ -5,7 +5,7 @@
           $id=$session->get('id');?>  
  <?php if($perfil == 1){  ?>
 <div class="">
-  <div class="nuevoProd" >
+  <div class="nuevoTurno" >
     <div class= "">
       <h2>Registrar Nuevo Producto</h2>
     </div>
@@ -18,10 +18,23 @@
  <?php endif?>
            <?php if(!empty (session()->getFlashdata('success'))):?>
       <div class="alert alert-danger"><?=session()->getFlashdata('success');?></div>
-  <?php endif?>     
-<div class="inputBox">
-   <input name="nombre" type="text" required="required">
-   <label for="exampleFormControlTextarea1" class="">Nombre</label>
+  <?php endif?>    
+<div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
+   <input name="codigo_barra" type="text" required="required">
+   
+     <!-- Error -->
+        <?php if($validation->getError('codigo_barra')) {?>
+            <div class='alert alert-danger mt-2'>
+              <?= $error = $validation->getError('codigo_barra'); ?>
+            </div>
+        <?php }?>
+  </div>
+  <br> 
+<div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="">Nombre</label>
+   <input name="nombre" type="text" required="required" >
+   
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -30,9 +43,10 @@
         <?php }?>
   </div>
   <br>
-  <div class="inputBox">
-   <input name="descripcion" type="text" required="required">
-   <label for="exampleFormControlTextarea1" class="form-label">Descripcion</label>
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="form-label">Descripcion</label>
+   <input name="descripcion" type="text" required="required" >
+   
     <!-- Error -->
         <?php if($validation->getError('descripcion')) {?>
             <div class='alert alert-danger mt-2'>
@@ -41,9 +55,10 @@
         <?php }?>
     </div>
     <br>
-  <div class="inputBox">
-  <input name="imagen" type="file" required="required">
+  <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="form-label">Imagen</label>
+  <input name="imagen" type="file" required="required" >
+  
   <?php if($validation->getError('imagen')) {?>
             <div class='alert alert-danger mt-2'>
               <?= $error = $validation->getError('imagen'); ?>
@@ -51,15 +66,16 @@
         <?php }?>
   </div>
   <br>
-  <div class="inputBox">
-    <select name="categoria_id">
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
+    <select name="categoria_id" >
     <option>Seleccione Categoria</option>
     <option value="1">Maquinas</option>
     <option value="2">Perfumes</option>
     <option value="3">Ropa</option>
     <option value="4">Otros</option>
     </select>
-    <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
+  
     <!-- Error -->
         <?php if($validation->getError('categoria_id')) {?>
             <div class='alert alert-danger mt-2'>
@@ -68,9 +84,10 @@
         <?php }?>
     </div>
     <br>
-    <div class="inputBox">
+    <div class="mb-2">
+    <label for="exampleFormControlTextarea1" class="form-label">Precio de Costo</label>
    <input name="precio"  type="text" required="required" >
-   <label for="exampleFormControlTextarea1" class="form-label">Precio de Costo</label>
+   
     <!-- Error -->
         <?php if($validation->getError('precio')) {?>
             <div class='alert alert-danger mt-2'>
@@ -80,9 +97,10 @@
         <br>
   </div>
   <br>
-  <div class="inputBox">
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="form-label">Precio Venta</label>
    <input  type="text" name="precio_vta" required="required">
-   <label for="exampleFormControlTextarea1" class="form-label">Precio Venta</label>
+   
    <!-- Error -->
         <?php if($validation->getError('precio_vta')) {?>
             <div class='alert alert-danger mt-2'>
@@ -91,9 +109,10 @@
         <?php }?>
   </div>
   <br>
-  <div class="inputBox">
-   <input name="stock" type="text" required="required">
-   <label for="exampleFormControlTextarea1" class="form-label">Stock</label>
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="form-label">Stock</label>
+   <input name="stock" type="text" required="required" >
+   
    <!-- Error -->
         <?php if($validation->getError('stock')) {?>
             <div class='alert alert-danger mt-2'>
@@ -102,9 +121,10 @@
         <?php }?>
   </div>
   <br>
-  <div class="inputBox">
-   <input name="stock_min" type="text" required="required">
-   <label for="exampleFormControlTextarea1" class="textColor2">Stock Minimo</label>
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="textColor2">Stock Minimo</label>
+   <input name="stock_min" type="text" required="required" >
+   
    <!-- Error -->
         <?php if($validation->getError('stock_min')) {?>
             <div class='alert alert-danger mt-2'>
@@ -113,10 +133,10 @@
         <?php }?>
   </div>
   <br>
-
+  <div class="button-container">
   <a href="<?php echo base_url('Lista_Productos');?>" class="btn">Cancelar</a>   
   <button type="submit" class="btn">Guardar</button>
-   
+  </div>
   <br>
  </div>
 </form>

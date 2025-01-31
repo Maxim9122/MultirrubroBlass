@@ -32,6 +32,7 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $input = $this->validate([
+            'codigo_barra' => 'required|is_unique[productos.codigo_barra]',
             'nombre'   => 'required|min_length[3]',
             'descripcion'   => 'required',
             'categoria_id' => 'required|min_length[1]|max_length[20]',
@@ -39,7 +40,6 @@ class Producto_controller extends Controller{
             'precio_vta'  => 'required|min_length[2]',
             'stock'     => 'required|min_length[1]|max_length[10]',
             'stock_min'     => 'required|min_length[1]|max_length[10]',
-            
             
         ]);
         $ProductoModel = new Productos_model();
@@ -65,6 +65,7 @@ class Producto_controller extends Controller{
                 'precio_vta'  => $this->request->getVar('precio_vta'),
                 'stock' => $this->request->getVar('stock'),
                 'stock_min' => $this->request->getVar('stock_min'),
+                'codigo_barra' => $this->request->getVar('codigo_barra'),
                 'eliminado' => 'NO',
                 
             ]);  
@@ -193,10 +194,10 @@ class Producto_controller extends Controller{
     	$Model = new Productos_model();
     	$data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
-                echo view('header',$dato);
-                echo view('nav_view');
+            echo view('navbar/navbar');
+            echo view('header/header',$dato);   
                 echo view('back/carrito/DetalleProducto_view',compact('data'));
-                echo view('footer');
+                echo view('footer/footer');
     }
 
     public function ProdValidationEdit() {
@@ -208,6 +209,7 @@ class Producto_controller extends Controller{
         //print_r($_POST);exit;
         
         $input = $this->validate([
+            'codigo_barra' => "required|is_unique[productos.codigo_barra,id,{$_POST['id']}]", // Ignora el ID actual
             'nombre'   => 'required|min_length[3]',
             'descripcion'   => 'required|max_length[200]',
             'categoria_id' => 'required|min_length[1]|max_length[2]',
@@ -222,10 +224,10 @@ class Producto_controller extends Controller{
         if (!$input) {
             $data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
-                echo view('header',$dato);
-                echo view('nav_view');
-                echo view('back/Admin/editarProducto_view',compact('data'));
-                echo view('footer');
+            echo view('navbar/navbar');
+            echo view('header/header',$dato);   
+                echo view('admin/editarProducto_view',compact('data'));
+                echo view('footer/footer');
         } else {
         	$validation= $this->validate([
         		'image' => ['uploaded[imagen]',
@@ -247,6 +249,7 @@ class Producto_controller extends Controller{
                 'stock'  => $_POST['stock'],
                 'stock_min'  => $_POST['stock_min'],
                 'eliminado' => $_POST['eliminado'],
+                'codigo_barra' => $_POST['codigo_barra'],
                 
             ];  
          	}else{
@@ -260,7 +263,7 @@ class Producto_controller extends Controller{
                 'stock'  => $_POST['stock'],
                 'stock_min'  => $_POST['stock_min'],
                 'eliminado' => $_POST['eliminado'],
-                
+                'codigo_barra' => $_POST['codigo_barra'],
             ];
             }
          

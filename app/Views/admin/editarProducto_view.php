@@ -15,6 +15,18 @@
       <div class="alert alert-danger"><?=session()->getFlashdata('success');?></div>
   <?php endif?>     
 <div class ="card-body" media="(max-width:768px)">
+<div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
+   <input name="codigo_barra" type="text" pattern="[0-9]+" required="required" value="<?php echo $data['codigo_barra']?>">
+   
+     <!-- Error -->
+        <?php if($validation->getError('codigo_barra')) {?>
+            <div class='alert alert-danger mt-2'>
+              <?= $error = $validation->getError('codigo_barra'); ?>
+            </div>
+        <?php }?>
+  </div>
+  <br> 
   <div class="mb-2">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
    <input name="nombre" type="text"  class="form-control" placeholder="nombre" 

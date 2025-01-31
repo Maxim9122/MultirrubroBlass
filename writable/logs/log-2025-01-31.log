@@ -26,3 +26,28 @@ CRITICAL - 2025-01-31 09:29:41 --> Undefined array key "codigo_barras"
 #7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
 #8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
 #9 {main}
+CRITICAL - 2025-01-31 15:36:18 --> Invalid file: header.php
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('header.php')
+#1 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('header', Array, true)
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(228): view('header', Array)
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2025-01-31 15:39:20 --> Invalid file: back/Admin/editarProducto_view.php
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(229): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2025-01-31 15:45:00 --> Undefined variable $id
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(212): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 212)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}

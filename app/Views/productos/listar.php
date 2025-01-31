@@ -76,7 +76,7 @@
                                 data-nombre="<?php echo $prod['nombre']; ?>" 
                                 data-precio="<?php echo $prod['precio_vta']; ?>" 
                                 data-stock="<?php echo $prod['stock']; ?>">  <!-- Agregamos data-stock -->
-                            <?php echo $prod['nombre']; ?>
+                            <?php echo $prod['codigo_barra']; ?>
                         </option>
                     <?php } ?>
                 <?php endforeach; ?>
