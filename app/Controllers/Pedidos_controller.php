@@ -18,6 +18,11 @@ class Pedidos_controller extends Controller{
 
     public function ListarPedidos()
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $filtros = [
             'estado' => 'Pendiente',
             'fecha_hoy' => date('d-m-Y'), 
@@ -40,6 +45,11 @@ class Pedidos_controller extends Controller{
 
     public function PedidosTodos()
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $filtros = [
             'estado' => 'Pendiente',
             'fecha_hoy' => '',            
@@ -62,6 +72,11 @@ class Pedidos_controller extends Controller{
 
     public function nuevoPedido()
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
             // Cargar el modelo de servicios
             $serviciosModel = new Servicios_model();
     
@@ -84,6 +99,11 @@ class Pedidos_controller extends Controller{
 
    //Verifica y guarda los pedidos
    public function RegistrarPedido() {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     $input = $this->validate([
         'nombre_cliente' => 'required|min_length[3]',
         'telefono' => 'required|min_length[10]|max_length[10]|is_unique[cliente.telefono]',
@@ -151,7 +171,11 @@ class Pedidos_controller extends Controller{
 
     //Verifica y guarda los pedidos de clientes ya registrados
     public function pedidoClienteRegistrado() {
-
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fecha = date('d-m-Y');
 
@@ -192,6 +216,11 @@ class Pedidos_controller extends Controller{
 
     //Actualiza el pedido
     public function pedido_actualizar($id_pedido){ 
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
      // Cargar el modelo
      $Pedido_model = new Pedidos_model();
 
@@ -219,6 +248,11 @@ class Pedidos_controller extends Controller{
     //Guarda el pedido Completado
     public function Pedido_completado($id_pedido)
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $pedidosModel = new Cabecera_model();
 
         $pedidosModel->cambiarEstado($id_pedido, 'Entregado');
@@ -275,6 +309,11 @@ class Pedidos_controller extends Controller{
     //Elimina el pedido Cancelado
     public function Pedido_cancelado($id_pedido)
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $cabecera_model = new Cabecera_model();
         $detalle_model = new VentaDetalle_model();
         $producto_model = new Productos_model();
@@ -307,6 +346,11 @@ class Pedidos_controller extends Controller{
     //Muestra todos los pedidos realizados    
     public function pedidosCompletados()
     {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
         $filtros = [
             'estado' => 'Entregado',
             'estado2' => 'Cancelado',
@@ -337,6 +381,11 @@ class Pedidos_controller extends Controller{
 //Filtrado de pedidos por fecha y barber
 public function filtrarPedidos()
 {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     $cabeceraModel = new Cabecera_model();
     $filtros = [
         'fecha_hoy' => '',

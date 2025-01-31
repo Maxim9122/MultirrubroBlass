@@ -17,6 +17,11 @@ class Clientes_controller extends Controller{
 
     function ListarClientes()
 	{
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
 		$ClientesModel = new Clientes_model();
         $datos['clientes'] = $ClientesModel->getClientes();
 		$data['titulo'] = 'Confirmar compra';
@@ -74,6 +79,11 @@ class Clientes_controller extends Controller{
 
   //carga vista formulario
   public function nuevo_cliente(){
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     $data['titulo']='Registro'; 
              echo view('navbar/navbar'); 
              echo view('header/header',$data);
@@ -82,6 +92,11 @@ class Clientes_controller extends Controller{
   }
 
     public function editarCliente($id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
     	$ClientesModel = new Clientes_model();
     	$data=$ClientesModel->getCliente($id);
             $dato['titulo']='Editar Cliente'; 
