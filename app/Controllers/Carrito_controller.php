@@ -92,24 +92,54 @@ public function ListCompraDetalle($id)
 
     //Agrega elemento al carrito
 	function add()
-	{
-        $cart = \Config\Services::cart();
-        // Genera array para insertar en el carrito
-    
-        //print_r($_POST['id']);
-       // exit;
-		$cart->insert(array(
-            'id'      => $_POST['id'],
+    {
+    $cart = \Config\Services::cart();
+    $producto_id = $_POST['id'];
+    $nombre = $_POST['nombre'];
+    $precio = $_POST['precio_vta'];
+    $stock = $_POST['stock'];
+
+    // Obtener todos los productos en el carrito
+    $cart_items = $cart->contents();
+    $producto_encontrado = false;
+
+    foreach ($cart_items as $item) {
+        if ($item['id'] == $producto_id) {
+            // Si el producto ya está en el carrito, incrementar cantidad
+            $nueva_cantidad = $item['qty'] + 1;
+
+            // Verificar si supera el stock disponible
+            if ($nueva_cantidad > $stock) {
+                session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
+                return redirect()->to(base_url('catalogo'));
+            }
+
+            // Actualizar cantidad en el carrito
+            $cart->update([
+                'rowid' => $item['rowid'],
+                'qty'   => $nueva_cantidad
+            ]);
+
+            $producto_encontrado = true;
+            break;
+        }
+    }
+
+    // Si el producto no está en el carrito, agregarlo
+    if (!$producto_encontrado) {
+        $cart->insert([
+            'id'      => $producto_id,
             'qty'     => 1,
-            'price'   => $_POST['precio_vta'],
-            'name'    => $_POST['nombre'],
-            'options' => array('stock' => $_POST['stock']))
-        );           // Almacena el stock disponible
-         
-		 session()->setFlashdata('msg','Producto Agregado!');
-        // Redirige a la misma página que se encuentra
-		return redirect()->to(base_url('catalogo'));
-	}
+            'price'   => $precio,
+            'name'    => $nombre,
+            'options' => ['stock' => $stock] // Almacenar stock disponible
+        ]);
+    }
+
+    session()->setFlashdata('msg', 'Producto Agregado!');
+    return redirect()->to(base_url('catalogo'));
+}
+
 
 	//Agrega elemento al carrito desde confirmar
 	function agregar()
