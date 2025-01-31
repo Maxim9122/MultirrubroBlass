@@ -252,11 +252,13 @@ select.addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const nombre = selectedOption.getAttribute('data-nombre');
     const precio = selectedOption.getAttribute('data-precio');
+    const stock = selectedOption.getAttribute('data-stock'); // Obtener el stock correctamente
 
     // Actualizar los campos ocultos
     document.getElementById('nombre').value = nombre;
     document.getElementById('precio_vta').value = precio;
     document.getElementById('product_id').value = selectedOption.value;
+    document.getElementById('producto_stock').value = stock; // Asignar el stock correctamente
 
     // Reiniciar el campo de búsqueda
     input.value = nombre; // Para que el input muestre el nombre del producto

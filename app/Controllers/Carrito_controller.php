@@ -95,6 +95,9 @@ public function ListCompraDetalle($id)
 	{
         $cart = \Config\Services::cart();
         // Genera array para insertar en el carrito
+    
+        //print_r($_POST['id']);
+       // exit;
 		$cart->insert(array(
             'id'      => $_POST['id'],
             'qty'     => 1,
@@ -113,12 +116,14 @@ public function ListCompraDetalle($id)
 	{
         $cart = \Config\Services::cart();
         // Genera array para insertar en el carrito
+        
 		$id_producto = uniqid('prod_') . random_int(100000, 999900);
 		$cart->insert(array(
             'id'      => $id_producto,
             'qty'     => 1,
             'price'   => $_POST['precio_vta'],
             'name'    => $_POST['nombre'],
+            'options' => array('stock' => $_POST['stock'])
             
          ));
 		 session()->setFlashdata('msg','Producto Agregado!');
@@ -137,6 +142,7 @@ public function ListCompraDetalle($id)
             'qty'     => 1,
             'price'   => $_POST['precio_vta'],
             'name'    => $_POST['nombre'],
+            'options' => array('stock' => $_POST['stock'])
             
          ));
 		 session()->setFlashdata('msg','Producto Agregado!');
