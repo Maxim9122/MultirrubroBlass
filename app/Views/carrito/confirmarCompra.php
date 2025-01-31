@@ -93,7 +93,7 @@ endif;
                     <td>
                         <select name="tipo_compra" id="tipoCompra">
                             <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>
-                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Compra Pedido</option>
+                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
                         </select>
                         <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
                     </td>
