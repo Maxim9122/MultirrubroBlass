@@ -1,0 +1,12 @@
+CRITICAL - 2025-01-31 06:06:20 --> Undefined array key "sock"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\carrito\ProductosEnCarrito.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('carrito/Product...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(89): view('carrito/Product...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->productosAgregados()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2025-01-31 06:43:47 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
