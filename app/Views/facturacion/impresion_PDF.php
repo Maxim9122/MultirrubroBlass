@@ -12,7 +12,6 @@
         }
         .reporte-header {
             text-align: center;
-            
         }
         .reporte-header h1 {
             font-size: 18px;
@@ -90,16 +89,16 @@
     </div>
 
     <div class="venta-detalle">
-        <p><strong>Numero de Ticket:</strong> <?= $cabecera['id']; ?></p>
-        <p><strong>Cliente:</strong> <?= $usuario['nombre']; ?></p>
-        <p><strong>Fecha:</strong> <?= $cabecera['fecha']; ?> <strong>Hora:</strong> <?= $cabecera['hora']; ?></p>
+        <p><strong>Numero de Ticket:</strong> <?= htmlspecialchars($cabecera['id']); ?></p>
+        <p><strong>Cliente:</strong> <?= htmlspecialchars($cliente['nombre']); ?></p>
+        <p><strong>Fecha:</strong> <?= htmlspecialchars($cabecera['fecha']); ?> <strong>Hora:</strong> <?= htmlspecialchars($cabecera['hora']); ?></p>
     </div>
     <div class="table-wrapper">
         <h5>Detalles de la Compra</h5>
         <table>
             <thead>
                 <tr>
-                    <th>Pruduc.</th>
+                    <th>Producto</th>
                     <th>Cant.</th>
                     <th>Precio</th>
                     <th>Total</th>
@@ -108,10 +107,10 @@
             <tbody>
                 <?php foreach ($detalles as $key => $detalle): ?>
                     <tr>
-                        <td><?= $productos[$key]['nombre']; ?></td>
-                        <td><?= $detalle['cantidad']; ?></td>
-                        <td><?= $detalle['precio']; ?></td>
-                        <td>$<?= $detalle['cantidad'] * $detalle['precio']; ?></td>
+                        <td><?= htmlspecialchars($productos[$key]['nombre'] ?? 'Producto no encontrado'); ?></td>
+                        <td><?= htmlspecialchars($detalle['cantidad']); ?></td>
+                        <td><?= htmlspecialchars($detalle['precio']); ?></td>
+                        <td>$<?= htmlspecialchars($detalle['cantidad'] * $detalle['precio']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -121,18 +120,17 @@
     <!-- Campo Total a Pagar -->
     <div class="total-pagar">
         <?php if($cabecera['tipo_pago'] == 'Efectivo'):?>
-        <p><strong>Descuento Efectivo:</strong> $<?= $descuento = $cabecera['total_venta'] * 0.10; ?>
+        <p><strong>Descuento Efectivo:</strong> $<?= htmlspecialchars($descuento = $cabecera['total_venta'] * 0.10); ?></p>
         <?php endif; ?>
-        <p><strong>Total a Pagar:</strong> $<?= $cabecera['total_bonificado']; ?></p>
+        <p><strong>Total a Pagar:</strong> $<?= htmlspecialchars($cabecera['total_bonificado']); ?></p>
     </div>
 
     <div class="informacion-footer">
-        <p>La mercaderia viaja por cuenta y riesgo del comprador.</p>
+        <p>La mercadería viaja por cuenta y riesgo del comprador.</p>
         <p>Es responsabilidad del cliente controlar su compra antes</p>
         <p>de salir del local.</p>
         <p>Su compra tiene 48hs para cambio ante fallas previas</p>
         <p>del producto.</p>
-        
     </div>
 </body>
 </html>

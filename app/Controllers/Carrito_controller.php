@@ -443,7 +443,7 @@ public function ListCompraDetalle($id)
 
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
     // Redirige a la vista de la factura
-    return redirect()->to('Carrito_controller/generarPDF/' . $id_cabecera);
+    return redirect()->to('Carrito_controller/generarTicket/' . $id_cabecera);
 }
 
 
@@ -547,24 +547,22 @@ public function verfactura($id)
 }
 
 
-public function generarPDF($id_venta)
+public function generarTicket($id_venta)
 {
-    // Cargar el modelo para obtener la información de la venta
+    // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
 
-    // Obtener la cabecera de la venta
-    $cabecera = $ventaModel->find($id_venta);
-
     // Obtener los detalles de la venta
+    $cabecera = $ventaModel->find($id_venta);
     $detalles = $detalleModel->where('venta_id', $id_venta)->findAll();
 
     // Obtener los productos relacionados
     $productos = [];
     foreach ($detalles as $detalle) {
-        $productos[] = $productoModel->find($detalle['producto_id']);
+        $productos[$detalle['producto_id']] = $productoModel->find($detalle['producto_id']);
     }
 
     // Obtener la información del cliente
@@ -572,28 +570,55 @@ public function generarPDF($id_venta)
 
     // Obtener el nombre del vendedor desde la sesión
     $session = session();
-    $nombreVendedor = $session->get('nombre'); // Asegúrate de que 'nombre' sea la clave correcta en tu sesión
+    $nombreVendedor = $session->get('nombre');
 
-    // Generar el contenido del ticket en formato de texto
-    $ticketContent = "=== TICKET DE VENTA ===\n";
-    $ticketContent .= "Fecha: " . date('d/m/Y H:i:s') . "\n";
-    $ticketContent .= "Cliente: " . $cliente['nombre'] . "\n";
-    $ticketContent .= "Vendedor: " . $nombreVendedor . "\n"; // Usamos el nombre del vendedor de la sesión
-    $ticketContent .= "========================\n";
-    $ticketContent .= "Productos:\n";
+    // Generar el contenido del ticket en texto
+    $ticket = "";
+
+    // Cabecera del ticket
+    // Definir ancho del papel en caracteres
+    $titulo = "MULTIRUBRO BLASS";
+    $ancho_papel = 40; // Ajusta el ancho del ticket según la impresora
+    $espacios_izq = ($ancho_papel - strlen($titulo)) / 2;
+
+    // Construir el ticket con el título centrado
+    $ticket = "";
+    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n\n";
+
+    $ticket .= "Calle Belgrano 2077, casi Brasil\n";
+    $ticket .= "Cel: 3794-095020\n";
+    $ticket .= "Instagram: @Blass.Multirubro\n";
+    $ticket .= "Facebook: Blass Multirubro\n\n";
+
+    // Información de la venta
+    $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
+    $ticket .= "Cliente: " . $cliente['nombre'] . "\n";
+    $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n\n";
+
+    // Detalle de la compra
+    $ticket .= "Detalle de Compra:\n";
     foreach ($detalles as $detalle) {
-        $producto = $productoModel->find($detalle['producto_id']);
-        $ticketContent .= $producto['nombre'] . " - " . $detalle['cantidad'] . " x $" . $detalle['precio'] . "\n";
+        $producto = $productos[$detalle['producto_id']];
+        $ticket .= $producto['nombre'] . " x " . $detalle['cantidad'] . " - $" . $detalle['precio'] . "\n";
     }
-    $ticketContent .= "========================\n";
-    $ticketContent .= "Total: $" . $cabecera['total_venta'] . "\n";
-    $ticketContent .= "========================\n";
-    $ticketContent .= "Gracias por su compra!\n";
 
-    // Enviar el contenido a la impresora térmica
-    $this->imprimirTicket($ticketContent);
+    // Total a pagar
+    if ($cabecera['tipo_pago'] == 'Efectivo') {
+        $ticket .= "\nDescuento Efectivo: $" . ($cabecera['total_venta'] * 0.05) . "\n";
+    }
+    $ticket .= "\nTotal a Pagar: $" . $cabecera['total_bonificado'] . "\n";
+    
 
-    // Redirigir al carrito después de la impresión
+    // Footer con notas
+    $ticket .= "\nImportante:.\n";
+    $ticket .= "\nLa mercadería viaja por cuenta y riesgo del comprador.\n";
+    $ticket .= "Es responsabilidad del cliente controlar su compra antes de salir del local.\n";
+    $ticket .= "Su compra tiene 48hs para cambio ante fallas previas del producto.\n";
+    $ticket .= "\nMuchas Gracias por su Compra!.\n";
+
+    // Imprimir el ticket
+    $this->imprimirTicket($ticket);
+
     return redirect()->to(base_url('catalogo'));
 }
 
@@ -608,6 +633,12 @@ private function imprimirTicket($content)
     if ($printer) {
         // Escribir el contenido en la impresora
         fwrite($printer, $content);
+
+        // Avanzar el papel varias líneas antes de cortar
+        fwrite($printer, "\n\n\n\n"); // Avanza 4 líneas
+
+        // Enviar el comando de corte de papel
+        fwrite($printer, "\x1D\x56\x00"); // Comando de corte de papel
 
         // Cerrar la impresora
         fclose($printer);
