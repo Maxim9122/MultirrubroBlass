@@ -18,7 +18,7 @@
         }
 
         thead tr {
-            background-color: #333; /* Fondo oscuro para el encabezado */
+            background-color: #333; /* Fondo oscuro para el encabezado (PAPER 80 X 297 mm)*/
             color: #fff; /* Texto blanco para el contenido del <tr> */
         }
 

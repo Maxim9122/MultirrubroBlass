@@ -600,7 +600,7 @@ public function generarPDF($id_venta)
 private function imprimirTicket($content)
 {
     // Configuración de la impresora térmica
-    $printerName = "EPSON TM-T20III Receipt"; // Reemplaza con el nombre de tu impresora térmica
+    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Reemplaza con el nombre de tu impresora térmica
 
     // Abrir la impresora
     $printer = fopen($printerName, 'w');
