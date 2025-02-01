@@ -8,26 +8,23 @@
         /* Estilos generales */
         body {
             font-family: Arial, sans-serif;
-            padding: auto;
-            background-color: #f4f4f4;
-            margin: auto; /* Margen general */
-            
+            /* Margen general */
         }
         .reporte-header {
             text-align: center;
-            margin-bottom: 10px;
+            
         }
         .reporte-header h1 {
             font-size: 18px;
             margin: 0;
         }
         .venta-detalle p {
-            margin: 5px 0;
+            margin: 3px 0;
             font-size: 12px; /* Tamaño reducido */
         }
         .table-wrapper {
             width: 100%;
-            margin: 10px 0;
+            margin: 3px 0;
         }
         .table-wrapper table {
             width: 100%;
@@ -42,8 +39,22 @@
             border: 1px solid #ddd;
         }
         .total-pagar p {
-            font-size: 14px;
+            font-size: 12px;
             text-align: right;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilos para el celular y redes sociales */
+        .informacion-footer {
+            font-size: 10px; /* Letras pequeñas */
+            text-align: center;
+            white-space: nowrap; /* Para que todo esté en una sola línea */
+        }
+        .informacion-footer p {
+            margin: 0;
+            display: inline-block; /* Hacer que los elementos estén en una sola fila */
+            margin-right: 10px; /* Espacio entre los elementos */
         }
 
         /* Estilos específicos para impresión */
@@ -53,7 +64,6 @@
                 padding: 0;
             }
             .reporte-header, .venta-detalle, .table-wrapper, .total-pagar {
-                
                 margin: 0;
                 padding: 0;
             }
@@ -72,21 +82,27 @@
         <h1>Multirubro Blass</h1>
     </div>
 
+    <div class="informacion-footer">
+        <p>Calle Belgrano 2077, casi Brasil</p>
+        <p>Cel: 3794-095020</p>
+        <p>Ig: @Blass.Multirubro</p>
+        <p>Facebook: Blass Multirubro</p>
+    </div>
+
     <div class="venta-detalle">
         <p><strong>Numero de Ticket:</strong> <?= $cabecera['id']; ?></p>
         <p><strong>Cliente:</strong> <?= $usuario['nombre']; ?></p>
         <p><strong>Fecha:</strong> <?= $cabecera['fecha']; ?> <strong>Hora:</strong> <?= $cabecera['hora']; ?></p>
     </div>
-
     <div class="table-wrapper">
-        <h4>Detalles de la Compra</h4>
+        <h5>Detalles de la Compra</h5>
         <table>
             <thead>
                 <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
+                    <th>Pruduc.</th>
+                    <th>Cant.</th>
                     <th>Precio</th>
-                    <th>Subtotal</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,9 +121,18 @@
     <!-- Campo Total a Pagar -->
     <div class="total-pagar">
         <?php if($cabecera['tipo_pago'] == 'Efectivo'):?>
-        <p><strong>Descuento:</strong> $<?= $descuento = $cabecera['total_venta'] * 0.10;?>
+        <p><strong>Descuento Efectivo:</strong> $<?= $descuento = $cabecera['total_venta'] * 0.10; ?>
         <?php endif; ?>
         <p><strong>Total a Pagar:</strong> $<?= $cabecera['total_bonificado']; ?></p>
+    </div>
+
+    <div class="informacion-footer">
+        <p>La mercaderia viaja por cuenta y riesgo del comprador.</p>
+        <p>Es responsabilidad del cliente controlar su compra antes</p>
+        <p>de salir del local.</p>
+        <p>Su compra tiene 48hs para cambio ante fallas previas</p>
+        <p>del producto.</p>
+        
     </div>
 </body>
 </html>

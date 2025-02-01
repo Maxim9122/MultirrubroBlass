@@ -443,7 +443,7 @@ public function ListCompraDetalle($id)
 
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
     // Redirige a la vista de la factura
-    return redirect()->to('Carrito_controller/verFactura/' . $id_cabecera);
+    return redirect()->to('Carrito_controller/generarPDF/' . $id_cabecera);
 }
 
 
@@ -547,7 +547,6 @@ public function verfactura($id)
 }
 
 
-//Genero el pdf a partir de la vista
 public function generarPDF($id_venta)
 {
     // Cargar el modelo para obtener la información de la venta
@@ -571,44 +570,51 @@ public function generarPDF($id_venta)
     // Obtener la información del cliente
     $cliente = $clienteModel->find($cabecera['id_cliente']);
 
-    // Cargar la vista HTML para generar el contenido del PDF
-    $html = view('facturacion/impresion_PDF', [
-        'cabecera' => $cabecera,
-        'detalles' => $detalles,
-        'productos' => $productos,
-        'usuario' => $cliente
-    ]);
+    // Obtener el nombre del vendedor desde la sesión
+    $session = session();
+    $nombreVendedor = $session->get('nombre'); // Asegúrate de que 'nombre' sea la clave correcta en tu sesión
 
-    // Configurar Dompdf
-    //$options = new \Dompdf\Options();
-    //$options->set('isHtml5ParserEnabled', true);
-    //$options->set('isPhpEnabled', true);
-    $dompdf = new Dompdf();
-	
-    // Cargar el HTML y renderizar el PDF
-    $dompdf->loadHtml($html);
-    //$dompdf->render();
+    // Generar el contenido del ticket en formato de texto
+    $ticketContent = "=== TICKET DE VENTA ===\n";
+    $ticketContent .= "Fecha: " . date('d/m/Y H:i:s') . "\n";
+    $ticketContent .= "Cliente: " . $cliente['nombre'] . "\n";
+    $ticketContent .= "Vendedor: " . $nombreVendedor . "\n"; // Usamos el nombre del vendedor de la sesión
+    $ticketContent .= "========================\n";
+    $ticketContent .= "Productos:\n";
+    foreach ($detalles as $detalle) {
+        $producto = $productoModel->find($detalle['producto_id']);
+        $ticketContent .= $producto['nombre'] . " - " . $detalle['cantidad'] . " x $" . $detalle['precio'] . "\n";
+    }
+    $ticketContent .= "========================\n";
+    $ticketContent .= "Total: $" . $cabecera['total_venta'] . "\n";
+    $ticketContent .= "========================\n";
+    $ticketContent .= "Gracias por su compra!\n";
 
-	$height = 150; // Altura en mm
-	$width = 78;  // Ancho en mm (típico para tickets térmicos)
-	$paper_format = array(0, 0, ($width / 25.4) * 72, ($height / 25.4) * 72);
-	$type = "portrait"; // Orientación vertical
-	$dompdf->setPaper($paper_format, $type);
-	$dompdf->render();
-	// Ruta donde se guardará el PDF en la carpeta Descargas del usuario
-    $downloadDirectory = getenv('USERPROFILE') . '\\Downloads';  // Directorio Descargas en Windows
-    $pdf_path = $downloadDirectory . '\\factura_venta_' . $cabecera['id'] . '.pdf';
+    // Enviar el contenido a la impresora térmica
+    $this->imprimirTicket($ticketContent);
 
-    // Guardar el PDF en la carpeta Descargas
-    file_put_contents($pdf_path, $dompdf->output());
-
-    // Forzar la descarga del PDF
-    header('Content-Type: application/pdf');
-    header('Content-Disposition: attachment; filename="factura_venta_' . $cabecera['id'] . '.pdf"');
-    echo $dompdf->output();
-	
-    // Redirigir al carrito después de la descarga
+    // Redirigir al carrito después de la impresión
     return redirect()->to(base_url('catalogo'));
+}
+
+private function imprimirTicket($content)
+{
+    // Configuración de la impresora térmica
+    $printerName = "EPSON TM-T20III Receipt"; // Reemplaza con el nombre de tu impresora térmica
+
+    // Abrir la impresora
+    $printer = fopen($printerName, 'w');
+
+    if ($printer) {
+        // Escribir el contenido en la impresora
+        fwrite($printer, $content);
+
+        // Cerrar la impresora
+        fclose($printer);
+    } else {
+        // Manejar el error si no se puede abrir la impresora
+        die("No se pudo abrir la impresora.");
+    }
 }
 
 }
