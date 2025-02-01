@@ -31,21 +31,16 @@
              <td><?php echo $prod['nombre']; ?></td>
              <td><?php echo $prod['precio']; ?></td>
              <td><?php echo $prod['precio_vta']; ?></td>
-             <?php  
-             $categoria='';
-             switch ($prod['categoria_id']) {
-                case 1:
-                    $categoria = 'Makinas';
-                    break;
-                case 2:
-                    $categoria = 'Perfumes';
-                    break;
-                case 3:
-                    $categoria = 'Ropa';
-                    break;
-              
-              }?>
-             <td><?php echo $categoria ?></td>
+             <?php 
+             $categoria_nombre = 'Desconocida';
+             foreach ($categorias as $categoria) {
+                 if ($categoria['categoria_id'] == $prod['categoria_id']) {
+                     $categoria_nombre = $categoria['descripcion'];
+                     break;
+                 }
+             }
+             ?>
+             <td><?php echo $categoria_nombre; ?></td>
              <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
              <td><?php echo $prod['eliminado'];  ?></td>
              <td>

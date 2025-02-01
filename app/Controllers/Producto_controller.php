@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 Use App\Models\Productos_model;
+Use App\Models\categoria_model;
 use CodeIgniter\Controller; 
 
 class Producto_controller extends Controller{
@@ -18,10 +19,13 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
-		$data['titulo']='Nuevo Producto'; 
+        $Model = new categoria_model();
+    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
+        
+		$data['titulo']='Nuevo Producto';
                 echo view('navbar/navbar');
                 echo view('header/header',$data);
-                echo view('admin/nuevoProducto_view');
+                echo view('admin/nuevoProducto_view',$dato);
                 echo view('footer/footer');
 	}
 
@@ -79,6 +83,8 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+        $Model = new categoria_model();
+    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $ProductosModel = new Productos_model();
         $eliminado = 'NO';
         $productos = $ProductosModel->getProdBaja($eliminado);
@@ -92,12 +98,13 @@ class Producto_controller extends Controller{
         if (!empty($productos_bajo_stock)) {
             $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
         }
-
-        $dato['titulo']='Lista de Productos'; 
+        //print_r($dato);
+        //exit;
+        $dato1['titulo']='Lista de Productos'; 
         $data['productos'] = $productos;
         echo view('navbar/navbar');
-        echo view('header/header',$dato);
-         echo view('admin/Productos_view', $data);
+        echo view('header/header',$dato1);
+         echo view('admin/Productos_view', $data + $dato);
           echo view('footer/footer');
        
     } 
@@ -175,12 +182,14 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+        $Model = new categoria_model();
+    	$dato1['categorias']=$Model->getCategoria();//trae la categoria del db
     	$Model = new Productos_model();
     	$data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
                 echo view('navbar/navbar');
-                echo view('header/header',$dato);                
-                echo view('admin/editarProducto_view',compact('data'));
+                echo view('header/header',$dato);
+                echo view('admin/editarProducto_view',compact('data')+ $dato1);
                 echo view('footer/footer');
     }
 
@@ -298,13 +307,15 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+        $Model = new categoria_model();
+    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $userModel = new Productos_model();
         $eliminado='SI';
         $data['productos'] = $userModel->getProdBaja($eliminado);
-        $dato['titulo']='Productos Eliminados'; 
+        $dato1['titulo']='Productos Eliminados'; 
         echo view('navbar/navbar');
-        echo view('header/header',$dato);        
-         echo view('admin/listProd_Eliminados_view',$data);
+        echo view('header/header',$dato1);        
+         echo view('admin/listProd_Eliminados_view',$data + $dato);
           echo view('footer/footer');
     }
 
