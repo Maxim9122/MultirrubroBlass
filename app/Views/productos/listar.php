@@ -127,7 +127,15 @@
             }?>
              <td><?php echo $categoria  ?></td>
              <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
-             <td class="text-center"><?php echo $prod['stock']; ?></td>
+             
+             <?php if($prod['stock'] <= $prod['stock_min']){ ?>
+                <td class="text-center">
+                    <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
+                </td>
+            <?php } else { ?>
+                    <td class="text-center"><?php echo $prod['stock']; ?></td>
+            <?php } ?>
+
              <td>
              <?php
                                      if($prod['stock'] <= 0){

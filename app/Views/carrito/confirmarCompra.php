@@ -184,10 +184,18 @@ endif;
     const btnPrintTicket = document.getElementById("printTicket");
     const btnInvoiceArca = document.getElementById("invoiceArca");
 
-    // Cuando el usuario hace clic en el botón Confirmar, abre el modal
     btnConfirmar.addEventListener("click", function (event) {
-        event.preventDefault(); // Evita que el formulario se envíe automáticamente
+    event.preventDefault(); // Evita el envío inmediato del formulario
+    
+    const tipoCompra = document.getElementById("tipoCompra").value;
+
+    if (tipoCompra === "Pedido") {
+        // Si es "Reservar Pedido", enviar directamente el formulario sin abrir el modal
+        document.querySelector("form").submit();
+    } else {
+        // Si es una compra normal, abrir el modal
         modal.style.display = "block";
+    }
     });
 
     // Cuando el usuario hace clic en <span> (x), cierra el modal
