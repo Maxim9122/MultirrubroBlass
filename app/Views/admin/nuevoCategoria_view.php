@@ -34,7 +34,7 @@
 </div>
 
   <br>
-  <a href="<?php echo base_url('Lista_Productos');?>" class="btn">Cancelar</a>   
+  <a href="<?php echo base_url('ListaCategorias');?>" class="btn">Cancelar</a>   
   <button type="submit" class="btn">Guardar</button>
    
   <br>
