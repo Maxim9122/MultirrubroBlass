@@ -115,7 +115,8 @@ class Producto_controller extends Controller{
         	
 
             $categoriaModel->save([
-                'descripcion' => $this->request->getVar('descripcion')  
+                'descripcion' => $this->request->getVar('descripcion'),
+                'eliminado' => "No" 
             ]);  
             session()->setFlashdata('msg','Producto Creado con Éxito!');
              return redirect()->to(base_url('Lista_Productos'));
@@ -153,6 +154,26 @@ class Producto_controller extends Controller{
           echo view('footer/footer');
        
     } 
+    // muestra las categorias 
+    public function ListaCategorias(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $Model = new categoria_model();
+        $eliminado = 'NO';
+        $productos = $Model->getProdBaja($eliminado);
+        //print_r($dato);
+        //exit;
+        $dato1['titulo']='Lista de Categorias'; 
+        $data['productos'] = $productos;
+        echo view('navbar/navbar');
+        echo view('header/header',$dato1);
+         echo view('admin/categorias_view.php', $data);
+          echo view('footer/footer');
+       
+    }
 
 	public function ProductosDisp(){
         $session = session();
@@ -160,7 +181,8 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login'));
         }
-    
+        $Model = new categoria_model();
+    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $ProductosModel = new Productos_model();
         $eliminado = 'NO';
         $productos = $ProductosModel->getProdBaja($eliminado);
@@ -175,12 +197,12 @@ class Producto_controller extends Controller{
             $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
         }
     
-        $dato['titulo'] = 'Productos Disponibles'; 
+        $dato1['titulo'] = 'Productos Disponibles'; 
         $data['productos'] = $productos;
     
         echo view('navbar/navbar');
-        echo view('header/header', $dato);        
-        echo view('productos/listar', $data);
+        echo view('header/header', $dato1);        
+        echo view('productos/listar', $data + $dato);
         echo view('footer/footer');
     }
     
@@ -237,6 +259,22 @@ class Producto_controller extends Controller{
                 echo view('admin/editarProducto_view',compact('data')+ $dato1);
                 echo view('footer/footer');
     }
+    //editar categoria
+    public function getCategoriaEdit($categoria_id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+    	$Model = new categoria_model();
+    	$data=$Model->getEdit($categoria_id);
+            $dato['titulo']='Editar Producto'; 
+                echo view('navbar/navbar');
+                echo view('header/header',$dato);
+                echo view('admin/editarCategoria_view',compact('data'));
+                echo view('footer/footer');
+    }
+
 
     public function ProductoDetalle($id){
         $session = session();
@@ -325,6 +363,58 @@ class Producto_controller extends Controller{
          return redirect()->to(base_url('Lista_Productos'));
         }
     }
+    //valida la edicion de categoria para cargar al db
+    public function CategValidationEdit() {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        //print_r($_POST);exit;
+        
+        $input = $this->validate([
+            'descripcion'   => 'required|max_length[200]'
+        ]);
+        $Model = new categoria_model();
+        $categoria_id=$_POST['categoria_id'];
+        if (!$input) {
+            $data=$Model->getEdit($categoria_id);
+            $dato['titulo']='Editar Categoria'; 
+                echo view('header',$dato);
+                echo view('nav_view');
+                echo view('back/Admin/editarCategoria_view',compact('data'));
+                echo view('footer');
+        } else {
+        	$validation= $this->validate([
+        		'image' => ['uploaded[imagen]',
+        		'mime_in[imagen,image/jpg,image/jpeg,image/png]',
+        	]
+        	]);
+        	if($validation){
+        	$img = $this->request->getFile('imagen');
+        	$nombre_aleatorio= $img->getRandomName();
+        	$img->move(ROOTPATH.'assets/uploads',$nombre_aleatorio);
+            $datos=[
+                'categiria_id' => $_POST['categoria_id'],
+                'descripcion' => $_POST['descripcion'],
+                'eliminado' => $_POST['eliminado'],
+            ];  
+         	}else{
+         	$datos=[
+                'categiria_id' => $_POST['categoria_id'],
+                'descripcion' => $_POST['descripcion'],
+                'eliminado' => $_POST['eliminado'],
+                
+            ];
+            }
+         
+         $Model -> updateDatosCateg($categoria_id,$datos);
+
+         session()->setFlashdata('msg','Categoria Editado');
+
+         return redirect()->to(base_url('ListaCategorias'));
+        }
+    }
 
     public function deleteProd($id){
         $session = session();
@@ -345,6 +435,26 @@ class Producto_controller extends Controller{
 
         return redirect()->to(base_url('Lista_Productos'));
     }
+    //elimina la categoria
+    public function deleteCateg($categoria_id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $Model=new categoria_model();
+        $data=$Model->getEliminar($categoria_id);
+        $datos=[
+                'categoria_id' => 'id',
+                'eliminado'  => 'SI',
+                
+            ];
+        $Model->update($categoria_id,$datos);
+
+        session()->setFlashdata('msg','Categoria Eliminado');
+
+        return redirect()->to(base_url('ListaCategorias'));
+    }
 
     public function ListaProductosElim(){
         $session = session();
@@ -363,6 +473,24 @@ class Producto_controller extends Controller{
          echo view('admin/listProd_Eliminados_view',$data + $dato);
           echo view('footer/footer');
     }
+    // lista de categorias eliminados
+    public function ListaCategElim(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $Model = new categoria_model();
+        $userModel = new Productos_model();
+        $eliminado='SI';
+        $data['productos'] = $Model->getProdBaja($eliminado);
+        $dato1['titulo']='Productos Eliminados'; 
+        echo view('navbar/navbar');
+        echo view('header/header',$dato1);        
+         echo view('admin/listCateg_Eliminados_view',$data);
+          echo view('footer/footer');
+    }
+
 
     public function habilitarProd($id){
         $session = session();
@@ -382,5 +510,25 @@ class Producto_controller extends Controller{
         session()->setFlashdata('msg','Producto Habilitado');
 
         return redirect()->to(base_url('eliminadosProd'));
+    }
+    //cambia el estado de categoria eliminado
+    public function habilitarCateg($categoria_id){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $Model=new categoria_model();
+        $data=$Model->getCateg($categoria_id);
+        $datos=[
+                'categoria_id' => 'categoria_id',
+                'eliminado'  => 'NO',
+                
+            ];
+        $Model->update($categoria_id,$datos);
+
+        session()->setFlashdata('msg','Categoria Habilitado');
+
+        return redirect()->to(base_url('eliminadosCateg'));
     }
 }

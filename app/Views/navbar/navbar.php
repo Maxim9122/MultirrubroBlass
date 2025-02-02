@@ -53,6 +53,9 @@
             <a href="<?= base_url('Lista_Productos')?>" class="btn">PRODUCTOS</a>
           </li>
           <li class="nnavItem">
+            <a href="<?= base_url('ListaCategorias')?>" class="btn">Producto Categoria</a>
+          </li>
+          <li class="nnavItem">
             <a href="<?= base_url('pedidos')?>" class="button">PEDIDOS</a>
           </li>
           <li class="navItem">
