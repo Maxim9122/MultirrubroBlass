@@ -5,18 +5,29 @@ class Sesion_model extends Model
 {
 	protected $table = 'sesiones'; // Nombre de la tabla
     protected $primaryKey = 'id_sesion'; // Clave primaria
-    protected $allowedFields = ['id_sesion', 'inicio_sesion', 'fin_sesion', 'estado']; // Campos que se pueden insertar
+    protected $allowedFields = ['id_sesion', 'id_usuario','inicio_sesion', 'fin_sesion', 'estado']; // Campos que se pueden insertar
     /**
      * Obtener sesiones con datos del usuario.
      */
     public function getSesionesConUsuarios()
-    {
-        return $this->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.apellido')
-            ->join('usuarios', 'usuarios.id = sesiones.id_usuario')
-            ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor
-            ->get()
-            ->getResult();
-    }
+{
+    $query = $this->db->table('sesiones')
+        ->select('sesiones.id_sesion, 
+                  sesiones.inicio_sesion,
+                  sesiones.fin_sesion, 
+                  sesiones.estado, 
+                  usuarios.nombre, 
+                  usuarios.apellido')
+        ->join('usuarios', 'usuarios.id = sesiones.id_usuario')
+        ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor
+        ->get();
+    
+    //echo $this->db->getLastQuery(); exit; // Esto imprimirá la consulta SQL
+    return $query->getResult();
+}
+
+
+
     public function getSesion($id){
 
     	return $this->where('id_sesion',$id)->first($id);
@@ -33,7 +44,12 @@ class Sesion_model extends Model
     {
         // Usar el Query Builder del modelo
     return $this->db->table('sesiones')
-    ->select('sesiones.id_sesion, sesiones.inicio_sesion, sesiones.fin_sesion, sesiones.estado, usuarios.nombre, usuarios.apellido')
+    ->select('sesiones.id_sesion, 
+                sesiones.inicio_sesion, 
+                sesiones.fin_sesion, 
+                sesiones.estado, 
+                usuarios.nombre, 
+                usuarios.apellido')
     ->join('usuarios', 'usuarios.id = sesiones.id_usuario', 'left') // Unir con la tabla usuarios
     ->where('sesiones.estado', $filter) // Filtrar por estado
     ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor

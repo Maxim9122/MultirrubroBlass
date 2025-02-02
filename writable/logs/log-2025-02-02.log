@@ -1,0 +1,58 @@
+CRITICAL - 2025-02-02 15:28:16 --> Object of class App\Models\Sesion_model could not be converted to string
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Login_controller->mostrarSesiones()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2025-02-02 15:28:17 --> Object of class App\Models\Sesion_model could not be converted to string
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Login_controller->mostrarSesiones()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2025-02-02 15:29:27 --> Object of class App\Models\Sesion_model could not be converted to string
+#0 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Login_controller->mostrarSesiones()
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#3 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#4 {main}
+CRITICAL - 2025-02-02 16:22:28 --> Undefined variable $categorias
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\admin\editarProducto_view.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('admin/editarPro...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(321): view('admin/editarPro...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-02-02 16:23:08 --> Undefined variable $categorias
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\admin\editarProducto_view.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('admin/editarPro...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(321): view('admin/editarPro...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-02-02 16:24:18 --> Undefined variable $categorias
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\admin\editarProducto_view.php(111): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 111)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('admin/editarPro...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(321): view('admin/editarPro...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-02-02 16:27:16 --> Call to undefined method App\Models\categoria_model::getProducto
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(319): CodeIgniter\Model->__call('getProducto', Array)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}

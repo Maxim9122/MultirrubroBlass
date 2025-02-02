@@ -11,15 +11,15 @@
     <h1>Lista Sessiones</h1>
 
     <!-- Formulario de búsqueda y filtro -->
-    <form method="get" action="<?php echo base_url('sesiones'); ?>">
+    <form style="margin-left: 50px;" method="post" action="<?php echo base_url('filtrarSesiones'); ?>">
             <select name="filter">
             <option value="">Todos los estados</option>
-            <option value="activa">Activo</option>
+            <option value="activa">Activa</option>
             <option value="cerrada">Cerrada</option>
         </select>
         <button class="btn" type="submit">Buscar</button>
     </form>
-
+    <br>
     <div class="table-container container">
         <table id="users-list">
             <thead>
@@ -28,7 +28,7 @@
                     <th>Inicio de Sesión</th>
                     <th>Fin de Sesión</th>
                     <th>Estado</th>
-                    <th>Empleados</th>
+                    <th>Usuarios</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +38,7 @@
                         <td><?= $sesion->inicio_sesion ?></td>
                         <td><?= $sesion->fin_sesion ?></td>
                         <td><?= $sesion->estado ?></td>
-                      <td><?= $sesion->nombre . ' ' . $sesion->apellido?></td><!--concatena nombre y apellido del empleado -->
+                      <td><?= $sesion->nombre . ' ' . $sesion->apellido?></td><!--concatena nombre y apellido del Usuario -->
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -50,21 +50,21 @@
  <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
  <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
 <script>
-     $(document).ready( function () {
-      $('#users-list').DataTable( {
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles.",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar: ",
-            "paginate": {
-              "next": "Siguiente",
-              "previous": "Anterior"
-            }
+     $('#users-list').DataTable({
+    "order": [[0, "desc"]], // Ordena por la primera columna (ID Sesión) en orden descendente
+    "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Lo sentimos! No hay resultados.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+            "next": "Siguiente",
+            "previous": "Anterior"
         }
-    } );
-  } );
+    }
+});
+
 </script>
 </html>

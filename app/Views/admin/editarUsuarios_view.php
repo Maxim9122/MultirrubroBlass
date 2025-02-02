@@ -98,8 +98,8 @@
    <label for="exampleFormControlInput1" class="form-label">Categoria</label>
    <select name="perfil_id">
     <option value="<?php echo $data['perfil_id']?>"><?php echo $perfil ?></option>
+    <option value="2">Vendedor</option>
     <option value="1">Admin</option>
-    <option value="2">Barber</option>
     </select>
    <!-- Error -->
         <?php if($validation->getError('perfil_id')) {?>

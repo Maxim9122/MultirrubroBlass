@@ -314,11 +314,13 @@ class Producto_controller extends Controller{
         $Model = new Productos_model();
         $id=$_POST['id'];
         if (!$input) {
+            $ModelCat = new categoria_model();
+    	    $dato1['categorias']=$ModelCat->getCategoria();//trae la categoria del db
             $data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
             echo view('navbar/navbar');
             echo view('header/header',$dato);   
-                echo view('admin/editarProducto_view',compact('data'));
+                echo view('admin/editarProducto_view',compact('data') + $dato1);
                 echo view('footer/footer');
         } else {
         	$validation= $this->validate([

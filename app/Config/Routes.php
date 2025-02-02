@@ -109,10 +109,6 @@ $routes->get('/habilitarCateg/(:num)', 'Producto_controller::habilitarCateg/$1')
 
 
 
-
-
-
-
 //Rutas del Cliente(Ver Productos Disponibles)
 $routes->get('/catalogo', 'Producto_controller::ProductosDisp');
 $routes->get('/ProductoDetalle/(:num)', 'Producto_controller::ProductoDetalle/$1');
@@ -134,6 +130,7 @@ $routes->get('/login', 'Login_controller');
 $routes->post('/enviarlogin','Login_controller::auth');
 $routes->get('/logout', 'Login_controller::logout');
 $routes->get('/sesiones', 'Login_controller::mostrarSesiones');
+$routes->post('/filtrarSesiones', 'Login_controller::mostrarSesiones');
 
 //Carrito
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');

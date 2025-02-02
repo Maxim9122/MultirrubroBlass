@@ -33,15 +33,17 @@ class Login_controller extends Controller
                     $session->setFlashdata('msg', 'Usted fue dado de Baja');
                     return redirect()->to('login');
                 }else{
-                    //registrando inicio de sesion
+
+                //registrando inicio de sesion
                 $registro_sesion = new Sesion_model();
                 date_default_timezone_set('America/Argentina/Buenos_Aires');
                 $registro_sesion ->save([
                     'id_usuario' => $data['id'],
-                    'inicio_sesion' => date('Y-m-d H:i:s'), // Fecha y hora actual de Argentina
+                    'inicio_sesion' => date('d-m-Y H:i:s'), // Fecha y hora actual de Argentina
                     'estado' => 'activa'
                 ]); 
-                
+                //print_r($data['id']);
+                //exit;
                 $id_regSesion = $registro_sesion->getInsertID(); 
 
                 $ses_data = [
@@ -72,6 +74,8 @@ class Login_controller extends Controller
             return redirect()->to('login');
         }
     }
+
+    
     public function logout()
     {
         $session = session();
@@ -79,21 +83,25 @@ class Login_controller extends Controller
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
+         //print_r();
+         //exit;
                 date_default_timezone_set('America/Argentina/Buenos_Aires');
                 $data =[
-                    'fin_sesion' => date('Y-m-d H:i:s'), // Fecha y hora actual de Argentina
+                    'fin_sesion' => date('d-m-Y H:i:s'), // Fecha y hora actual de Argentina
                     'estado' => 'cerrada'
                 ];
 
                 //print_r($id_sesion);
                 //print_r($data);
                // exit;
-                $registro_sesion->actualizar_sesion($id_sesion,$data);
+            $registro_sesion->actualizar_sesion($id_sesion,$data);
             $session->destroy();
             return redirect()->to('/');
     }
+
     //muestra las sesiones de los usuarios
     public function mostrarSesiones()
     {
@@ -102,6 +110,7 @@ class Login_controller extends Controller
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+
         $usuarioModel = new Sesion_model();
         // Obtener parámetros de búsqueda y filtro
         $filter = $this->request->getVar('filter'); // Para filtrar por estado
@@ -114,7 +123,8 @@ class Login_controller extends Controller
         }else{
             $data['sesiones'] = $usuarioModel->getSesionesConUsuarios();
         }
-        
+        //print_r($data['sesiones']); 
+        //exit;
        // $sesiones = $usuarioModel->getSesionesConUsuarios();
        
         $dato['titulo']='Sesiones';

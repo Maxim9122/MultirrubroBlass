@@ -67,7 +67,8 @@
   </div>
   <br>
 
-  <div class="inputBox">
+  <div class="mb-2">
+  <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
     <select name="categoria_id" class="form-control">
         <option value="">Seleccione Categoria</option>
         <?php foreach ($categorias as $categoria) : ?>
@@ -76,9 +77,6 @@
             </option>
         <?php endforeach; ?>
     </select>
-    <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
-    
-
     <!-- Error -->
     <?php if ($validation->getError('categoria_id')) : ?>
         <div class='alert alert-danger mt-2'>

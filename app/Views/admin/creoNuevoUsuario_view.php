@@ -2,7 +2,7 @@
 <div class="nuevoTurno">
   <div class="" style="width: 100%;" >
     <div class= "">
-      <h2>Nuevo Usuario/Barber</h2>
+      <h2>Nuevo Usuario / Vendedor</h2>
     </div>
   
  <?php $validation = \Config\Services::validation(); ?>
@@ -82,8 +82,8 @@
    <label for="exampleFormControlInput1" class="form-label">Perfil:</label>
    <select name="perfil_id">
     <option>Seleccione Perfil</option>
-    <option value="2">Barber</option>
     <option value="2">Vendedor</option>
+    <option value="1">Admin</option>
     </select>
    <!-- Error -->
         <?php if($validation->getError('perfil_id')) {?>

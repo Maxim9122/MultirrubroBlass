@@ -61,6 +61,7 @@
     
     $(document).ready( function () {
       $('#users-list').DataTable( {
+        "order": [[0, "desc"]],
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
