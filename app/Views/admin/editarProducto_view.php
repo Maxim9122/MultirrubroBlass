@@ -30,7 +30,7 @@
   <div class="mb-2">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
    <input name="nombre" type="text"  class="form-control" placeholder="nombre" 
-   value="<?php echo $data['nombre']?>">
+   value="<?php echo $data['nombre']?>" required>
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -40,7 +40,7 @@
   </div>
   <div class="mb-3">
    <label for="exampleFormControlTextarea1" class="form-label">Descripción</label>
-    <input type="text" name="descripcion" class="form-control" value="<?php echo $data['descripcion'] ?>">
+    <input required type="text" name="descripcion" class="form-control" value="<?php echo $data['descripcion'] ?>">
     <!-- Error -->
         <?php if($validation->getError('descripcion')) {?>
             <div class='alert alert-danger mt-2'>
@@ -62,7 +62,7 @@
   </div>
     <div class="mb-3">
   <label for="exampleFormControlInput1" class="form-label">Precio</label>
-   <input  type="text" name="precio" class="form-control" value="<?php echo $data['precio']?>">
+   <input required type="text" name="precio" class="form-control" value="<?php echo $data['precio']?>">
    <!-- Error -->
         <?php if($validation->getError('precio')) {?>
             <div class='alert alert-danger mt-2'>
@@ -73,7 +73,7 @@
   
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Precio Venta</label>
-   <input name="precio_vta" type="text" class="form-control" value="<?php echo $data['precio_vta']?>">
+   <input required name="precio_vta" type="text" class="form-control" value="<?php echo $data['precio_vta']?>">
    <!-- Error -->
         <?php if($validation->getError('precio_vta')) {?>
             <div class='alert alert-danger mt-2'>
@@ -84,7 +84,7 @@
 
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Stock</label>
-   <input name="stock" type="text" class="form-control" value="<?php echo $data['stock']?>">
+   <input required name="stock" type="text" class="form-control" value="<?php echo $data['stock']?>">
    <!-- Error -->
         <?php if($validation->getError('stock')) {?>
             <div class='alert alert-danger mt-2'>
@@ -104,39 +104,26 @@
         <?php }?>
   </div>
 <br>
-  <div class="mb-3">
-<?php  
-  $categoria='';
-  switch ($data['categoria_id']) {
-    case 1:
-      $categoria = 'Makinas';
-      break;
-  case 2:
-      $categoria = 'Perfumes';
-      break;
-  case 3:
-      $categoria = 'Ropa';
-      break;
-  case 4:
-      $categoria = 'Otros';
-      break;
-}?>
-   <label for="exampleFormControlInput1" class="form-label">Categoria</label>
-   <select name="categoria_id">
-    <option value="<?php echo $data['categoria_id']?>"><?php echo $categoria ?></option>
-    <option value="1">Maquinas</option>
-    <option value="2">Perfumes</option>
-    <option value="3">Ropa</option>
-    <option value="4">Otros</option>
-    
+<div class="mb-3">
+    <select required name="categoria_id" class="form-control">
+        <option value="">Seleccione Categoria</option>
+        <?php foreach ($categorias as $categoria) : ?>
+            <option value="<?= $categoria['categoria_id']; ?>" <?= ($categoria['categoria_id'] == $data['categoria_id']) ? 'selected' : ''; ?>>
+                <?= $categoria['descripcion']; ?>
+            </option>
+        <?php endforeach; ?>
     </select>
-   <!-- Error -->
-        <?php if($validation->getError('categoria_id')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('categoria_id'); ?>
-            </div>
-        <?php }?>
-  </div>
+    <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
+    
+    <!-- Error -->
+    <?php if ($validation->getError('categoria_id')) : ?>
+        <div class='alert alert-danger mt-2'>
+            <?= $validation->getError('categoria_id'); ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+
 <br>
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Eliminado</label>

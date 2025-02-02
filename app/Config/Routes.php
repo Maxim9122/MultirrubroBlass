@@ -98,6 +98,20 @@ $routes->get('/eliminadosProd', 'Producto_controller::ListaProductosElim');
 $routes->get('/deleteProd/(:num)', 'Producto_controller::deleteProd/$1');
 $routes->get('/habilitarProd/(:num)', 'Producto_controller::habilitarProd/$1');
 $routes->get('/ProductoEdit/(:num)', 'Producto_controller::getProductoEdit/$1');
+$routes->get('/nuevoCategoria', 'Producto_controller::nuevoCategoria');
+$routes->post('/categoriaValidation', 'Producto_controller::categoriaValidation');
+$routes->get('/ListaCategorias', 'Producto_controller::ListaCategorias');
+$routes->get('/deleteCateg/(:num)', 'Producto_controller::deleteCateg/$1');
+$routes->get('/CategoriaEdit/(:num)', 'Producto_controller::getCategoriaEdit/$1');
+$routes->post('/enviarEdicionCateg', 'Producto_controller::CategValidationEdit');
+$routes->get('/eliminadosCateg', 'Producto_controller::ListaCategElim');
+$routes->get('/habilitarCateg/(:num)', 'Producto_controller::habilitarCateg/$1');
+
+
+
+
+
+
 
 //Rutas del Cliente(Ver Productos Disponibles)
 $routes->get('/catalogo', 'Producto_controller::ProductosDisp');

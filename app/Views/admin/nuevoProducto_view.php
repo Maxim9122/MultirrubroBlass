@@ -66,23 +66,28 @@
         <?php }?>
   </div>
   <br>
-  <div class="mb-2">
-  <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
-    <select name="categoria_id" >
-    <option>Seleccione Categoria</option>
-    <option value="1">Maquinas</option>
-    <option value="2">Perfumes</option>
-    <option value="3">Ropa</option>
-    <option value="4">Otros</option>
+
+  <div class="inputBox">
+    <select name="categoria_id" class="form-control">
+        <option value="">Seleccione Categoria</option>
+        <?php foreach ($categorias as $categoria) : ?>
+            <option value="<?= $categoria['categoria_id']; ?>">
+                <?= $categoria['descripcion']; ?>
+            </option>
+        <?php endforeach; ?>
     </select>
-  
+    <label for="exampleFormControlTextarea1" class="form-label">Categoria</label>
+    
+
     <!-- Error -->
-        <?php if($validation->getError('categoria_id')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('categoria_id'); ?>
-            </div>
-        <?php }?>
-    </div>
+    <?php if ($validation->getError('categoria_id')) : ?>
+        <div class='alert alert-danger mt-2'>
+            <?= $validation->getError('categoria_id'); ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+
     <br>
     <div class="mb-2">
     <label for="exampleFormControlTextarea1" class="form-label">Precio de Costo</label>
