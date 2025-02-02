@@ -10,3 +10,79 @@ CRITICAL - 2025-01-31 06:06:20 --> Undefined array key "sock"
 #8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
 #9 {main}
 ERROR - 2025-01-31 06:43:47 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+ERROR - 2025-01-31 09:11:47 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+ERROR - 2025-01-31 09:12:07 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+ERROR - 2025-01-31 09:12:18 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+ERROR - 2025-01-31 09:12:34 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+ERROR - 2025-01-31 09:12:47 --> Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores
+CRITICAL - 2025-01-31 09:29:41 --> Undefined array key "codigo_barras"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\productos\listar.php(99): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 99)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('productos/lista...', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(131): view('productos/lista...', Array)
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProductosDisp()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2025-01-31 15:36:18 --> Invalid file: header.php
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('header.php')
+#1 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('header', Array, true)
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(228): view('header', Array)
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2025-01-31 15:39:20 --> Invalid file: back/Admin/editarProducto_view.php
+#0 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(198): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('back/Admin/edit...')
+#1 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('back/Admin/edit...', Array, true)
+#2 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(229): view('back/Admin/edit...', Array)
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#4 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#6 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#7 {main}
+CRITICAL - 2025-01-31 15:45:00 --> Undefined variable $id
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Producto_controller.php(212): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 212)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Producto_controller->ProdValidationEdit()
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Producto_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-31 19:06:15 --> Undefined array key "vendedor"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(577): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 577)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->generarPDF('170')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-31 19:17:08 --> Undefined array key "precio_unitario"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(586): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 586)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->generarPDF('172')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-31 19:17:46 --> Undefined array key "precio_venta"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(586): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 586)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->generarPDF('172')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-31 19:17:49 --> Undefined array key "precio_venta"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(586): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 586)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->generarPDF('172')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}
+CRITICAL - 2025-01-31 19:18:16 --> Undefined array key "precio_vta"
+#0 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Carrito_controller.php(586): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 586)
+#1 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Carrito_controller->generarPDF('172')
+#2 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Carrito_controller))
+#3 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#5 {main}

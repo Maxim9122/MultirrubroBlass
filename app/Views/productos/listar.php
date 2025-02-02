@@ -61,7 +61,7 @@
   <section class="buscador">
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <button type="submit" class="success">Buscar y Agregar</button>
+  <button type="submit" class="success">Buscar y Agregar por Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
         <input type="text" id="product_input" placeholder="Buscar producto..." autocomplete="off" required onfocus="this.value=''" />
@@ -76,7 +76,7 @@
                                 data-nombre="<?php echo $prod['nombre']; ?>" 
                                 data-precio="<?php echo $prod['precio_vta']; ?>" 
                                 data-stock="<?php echo $prod['stock']; ?>">  <!-- Agregamos data-stock -->
-                            <?php echo $prod['nombre']; ?> <h5> ---- Precio -- $</h5> <?php echo $prod['precio_vta']; ?>
+                            <?php echo $prod['codigo_barra']; ?>
                         </option>
                     <?php } ?>
                 <?php endforeach; ?>
@@ -206,7 +206,6 @@
 </script>
 
 <script>
-
 const input = document.getElementById('product_input');
 const select = document.getElementById('product_select');
 const form = document.getElementById('product_form'); // Obtener el formulario
@@ -218,6 +217,7 @@ input.addEventListener('input', function() {
 
     let hasOptions = false; // Para mostrar/ocultar el select
     let firstMatchIndex = -1; // Para recordar la primera coincidencia
+    let exactMatch = false; // Para detectar una coincidencia exacta
 
     for (let i = 1; i < options.length; i++) { // Comenzar desde 1 para omitir la opción por defecto
         const optionText = options[i].text.toLowerCase();
@@ -227,6 +227,13 @@ input.addEventListener('input', function() {
             if (firstMatchIndex === -1) {
                 firstMatchIndex = i; // Guarda la primera coincidencia
             }
+            // Verificar si hay una coincidencia exacta
+            if (optionText === searchTerm) {
+                exactMatch = true;
+                select.selectedIndex = i; // Seleccionar la opción que coincide exactamente
+                select.dispatchEvent(new Event('change')); // Despachar evento de cambio
+                form.submit(); // Enviar el formulario automáticamente
+            }
         }
     }
 
@@ -234,9 +241,9 @@ input.addEventListener('input', function() {
     select.style.display = hasOptions && searchTerm.length > 0 ? 'block' : 'none';
 
     // Si hay opciones que coinciden, selecciona la primera
-    if (firstMatchIndex !== -1) {
+    if (firstMatchIndex !== -1 && !exactMatch) {
         select.selectedIndex = firstMatchIndex; // Selecciona la primera opción que coincide
-    } else {
+    } else if (!exactMatch) {
         select.selectedIndex = 0; // Reinicia la selección si no hay coincidencias
     }
 });
@@ -324,9 +331,6 @@ document.addEventListener("DOMContentLoaded", function() {
     productInput.focus();  // Enfoca el input
     productInput.select(); // Selecciona el texto en el input
 });
-
-
-
-
 </script>
+
 <br><br>

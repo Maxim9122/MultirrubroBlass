@@ -2,11 +2,8 @@
 $cart = \Config\Services::cart(); 
 $session = session();
 $nombre = $session->get('nombre');
-$apellido = $session->get('apellido');
 $perfil = $session->get('perfil_id');
-$email = $session->get('email');
-$telefono = $session->get('telefono');
-$direccion = $session->get('direccion');
+
 
 // Obtener los datos del carrito
 $id_cliente = '';
@@ -46,15 +43,15 @@ endif;
 
             <table>
                 <tr>
-                    <td style="color: #2BD5C3;">Total General:</td>
+                    <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
                     <td style="color: #ffff;"><strong id="totalCompra">$<?php echo number_format($gran_total, 2); ?></strong></td>
                 </tr>
                 <tr>
-                    <td style="color: #2BD5C3;">Vendedor:</td>
+                    <td style="color:rgb(192, 250, 214);"><strong>Vendedor:</strong></td>
                     <td style="color: #ffff;"><?php echo($nombre) ?></td>
                 </tr>
                 <tr>
-                    <td style="color: #2BD5C3;">Cliente:</td>
+                    <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
                     <td>
                         <?php if ($clientes): ?>
                             <select name="cliente_id">
@@ -70,13 +67,9 @@ endif;
                         <?php endif; ?>
                     </td>
                 </tr>
+                                
                 <tr>
-                    <td style="color: #2BD5C3;">Dirección:</td>
-                    <td style="color: #ffff;"><?php echo($direccion) ?></td>
-                </tr>
-                
-                <tr>
-                    <td style="color: #2BD5C3;">Seleccione Tipo de Pago:</td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Seleccione Tipo de Pago:</strong></td>
                     <td>
                         <select name="tipo_pago" id="tipoPago">
                             <option value="Transferencia">Transferencia</option>
@@ -85,21 +78,21 @@ endif;
                     </td>
                 </tr>
                 <tr name="total_conDescuento" id="totalConDescuentoFila" style="display: none;">
-                    <td style="color: #2BD5C3;">Total con Descuento:</td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Total con Descuento:</strong></td>
                     <td style="color: #ffff;"><strong id="totalConDescuento">-</strong></td>
                 </tr>
                 <tr>
-                    <td style="color: #2BD5C3;">Tipo de Compra o Pedido:</td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                     <td>
                         <select name="tipo_compra" id="tipoCompra">
                             <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>
-                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Compra Pedido</option>
+                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
                         </select>
                         <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
                     </td>
                 </tr>
                 <tr id="fechaPedidoFila" style="display: <?php echo $fecha_pedido ? 'table-row' : 'none'; ?>;">
-                    <td style="color: #2BD5C3;">Fecha de entrega del Pedido:</td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Fecha de entrega del Pedido:</strong></td>
                     <td>
                         <input type="date" name="fecha_pedido" id="fechaPedido" value="<?php echo $fecha_pedido; ?>" min="<?php echo date('Y-m-d'); ?>">
                         <?php echo form_hidden('fecha_pedido_input', $fecha_pedido); ?>
@@ -129,6 +122,104 @@ endif;
     </div>
     <?php echo form_close(); ?>
 </div>
+
+
+<!-- Modal -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>¿Qué acción deseas realizar?</p>
+        <button id="invoiceArca" class="btn">Facturar Arca</button>
+        <button id="printTicket" class="btn">Imprimir Ticket</button>        
+    </div>
+</div>
+
+<style>
+    /* Estilos para el modal */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Posición fija */
+    z-index: 1; /* Encima de todo */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Alto completo */
+    overflow: auto; /* Habilitar scroll si es necesario */
+    background-color: rgb(0,0,0); /* Color de fondo */
+    background-color: rgba(0,0,0,0.4); /* Negro con opacidad */
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* 5% desde la parte superior y centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ancho del contenido */
+    max-width: 500px; /* Ancho máximo */
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("confirmationModal");
+    const btnConfirmar = document.querySelector("input[name='confirmar']");
+    const spanClose = document.getElementsByClassName("close")[0];
+    const btnPrintTicket = document.getElementById("printTicket");
+    const btnInvoiceArca = document.getElementById("invoiceArca");
+
+    // Cuando el usuario hace clic en el botón Confirmar, abre el modal
+    btnConfirmar.addEventListener("click", function (event) {
+        event.preventDefault(); // Evita que el formulario se envíe automáticamente
+        modal.style.display = "block";
+    });
+
+    // Cuando el usuario hace clic en <span> (x), cierra el modal
+    spanClose.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Cuando el usuario hace clic en "Imprimir Ticket", envía el formulario
+    btnPrintTicket.addEventListener("click", function () {
+        document.querySelector("form").submit();
+    });
+
+    // Cuando el usuario hace clic en "Facturar Arca", puedes agregar la lógica necesaria
+    btnInvoiceArca.addEventListener("click", function () {
+        alert("Facturar Arca no está implementado aún.");
+    });
+
+    // Cuando el usuario hace clic fuera del modal, ciérralo
+    window.addEventListener("click", function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // Cuando el usuario presiona la tecla Escape, ciérralo
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            modal.style.display = "none";
+        }
+    });
+});
+</script>
 
 <script>
     // Define el total de PHP en JavaScript
