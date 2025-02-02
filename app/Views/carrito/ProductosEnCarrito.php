@@ -165,20 +165,21 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <br>
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
-                        <!-- Borrar carrito usa mensaje de confirmacion javascript implementado en partes/head_view -->
-                        <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
-                        Borrar Todo</a>
+                        <!-- Borrar carrito usa mensaje de confirmacion -->
+                        <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
+                            Borrar Todo
+                        </a>
 
                         <!-- Submit boton. Actualiza los datos en el carrito -->
                         <button type="submit" class="success" onclick="setAccion('actualizar')">
                             Actualizar Importes
                         </button>
                         <!-- Cancelar edicion de pedido -->
-                        <?php if($id_cliente){ ?>
-
-                        <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
-                        Cancelar Edicion de Pedido</a>
-                        <?php  } ?>
+                        <?php if ($id_cliente) { ?>
+                            <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
+                                Cancelar Modificación de Pedido
+                            </a>
+                        <?php } ?>
 
                             <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
@@ -202,6 +203,17 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
     document.getElementById('carrito_form').submit();
 }
 
+</script>
+
+<script>
+    function confirmarAccionPedido() {
+        return confirm("¿Desea cancelar la Modificacion del Pedido?");
+    }
+</script>
+<script>
+    function confirmarAccionCompra() {
+        return confirm("¿Estás seguro de que deseas eliminar todos los productos del carrito?");
+    }
 </script>
 
 <br>
