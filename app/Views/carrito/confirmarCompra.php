@@ -18,6 +18,8 @@ if (!empty($cart_items)) {
     $fecha_pedido = isset($first_item['options']['fecha_pedido']) ? $first_item['options']['fecha_pedido'] : '';
     $tipo_compra = isset($first_item['options']['tipo_compra']) ? $first_item['options']['tipo_compra'] : ''; // Establecemos el tipo de compra por defecto
 }
+//print_r($tipo_compra);
+//exit;
 ?>
 
 
@@ -84,10 +86,17 @@ endif;
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                     <td>
+                    <?php if($id_cliente){ ?>
+                        <select name="tipo_compra" id="tipoCompra">
+                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
+                            <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>                           
+                        </select>
+                    <?php  } else {  ?>
                         <select name="tipo_compra" id="tipoCompra">
                             <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>
                             <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
                         </select>
+                        <?php  } ?>
                         <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
                     </td>
                 </tr>
@@ -110,11 +119,11 @@ endif;
             <br> <br>
             <a class='btn' href="<?php echo base_url('CarritoList') ?>">Volver</a>
             <!-- Cancelar edicion de pedido -->
-            <?php if($id_cliente){ ?>
-
-            <a href="<?php echo base_url('carrito_elimina/all');?>" type="submit" class="danger"  >
-            Cancelar Edicion de Pedido</a>
-            <?php  } ?>
+            <?php if ($id_cliente) { ?>
+                <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
+                    Cancelar Modificación de Pedido
+                </a>
+            <?php } ?>
 
             <?php echo form_submit('confirmar', 'Confirmar',"class='btn'"); ?>
             <br> <br>
@@ -123,13 +132,18 @@ endif;
     <?php echo form_close(); ?>
 </div>
 
+<script>
+    function confirmarAccionPedido() {
+        return confirm("¿Desea cancelar la Modificacion del Pedido?");
+    }
+</script>
 
 <!-- Modal -->
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>¿Qué acción deseas realizar?</p>
-        <button id="invoiceArca" class="btn">Facturar Arca</button>
+        <p>Elija el tipo de Ticket para imprimir.!</p>
+        <button id="invoiceArca" class="btn">Factura C (Arca)</button>
         <button id="printTicket" class="btn">Imprimir Ticket</button>        
     </div>
 </div>
@@ -154,9 +168,20 @@ endif;
     background-color: #fefefe;
     margin: 5% auto; /* 5% desde la parte superior y centrado */
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Ancho del contenido */
-    max-width: 500px; /* Ancho máximo */
+    border: 7px solid #888;
+    width: 70%; /* Ancho del contenido */
+    max-width: 400px; /* Ancho máximo */
+    text-align: center;
+}
+
+.modal-content p{
+    font-weight: 800;
+    background-color: #fefefe;
+    margin: 5% auto; /* 5% desde la parte superior y centrado */
+    padding: 20px;
+    border: 7px solid #888;
+    width: 70%; /* Ancho del contenido */
+    max-width: 400px; /* Ancho máximo */
     text-align: center;
 }
 
@@ -169,6 +194,7 @@ endif;
 
 .close:hover,
 .close:focus {
+    font-weight: 700;
     color: black;
     text-decoration: none;
     cursor: pointer;

@@ -339,7 +339,7 @@ public function ListCompraDetalle($id)
     if (!$fecha_pedido){
         $fecha_pedido = date('d-m-Y');
     }
-    //print_r($fecha_pedido);
+    //print_r($tipo_compra);
     //exit;
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
     
@@ -377,21 +377,7 @@ public function ListCompraDetalle($id)
     }
     
     // Guardar la nueva cabecera de la venta
-    if (!$fecha_pedido) { 
-        // Guardar cabecera de la venta tipo compra normal
-        $cabecera_model = new Cabecera_model();
-        $ventas_id = $cabecera_model->save([
-            'fecha'        => $fecha,
-            'hora'         => $hora,
-            'id_cliente'   => $id_cliente,
-            'id_usuario'   => $id_usuario,
-            'total_venta'  => $total,
-            'tipo_pago'    => $tipo_pago,
-            'total_bonificado' => $total_conDescuento,
-            'tipo_compra' => $tipo_compra,
-            'estado' => 'Realizada'
-        ]);
-    } else {
+    if ($tipo_compra == 'Pedido') { 
         // Guardar cabecera de la venta tipo pedido
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
@@ -405,6 +391,22 @@ public function ListCompraDetalle($id)
             'tipo_compra' => $tipo_compra,
             'fecha_pedido' => $fecha_pedido_formateada,
             'estado' => 'Pendiente'
+        ]);
+        
+    } else {
+        
+        // Guardar cabecera de la venta tipo compra normal
+        $cabecera_model = new Cabecera_model();
+        $ventas_id = $cabecera_model->save([
+            'fecha'        => $fecha,
+            'hora'         => $hora,
+            'id_cliente'   => $id_cliente,
+            'id_usuario'   => $id_usuario,
+            'total_venta'  => $total,
+            'tipo_pago'    => $tipo_pago,
+            'total_bonificado' => $total_conDescuento,
+            'tipo_compra' => $tipo_compra,
+            'estado' => 'Realizada'
         ]);
     }
 
