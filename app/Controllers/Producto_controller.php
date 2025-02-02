@@ -29,6 +29,22 @@ class Producto_controller extends Controller{
                 echo view('footer/footer');
 	}
 
+    // funcion para agregar nueva categoria
+    public function nuevoCategoria(){
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }    
+		$data['titulo']='Nuevo Categoria';
+                echo view('navbar/navbar');
+                echo view('header/header',$data);
+                echo view('admin/nuevoCategoria_view');
+                echo view('footer/footer');
+	}
+
+    
+
 	public function ProductoValidation() {
         $session = session();
         // Verifica si el usuario está logueado
@@ -71,6 +87,35 @@ class Producto_controller extends Controller{
                 'stock_min' => $this->request->getVar('stock_min'),
                 'eliminado' => 'NO',
                 
+            ]);  
+            session()->setFlashdata('msg','Producto Creado con Éxito!');
+             return redirect()->to(base_url('Lista_Productos'));
+        }
+    }
+    // verifica los datos de la categoria nueva
+    public function categoriaValidation() {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $input = $this->validate([
+            'descripcion'   => 'required'
+        ]);
+        $categoriaModel = new categoria_model();
+        
+        if (!$input) {
+               $data['titulo']='Nuevo Categoria';
+               echo view('navbar/navbar');
+               echo view('header/header',$data);
+                echo view('admin/nuevoCategoria_view',['validation' => $this->validator]);
+                echo view('footer/footer');
+        } else {
+
+        	
+
+            $categoriaModel->save([
+                'descripcion' => $this->request->getVar('descripcion')  
             ]);  
             session()->setFlashdata('msg','Producto Creado con Éxito!');
              return redirect()->to(base_url('Lista_Productos'));
