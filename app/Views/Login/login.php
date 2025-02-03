@@ -8,8 +8,13 @@
     <script src="https://kit.fontawesome.com/a25933befb.js" crossorigin="anonymous"></script>   
 </head>
 <body>
-    <div class="containerLogin">
-        <div class="form-content">
+<div class="containerLogin">
+
+    <?php  
+    $session = session();
+    $id=$session->get('id');
+    if(!$id){  ?>
+    <div class="form-content">
             <h1 id="title">
                 Ingreso
             </h1>
@@ -34,8 +39,12 @@
                     <button type="submit" class="button2"> Ingresar </button>
                 </div>
             </form>
-        </div>
-    </div>
+            </div>
     
+    <?php    }else{  ?>
+        <h1 class="titulo-vidrio">Usted ya esta Logueado.!</h1>
+        <?php  } ?>
+        
+        </div>
 </body>
 </html>

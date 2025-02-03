@@ -20,22 +20,24 @@
           $perfil=$session->get('perfil_id');
           $id=$session->get('id');?>
 
-  <section class="navBarSection">
+<section class="navBarSection">
     <div class="headernav">
-      <div class="logoDiv">
-        <a href="<?= base_url('turnos')?>" class="logo">
-        <div class="clock">
-        <div id="day" class="day"></div>
-        <div id="hours"></div>
-        <span class="colon" id="colon">:</span>
-        <div id="minutes"></div>
+        <div class="logoDiv">
+            <div class="clock">
+                <div id="day" class="day"></div>
+                <div id="hours"></div>
+                <span class="colon" id="colon">:</span>
+                <div id="minutes"></div>
+            </div>
         </div>
-        </a>
 
-      </div>
-      
-      <div id="navBar" class="navBar">
-        <ul class="navList flex">
+        <!-- Botón de hamburguesa -->
+        <button class="toggleNavBar" id="toggleNavBar">
+            &#9776; <!-- Icono de hamburguesa -->
+        </button>
+
+        <div id="navBar" class="navBar">
+            <ul class="navList flex">
         <?php if( ($perfil =='1')) { ?>
           <li class="navItem">
           <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?> </h5>
@@ -56,11 +58,11 @@
             <a href="<?= base_url('ListaCategorias')?>" class="btn">Producto Categoria</a>
           </li>
           <li class="nnavItem">
-            <a href="<?= base_url('pedidos')?>" class="button">PEDIDOS</a>
+            <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>
-          <li class="navItem">
-            <button class="btn signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp">Salir</a>
+          <li class="nnavItem">
+            <button class="signUp">
+              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
             </button>
           </li>
           <?php } else if( (($perfil =='2')) ) { ?>
@@ -77,10 +79,13 @@
           <a href="<?php echo base_url('CarritoList') ?>"> <img src=" <?php echo base_url('assets/img/icons/carrito2.png')?>"> </a>
           </li>
           <li class="nnavItem">
-            <a class="button" href="<?php echo base_url('pedidos');?>">Pedidos</a>
+            <a class="btn" href="<?php echo base_url('pedidos');?>">Pedidos</a>
             <li class="navItem">
-            <button class="btn signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp">Salir</a>
+            
+          </li>
+          <li class="nnavItem">
+            <button class="signUp">
+              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
             </button>
           </li>
           <?php } else { ?>
@@ -92,10 +97,45 @@
           </li>
           
          <?php } ?> 
-        </ul>
-      </div>
+         </ul>
+        </div>
     </div>
-  </section>
+</section>
+
+<script>
+  // Obtén el botón de hamburguesa y la barra de navegación
+const toggleButton = document.querySelector('.toggleNavBar');
+const navBar = document.querySelector('.navBar');
+const body = document.querySelector('body');
+
+// Función para activar la barra de navegación y desplazar el contenido
+toggleButton.addEventListener('click', function() {
+    navBar.classList.toggle('active'); // Abre o cierra la barra de navegación
+    body.classList.toggle('navbar-active'); // Desplaza el contenido hacia abajo
+});
+
+</script>
+
+
+
+  <script>
+    // Obtener elementos del DOM
+    const toggleNavBar = document.getElementById('toggleNavBar');
+    const navBar = document.getElementById('navBar');
+
+    // Función para alternar la visibilidad del menú
+    toggleNavBar.addEventListener('click', () => {
+        navBar.classList.toggle('active');
+    });
+
+    // Cerrar el menú si se hace clic fuera de él
+    document.addEventListener('click', (event) => {
+        if (!navBar.contains(event.target) && !toggleNavBar.contains(event.target)) {
+            navBar.classList.remove('active');
+        }
+    });
+  </script>
+
 
   <script>
 

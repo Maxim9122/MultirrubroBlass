@@ -39,7 +39,7 @@ class Login_controller extends Controller
                 date_default_timezone_set('America/Argentina/Buenos_Aires');
                 $registro_sesion ->save([
                     'id_usuario' => $data['id'],
-                    'inicio_sesion' => date('d-m-Y H:i:s'), // Fecha y hora actual de Argentina
+                    'inicio_sesion' => date('d-m-Y H:i'), // Fecha y hora actual de Argentina
                     'estado' => 'activa'
                 ]); 
                 //print_r($data['id']);
@@ -90,7 +90,7 @@ class Login_controller extends Controller
          //exit;
                 date_default_timezone_set('America/Argentina/Buenos_Aires');
                 $data =[
-                    'fin_sesion' => date('d-m-Y H:i:s'), // Fecha y hora actual de Argentina
+                    'fin_sesion' => date('d-m-Y H:i'), // Fecha y hora actual de Argentina
                     'estado' => 'cerrada'
                 ];
 
