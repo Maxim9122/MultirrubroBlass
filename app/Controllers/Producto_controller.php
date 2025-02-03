@@ -208,14 +208,15 @@ class Producto_controller extends Controller{
     }
     
 
-    public function Indumentaria(){
+    public function ProductosStockBajo(){
         $ProductosModel = new Productos_model();
-        $tipo='1';
-        $data['productos'] = $ProductosModel->getTipo($tipo);
+        $data['productos'] = $ProductosModel->getPorStockBajo();
+        $Model = new categoria_model();
+    	$dato1['categorias']=$Model->getCategoria();//trae la categoria del db
         $dato['titulo']='Productos Disponibles';
         echo view('navbar/navbar');
         echo view('header/header',$dato);        
-         echo view('productos/listar', $data);
+         echo view('admin/productos_view', $data + $dato1);
           echo view('footer/footer');
        
     }

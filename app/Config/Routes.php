@@ -106,6 +106,8 @@ $routes->get('/CategoriaEdit/(:num)', 'Producto_controller::getCategoriaEdit/$1'
 $routes->post('/enviarEdicionCateg', 'Producto_controller::CategValidationEdit');
 $routes->get('/eliminadosCateg', 'Producto_controller::ListaCategElim');
 $routes->get('/habilitarCateg/(:num)', 'Producto_controller::habilitarCateg/$1');
+$routes->get('/StockBajo', 'Producto_controller::ProductosStockBajo');
+
 
 
 

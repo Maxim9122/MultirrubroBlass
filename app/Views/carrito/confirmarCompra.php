@@ -22,7 +22,6 @@ if (!empty($cart_items)) {
 //exit;
 ?>
 
-
 <?php
 $gran_total = 0;
 
@@ -34,16 +33,17 @@ if ($cart):
 endif;
 ?>
 
-<div class="comprados" style="width:40%;">
+<div align="center" style="width:100%;">
     <div id="">
         <?php 
         // Crea formulario para guardar los datos de la venta
         echo form_open("confirma_compra", ['class' => 'form-signin', 'role' => 'form']);
         ?>
-        <div align="center">
+        <br>
+        <div style="width:60%;" align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
 
-            <table>
+            <table style="font-weight: 900;">
                 <tr>
                     <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
                     <td style="color: #ffff;"><strong id="totalCompra">$<?php echo number_format($gran_total, 2); ?></strong></td>
@@ -110,10 +110,10 @@ endif;
                 <?php echo form_hidden('total_venta', $gran_total); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
                 <br>
-                        <label for="pago" class="cambio">Paga con: $</label>
+                        <label for="pago" class="cambio" style="color: #ffff; font-weight: 600;">Paga con: $</label>
                         <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" oninput="formatearMiles()" onkeyup="calcularCambio()">
 
-                        <h4 class="cambio" style="color: #ffff;">Cambio: $ <span id="cambio">0.00</span></h4>
+                        <h4 class="cambio" style="color: #ffff; font-weight: 900;">Cambio: $ <span id="cambio">0.00</span></h4>
                 <br>
             </table>
             <br> <br>
@@ -121,21 +121,57 @@ endif;
             <!-- Cancelar edicion de pedido -->
             <?php if ($id_cliente) { ?>
                 <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
-                    Cancelar Modificación de Pedido
+                    Cancelar Modificación
                 </a>
-            <?php } ?>
-
+            <?php } else {?>
+                <br>
+                <!-- Borrar carrito usa mensaje de confirmacion -->
+                <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
+                            Borrar Todo
+                </a>
+                <?php  } ?>
             <?php echo form_submit('confirmar', 'Confirmar',"class='btn'"); ?>
             <br> <br>
         </div>
     </div>
     <?php echo form_close(); ?>
 </div>
-
+            <!-- Esto es para cancelar todo, edicion de pedido o compra normal-->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmarAccionPedido() {
-        return confirm("¿Desea cancelar la Modificacion del Pedido?");
+    function confirmarAccionCompra() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esto eliminará todos los productos del carrito.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Eliminar Todo",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
     }
+
+    
+    function confirmarAccionPedido() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Se cancelara la modificacion del pedido y quedara como estaba.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Cancelar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+
 </script>
 
 <!-- Modal -->

@@ -85,3 +85,11 @@
     margin-left: 3px;
     font-family: 'Bangers', sans-serif; /* Usamos la misma fuente para el día */
 }
+
+
+/* Ocultar celdas en pantallas pequeñas (menores a 600px) */
+@media screen and (max-width: 600px) {
+    .ocultar-en-movil {
+        display: none;
+    }
+}

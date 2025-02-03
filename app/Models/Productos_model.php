@@ -27,4 +27,9 @@ class Productos_model extends Model
     	return $this->where('id',$id)->first($id);
     }
 
+    public function getPorStockBajo(){
+
+    	return $this->where('stock <= stock_min')->findAll();
+    }
+
 }

@@ -1,53 +1,96 @@
-<br>
-<div class="comprados">
-  
-  <?php $session = session();
-          $perfil=$session->get('perfil_id');
-          $id=$session->get('id');
-          ?>
-  <?php if($perfil==1){?>
-  <a class="btn btn-primary float-end" href="javascript:history.back()">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
-  <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
-  </svg> Volver</a>
-  <?php }else{?>
-    <a class="btn btn-primary float-end" href="javascript:history.back()">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
-  <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
-  </svg> Volver</a>
-  <?php }?>
-  <br><br>
+<style>
+  /* Contenedor principal de la vista */
+  .detalle-compra-container {
+    width: 100%;
+    padding: 10px;
+  }
 
-  <div class="comprados">
-  <h2 class="">Detalle de la Compra</h2>
+  /* Botón de volver */
+  .detalle-compra-btn-volver {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    float: right;
+  }
+
+  /* Contenedor para la tabla */
+  .detalle-compra-tabla-container {
+    overflow-x: auto; /* Permite desplazamiento horizontal solo en este contenedor */
+    width: 100%;
+  }
+
+  /* Estilos específicos para la tabla */
+  .detalle-compra-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .detalle-compra-tabla th, .detalle-compra-tabla td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    color: #ffff;
+    
+  }
+
+  .detalle-compra-tabla th {
+    background-color: #333;
+    color: white;
+  }
+
+  /* Ajustes para pantallas pequeñas */
+  @media screen and (max-width: 600px) {
+    .detalle-compra-tabla th, .detalle-compra-tabla td {
+      font-size: 18px;
+      padding: 1px;
+    }
+  }
+</style>
+
+<div class="detalle-compra-container" align="center">
   
-  <table class="" id="users-list">
-       <thead>
-          <tr class="">
-             <th>ID Producto</th>
-             <th >Nombre</th>
-             <th class="text-center">Cantidad Comprada</th>
-             <th class="text-center">Precio Unitario</th>
-             <th class="text-center">Total x Producto</th>
-          </tr>
-       </thead>
-       <tbody>
-          <?php if($ventas): ?>
-          <?php foreach($ventas as $vta): ?>
-          <tr>
-             <td class="bg-light"><?php echo $vta['id']; ?></td>
-             <td class="bg-light"><?php echo $vta['nombre']; ?></td>
-             <td class="text-center bg-light"><?php echo $vta['cantidad']; ?></td>
-             <td class="text-center bg-light"><?php echo $vta['precio']; ?></td>
-             <td class="text-center bg-light"><?php echo $vta['total']; ?></td>
+  <?php 
+    $session = session();
+    $perfil = $session->get('perfil_id');
+  ?>
+
+  <a class="detalle-compra-btn-volver btn" align="center" href="javascript:history.back()">⬅ Volver</a>
+
+  <div style="clear: both;"></div>
+  <br>
+
+  <h2 class="detalle-compra-titulo">Detalle de la Compra</h2>
+
+  <div class="detalle-compra-tabla-container">
+    <table class="detalle-compra-tabla comprados">
+      <thead>
+        <tr>
+          <th>ID Producto</th>
+          <th>Nombre</th>
+          <th>Cantidad Comprada</th>
+          <th>Precio Unitario</th>
+          <th>Total x Producto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($ventas): ?>
+          <?php foreach ($ventas as $vta): ?>
+            <tr>
+              <td><?php echo $vta['id']; ?></td>
+              <td><?php echo $vta['nombre']; ?></td>
+              <td><?php echo $vta['cantidad']; ?></td>
+              <td><?php echo $vta['precio']; ?></td>
+              <td><?php echo $vta['total']; ?></td>
             </tr>
-           
-         <?php endforeach; ?>
-         <?php endif; ?>
-         
-     </table>
-     <br>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </tbody>
+    </table>
   </div>
-</div>
 
-<br><br>
+  <br>
+</div>

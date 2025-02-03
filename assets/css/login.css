@@ -129,3 +129,26 @@ form p a {
         height: 300vh;
     }
 }
+
+/* Optimiza el renderizado de fuentes */
+body, input, button {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Evita que el texto se vea borroso en escalas pequeñas */
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 16px; /* Ajusta el tamaño de fuente para mejor lectura */
+    }
+
+    .containerLogin {
+        transform: translateZ(0); /* Corrige problemas de renderizado en algunos navegadores */
+        will-change: transform;
+    }
+
+    h1, input, button {
+        font-weight: 600; /* Asegura que el texto tenga buena definición */
+    }
+}

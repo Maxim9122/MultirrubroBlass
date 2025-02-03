@@ -98,7 +98,7 @@
           <tr class="colorTexto2">
              <th>Nombre</th>
              <th>Precio Venta</th>
-             <th>Categoría</th>
+             <th class="ocultar-en-movil">Categoría</th>
              <th>Imagen</th>
              <th>Stock</th>
              <th>Acciones</th>
@@ -119,7 +119,7 @@
                  }
              }
              ?>
-             <td><?php echo $categoria_nombre; ?></td>
+             <td class="ocultar-en-movil"><?php echo $categoria_nombre; ?></td>
              <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
              
              <?php if($prod['stock'] <= $prod['stock_min']){ ?>

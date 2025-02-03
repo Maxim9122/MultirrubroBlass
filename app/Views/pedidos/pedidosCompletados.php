@@ -27,7 +27,7 @@
 
 <div class="" style="width: 100%;">
     <br>
-<h2 class="textoColor" align="center">Listado de Pedidos Realizados/Entregados</h2>
+<h2 class="textoColor" align="center">Listado de Pedidos Entregados o Cancelados</h2>
         <section class="contenedor-titulo">
 
         <div class="estiloTurno">
@@ -52,7 +52,7 @@
                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
                 <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
                 <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
-        </svg> Todos</a>
+        </svg>Todos</a>
         </div>
         
   <div style="text-align: end;">
@@ -112,6 +112,25 @@
 </div>
 
 </section>
+
+<style>
+  @media (max-width: 768px) { /* Aplica cambios en pantallas pequeñas */
+    table td:last-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px; /* Espaciado entre los botones */
+        min-height: 50px; /* Ajusta la altura mínima según necesites */
+    }
+    
+    table td:last-child a {
+        width: 100%; /* Hace que los botones ocupen todo el ancho */
+        text-align: center;
+    }
+}
+</style>
+
+
 
           <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
           <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">

@@ -8,7 +8,7 @@
     
 </head>
 <body>
-    <h1>Lista Sessiones</h1>
+    <h1>Lista De Ingresos al Sistema</h1>
 
     <!-- Formulario de búsqueda y filtro -->
     <form style="margin-left: 50px;" method="post" action="<?php echo base_url('filtrarSesiones'); ?>">

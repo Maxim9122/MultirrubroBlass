@@ -32,6 +32,49 @@
 
 <!-- Fin de los mensajes temporales -->
 <br>
+
+<style>
+
+    /* Estilos generales de la tabla del carrito */
+.tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+.tabla-carrito th,
+.tabla-carrito td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+.tabla-carrito thead {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+/* Ajustar tabla en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .tabla-carrito {
+        font-size: 14px; /* Reducir tamaño de fuente */
+    }
+    
+    .ocultar-en-movil {
+        display: none; /* Ocultar columnas innecesarias */
+    }
+
+    .tabla-carrito th, 
+    .tabla-carrito td {
+        padding: 6px; /* Reducir espacio interno */
+    }
+}
+
+</style>
+
+
+
+
 <?php
 // Obtener los datos del carrito
 $id_cliente = '';
@@ -46,7 +89,7 @@ if (!empty($cart_items)) {
 }
 ?>
 
-<div class="comprados" style="width:100%;">
+<div class="compados" style="width:100%;">
 
 <div class="cart" >
         <div class = "heading">
@@ -79,7 +122,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                 <tr class=" colorTexto2"  >
                     <td>ID</td>
                     <td>Nombre</td>
-                    <td>Precio</td>
+                    <td class="ocultar-en-movil">Precio</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
                     <td>Eliminar?</td>
@@ -105,7 +148,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <td class="separador" style="color: #ffff;">
                             <?php echo $item['name']; ?>
                         </td>
-                        <td class="separador" style="color: #ffff;">
+                        <td class="separador ocultar-en-movil"  style="color: #ffff;">
                         $ARS <?php  echo number_format($item['price'], 2);?>
                         </td>
                         <td class="separador" style="color: #ffff;">
@@ -165,21 +208,23 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <br>
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
-                        <!-- Borrar carrito usa mensaje de confirmacion -->
-                        <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
-                            Borrar Todo
-                        </a>
+                        <!-- Cancelar edicion de pedido -->
+                        <?php if ($id_cliente) { ?>
+                            <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
+                                Cancelar Modificación
+                            </a>
+                            <?php } else {?>
+                            <!-- Borrar carrito usa mensaje de confirmacion -->
+                            <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
+                                        Borrar Todo
+                            </a>
+                            <?php  } ?>
 
                         <!-- Submit boton. Actualiza los datos en el carrito -->
                         <button type="submit" class="success" onclick="setAccion('actualizar')">
                             Actualizar Importes
                         </button>
-                        <!-- Cancelar edicion de pedido -->
-                        <?php if ($id_cliente) { ?>
-                            <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
-                                Cancelar Modificación de Pedido
-                            </a>
-                        <?php } ?>
+                        
 
                             <br><br>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
@@ -205,15 +250,41 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
 
 </script>
 
-<script>
-    function confirmarAccionPedido() {
-        return confirm("¿Desea cancelar la Modificacion del Pedido?");
-    }
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmarAccionCompra() {
-        return confirm("¿Estás seguro de que deseas eliminar todos los productos del carrito?");
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esto eliminará todos los productos del carrito.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Eliminar Todo",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
     }
+
+    
+    function confirmarAccionPedido() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Se cancelara la modificacion del pedido y quedara como estaba.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Cancelar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+
 </script>
 
 <br>
