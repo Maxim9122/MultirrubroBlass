@@ -118,6 +118,7 @@ endif;
             </table>
             <br> <br>
             <a class='btn' href="<?php echo base_url('CarritoList') ?>">Volver</a>
+            <br>
             <!-- Cancelar edicion de pedido -->
             <?php if ($id_cliente) { ?>
                 <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">

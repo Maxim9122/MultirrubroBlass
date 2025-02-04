@@ -1,0 +1,11 @@
+CRITICAL - 2025-02-03 05:32:57 --> Undefined variable $id
+#0 C:\xampp\htdocs\MultirubroBlass\app\Views\Login\login.php(11): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined varia...', 'C:\\xampp\\htdocs...', 11)
+#1 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(210): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\MultirubroBlass\system\View\View.php(213): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+#3 C:\xampp\htdocs\MultirubroBlass\system\Common.php(1089): CodeIgniter\View\View->render('login/login', Array, true)
+#4 C:\xampp\htdocs\MultirubroBlass\app\Controllers\Login_controller.php(17): view('login/login')
+#5 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(832): App\Controllers\Login_controller->index()
+#6 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(419): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login_controller))
+#7 C:\xampp\htdocs\MultirubroBlass\system\CodeIgniter.php(326): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\MultirubroBlass\index.php(45): CodeIgniter\CodeIgniter->run()
+#9 {main}
