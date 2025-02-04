@@ -91,21 +91,22 @@ if (!empty($cart_items)) {
 
 <div class="compados" style="width:100%;">
 
-<div class="cart" >
-        <div class = "heading">
+<div class="" >
+        <div class = "">
             <u><i><h2>Productos En Carrito</h2></i></u>
         </div>
         <br>
-        <div class="texto-negrita" align="center" >
-
+        <div class="" style="color:#ffff; " align="center" >
+            <h2>
             <?php  
             // Si el carrito está vacio, mostrar el siguiente mensaje
             if (empty($carrito))
             {
-                echo 'No hay productos agregados Todavia.!"';
+                echo 'No hay productos agregados Todavia.!';
                 
             }
             ?>
+            </h2>
         </div>
    
 

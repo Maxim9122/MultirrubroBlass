@@ -114,7 +114,7 @@ a{
 }
 @media screen and (max-width: 925px) {
     .headerHome{
-        height: 16vh;
+        height: 10vh;
     }
 }
 
