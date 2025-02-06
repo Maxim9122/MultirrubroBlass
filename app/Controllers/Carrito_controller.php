@@ -667,7 +667,7 @@ public function verificarTA() {
 
     // Cargar el XML
     $xml = simplexml_load_file($taPath);
-
+    
     // Obtener la fecha de expiración del XML
     $expirationTime = (string)$xml->header->expirationTime;
     $expirationDateTime = new \DateTime($expirationTime, new \DateTimeZone('UTC')); // AFIP usa UTC
@@ -679,7 +679,15 @@ public function verificarTA() {
     // Comparar fechas
     if ($expirationDateTime > $currentDateTime) {
         // El ticket sigue siendo válido, continuar con la facturación
-        $this->facturar();
+        $token = (string)$xml->credentials->token;
+        $sign = (string)$xml->credentials->sign;
+            $TA = [
+                'token' => $token,
+                'sign' => $sign            
+            ];
+    //print_r($TA);
+    //exit;
+        $this->facturar($TA);
     } else {
         // El ticket ha expirado, eliminar el archivo y generar uno nuevo
         unlink($taPath);
@@ -705,8 +713,12 @@ public function generarTA() {
 }
 
 //Aqui va el xml de factura para enviar a ARCA
-public function facturar() {
-    echo "Factura generada correctamente.";
+public function facturar($TA) {
+    echo "Token para crear la factura xml para ARCA.\n";
+    print_r($TA['token']);
+    echo "Sign para crear la factura xml para ARCA.\n";
+    print_r($TA['sign']);
+    exit;
 }
 
 }
