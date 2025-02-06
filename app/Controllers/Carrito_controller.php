@@ -650,4 +650,63 @@ private function imprimirTicket($content)
     }
 }
 
+//Verifica la fecha de expiracion del TA.xml
+public function verificarTA() {
+    // Ruta del archivo TA.xml
+    $taPath = ROOTPATH . 'writable/facturacionARCA/TA.xml';
+
+    // Verificar si el archivo existe
+    if (!file_exists($taPath)) {
+        echo "El archivo TA.xml no existe. Generando uno nuevo...<br>";
+        $this->generarTA();
+        return;
+    }
+
+    // Zona horaria de Argentina
+    $zonaHorariaArgentina = new \DateTimeZone('America/Argentina/Buenos_Aires');
+
+    // Cargar el XML
+    $xml = simplexml_load_file($taPath);
+
+    // Obtener la fecha de expiración del XML
+    $expirationTime = (string)$xml->header->expirationTime;
+    $expirationDateTime = new \DateTime($expirationTime, new \DateTimeZone('UTC')); // AFIP usa UTC
+    $expirationDateTime->setTimezone($zonaHorariaArgentina); // Convertir a Argentina
+
+    // Obtener la fecha y hora actuales en la misma zona horaria
+    $currentDateTime = new \DateTime('now', $zonaHorariaArgentina);
+
+    // Comparar fechas
+    if ($expirationDateTime > $currentDateTime) {
+        // El ticket sigue siendo válido, continuar con la facturación
+        $this->facturar();
+    } else {
+        // El ticket ha expirado, eliminar el archivo y generar uno nuevo
+        unlink($taPath);
+        echo "El ticket ha expirado y se eliminó TA.xml. Generando uno nuevo...<br>";
+        $this->generarTA();
+    }
+}
+
+//Genera un nuevo TA.xml si es necesario.
+public function generarTA() {
+    // Ruta al script wsaa-client.php
+    $path = APPPATH . 'Libraries/afip/wsaa-client.php';
+
+    // Ejecutar el script PHP mediante shell_exec()
+    $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
+
+    // Mostrar el resultado
+    //echo "Nuevo TA generado:<br>";
+    //print_r($output);
+
+    // Volver a verificar si el TA es válido después de generarlo
+    $this->verificarTA();
+}
+
+//Aqui va el xml de factura para enviar a ARCA
+public function facturar() {
+    echo "Factura generada correctamente.";
+}
+
 }
