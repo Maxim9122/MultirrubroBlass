@@ -274,6 +274,7 @@ class Pedidos_controller extends Controller{
     $id_pedido = $cabecera ? $cabecera['id'] : null;
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
     $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
+    $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
     //print_r($fecha_pedido);
     //exit;
     // Obtener los productos del pedido
@@ -295,8 +296,8 @@ class Pedidos_controller extends Controller{
                     'id_cliente' => $id_cliente, // Guardar el id_cliente en las opciones
                     'id_venta'  =>  $id_pedido,
                     'fecha_pedido' => $fecha_pedido,
-                    'tipo_compra' => $tipo_compra
-                    
+                    'tipo_compra' => $tipo_compra,
+                    'tipo_pago' => $tipo_pago
                 )
             ]);
         }

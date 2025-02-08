@@ -1,5 +1,5 @@
-#!/usr/bin/php
 <?php
+#!/usr/bin/php
 # Author: Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
 # Function: Get an authorization ticket (TA) from AFIP WSAA
 # Input:
@@ -53,7 +53,7 @@ function SignTRA()
       if ( $i++ >= 4 ) {$CMS.=$buffer;}
     }
   fclose($inf);
-#  unlink("TRA.xml");
+  unlink("TRA.xml");
   unlink("TRA.tmp");
   return $CMS;
 }
@@ -90,14 +90,25 @@ $SERVICE=$argv[1];
 CreateTRA($SERVICE);
 $CMS=SignTRA();
 $TA=CallWSAA($CMS);
-// Asegúrate de que CodeIgniter se haya cargado
-require_once FCPATH . 'vendor/autoload.php'; // Esto es para asegurarse de que el autoloader esté cargado
 
-// Ahora, puedes usar WRITEPATH
-$path = WRITEPATH . 'facturacionARCA/TA.xml';
+// Definir ROOTPATH manualmente si no está disponible
+if (!defined('ROOTPATH')) {
+    define('ROOTPATH', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+}
+
+// Ruta donde se guardará el archivo TA.xml en la carpeta correcta
+$dir = ROOTPATH . 'writable/facturacionARCA/';
+$path = $dir . 'TA.xml';
+
+// Verificar que el directorio exista, si no, crearlo
+if (!is_dir($dir)) {
+    mkdir($dir, 0775, true);
+}
+
+// Guardar el archivo en la ruta especificada
 if (!file_put_contents($path, $TA)) {
-    exit("❌ ERROR: No se pudo escribir el archivo TA.xml en: $path \n");
+    exit("❌ ERROR: No se pudo escribir el archivo ficticio TA.xml en: $path \n");
 } else {
-    echo "✅ TA.xml guardado correctamente en: $path \n";
+    echo "✅ Archivo ficticio TA.xml guardado correctamente en: $path \n";
 }
 ?>
