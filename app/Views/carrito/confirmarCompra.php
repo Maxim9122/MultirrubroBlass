@@ -1,3 +1,15 @@
+<?php if (session("msgEr")): ?>
+        <div id="flash-message" class="flash-message danger">
+            <?php echo session("msgEr"); ?>
+        </div>
+    <?php endif; ?>
+    <script>
+        setTimeout(function() {
+            document.getElementById('flash-message').style.display = 'none';
+        }, 3000); // 3000 milisegundos = 3 segundos
+    </script>
+<!-- Fin de los mensajes temporales -->
+
 <?php
 $cart = \Config\Services::cart(); 
 $session = session();
