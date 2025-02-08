@@ -21,6 +21,7 @@ $perfil = $session->get('perfil_id');
 $id_cliente = '';
 $fecha_pedido = '';
 $tipo_compra = ''; // Añadido para el tipo de compra
+$tipo_pago = '';
 
 $cart_items = $cart->contents(); // Obtener los artículos del carrito
 if (!empty($cart_items)) {
@@ -29,8 +30,9 @@ if (!empty($cart_items)) {
     $id_cliente = isset($first_item['options']['id_cliente']) ? $first_item['options']['id_cliente'] : '';
     $fecha_pedido = isset($first_item['options']['fecha_pedido']) ? $first_item['options']['fecha_pedido'] : '';
     $tipo_compra = isset($first_item['options']['tipo_compra']) ? $first_item['options']['tipo_compra'] : ''; // Establecemos el tipo de compra por defecto
+    $tipo_pago = isset($first_item['options']['tipo_pago']) ? $first_item['options']['tipo_pago'] : '';
 }
-//print_r($tipo_compra);
+//print_r($fecha_pedido);
 //exit;
 ?>
 
@@ -69,7 +71,7 @@ endif;
                     <td>
                         <?php if ($clientes): ?>
                             <select name="cliente_id">
-                                <option value="Anonimo">Seleccione un cliente</option>
+                                <option value="Anonimo">Consumidor Final</option>
                                 <?php foreach ($clientes as $cl): ?>
                                     <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
                                         <?php echo $cl['nombre']; ?>
@@ -86,8 +88,8 @@ endif;
                     <td style="color: rgb(192, 250, 214);"><strong>Seleccione Tipo de Pago:</strong></td>
                     <td>
                         <select name="tipo_pago" id="tipoPago">
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Efectivo">Efectivo (-5%)</option>                            
+                            <option value="Transferencia" <?php echo isset($tipo_pago) && $tipo_pago == 'Transferencia' ? 'selected' : ''; ?>>Transferencia</option>
+                            <option value="Efectivo" <?php echo isset($tipo_pago) && $tipo_pago == 'Efectivo' ? 'selected' : ''; ?>>Efectivo (-5%)</option>                            
                         </select>
                     </td>
                 </tr>
@@ -133,6 +135,7 @@ endif;
             <br>
             <!-- Cancelar edicion de pedido -->
             <?php if ($id_cliente) { ?>
+                <br>
                 <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
                     Cancelar Modificación
                 </a>
@@ -336,54 +339,63 @@ endif;
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const tipoPago = document.getElementById("tipoPago");
-        const totalConDescuentoFila = document.getElementById("totalConDescuentoFila");
-        const totalConDescuento = document.getElementById("totalConDescuento");
-        const granTotalOriginal = <?php echo $gran_total; ?>;
-        const totalConDescuentoInput = document.querySelector('input[name="total_con_descuento"]');
+    const tipoPago = document.getElementById("tipoPago");
+    const totalConDescuentoFila = document.getElementById("totalConDescuentoFila");
+    const totalConDescuento = document.getElementById("totalConDescuento");
+    const granTotalOriginal = <?php echo $gran_total; ?>;
+    const totalConDescuentoInput = document.querySelector('input[name="total_con_descuento"]');
 
-        tipoPago.addEventListener("change", function () {
-            const seleccion = tipoPago.value;
-            let descuento = 0;
+    // Función para actualizar la fila y el descuento
+    function actualizarDescuento() {
+        const seleccion = tipoPago.value;
+        let descuento = 0;
 
-            if (seleccion === "Efectivo") {
-                descuento = granTotalOriginal * 0.05;
-                const totalConDescuentoCalculado = granTotalOriginal - descuento;
-                totalConDescuentoFila.style.display = "table-row";
-                totalConDescuento.textContent = `$${totalConDescuentoCalculado.toFixed(2)}`;
-                totalConDescuentoInput.value = totalConDescuentoCalculado.toFixed(2); // Actualiza el campo oculto
-            } else {
-                totalConDescuentoFila.style.display = "none";
-                totalConDescuento.textContent = "-";
-                totalConDescuentoInput.value = ""; // Limpia el campo oculto
-            }
+        if (seleccion === "Efectivo") {
+            descuento = granTotalOriginal * 0.05;
+            const totalConDescuentoCalculado = granTotalOriginal - descuento;
+            totalConDescuentoFila.style.display = "table-row";
+            totalConDescuento.textContent = `$${totalConDescuentoCalculado.toFixed(2)}`;
+            totalConDescuentoInput.value = totalConDescuentoCalculado.toFixed(2); // Actualiza el campo oculto
+        } else {
+            totalConDescuentoFila.style.display = "none";
+            totalConDescuento.textContent = "-";
+            totalConDescuentoInput.value = ""; // Limpia el campo oculto
+        }
+    }
 
-            // Recalcula el cambio cuando cambia el tipo de pago
-            calcularCambio();
-        });
+    // Ejecuta la función al cargar la página para verificar el valor inicial
+    actualizarDescuento();
 
-        const tipoCompra = document.getElementById("tipoCompra");
-        const fechaPedidoFila = document.getElementById("fechaPedidoFila");
-        const fechaPedido = document.getElementById("fechaPedido");
-        const tipoCompraInput = document.querySelector('input[name="tipo_compra_input"]');
-        const fechaPedidoInput = document.querySelector('input[name="fecha_pedido_input"]');
-
-        tipoCompra.addEventListener("change", function () {
-            if (tipoCompra.value === "Pedido") {
-                fechaPedidoFila.style.display = "table-row";
-                tipoCompraInput.value = "Pedido"; // Actualiza el campo oculto
-            } else {
-                fechaPedidoFila.style.display = "none";
-                tipoCompraInput.value = "Compra Normal"; // Actualiza el campo oculto
-                fechaPedidoInput.value = ""; // Limpia el campo oculto de fecha
-            }
-        });
-
-        fechaPedido.addEventListener("change", function () {
-            fechaPedidoInput.value = fechaPedido.value; // Actualiza el campo oculto con la fecha seleccionada
-        });
-
-        // Establece la fecha mínima como hoy
-        fechaPedido.min = new Date().toISOString().split("T")[0];
+    // Agrega el evento change al select
+    tipoPago.addEventListener("change", function () {
+        actualizarDescuento();
+        // Recalcula el cambio cuando cambia el tipo de pago
+        calcularCambio();
     });
+
+    const tipoCompra = document.getElementById("tipoCompra");
+    const fechaPedidoFila = document.getElementById("fechaPedidoFila");
+    const fechaPedido = document.getElementById("fechaPedido");
+    const tipoCompraInput = document.querySelector('input[name="tipo_compra_input"]');
+    const fechaPedidoInput = document.querySelector('input[name="fecha_pedido_input"]');
+
+    tipoCompra.addEventListener("change", function () {
+        if (tipoCompra.value === "Pedido") {
+            fechaPedidoFila.style.display = "table-row";
+            tipoCompraInput.value = "Pedido"; // Actualiza el campo oculto
+        } else {
+            fechaPedidoFila.style.display = "none";
+            tipoCompraInput.value = "Compra Normal"; // Actualiza el campo oculto
+            fechaPedidoInput.value = ""; // Limpia el campo oculto de fecha
+        }
+    });
+
+    fechaPedido.addEventListener("change", function () {
+        fechaPedidoInput.value = fechaPedido.value; // Actualiza el campo oculto con la fecha seleccionada
+    });
+
+    // Establece la fecha mínima como hoy
+    fechaPedido.min = new Date().toISOString().split("T")[0];
+});
+
 </script>

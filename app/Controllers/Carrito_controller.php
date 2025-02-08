@@ -308,6 +308,8 @@ public function ListCompraDetalle($id)
 		echo view('footer/footer');
     }
 
+
+//GUARDA LA COMPRA
     public function guarda_compra()
 {
     $cart = \Config\Services::cart();
@@ -514,39 +516,6 @@ public function ListCompraDetalle($id)
 		
 	}
 
-	//Genero factura de la compra
-public function verfactura($id)
-{
-    $facturaModel = new Cabecera_model();
-    $detalleModel = new VentaDetalle_model();
-    $productoModel = new Productos_model();
-    $clienteModel = new Clientes_model(); // Suponiendo que tienes un modelo de usuarios
-    
-    // Obtener la cabecera de la venta
-    $cabecera = $facturaModel->find($id);
-    
-    // Obtener los detalles de la venta
-    $detalles = $detalleModel->where('venta_id', $id)->findAll();
-    
-    // Obtener detalles del usuario
-    $cliente = $clienteModel->find($cabecera['id_cliente']);
-    //print_r($cliente);
-	//exit;
-    // Obtener detalles de los productos
-    $productos = [];
-    foreach ($detalles as $detalle) {
-        $producto = $productoModel->find($detalle['producto_id']);
-        $productos[] = $producto;
-    }
-    
-    // Pasar los datos a la vista
-    return view('facturacion/factura_compra', [
-        'cabecera' => $cabecera,
-        'detalles' => $detalles,
-        'usuario' => $cliente, // Detalles del usuario
-        'productos' => $productos, // Detalles de los productos
-    ]);
-}
 
 
 public function generarTicket($id_venta)
@@ -711,6 +680,8 @@ public function generarTA() {
 
     // Ejecutar el script PHP mediante shell_exec()
     $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
+    //print_r($output);
+    //exit;
 
     $this->verificarTA();
 }
@@ -758,8 +729,8 @@ public function facturar($TA) {
                 <ar:Concepto>1</ar:Concepto> <!-- Productos -->
                 <ar:DocTipo>99</ar:DocTipo> <!-- 80 CUIT, 99 C_Final-->
                 <ar:DocNro>0</ar:DocNro> <!-- 0 para C_final-->
-                <ar:CbteDesde>8</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
-                <ar:CbteHasta>8</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
+                <ar:CbteDesde>9</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
+                <ar:CbteHasta>9</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
                 <ar:CbteFch>20250210</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5 -->
                 <ar:ImpTotal>150.0</ar:ImpTotal> <!-- Suma de ImpNeto + ImpTrib -->
                 <ar:ImpTotConc>0</ar:ImpTotConc>
