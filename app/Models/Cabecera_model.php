@@ -21,9 +21,9 @@ class Cabecera_model extends Model
         $db = db_connect();
         // Construir la consulta con el join
         $builder = $db->table($this->table . ' u');
-        $builder->select('u.id, c.nombre, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado');
+        $builder->select('u.id, c.nombre AS nombre_cliente, v.nombre AS nombre_vendedor, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado');
         $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
-        
+        $builder->join('usuarios v', 'u.id_usuario = v.id');
         // Ejecutar la consulta y retornar el resultado como array
         $ventas = $builder->get();
         return $ventas->getResultArray();

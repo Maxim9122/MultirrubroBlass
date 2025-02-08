@@ -17,6 +17,7 @@
           <tr class="colorTexto2">
              <th>Nro Venta</th>
              <th>Cliente</th>
+             <th>Vendedor</th>
              <th>Telefono</th>
              <th>Total Venta</th>
              <th>Fecha</th>
@@ -30,7 +31,8 @@
           <?php foreach($ventas as $vta): ?>
           <tr>
              <td><?php echo $vta['id']; ?></td>
-             <td><?php echo $vta['nombre']; ?></td>
+             <td><?php echo $vta['nombre_cliente']; ?></td>
+             <td><?php echo $vta['nombre_vendedor']; ?></td>
              <td><?php echo $vta['telefono']; ?></td>
              <td><?php echo $vta['total_bonificado']; ?></td>
              <td><?php echo $vta['fecha']; ?></td>

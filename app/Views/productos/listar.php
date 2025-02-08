@@ -146,7 +146,7 @@
                                           <?php
                                           
                                       } else if ($session){
-                                        if ($perfil==2) {
+                                        if ($perfil == 2 || $perfil == 1) {
                                             
                                            // Envia los datos en forma de formulario para agregar al carrito
                                    echo form_open('Carrito_agrega');

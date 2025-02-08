@@ -146,6 +146,9 @@ endif;
                             Borrar Todo
                 </a>
                 <?php  } ?>
+            <!-- Identificador oculto de que la compra es para Factura C-->
+                <?php echo form_hidden('tipo_proceso', ''); ?>
+
             <?php echo form_submit('confirmar', 'Confirmar',"class='btn'"); ?>
             <br> <br>
         </div>
@@ -190,11 +193,11 @@ endif;
 
 </script>
 
-<!-- Modal -->
+<!-- Modal (Cartel de confirmacion y opciones de tipo de compra)-->
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>Elija el tipo de Ticket para imprimir.!</p>
+        <p>Desea Facturar (Factura tipo C) o solo imprimir ticket.?</p>
         <button id="invoiceArca" class="btn">Factura C (Arca)</button>
         <button id="printTicket" class="btn">Imprimir Ticket</button>        
     </div>
@@ -227,7 +230,7 @@ endif;
 }
 
 .modal-content p{
-    font-weight: 800;
+    font-weight: 750;
     background-color: #fefefe;
     margin: 5% auto; /* 5% desde la parte superior y centrado */
     padding: 20px;
@@ -250,6 +253,7 @@ endif;
     color: black;
     text-decoration: none;
     cursor: pointer;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 </style>
 
@@ -261,6 +265,7 @@ endif;
     const spanClose = document.getElementsByClassName("close")[0];
     const btnPrintTicket = document.getElementById("printTicket");
     const btnInvoiceArca = document.getElementById("invoiceArca");
+    const tipoProcesoInput = document.querySelector("input[name='tipo_proceso']");
 
     btnConfirmar.addEventListener("click", function (event) {
     event.preventDefault(); // Evita el envío inmediato del formulario
@@ -288,7 +293,8 @@ endif;
 
     // Cuando el usuario hace clic en "Facturar Arca", puedes agregar la lógica necesaria
     btnInvoiceArca.addEventListener("click", function () {
-        alert("Facturar Arca no está implementado aún.");
+        tipoProcesoInput.value = "factura"; // Establece que es una factura tipo C
+        document.querySelector("form").submit();
     });
 
     // Cuando el usuario hace clic fuera del modal, ciérralo
