@@ -39,8 +39,12 @@
         <div id="navBar" class="navBar">
             <ul class="navList flex">
         <?php if( ($perfil =='1')) { ?>
+          
+          <li class="nnavItem">
+            <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
+          </li>
           <li class="navItem">
-          <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?> </h5>
+          <a href="<?php echo base_url('CarritoList') ?>"> <img src=" <?php echo base_url('assets/img/icons/carrito2.png')?>"> </a>
           </li>
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
@@ -52,10 +56,10 @@
             <a class="btn signUp" href="<?php echo base_url('clientes');?>">CLIENTES</a>
           </li>
           <li class="nnavItem">
-            <a href="<?= base_url('Lista_Productos')?>" class="btn">PRODUCTOS</a>
+            <a href="<?= base_url('Lista_Productos')?>" class="btn">ABM_PRODUCTOS</a>
           </li>
           <li class="nnavItem">
-            <a href="<?= base_url('ListaCategorias')?>" class="btn">Producto Categoria</a>
+            <a href="<?= base_url('ListaCategorias')?>" class="btn">P_Categorias</a>
           </li>
           <li class="nnavItem">
             <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>

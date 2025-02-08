@@ -315,17 +315,28 @@ public function ListCompraDetalle($id)
     $cart = \Config\Services::cart();
     $session = session();
     
+    //Identifico si es una compra para facturar si este cambio viene con el dato "Factura"
+    //$facturacion = $this->request->getPost('tipo_proceso');
+    //print_r($facturacion);
+    //exit;
+
+    //id del vendedor
     $id_usuario = $session->get('id');
+
+    //id del cliente seleccionado o se selecciona Consumidor final por defecto.
     $id_cliente = $this->request->getPost('cliente_id');
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
 
-    
+    //Tipo de pago enciado del formulario (Transferencia o Efectivo)
     $tipo_pago = $this->request->getPost('tipo_pago');
+    //Total de la venta
     $total = $this->request->getPost('total_venta');
+    //Total menos el descuento si se pago en efectivo.
     $total_conDescuento = $this->request->getPost('total_con_descuento');
+    //Si no trajo el descuento y esa variable quedo vacia se asigna el mismo valor de la venta total.
     if (!$total_conDescuento) {
         $total_conDescuento = $total;
     }
@@ -334,29 +345,34 @@ public function ListCompraDetalle($id)
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
     $fecha = date('d-m-Y'); // Formato DATE
+    //Rescato el tipo de compra (Pedido o Compra_Normal)
     $tipo_compra = $this->request->getVar('tipo_compra');
     //$tipo_compra = $this->request->getPost('tipo_compra_input');
     
+    //Si no se selecciono una fecha se asigna la fecha de hoy por defecto para el pedido.
     $fecha_pedido = $this->request->getPost('fecha_pedido_input');
     if (!$fecha_pedido){
         $fecha_pedido = date('d-m-Y');
     }
     //print_r($tipo_compra);
     //exit;
+    //Formateamos la fecha del pedido al formato dia-mes-año
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
     
-    // Obtener el id_venta del carrito del pedido modificado
+    // Obtener el id_venta del carrito si es un pedido modificado
     $id_venta_anterior = null;
+    //recorremos el carrito porque si fue un pedido modificado guarde el id en una variable del carrito
     foreach ($cart->contents() as $item) {
         if (isset($item['options']['id_venta'])) {
             $id_venta_anterior = $item['options']['id_venta'];
-            break; // No es necesario seguir recorriendo si ya encontramos el id_venta
+            break; // recorre solo el 1ero, No es necesario seguir recorriendo si ya encontramos el id_venta
         }
     }
     
-    
+
+    // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
     if ($id_venta_anterior) {
-        // Eliminar el pedido anterior, restaurar stock
+        
         $VentaDetalle_model = new VentaDetalle_model();
         $Producto_model = new Productos_model();
 
@@ -378,7 +394,9 @@ public function ListCompraDetalle($id)
         $Cabecera_model->delete($id_venta_anterior);
     }
     
-    // Guardar la nueva cabecera de la venta
+
+
+    // Guardar la nueva cabecera del Pedido (Nuevo o Modidicado segun sea) utiliza el mismo carrito.
     if ($tipo_compra == 'Pedido') { 
         // Guardar cabecera de la venta tipo pedido
         $cabecera_model = new Cabecera_model();
