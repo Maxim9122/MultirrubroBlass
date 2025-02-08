@@ -96,6 +96,8 @@ require_once FCPATH . 'vendor/autoload.php'; // Esto es para asegurarse de que e
 // Ahora, puedes usar WRITEPATH
 $path = WRITEPATH . 'facturacionARCA/TA.xml';
 if (!file_put_contents($path, $TA)) {
-    exit();
+    exit("❌ ERROR: No se pudo escribir el archivo TA.xml en: $path \n");
+} else {
+    echo "✅ TA.xml guardado correctamente en: $path \n";
 }
 ?>

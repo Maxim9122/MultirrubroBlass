@@ -650,24 +650,29 @@ private function imprimirTicket($content)
     }
 }
 
-//Verifica la fecha de expiracion del TA.xml
 public function verificarTA() {
+    $session = session();
     // Ruta del archivo TA.xml
     $taPath = ROOTPATH . 'writable/facturacionARCA/TA.xml';
-
-    // Verificar si el archivo existe
-    if (!file_exists($taPath)) {
-        echo "El archivo TA.xml no existe. Generando uno nuevo...<br>";
-        $this->generarTA();
-        return;
-    }
 
     // Zona horaria de Argentina
     $zonaHorariaArgentina = new \DateTimeZone('America/Argentina/Buenos_Aires');
 
-    // Cargar el XML
+   // Verificar si el archivo TA.xml existe
+   if (!file_exists($taPath)) {
+    //echo "No pasa nada kapo";
+    //exit;    
+    session()->setFlashdata('msgEr', 'Problemas con el TA, comunicarse con el admin!');
+    return redirect()->to(base_url('catalogo'));
+    }
+    // Cargar el XML    
     $xml = simplexml_load_file($taPath);
+    if (!$xml) {
+        session()->setFlashdata('msgER', 'Problemas con el TA, comunicarse con el admin!');
+        return redirect()->to($this->request->getHeader('referer')->getValue());
+    }
     
+
     // Obtener la fecha de expiración del XML
     $expirationTime = (string)$xml->header->expirationTime;
     $expirationDateTime = new \DateTime($expirationTime, new \DateTimeZone('UTC')); // AFIP usa UTC
@@ -679,20 +684,23 @@ public function verificarTA() {
     // Comparar fechas
     if ($expirationDateTime > $currentDateTime) {
         // El ticket sigue siendo válido, continuar con la facturación
-        $token = (string)$xml->credentials->token;
-        $sign = (string)$xml->credentials->sign;
-            $TA = [
-                'token' => $token,
-                'sign' => $sign            
-            ];
-    //print_r($TA);
-    //exit;
+        $TA = [
+            'token' => (string)$xml->credentials->token,
+            'sign'  => (string)$xml->credentials->sign            
+        ];
         $this->facturar($TA);
     } else {
         // El ticket ha expirado, eliminar el archivo y generar uno nuevo
-        unlink($taPath);
-        echo "El ticket ha expirado y se eliminó TA.xml. Generando uno nuevo...<br>";
+        //unlink($taPath);
+        rename($taPath, $taPath . ".bak");
+        //echo "El ticket ha expirado y se eliminó TA.xml. Generando uno nuevo...<br>";
         $this->generarTA();
+
+        // Verificar si se generó correctamente antes de continuar
+        if (!file_exists($taPath)) {
+            session()->setFlashdata('msgER', 'Problemas con el TA, comunicarse con el admin!');
+            return redirect()->to(base_url('casiListo'));
+        }
     }
 }
 
@@ -704,21 +712,87 @@ public function generarTA() {
     // Ejecutar el script PHP mediante shell_exec()
     $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
 
-    // Mostrar el resultado
-    //echo "Nuevo TA generado:<br>";
-    //print_r($output);
-
-    // Volver a verificar si el TA es válido después de generarlo
     $this->verificarTA();
 }
 
 //Aqui va el xml de factura para enviar a ARCA
 public function facturar($TA) {
     echo "Token para crear la factura xml para ARCA.\n";
-    print_r($TA['token']);
-    echo "Sign para crear la factura xml para ARCA.\n";
-    print_r($TA['sign']);
-    exit;
+    //print_r($TA['token']);
+    $token = $TA['token'];
+    print_r($token);
+    echo "\nSign para crear la factura xml para ARCA.\n";
+    //print_r($TA['sign']);
+    $sign = $TA['sign'];
+    print_r($sign);
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                      xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <ar:FECAESolicitar>
+                <ar:Auth>
+                    <ar:Token>' . $token . '</ar:Token>
+                    <ar:Sign>' . $sign . '</ar:Sign>
+                    <ar:Cuit>20369557263</ar:Cuit>
+                </ar:Auth>
+                <ar:FeCAEReq>
+        <ar:FeCabReq>
+            <ar:CantReg>1</ar:CantReg>
+            <ar:PtoVta>1</ar:PtoVta>
+            <ar:CbteTipo>11</ar:CbteTipo> <!-- FACTURA C -->
+        </ar:FeCabReq>
+        <ar:FeDetReq>
+            <ar:FECAEDetRequest>
+                <ar:Concepto>1</ar:Concepto> <!-- Productos -->
+                <ar:DocTipo>99</ar:DocTipo> <!-- 80 CUIT, 99 C_Final-->
+                <ar:DocNro>0</ar:DocNro> <!-- 0 para C_final-->
+                <ar:CbteDesde>8</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
+                <ar:CbteHasta>8</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
+                <ar:CbteFch>20250210</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5 -->
+                <ar:ImpTotal>150.0</ar:ImpTotal> <!-- Suma de ImpNeto + ImpTrib -->
+                <ar:ImpTotConc>0</ar:ImpTotConc>
+                <ar:ImpNeto>150</ar:ImpNeto>
+                <ar:ImpOpEx>0</ar:ImpOpEx>
+                <ar:FchServDesde></ar:FchServDesde>
+                <ar:FchServHasta></ar:FchServHasta>
+                <ar:FchVtoPago></ar:FchVtoPago>
+                <ar:MonId>PES</ar:MonId>
+                <ar:MonCotiz>1</ar:MonCotiz>
+                <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> 
+                
+            </ar:FECAEDetRequest>
+        </ar:FeDetReq>
+    </ar:FeCAEReq>
+    </ar:FECAESolicitar>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECAESolicitar',
+        'Content-Type: text/xml; charset=utf-8',
+        'Cookie: f5avraaaaaaaaaaaaaaaa_session_=DOGCDGKIDKOJLKNJBJIMIMJADLNDFJNFBJOOLLPLBOKCOOBAEMBIKIIKPOOMABAILBHDMMAPGHOGFONOFLPAJBJMGJKFNHCCPJHLEHGFFAHDPJFGKKNFDGACFPOGAOHP; TS010b76f1=01439f1ddf5dc5e1806b91ede532ed9a15e0cd86a7982bb7b04e6db483767d60862c168a2c6638853d4693b02dbc2fb4e2e36deb11f589fb959a6bf821b4c5affd2086fb9a'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    print_r($response);
+    
+
 }
+
 
 }
