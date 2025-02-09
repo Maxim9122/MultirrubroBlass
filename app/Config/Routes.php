@@ -156,9 +156,9 @@ $routes->get('turnos/(:num)', 'Carrito_controller::ListaTurnosCabeceraCliente/$1
 $routes->get('factura/(:num)', 'Carrito_controller::FacturaCliente/$1');
 
 //AFIP
-$routes->get('verificarTA', 'Carrito_controller::verificarTA');
-$routes->get('generarTA', 'Carrito_controller::generarTA');
-$routes->get('facturar', 'Carrito_controller::facturar');
+$routes->get('verificarTA/(:num)', 'Carrito_controller::verificarTA/$1');
+//$routes->get('generarTA', 'Carrito_controller::generarTA');
+$routes->get('generarTicket/(:num)', 'Carrito_controller::facturar/$1');
 
 
 /*
