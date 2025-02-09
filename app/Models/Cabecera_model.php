@@ -5,7 +5,7 @@ class Cabecera_model extends Model
 {
 	protected $table = 'ventas_cabecera';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido', 'estado'];
+    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido', 'estado'];
 
     public function getVentasCabecera(){
       $db = db_connect();
@@ -103,6 +103,15 @@ class Cabecera_model extends Model
     public function cambiarEstado($id_turno, $estado)
     {
         return $this->update($id_turno, ['estado' => $estado]);
+    }
+
+    // Actualizar la cabecera de la venta con el estado "facturado" y el ID del CAE
+    public function facturado($id_cabecera, $id_CAE)
+    {
+        return $this->update($id_cabecera, [
+            'estado' => 'Facturado', // Asegúrate de que el campo "estado" existe en la base de datos
+            'id_cae' => $id_CAE      // Guarda el ID del CAE en la cabecera
+        ]);
     }
      
 }
