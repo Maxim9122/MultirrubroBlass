@@ -702,9 +702,17 @@ private function imprimirTicket($content)
 
 
 //Verifica que todo este bien para Facturar
-public function verificarTA($id_cabecera) {
-    //$id_cabecera = 24;
+public function verificarTA($id_cabecera = null) {
     $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    //$id_cabecera = 24;
     // Ruta del archivo TA.xml
     $taPath = ROOTPATH . 'writable/facturacionARCA/TA.xml';
 
@@ -761,7 +769,16 @@ public function verificarTA($id_cabecera) {
 }
 
 //Genera un nuevo TA.xml si es necesario.
-public function generarTA($id_cabecera) {
+public function generarTA($id_cabecera = null) {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
     // Ruta al script wsaa-client.php
     $path = APPPATH . 'Libraries/afip/wsaa-client.php';
 
@@ -775,8 +792,16 @@ public function generarTA($id_cabecera) {
 
 //Aqui va el xml de factura para enviar a ARCA
 //re copiar abajo $TA,$id_cabecera
-public function facturar($TA,$id_cabecera) {
-    
+public function facturar($TA = null,$id_cabecera = null) {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $clienteModel = new \App\Models\Clientes_model();
@@ -921,8 +946,17 @@ public function facturar($TA,$id_cabecera) {
 
 
 //Genera el ticket factura tipo C
-public function generarTicketFacturaC($id_cabecera,$id_cae_siguiente)
-{
+public function generarTicketFacturaC($id_cabecera = null,$id_cae_siguiente = null)
+{   
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
