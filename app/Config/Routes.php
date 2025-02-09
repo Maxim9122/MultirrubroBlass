@@ -158,7 +158,7 @@ $routes->get('factura/(:num)', 'Carrito_controller::FacturaCliente/$1');
 //AFIP
 $routes->get('verificarTA', 'Carrito_controller::verificarTA');
 $routes->get('generarTA', 'Carrito_controller::generarTA');
-//$routes->get('prueba', 'Carrito_controller::prueba');
+$routes->get('facturar', 'Carrito_controller::facturar');
 
 
 /*

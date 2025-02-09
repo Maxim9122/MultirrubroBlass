@@ -5,7 +5,7 @@
 <section class="Fondo">
 <div class="" style="width: 100%;">
 <section class="contenedor-titulo">
-  <strong class="titulo-vidrio">Lista de Productos Vendidos</strong>
+  <strong class="titulo-vidrio">Listado de ventas (Ventas comunes y Pedidos)</strong>
   </section>
   <div style="text-align: end;">
   
