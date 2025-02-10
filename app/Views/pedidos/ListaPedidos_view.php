@@ -91,7 +91,7 @@
             </li>
             <li>
                 <a href="<?php echo base_url('cancelar/'.$p['id']); ?>" class="text-danger"
-                   onclick="mostrarConfirmacion(event, '¿Estás seguro de cancelar este pedido?', this.href);">
+                   onclick="mostrarConfirmacionCancelar(event, '¿Estás seguro de cancelar este pedido?', this.href);">
                     ❌ Cancelar
                 </a>
             </li>
@@ -119,7 +119,81 @@
        
      </table>
 
-<!-- Cuadro de confirmación -->
+<!-- Cuadro de confirmación de Cancelar Pedido -->
+<div id="confirm-dialog-Cancelar" class="confirm-dialog" style="display: none;">
+    <div class="confirm-content btn2">
+        <p id="confirm-message-cancelar">¿Estás seguro de Cancelar el pedido??</p>
+        <div class="confirm-buttons">
+            <button id="confirm-yes" class="btn btn-yes" autofocus>Sí</button>
+            <button id="confirm-no" class="btn btn-no">No</button>
+        </div>
+    </div>
+</div>
+<!-- Esta parte es del cartel de confirmacion de Cancelar pedido o pedido Listo-->
+<script>
+function mostrarConfirmacionCancelar(event, mensaje, url) {
+    event.preventDefault(); // Previene la acción por defecto del enlace
+    const confirmDialog = document.getElementById('confirm-dialog-Cancelar');
+    const confirmMessage = document.getElementById('confirm-message-cancelar');
+    const confirmYes = document.getElementById('confirm-yes');
+    const confirmNo = document.getElementById('confirm-no');
+
+    // Muestra el cuadro de confirmación con el mensaje proporcionado
+    confirmMessage.textContent = mensaje;
+    confirmDialog.style.display = 'flex';
+
+    // Si el usuario confirma, redirige a la URL
+    confirmYes.onclick = function () {
+        window.location.href = url;
+    };
+
+    // Si el usuario cancela, oculta el cuadro de confirmación
+    confirmNo.onclick = function () {
+        confirmDialog.style.display = 'none';
+    };
+
+    
+}
+
+// Detectar clics fuera del cuadro de diálogo
+window.onclick = function (e) {
+        if (e.target === dialog) {
+            cerrarConfirmacion();
+        }
+    };
+
+    // Detectar las teclas Enter y Escape
+    window.onkeydown = function (e) {
+        if (e.key === "Escape") {
+            cerrarConfirmacion();
+        } else if (e.key === "Enter") {
+            enviarFormulario(url);
+        }
+    };
+
+
+function enviarFormulario(url) {
+    // Enviar el formulario al hacer clic en "Sí"
+    const formulario = document.getElementById('pedidoForm');
+    formulario.action = url; // Cambiar la acción del formulario
+    formulario.submit(); // Enviar el formulario
+    cerrarConfirmacion(); // Cerrar el cuadro de confirmación
+}
+
+function cerrarConfirmacion() {
+    const dialog = document.getElementById('confirm-dialog-Cancelar');
+    dialog.style.display = 'none';
+
+    // Eliminar los eventos para evitar interferencias en el futuro
+    window.onclick = null;
+    window.onkeydown = null;
+}
+</script>
+
+
+
+
+<!-- Cuadro de confirmación Pedido Listo-->
 <div id="confirm-dialog" class="confirm-dialog" style="display: none;">
     <div class="confirm-content btn2">
         <p id="confirm-message">¿Cómo desea continuar?</p>
