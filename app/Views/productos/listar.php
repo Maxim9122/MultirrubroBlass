@@ -9,7 +9,6 @@
         <?= session()->getFlashdata('mensaje_stock'); ?>
     </div>
 <?php endif; ?>
-
 <style>
     #msg_stock {
         position: fixed;
@@ -27,7 +26,6 @@
         box-shadow: 0px 0px 10px #ff073a; /* Efecto neón */
     }
 </style>
-
 <script>
     setTimeout(function() {
         let msg = document.getElementById('msg_stock');
@@ -36,21 +34,31 @@
         }
     }, 3000); // Se oculta después de 3 segundos
 </script>
+
 <?php if (session()->getFlashdata('msg')): ?>
         <div id="flash-message" class="flash-message success">
             <?= session()->getFlashdata('msg') ?>
         </div>
-    <?php endif; ?>
-    <?php if (session("msgEr")): ?>
-        <div id="flash-message" class="flash-message danger">
-            <?php echo session("msgEr"); ?>
-        </div>
-    <?php endif; ?>
+    <?php endif; ?>   
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
     </script>
+
+<?php if (session("msgEr")): ?>
+    <div id="flash-message-Error" class="flash-message danger">
+        <?php echo session("msgEr"); ?>
+        <button class="close-btn" onclick="cerrarMensaje()">×</button>
+    </div>
+<?php endif; ?>
+<script>
+function cerrarMensaje() {
+    document.getElementById("flash-message-Error").style.display = "none";
+}
+</script>
+
+
 <!-- Fin de los mensajes temporales -->
 <br>
 <div class="" style="width: 100%;">

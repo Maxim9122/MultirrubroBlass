@@ -682,29 +682,31 @@ public function generarTicket($id_venta)
 
 private function imprimirTicket($content)
 {
-    // Configuración de la impresora térmica
-    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Reemplaza con el nombre de tu impresora térmica
+    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Nombre de la impresora
 
-    // Abrir la impresora
     $printer = fopen($printerName, 'w');
 
     if ($printer) {
-        // Escribir el contenido en la impresora
-        fwrite($printer, $content);
+        // Enviar el contenido línea por línea con una pequeña pausa
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+            fwrite($printer, $line . "\n");
+            usleep(50000); // 50ms de pausa entre líneas
+        }
 
         // Avanzar el papel varias líneas antes de cortar
-        fwrite($printer, "\n\n\n\n"); // Avanza 4 líneas
+        fwrite($printer, "\n\n\n\n");
+        usleep(100000); // 100ms de pausa antes del corte
 
-        // Enviar el comando de corte de papel
-        fwrite($printer, "\x1D\x56\x00"); // Comando de corte de papel
+        // Comando de corte de papel
+        fwrite($printer, "\x1D\x56\x00");
 
-        // Cerrar la impresora
         fclose($printer);
     } else {
-        // Manejar el error si no se puede abrir la impresora
         die("No se pudo abrir la impresora.");
     }
 }
+
 
 
 //Verifica que todo este bien para Facturar
