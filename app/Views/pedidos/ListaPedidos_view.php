@@ -101,7 +101,7 @@
                 </a>
             </li>
             <li>
-                <button class="text-success btn" onclick="confirmarYEnviar('<?php echo base_url('clienteListo/'.$p['id']); ?>')">
+                <button class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
                     ✅ Listo
                 </button>
             </li>
@@ -122,13 +122,16 @@
 <!-- Cuadro de confirmación -->
 <div id="confirm-dialog" class="confirm-dialog" style="display: none;">
     <div class="confirm-content btn2">
-        <p id="confirm-message">¿Estás seguro?</p>
+        <p id="confirm-message">¿Cómo desea continuar?</p>
         <div class="confirm-buttons">
-            <button id="confirm-yes" class="btn btn-yes" autofocus>Sí</button>
-            <button id="confirm-no" class="btn btn-no">No</button>
+            <button id="confirm-factura" class="btn btn-yes" autofocus>Facturar C</button>
+            <button id="confirm-ticket" class="btn btn-no">Solo Ticket</button>
+            <button id="confirm-cancelar" class="btn btn-cancel">Cancelar</button>
         </div>
     </div>
 </div>
+
+
 
      
   </div>
@@ -189,65 +192,45 @@ document.getElementById('hora').value = formattedTime;
 
 <!-- Esta parte es del cartel de confirmacion de Cancelar pedido o pedido Listo-->
 <script>
-function mostrarConfirmacion(event, mensaje, url) {
+
+function mostrarConfirmacion(event, id) {
     event.preventDefault(); // Previene la acción por defecto del enlace
     const confirmDialog = document.getElementById('confirm-dialog');
-    const confirmMessage = document.getElementById('confirm-message');
-    const confirmYes = document.getElementById('confirm-yes');
-    const confirmNo = document.getElementById('confirm-no');
+    const confirmFactura = document.getElementById('confirm-factura');
+    const confirmTicket = document.getElementById('confirm-ticket');
+    const confirmCancelar = document.getElementById('confirm-cancelar');
 
-    // Muestra el cuadro de confirmación con el mensaje proporcionado
-    confirmMessage.textContent = mensaje;
+    // Muestra el cuadro de confirmación
     confirmDialog.style.display = 'flex';
+    // Base URL desde PHP
+    let urlBase = "<?php echo base_url(); ?>";
 
-    // Si el usuario confirma, redirige a la URL
-    confirmYes.onclick = function () {
-        window.location.href = url;
+    // Facturar C -> Redirige a verificarTA con el ID
+    confirmFactura.onclick = function () {
+        window.location.href = `${"<?php echo base_url('verificarTA'); ?>"}/${id}`;
     };
 
-    // Si el usuario cancela, oculta el cuadro de confirmación
-    confirmNo.onclick = function () {
-        confirmDialog.style.display = 'none';
+    // Solo Ticket -> Redirige a generarTicket con el ID
+    confirmTicket.onclick = function () {
+        window.location.href = `${"<?php echo base_url('generarTicket'); ?>"}/${id}`;
     };
 
-    
-}
 
-// Detectar clics fuera del cuadro de diálogo
-window.onclick = function (e) {
-        if (e.target === dialog) {
-            cerrarConfirmacion();
-        }
-    };
+    // Cancelar -> Cierra el cuadro de confirmación
+    confirmCancelar.onclick = cerrarConfirmacion;
 
-    // Detectar las teclas Enter y Escape
-    window.onkeydown = function (e) {
+    // Detectar la tecla Escape para cerrar el cuadro
+    document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
             cerrarConfirmacion();
-        } else if (e.key === "Enter") {
-            enviarFormulario(url);
         }
-    };
-
-
-function enviarFormulario(url) {
-    // Enviar el formulario al hacer clic en "Sí"
-    const formulario = document.getElementById('pedidoForm');
-    formulario.action = url; // Cambiar la acción del formulario
-    formulario.submit(); // Enviar el formulario
-    cerrarConfirmacion(); // Cerrar el cuadro de confirmación
+    }, { once: true }); // Elimina el evento después de ejecutarse una vez
 }
 
+// Función para cerrar el cuadro de confirmación
 function cerrarConfirmacion() {
-    const dialog = document.getElementById('confirm-dialog');
-    dialog.style.display = 'none';
-
-    // Eliminar los eventos para evitar interferencias en el futuro
-    window.onclick = null;
-    window.onkeydown = null;
-}
-
-      
+    document.getElementById('confirm-dialog').style.display = 'none';
+}    
     
 </script>
 

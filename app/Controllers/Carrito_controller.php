@@ -671,6 +671,12 @@ public function generarTicket($id_venta)
     // Imprimir el ticket
     $this->imprimirTicket($ticket);
 
+    if($cabecera['tipo_compra'] == 'Pedido'){
+
+        $ventaModel->cambiarEstado($id_venta, 'Entregado');
+    }
+
+    session()->setFlashdata('msg', 'Gracias por su compra.!');
     return redirect()->to(base_url('catalogo'));
 }
 
@@ -703,6 +709,7 @@ private function imprimirTicket($content)
 
 //Verifica que todo este bien para Facturar
 public function verificarTA($id_cabecera = null) {
+    //$id_cabecera = 252;
     $session = session();
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
@@ -758,7 +765,8 @@ public function verificarTA($id_cabecera = null) {
         //unlink($taPath);
         rename($taPath, $taPath . ".bak");
         //echo "El ticket ha expirado y se eliminó TA.xml. Generando uno nuevo...<br>";
-        $this->generarTA($id_cabecera);
+        return redirect()->to('Carrito_controller/generarTA/'. $id_cabecera);
+        //$this->generarTA($id_cabecera);
 
         // Verificar si se generó correctamente antes de continuar
         if (!file_exists($taPath)) {
@@ -787,7 +795,7 @@ public function generarTA($id_cabecera = null) {
     //print_r($output);
     //exit;
 
-    $this->verificarTA($id_cabecera);
+    return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
 }
 
 //Aqui va el xml de factura para enviar a ARCA
@@ -930,8 +938,10 @@ public function facturar($TA = null,$id_cabecera = null) {
             'cae'       => $cae,
             'vto_cae'   => $cae_vencimiento
         ]); // Muestra los errores si la inserción falla
+        //Rescato el id del ultimo cae generado y guardado en la DB.
+        $new_cae = $caeModel->getInsertID();
         //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
-        $ventaModel->facturado($id_cabecera,$id_cae_siguiente);
+        $ventaModel->facturado($id_cabecera,$new_cae);
     }else{
         //Si tiene una R en resultado redirecciona por rechazado
         session()->setFlashdata('msgEr', 'No se pudo facturar, intente mas tarde, la venta se guardo de todas formas.');
