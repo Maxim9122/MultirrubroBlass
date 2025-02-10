@@ -65,10 +65,9 @@
             <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>
           <li class="nnavItem">
-            <button class="signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
-            </button>
+            <a href="<?= base_url('/logout')?>" class="btn">Salir</a>
           </li>
+
           <?php } else if( (($perfil =='2')) ) { ?>
           <li class="navItem">
             <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?></h5>
@@ -84,13 +83,10 @@
           </li>
           <li class="nnavItem">
             <a class="btn" href="<?php echo base_url('pedidos');?>">Pedidos</a>
-            <li class="navItem">
-            
+            <li class="navItem">            
           </li>
-          <li class="nnavItem">
-            <button class="signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
-            </button>
+          <li class="nnavItem">            
+              <a href="<?= base_url('/logout')?>" class="btn">Salir</a>            
           </li>
           <?php } else { ?>
           
