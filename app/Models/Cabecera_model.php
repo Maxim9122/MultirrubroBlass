@@ -84,8 +84,8 @@ class Cabecera_model extends Model
         if (!empty($filtros['fecha_hasta'])) {
             $builder->where('STR_TO_DATE(u.fecha_pedido, "%d-%m-%Y") <=', date('Y-m-d', strtotime($filtros['fecha_hasta'])));
         }
-        if (!empty($filtros['id_barber'])) {
-            $builder->where('t.id_barber', $filtros['id_barber']);
+        if (!empty($filtros['id_usuario'])) {
+            $builder->where('u.id_usuario', $filtros['id_usuario']);
         }
          // Ejecutar la consulta y retornar el resultado como array
          $ventas = $builder->get();
@@ -102,7 +102,8 @@ class Cabecera_model extends Model
     // Cambia el estado del turno
     public function cambiarEstado($id_turno, $estado)
     {
-        return $this->update($id_turno, ['estado' => $estado]);
+        return $this->update($id_turno, ['estado' => $estado]); // Asegúrate de que el campo "estado" existe en la base de datos
+                                            
     }
 
     // Actualizar la cabecera de la venta con el estado "facturado" y el ID del CAE
