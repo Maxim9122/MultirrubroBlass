@@ -75,6 +75,7 @@ endif;
                                 <?php foreach ($clientes as $cl): ?>
                                     <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
                                         <?php echo $cl['nombre']; ?>
+                                        <?php echo "Cuil:" . $cl['cuil']; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

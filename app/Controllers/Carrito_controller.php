@@ -927,11 +927,14 @@ public function facturar($TA = null,$id_cabecera = null) {
         $resultado_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Resultado');
         $cae_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAE');
         $cae_vencimiento_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAEFchVto');
+        $observaciones_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Observaciones/ns:Obs/ns:Msg');
 
         // Verificar si los nodos existen antes de acceder a ellos
         $resultado = isset($resultado_nodes[0]) ? (string) $resultado_nodes[0] : 'No encontrado';
         $cae = isset($cae_nodes[0]) ? (string) $cae_nodes[0] : 'No encontrado';
         $cae_vencimiento = isset($cae_vencimiento_nodes[0]) ? (string) $cae_vencimiento_nodes[0] : 'No encontrado';
+        // Capturar mensaje de error si la factura fue rechazada
+        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : 'Sin errores';
         //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
     if($resultado == 'A'){ 
         $caeModel->save([
@@ -943,8 +946,18 @@ public function facturar($TA = null,$id_cabecera = null) {
         //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
         $ventaModel->facturado($id_cabecera,$new_cae);
     }else{
+        // Buscar la posición de "DocNro" en el mensaje de error
+        $posicion = strpos($mensaje_error, "DocNro");
+
+        // Si "DocNro" existe en el mensaje, extraer el texto después de él
+        if ($posicion !== false) {
+            $mensaje_error_limpio = substr($mensaje_error, $posicion + strlen("DocNro"));
+        } else {
+            // Si "DocNro" no está en el mensaje, dejar el mensaje original
+            $mensaje_error_limpio = $mensaje_error;
+        }
         //Si tiene una R en resultado redirecciona por rechazado
-        session()->setFlashdata('msgEr', 'No se pudo facturar, intente mas tarde, la venta se guardo de todas formas.');
+        session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: El Cuil' . $mensaje_error_limpio . ' La venta se guardó para facturar despues de corregir el error.');
         return redirect()->to(base_url('catalogo'));
     }
         // Mostrar los datos obtenidos
