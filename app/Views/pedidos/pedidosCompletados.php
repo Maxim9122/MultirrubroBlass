@@ -139,7 +139,7 @@
     
     $(document).ready( function () {
       $('#users-list').DataTable( {
-        "ordering": false, // Desactiva el ordenamiento en toda la tabla
+        "order": [[0, "desc"]],//Ordena de manera descendente (Primero el ultimo registrado)        
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",

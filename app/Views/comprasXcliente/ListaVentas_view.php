@@ -11,23 +11,23 @@
 <?php $TotalRecaudado = 0;?>
 
   <div class="estiloTurno" style="width: 70%;">
-    <form action="<?php echo base_url('filtrarVentas'); ?>" method="POST">
-        <label for="start-date" class="label-inline">Fecha desde:</label>
-        <input type="date" id="fecha_desde" name="fecha_desde" required>
-        
-        <label for="end-date" class="label-inline">Fecha hasta:</label>
-        <input type="date" id="fecha_hasta" name="fecha_hasta" required>
-        
-        <label for="barber-id" class="label-inline">Estado:</label>
-        <select id="barber-id" name="estado">
-            <option value="">Todas</option>
-            <option value="Facturada">Facturadas</option>
-            <option value="Sin_Facturar">Sin Facturar</option>
-            <option value="Error_factura">Error Factura</option>
+      <form method="GET" action="<?= base_url('Carrito_controller/filtrarVentas') ?>">
+        <label for="fecha_desde" style="color:#ffff;">Desde:</label>
+        <input type="date" name="fecha_desde" id="fecha_desde" value="<?= esc($filtros['fecha_desde'] ?? '') ?>">
+
+        <label for="fecha_hasta" style="color:#ffff;">Hasta:</label>
+        <input type="date" name="fecha_hasta" id="fecha_hasta" value="<?= esc($filtros['fecha_hasta'] ?? '') ?>">
+
+        <label for="estado" style="color:#ffff;">Estado:</label>
+        <select name="estado" id="estado">
+            <option value="">Todos</option>
+            <option value="Facturada" <?= ($filtros['estado'] ?? '') == 'Facturada' ? 'selected' : '' ?>>Facturada</option>
+            <option value="Sin_Facturar" <?= ($filtros['estado'] ?? '') == 'Sin_Facturar' ? 'selected' : '' ?>>Sin_Facturar</option>
+            <option value="Error_factura" <?= ($filtros['estado'] ?? '') == 'Error_factura' ? 'selected' : '' ?>>Error_factura</option>
         </select>
-        
-        <button type="submit" class="btn">Filtrar</button>
-        </form>
+
+          <button type="submit" class="btn">Filtrar</button>
+       </form>
         <a class="button" href="<?php echo base_url('compras');?>">
                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
                 <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
@@ -67,7 +67,7 @@
              <td><?php echo $vta['nombre_vendedor']; ?></td>
              <td><?php echo $vta['estado']; ?></td>
              <td>$<?php echo $vta['total_bonificado']; ?></td>
-             <td><?php echo $vta['fecha']; ?></td>
+             <td><?php echo $vta['fecha']; $vta['fecha_pedido']; ?></td>
              <td><?php echo $vta['hora']; ?></td>
              <td><?php echo $vta['tipo_pago']; ?></td>
              
@@ -173,8 +173,6 @@ const formatter = new Intl.DateTimeFormat('es-AR', {
 
 const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
 
-// Establecer la fecha y hora actuales en los campos correspondientes
-document.getElementById('fecha_desde').value = formattedDate;
-document.getElementById('fecha_hasta').value = formattedDate;
+
 </script>
 <br><br>

@@ -46,28 +46,41 @@ class Carrito_controller extends Controller{
 public function filtrarVentas()
 {
     $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
+
+    // Verifica si el usuario está logueado
+    if (!$session->get('id')) { 
+        return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+    }
+
+    // Cargar modelos
     $cabeceraModel = new Cabecera_model();
+    $usuariosModel = new Usuarios_model();
+
+    // Obtener y limpiar filtros
     $filtros = [
         'fecha_hoy' => '',
-        'fecha_desde' => $this->request->getVar('fecha_desde'),
-        'fecha_hasta' => $this->request->getVar('fecha_hasta'),
-        'estado' => $this->request->getVar('estado'),
+        'fecha_desde' => trim($this->request->getVar('fecha_desde') ?? ''),
+        'fecha_hasta' => trim($this->request->getVar('fecha_hasta') ?? ''),
+        'estado' => trim($this->request->getVar('estado') ?? ''),
     ];
 
+    // Obtener datos
     $datos['ventas'] = $cabeceraModel->getVentasConClientes($filtros);
-    //Creo un objeto del tipo modelo y en la misma linea ejecuto una funcion de ese modelo.
-    $datos2['usuarios'] = (new Usuarios_model())->getUsBaja('NO');
+    $datos['usuarios'] = $usuariosModel->getUsBaja('NO');
 
+    // Pasar filtros a la vista para mantener los valores seleccionados
+    $datos['filtros'] = $filtros;
+
+    // Definir título
     $data['titulo'] = 'Listado de Pedidos Filtrados';
-    echo view('navbar/navbar');
-    echo view('header/header', $data);
-    echo view('comprasXcliente/ListaVentas_view', $datos + $datos2);
-    echo view('footer/footer');
+
+    // Cargar vistas
+    return view('navbar/navbar')
+        . view('header/header', $data)
+        . view('comprasXcliente/ListaVentas_view', $datos)
+        . view('footer/footer');
 }
+
 
 
 public function ListaComprasCabeceraCliente($id)
