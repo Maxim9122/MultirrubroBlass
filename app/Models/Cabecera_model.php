@@ -19,27 +19,55 @@ class Cabecera_model extends Model
     {
         // Conectarse a la base de datos
         $db = db_connect();
+        
         // Construir la consulta con el join
         $builder = $db->table($this->table . ' u');
-        $builder->select('u.id, c.nombre AS nombre_cliente, v.nombre AS nombre_vendedor, u.estado, u.total_venta, u.fecha ,u.fecha_pedido, u.hora, u.tipo_pago, u.total_bonificado');
+        $builder->select("
+            u.id, 
+            c.nombre AS nombre_cliente, 
+            v.nombre AS nombre_vendedor, 
+            u.estado, 
+            u.total_venta, 
+            (CASE 
+                WHEN u.tipo_compra = 'Pedido' THEN u.fecha_pedido 
+                ELSE u.fecha 
+            END) AS fecha, 
+            u.hora, 
+            u.tipo_pago, 
+            u.total_bonificado
+        ");
         $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
         $builder->join('usuarios v', 'u.id_usuario = v.id');
         $builder->whereNotIn('u.estado', ['Cancelado', 'Pendiente']);
-        //print_r($filtros['estado']);
-        //exit;
+    
+        // Aplicar filtros opcionales
         if (!empty($filtros['estado'])) {
             $builder->where('u.estado', $filtros['estado']);
-        } 
+        }
+    
         if (!empty($filtros['fecha_desde'])) {
-            $builder->where('STR_TO_DATE(u.fecha, "%d-%m-%Y") >=', date('Y-m-d', strtotime($filtros['fecha_desde'])));
+            $fechaDesde = date('Y-m-d', strtotime($filtros['fecha_desde']));
+            $builder->where("STR_TO_DATE(
+                (CASE 
+                    WHEN u.tipo_compra = 'Pedido' THEN u.fecha_pedido 
+                    ELSE u.fecha 
+                END), '%d-%m-%Y') >= ", $fechaDesde);
         }
+    
         if (!empty($filtros['fecha_hasta'])) {
-            $builder->where('STR_TO_DATE(u.fecha, "%d-%m-%Y") <=', date('Y-m-d', strtotime($filtros['fecha_hasta'])));
+            $fechaHasta = date('Y-m-d', strtotime($filtros['fecha_hasta']));
+            $builder->where("STR_TO_DATE(
+                (CASE 
+                    WHEN u.tipo_compra = 'Pedido' THEN u.fecha_pedido 
+                    ELSE u.fecha 
+                END), '%d-%m-%Y') <= ", $fechaHasta);
         }
+    
         // Ejecutar la consulta y retornar el resultado como array
         $ventas = $builder->get();
         return $ventas->getResultArray();
     }
+    
 
     public function getVentasPorClienteYFecha($idCliente, $fechaHoy)
     {
