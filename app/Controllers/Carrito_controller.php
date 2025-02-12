@@ -750,6 +750,8 @@ public function verificarTA($id_cabecera = null) {
             'token' => (string)$xml->credentials->token,
             'sign'  => (string)$xml->credentials->sign            
         ];
+        //print_r($TA);
+        //exit;
         //Manda a facturar con el TA y el id de cabecera, y redireccion con msg si es venta o pedido facturado con exito.
         $this->facturar($TA,$id_cabecera);
         session()->setFlashdata('msg', 'Se realizo la Factura con Exito.!');
@@ -814,6 +816,7 @@ public function facturar($TA = null,$id_cabecera = null) {
         //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
         return redirect()->to(base_url('catalogo'));
     }
+
     // Cargar los modelos necesarios 
     $clienteModel = new \App\Models\Clientes_model();
     //Obtengo el ultimo id del cae
@@ -834,7 +837,7 @@ public function facturar($TA = null,$id_cabecera = null) {
     $total_venta = $cabecera['total_bonificado'];
     //Obtengo la fecha
     $fecha_venta = $cabecera['fecha'];
-    $fecha_formateadaF = date('Ymd', strtotime($fecha_venta . ' +2 day')); // Ajusta y suma 2 dias porque es el rango permitido por AFIP.
+    $fecha_formateadaF = date('Ymd', strtotime($fecha_venta)); // Ajusta y suma 2 dias porque es el rango permitido por AFIP.
     //print_r($fecha_formateadaF);    
     //exit;
     // Obtener la información del cliente
@@ -863,7 +866,7 @@ public function facturar($TA = null,$id_cabecera = null) {
     $curl = curl_init();
     
     curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx',
+      CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -884,7 +887,7 @@ public function facturar($TA = null,$id_cabecera = null) {
                 <ar:FeCAEReq>
         <ar:FeCabReq>
             <ar:CantReg>1</ar:CantReg>
-            <ar:PtoVta>1</ar:PtoVta>
+            <ar:PtoVta>2</ar:PtoVta>
             <ar:CbteTipo>11</ar:CbteTipo> <!-- 11 para FACTURA C -->
         </ar:FeCabReq>
         <ar:FeDetReq>
@@ -918,7 +921,7 @@ public function facturar($TA = null,$id_cabecera = null) {
     $response = curl_exec($curl);
     
     curl_close($curl);
-    //print_r($response);
+    
     
     // **Extraer los datos del XML**
     
@@ -937,7 +940,7 @@ public function facturar($TA = null,$id_cabecera = null) {
         $cae = isset($cae_nodes[0]) ? (string) $cae_nodes[0] : 'No encontrado';
         $cae_vencimiento = isset($cae_vencimiento_nodes[0]) ? (string) $cae_vencimiento_nodes[0] : 'No encontrado';
         // Capturar mensaje de error si la factura fue rechazada
-        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : 'Sin errores';
+        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : '';
         //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
     if($resultado == 'A'){ 
         $caeModel->save([
@@ -950,7 +953,8 @@ public function facturar($TA = null,$id_cabecera = null) {
         $ventaModel->facturado($id_cabecera,$new_cae);
 
     }else{ 
-
+        //print_r($response);
+        //exit;
         $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
         //Si tiene una R en resultado redirecciona por rechazado
         session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: ' . $mensaje_error . ' La venta se guardó para facturar despues de corregir el error.');

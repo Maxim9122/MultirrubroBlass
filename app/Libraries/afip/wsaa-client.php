@@ -14,8 +14,8 @@ define("PRIVATEKEY", __DIR__ . '/MiClavePrivada.key'); # The private key corresp
 define ("PASSPHRASE", ""); # The passphrase (if any) to sign
 //define ("PROXY_HOST", "10.20.152.112"); # Proxy IP, to reach the Internet
 //define ("PROXY_PORT", "80");            # Proxy TCP port
-define ("URL", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms");
-#define ("URL", "https://wsaa.afip.gov.ar/ws/services/LoginCms");
+#define ("URL", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms");
+define ("URL", "https://wsaa.afip.gov.ar/ws/services/LoginCms?WSDL");
 #------------------------------------------------------------------------------
 # You shouldn't have to change anything below this line!!!
 #==============================================================================
