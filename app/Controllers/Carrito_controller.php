@@ -953,7 +953,7 @@ public function facturar($TA = null,$id_cabecera = null) {
 
         $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
         //Si tiene una R en resultado redirecciona por rechazado
-        session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: El Cuil' . $mensaje_error . ' La venta se guardó para facturar despues de corregir el error.');
+        session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: ' . $mensaje_error . ' La venta se guardó para facturar despues de corregir el error.');
         return redirect()->to(base_url('catalogo'));
     }
         // Mostrar los datos obtenidos

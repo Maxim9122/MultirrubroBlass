@@ -112,7 +112,7 @@
        
      </table>
      <!-- Recaudacion de Ventas (Todas o por filtro)-->
-     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?></h2>
+     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?> (Excluyendo las que dieron Error al Facturar)</h2>
      <br>
   </div>
 </div>

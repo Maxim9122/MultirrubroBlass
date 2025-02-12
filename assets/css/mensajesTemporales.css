@@ -41,6 +41,7 @@
 
 /* Mensaje de error */
 .flash-message.danger {
+    padding: 28px;
     background-color: #f8d7da;
     color: #4e4d4d; /* Cambia a blanco para más contraste */
     border: 3px solid #f5c6cb;
