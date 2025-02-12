@@ -75,7 +75,7 @@ class Login_controller extends Controller
         }
     }
 
-    
+
     public function logout()
     {
         $session = session();

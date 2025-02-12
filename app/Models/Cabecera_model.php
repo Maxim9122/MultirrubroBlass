@@ -15,15 +15,27 @@ class Cabecera_model extends Model
       return $ventas;
     }
 
-    public function getVentasConClientes()
+    public function getVentasConClientes($filtros = [])
     {
         // Conectarse a la base de datos
         $db = db_connect();
         // Construir la consulta con el join
         $builder = $db->table($this->table . ' u');
-        $builder->select('u.id, c.nombre AS nombre_cliente, v.nombre AS nombre_vendedor, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado');
+        $builder->select('u.id, c.nombre AS nombre_cliente, v.nombre AS nombre_vendedor, u.estado, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado');
         $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
         $builder->join('usuarios v', 'u.id_usuario = v.id');
+        $builder->whereNotIn('u.estado', ['Cancelado', 'Pendiente']);
+        //print_r($filtros['estado']);
+        //exit;
+        if (!empty($filtros['estado'])) {
+            $builder->where('u.estado', $filtros['estado']);
+        } 
+        if (!empty($filtros['fecha_desde'])) {
+            $builder->where('STR_TO_DATE(u.fecha, "%d-%m-%Y") >=', date('Y-m-d', strtotime($filtros['fecha_desde'])));
+        }
+        if (!empty($filtros['fecha_hasta'])) {
+            $builder->where('STR_TO_DATE(u.fecha, "%d-%m-%Y") <=', date('Y-m-d', strtotime($filtros['fecha_hasta'])));
+        }
         // Ejecutar la consulta y retornar el resultado como array
         $ventas = $builder->get();
         return $ventas->getResultArray();
@@ -68,13 +80,12 @@ class Cabecera_model extends Model
          $builder->select('u.id, c.nombre AS nombre_cliente, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado, u.estado, u.fecha_pedido, usuarios.nombre AS nombre_usuario');
          $builder->join('cliente c', 'u.id_cliente = c.id_cliente'); // Relación con cliente
          $builder->join('usuarios usuarios', 'u.id_usuario = usuarios.id'); // Relación con usuario
-         if (!empty($filtros['estado']) && !empty($filtros['estado2'])) {
-            $builder->whereIn('u.estado', [$filtros['estado'], $filtros['estado2']]);
-        } elseif (!empty($filtros['estado'])) {
+         $builder->where('u.tipo_compra', 'Pedido');
+         if($filtros['estado']){
             $builder->where('u.estado', $filtros['estado']);
-        } elseif (!empty($filtros['estado2'])) {
-            $builder->where('u.estado', $filtros['estado2']);
-        }        
+         }else{ 
+         $builder->whereIn('u.estado', ['Facturada', 'Cancelado', 'Sin_Facturar']);//Todos los pedidos menos los Pendientes
+         }
          if($filtros['fecha_hoy']){
             $builder->where('u.fecha_pedido', $filtros['fecha_hoy']);
          }
@@ -102,16 +113,25 @@ class Cabecera_model extends Model
     // Cambia el estado del turno
     public function cambiarEstado($id_turno, $estado)
     {
-        return $this->update($id_turno, ['estado' => $estado]); // Asegúrate de que el campo "estado" existe en la base de datos
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $fechaHoy = date('d-m-Y');
+        return $this->update($id_turno, [
+                'estado' => $estado,
+                'fecha_pedido' => $fechaHoy
+            ]); // Asegúrate de que el campo "estado" existe en la base de datos
                                             
     }
 
     // Actualizar la cabecera de la venta con el estado "facturado" y el ID del CAE
-    public function facturado($id_cabecera, $id_CAE)
+    public function facturado($id_cabecera, $new_cae)
     {
+        // Establecer zona horaria y obtener fecha/hora en formato correcto
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $fechaHoy = date('d-m-Y');
         return $this->update($id_cabecera, [
-            'estado' => 'Facturado', // Asegúrate de que el campo "estado" existe en la base de datos
-            'id_cae' => $id_CAE      // Guarda el ID del CAE en la cabecera
+            'estado' => 'Facturada', // Asegúrate de que el campo "estado" existe en la base de datos
+            'id_cae' => $new_cae, // Guarda el ID del CAE en la cabecera
+            'fecha_pedido' => $fechaHoy     
         ]);
     }
      

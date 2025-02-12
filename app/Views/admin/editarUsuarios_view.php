@@ -41,7 +41,7 @@
         <?php }?>
     </div>
     <div class="mb-3">
-       <label for="exampleFormControlInput1" class="form-label">email</label>
+       <label for="exampleFormControlInput1" class="form-label">Email</label>
    <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" value="<?php echo $data['email']?>" >
     <!-- Error -->
         <?php if($validation->getError('email')) {?>
@@ -92,7 +92,7 @@
         $perfil = 'Admin';
         break;
     case 2:
-        $perfil = 'Barber';
+        $perfil = 'Vendedor';
         break;
 }?>
    <label for="exampleFormControlInput1" class="form-label">Categoria</label>

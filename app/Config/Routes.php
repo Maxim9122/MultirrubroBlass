@@ -134,7 +134,9 @@ $routes->get('/logout', 'Login_controller::logout');
 $routes->get('/sesiones', 'Login_controller::mostrarSesiones');
 $routes->post('/filtrarSesiones', 'Login_controller::mostrarSesiones');
 
-//Carrito
+//Carrito y Ventas
+$routes->post('filtrarVentas', 'Carrito_controller::filtrarVentas');
+$routes->get('filtrarPedidos', 'Carrito_controller::filtrarPedidos');
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');
 $routes->get('cargar_pedido/(:num)', 'Pedidos_controller::cargar_pedido_en_carrito/$1');
 $routes->post('Carrito_agrega', 'Carrito_controller::add');
@@ -161,6 +163,7 @@ $routes->get('generarTicket', 'Carrito_controller::facturar');
 
 $routes->get('verificarTA/(:num)','Carrito_controller::verificarTA/$1');
 $routes->get('generarTicket/(:num)', 'Carrito_controller::generarTicket/$1');
+$routes->get('generarTicketFacturaC/(:num)', 'Carrito_controller::generarTicketFacturaC/$1');
 
 
 
