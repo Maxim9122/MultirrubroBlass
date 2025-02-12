@@ -336,10 +336,8 @@ class Pedidos_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
-        $filtros = [
-            
-            'estado' => 'Entregado',
-            'estado2' => 'Cancelado',
+        $filtros = [            
+            'estado' => '',           
             'fecha_hoy' => '',            
         ];
         // Instanciar el modelo
@@ -364,7 +362,7 @@ class Pedidos_controller extends Controller{
         echo view('footer/footer');
     }
 
-//Filtrado de pedidos por fecha y barber
+//Filtrado de pedidos por fecha y vendedor
 public function filtrarPedidos()
 {
     $session = session();
@@ -374,8 +372,8 @@ public function filtrarPedidos()
         }
     $cabeceraModel = new Cabecera_model();
     $filtros = [
-        'fecha_hoy' => '',
-        'estado' => 'Entregado',
+        'estado' => '',
+        'fecha_hoy' => '',       
         'fecha_desde' => $this->request->getVar('fecha_desde'),
         'fecha_hasta' => $this->request->getVar('fecha_hasta'),
         'id_usuario' => $this->request->getVar('id_usuario'),

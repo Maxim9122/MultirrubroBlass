@@ -27,8 +27,10 @@
             
             <div class="desarrollador">
                 <span>
-                    Desarrollado por <span>Maximiliano Luna / Luis Nuñez (Tel:3841-670079)</span>
-                </span>
+                    Desarrollado por <span>Maximiliano Luna / Luis Nuñez</span>
+                    <br>
+                    <span>Tel: 3841-670079</span>
+                </span>                
             </div>
         </div>
     </div>

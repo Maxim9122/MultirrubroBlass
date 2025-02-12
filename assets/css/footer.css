@@ -17,7 +17,7 @@
 
 /* Estilo para los logos */
 .footerLogo {
-    font-size: 22px; /* Ajustamos el tamaño para que no sea tan grande */
+    font-size: 15px; /* Ajustamos el tamaño para que no sea tan grande */
     font-weight: bold;
 }
 
@@ -89,4 +89,5 @@
     width: 100%; /* Ocupa todo el ancho */
     font-weight: 900px;
 }
+
 

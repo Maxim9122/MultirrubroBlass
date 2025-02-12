@@ -12,7 +12,7 @@
 <style>
     #msg_stock {
         position: fixed;
-        top: 10px;
+        top: 100px;
         left: 50%;
         transform: translateX(-50%);
         background-color: black; /* Fondo oscuro para destacar el mensaje */
@@ -32,7 +32,7 @@
         if (msg) {
             msg.style.display = 'none';
         }
-    }, 3000); // Se oculta después de 3 segundos
+    }, 1500); // Se oculta después de 1.5 segundos
 </script>
 
 <?php if (session()->getFlashdata('msg')): ?>
@@ -69,10 +69,10 @@ function cerrarMensaje() {
   <section class="buscador">
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <button type="submit" class="success">Agregar por Codigo de Barra</button>
+  <button type="submit" class="success" style="display: none;">Agregar por Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
-        <input type="text" id="product_input" placeholder="Buscar producto..." autocomplete="off" required onfocus="this.value=''" />
+        <input type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
         <select id="product_select" name="product_id" required size="3">
             <option class="separador">Seleccione un Producto!</option>
             <?php if ($productos): ?>
@@ -157,23 +157,21 @@ function cerrarMensaje() {
                                         if ($perfil == 2 || $perfil == 1) {
                                             
                                            // Envia los datos en forma de formulario para agregar al carrito
-                                   echo form_open('Carrito_agrega');
-                                         echo form_hidden('id', $prod['id']);
-                                         echo form_hidden('nombre', $prod['nombre']);
-                                         echo form_hidden('precio_vta', $prod['precio_vta']);
-                                         echo form_hidden('stock', $prod['stock']);
-                                                       ?>
-                                                      <?php
-                                                      
-                                                                        $btn = array(
-                                                                         'onclick'=> 'comprar()',
-                                                 'class' => 'btn',
-                                                   'value' => 'Agregar',
-                                                   'name' => 'action'
-                                                           );
-                                            echo form_submit($btn);
+                                           //Comienzo del fomulario oculto de php
+                                           echo form_open('Carrito_agrega', ['id' => 'formCarrito']);
+                                           echo form_hidden('id', $prod['id']);
+                                           echo form_hidden('nombre', $prod['nombre']);
+                                           echo form_hidden('precio_vta', $prod['precio_vta']);
+                                           echo form_hidden('stock', $prod['stock']);
+                                           
+                                           $btn = array(
+                                               'class' => 'btn',
+                                               'value' => 'Agregar',
+                                               'name' => 'action'
+                                           );
+                                           echo form_submit($btn);
                                            echo form_close();
-   
+                                           //Aqui termina el form php
    
                                            }else{
                                            ?>

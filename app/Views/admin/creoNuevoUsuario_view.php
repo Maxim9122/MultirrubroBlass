@@ -36,9 +36,9 @@
         <?php }?>
     </div>
     <div class="">
-       <label for="exampleFormControlInput1" class="">email</label>
-   <input name="email"  type="femail" class=""  placeholder="correo@algo.com" >
-    <!-- Error -->
+       <label for="exampleFormControlInput1" class="">Email</label>
+       <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" >
+       <!-- Error -->
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
               <?= $error = $validation->getError('email'); ?>
