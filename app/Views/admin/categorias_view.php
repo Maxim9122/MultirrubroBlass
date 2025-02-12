@@ -4,6 +4,17 @@
           $id=$session->get('id');?>  
  <?php if($perfil == 1){  ?>
 
+
+  <?php if (session()->getFlashdata('msg')): ?>
+        <div id="flash-message" class="flash-message success">
+            <?= session()->getFlashdata('msg') ?>
+        </div>
+    <?php endif; ?>   
+    <script>
+        setTimeout(function() {
+            document.getElementById('flash-message').style.display = 'none';
+        }, 3000); // 3000 milisegundos = 3 segundos
+    </script>
  
 <section class="contenedor-titulo">
   <strong class="titulo-vidrio">Listado de Categorias</strong>
