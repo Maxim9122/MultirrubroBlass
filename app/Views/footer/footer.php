@@ -16,7 +16,7 @@
         <div class="logoDiv">
             <div class="footerLogo">
                 <a href="<?= base_url('catalogo')?>" class="logo">
-                    <strong class="nombreLogo">Multirubro Blass</strong>
+                    <strong class="nombreLogo">Multirrubro Blass</strong>
                 </a>
             </div>
             
