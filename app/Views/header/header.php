@@ -33,7 +33,7 @@
     <section class="headerHome">
         
         <div class="header-img">
-            <img src="/assets/img/Madera.jpg" alt="">
+           
         </div>
 
     </section>
