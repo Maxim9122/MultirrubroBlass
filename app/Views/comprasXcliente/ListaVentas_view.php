@@ -67,7 +67,7 @@
              <td><?php echo $vta['nombre_vendedor']; ?></td>
              <td><?php echo $vta['estado']; ?></td>
              <td>$<?php echo $vta['total_bonificado']; ?></td>
-             <td><?php echo $vta['fecha']; $vta['fecha_pedido']; ?></td>
+             <td><?php echo $vta['fecha'];?></td>
              <td><?php echo $vta['hora']; ?></td>
              <td><?php echo $vta['tipo_pago']; ?></td>
              
