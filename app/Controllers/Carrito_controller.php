@@ -750,7 +750,7 @@ public function verificarTA($id_cabecera = null) {
         //exit;
         //Manda a facturar con el TA y el id de cabecera, y redireccion con msg si es venta o pedido facturado con exito.
         $this->facturar($TA,$id_cabecera);
-        session()->setFlashdata('msg', 'Se realizo la Factura con Exito.!');
+        session()->setFlashdata('msg', 'La Factura se realizo con Exito.!');
         return redirect()->to(base_url('catalogo'));
     } else {
         // El ticket ha expirado, eliminar el archivo y generar uno nuevo
@@ -785,8 +785,8 @@ public function generarTA($id_cabecera = null) {
 
     // Ejecutar el script PHP mediante shell_exec()
     $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
-    print_r($output);
-    exit;
+    //print_r($output);
+    //exit;
 
     return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
 }
