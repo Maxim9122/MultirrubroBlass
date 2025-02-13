@@ -53,7 +53,7 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $input = $this->validate([
-            'codigo_barra' => 'required|is_unique[productos.codigo_barra]',
+            'codigo_barra' => 'is_unique[productos.codigo_barra]',
             'nombre'   => 'required|min_length[3]',
             'descripcion'   => 'required',
             'categoria_id' => 'required|min_length[1]|max_length[20]',

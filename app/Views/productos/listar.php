@@ -117,7 +117,7 @@ function cerrarMensaje() {
           <?php foreach($productos as $prod): ?>
           <tr>
              <td><?php echo $prod['nombre']; ?></td>
-             <td><?php echo $prod['precio_vta']; ?></td>
+             <td>$<?php echo $prod['precio_vta']; ?></td>
              <?php 
              $categoria_nombre = 'Desconocida';
              foreach ($categorias as $categoria) {
