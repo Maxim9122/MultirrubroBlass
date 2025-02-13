@@ -85,18 +85,20 @@ class Cabecera_model extends Model
         return $ventas->getResultArray();
     }
  
-     // Obtener los detalles de una venta específica
-     public function getDetallesVenta($idVenta)
-     {
-         $db = db_connect();
-         $builder = $db->table('ventas_detalle u');
-         $builder->select('d.id, d.nombre, u.cantidad, u.precio, u.total');
-         $builder->where('u.venta_id', $idVenta);
-         $builder->join('productos d', 'u.producto_id = d.id');
-         $result = $builder->get();
- 
-         return $result->getResultArray(); // Devuelve todos los resultados como array
-     }
+    public function getDetallesVenta($idVenta)
+    {
+        $db = db_connect();
+        $builder = $db->table('ventas_detalle u');
+        $builder->select('d.id, d.nombre, u.cantidad, u.precio, u.total, c.id_cae , c.cae, c.vto_cae');
+        $builder->where('u.venta_id', $idVenta);
+        $builder->join('productos d', 'u.producto_id = d.id');
+        $builder->join('ventas_cabecera v', 'u.venta_id = v.id'); // Relacionamos con ventas_cabecera
+        $builder->join('cae c', 'v.id_cae = c.id_cae'); // Relacionamos con la tabla cae
+        $result = $builder->get();
+    
+        return $result->getResultArray(); // Devuelve todos los resultados como array
+    }
+    
 
     public function obtenerPedidos($filtros = [])
      {

@@ -56,6 +56,7 @@
   <?php 
     $session = session();
     $perfil = $session->get('perfil_id');
+    $VTO_CAE = '';
   ?>
 
   <a class="detalle-compra-btn-volver btn" align="center" href="javascript:history.back()">⬅ Volver</a>
@@ -64,7 +65,28 @@
   <br>
 
   <h2 class="detalle-compra-titulo">Detalle de la Compra</h2>
-
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Nro CAE</th>
+          <th>CAE</th>
+          <th>Vencimiento CAE</th>
+      </tr>
+    </thead>
+    <tbody>
+    <?php if ($ventas): ?>
+      <?php foreach ($ventas as $vta): ?>
+      <tr>      
+          <td><?php echo $vta['id_cae']; ?></td>
+          <td><?php echo $vta['cae']; ?></td>
+          <?php $VTO_CAE = date('d-m-Y', strtotime($vta['vto_cae'])); ?>
+          <td><?php echo $VTO_CAE; ?></td>
+      </tr>
+      <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+  </table>
+  <br>
   <div class="detalle-compra-tabla-container">
     <table class="detalle-compra-tabla comprados">
       <thead>
@@ -73,7 +95,7 @@
           <th>Nombre</th>
           <th>Cantidad Comprada</th>
           <th>Precio Unitario</th>
-          <th>Total x Producto</th>
+          <th>Total x Producto</th>          
         </tr>
       </thead>
       <tbody>
@@ -85,6 +107,7 @@
               <td><?php echo $vta['cantidad']; ?></td>
               <td><?php echo $vta['precio']; ?></td>
               <td><?php echo $vta['total']; ?></td>
+              
             </tr>
           <?php endforeach; ?>
         <?php endif; ?>
