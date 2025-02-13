@@ -123,6 +123,17 @@ a{
     width: 50px;
   }
 
+.navImg {
+    height: 50px;
+    width: 50px;
+    transition: transform 0.3s ease-in-out; /* Agrega una transición suave */
+}
+
+.navImg:hover {
+    transform: scale(1.3); /* Aumenta un 20% el tamaño al hacer hover */
+}
+
+
 .alineacion_Y_texto{
     width: 40%;
     margin: auto;
@@ -182,7 +193,7 @@ table.dataTable tbody tr:hover {
     display: grid 1fr;
     margin: auto;
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
     background: rgb(255, 255, 255, 0.2);
     padding: 10px 10px 10px;
     text-align: center;

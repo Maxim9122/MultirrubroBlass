@@ -20,7 +20,8 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $Model = new categoria_model();
-    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
+        $eliminado = 'NO';
+        $dato['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
         
 		$data['titulo']='Nuevo Producto';
                 echo view('navbar/navbar');
@@ -52,7 +53,7 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $input = $this->validate([
-            'codigo_barra' => 'required|is_unique[productos.codigo_barra]',
+            'codigo_barra' => 'is_unique[productos.codigo_barra]',
             'nombre'   => 'required|min_length[3]',
             'descripcion'   => 'required',
             'categoria_id' => 'required|min_length[1]|max_length[20]',
@@ -252,7 +253,8 @@ class Producto_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         $Model = new categoria_model();
-    	$dato1['categorias']=$Model->getCategoria();//trae la categoria del db
+        $eliminado = 'NO';
+        $dato1['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
     	$Model = new Productos_model();
     	$data=$Model->getProducto($id);
             $dato['titulo']='Editar Producto'; 
@@ -369,6 +371,7 @@ class Producto_controller extends Controller{
          return redirect()->to(base_url('Lista_Productos'));
         }
     }
+    
     //valida la edicion de categoria para cargar al db
     public function CategValidationEdit() {
         $session = session();

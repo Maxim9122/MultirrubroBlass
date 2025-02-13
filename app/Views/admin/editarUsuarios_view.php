@@ -22,7 +22,7 @@
   <div class="mb-2">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
    <input name="nombre" type="text"  class="form-control" placeholder="nombre" 
-   value="<?php echo $data['nombre']?>" required>
+   value="<?php echo $data['nombre']?>" required minlength="3" maxlength="20">
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -32,7 +32,7 @@
   </div>
   <div class="mb-3">
    <label for="exampleFormControlTextarea1" class="form-label">Apellido</label>
-    <input type="text" name="apellido" required class="form-control" placeholder="apellido" value="<?php echo $data['apellido'] ?>" >
+    <input type="text" name="apellido" required class="form-control" placeholder="apellido" value="<?php echo $data['apellido'] ?>" minlength="3" maxlength="20">
     <!-- Error -->
         <?php if($validation->getError('apellido')) {?>
             <div class='alert alert-danger mt-2'>
@@ -41,8 +41,8 @@
         <?php }?>
     </div>
     <div class="mb-3">
-       <label for="exampleFormControlInput1" class="form-label">email</label>
-   <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" value="<?php echo $data['email']?>" >
+       <label for="exampleFormControlInput1" class="form-label">Email</label>
+   <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" value="<?php echo $data['email']?>" required="required">
     <!-- Error -->
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
@@ -53,7 +53,7 @@
   
   <div class="mb-3">
        <label for="exampleFormControlInput1" class="form-label">Teléfono</label>
-   <input name="telefono"  type="text" class="form-control"  placeholder="Telefono" value="<?php echo $data['telefono']?>" >
+   <input name="telefono"  type="text" class="form-control"  placeholder="Telefono" value="<?php echo $data['telefono']?>"  maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     <!-- Error -->
         <?php if($validation->getError('telefono')) {?>
             <div class='alert alert-danger mt-2'>
@@ -75,7 +75,7 @@
   
   <div class="mb-3">
   <label for="exampleFormControlInput1" class="form-label">Pass</label>
-   <input name="pass" type="text" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>">
+   <input name="pass" type="text" class="form-control"  placeholder="password" value="<?php echo $data['pass']?>" minlength="3" maxlength="20"required="required">
    <!-- Error -->
         <?php if($validation->getError('pass')) {?>
             <div class='alert alert-danger mt-2'>
@@ -92,7 +92,7 @@
         $perfil = 'Admin';
         break;
     case 2:
-        $perfil = 'Barber';
+        $perfil = 'Vendedor';
         break;
 }?>
    <label for="exampleFormControlInput1" class="form-label">Categoria</label>

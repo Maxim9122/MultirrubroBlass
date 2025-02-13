@@ -126,6 +126,7 @@ label {
     background-image: linear-gradient(to right, #4b8a5e, #adb5bd);
 }
 
+/*Mensaje Temporal Rojo de los errores*/
 .danger {
     background-image: linear-gradient(to right, #a31557, #adb5bd);
     padding: 12px;
@@ -134,7 +135,7 @@ label {
     cursor: pointer;
     font-size: 15px;
     box-shadow: 2px 2px 4px #000000;
-    color: #000000;
+    color: #faf5f5;
     
 } 
 .danger:hover {

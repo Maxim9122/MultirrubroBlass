@@ -21,7 +21,11 @@
   <?php endif?>    
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
-   <input name="codigo_barra" type="text" required="required">
+<<<<<<< Updated upstream
+   <input name="codigo_barra" type="text" maxlength="15" required="required" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+=======
+   <input name="codigo_barra" type="text">
+>>>>>>> Stashed changes
    
      <!-- Error -->
         <?php if($validation->getError('codigo_barra')) {?>
@@ -33,7 +37,7 @@
   <br> 
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Nombre</label>
-   <input name="nombre" type="text" required="required" >
+   <input name="nombre" type="text" minlength="5" maxlength="20"required="required" >
    
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
@@ -45,7 +49,7 @@
   <br>
   <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="form-label">Descripcion</label>
-   <input name="descripcion" type="text" required="required" >
+   <input name="descripcion" type="text" required="required" minlength="5" maxlength="20">
    
     <!-- Error -->
         <?php if($validation->getError('descripcion')) {?>
@@ -89,7 +93,7 @@
     <br>
     <div class="mb-2">
     <label for="exampleFormControlTextarea1" class="form-label">Precio de Costo</label>
-   <input name="precio"  type="text" required="required" >
+   <input name="precio"  type="text" step="0.01" min="0"  maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')"required="required" >
    
     <!-- Error -->
         <?php if($validation->getError('precio')) {?>
@@ -102,7 +106,7 @@
   <br>
   <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="form-label">Precio Venta</label>
-   <input  type="text" name="precio_vta" required="required">
+   <input  type="text" name="precio_vta" required="required" step="0.01" min="0"  maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    
    <!-- Error -->
         <?php if($validation->getError('precio_vta')) {?>
@@ -114,7 +118,7 @@
   <br>
   <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="form-label">Stock</label>
-   <input name="stock" type="text" required="required" >
+   <input name="stock" type="text" required="required" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    
    <!-- Error -->
         <?php if($validation->getError('stock')) {?>
@@ -126,7 +130,7 @@
   <br>
   <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="textColor2">Stock Minimo</label>
-   <input name="stock_min" type="text" required="required" >
+   <input name="stock_min" type="text" required="required" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    
    <!-- Error -->
         <?php if($validation->getError('stock_min')) {?>

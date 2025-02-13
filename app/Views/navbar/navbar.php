@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multirubro Blass</title>
-  <link rel="icon" href="<?php echo base_url('./assets/img/carrito2.png');?>">
+  <title>Multirrubro Blass</title>
+  <link rel="icon" href="<?php echo base_url('./assets/img/iconMB2.png');?>">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/navbar.css">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/clock.css">
   <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/mensajesTemporales.css">
@@ -39,8 +39,12 @@
         <div id="navBar" class="navBar">
             <ul class="navList flex">
         <?php if( ($perfil =='1')) { ?>
+          
+          <li class="nnavItem">
+            <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
+          </li>
           <li class="navItem">
-          <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?> </h5>
+          <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
           </li>
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
@@ -52,19 +56,18 @@
             <a class="btn signUp" href="<?php echo base_url('clientes');?>">CLIENTES</a>
           </li>
           <li class="nnavItem">
-            <a href="<?= base_url('Lista_Productos')?>" class="btn">PRODUCTOS</a>
+            <a href="<?= base_url('Lista_Productos')?>" class="btn">ABM_PRODUCTOS</a>
           </li>
           <li class="nnavItem">
-            <a href="<?= base_url('ListaCategorias')?>" class="btn">Producto Categoria</a>
+            <a href="<?= base_url('ListaCategorias')?>" class="btn">P_Categorias</a>
           </li>
           <li class="nnavItem">
             <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>
           <li class="nnavItem">
-            <button class="signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
-            </button>
+          <a href="<?= base_url('/logout')?>" class="btn" onclick="return confirmarAccionSalir(event);">Salir</a>
           </li>
+
           <?php } else if( (($perfil =='2')) ) { ?>
           <li class="navItem">
             <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?></h5>
@@ -76,23 +79,20 @@
             <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
           </li>
           <li class="navItem">
-          <a href="<?php echo base_url('CarritoList') ?>"> <img src=" <?php echo base_url('assets/img/icons/carrito2.png')?>"> </a>
+          <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
           </li>
           <li class="nnavItem">
             <a class="btn" href="<?php echo base_url('pedidos');?>">Pedidos</a>
-            <li class="navItem">
-            
+            <li class="navItem">            
           </li>
-          <li class="nnavItem">
-            <button class="signUp">
-              <a href="<?= base_url('/logout')?>" class="signUp btn">Salir</a>
-            </button>
+          <li class="nnavItem">            
+          <a href="<?= base_url('/logout')?>" class="btn" onclick="return confirmarAccionSalir(event);">Salir</a>            
           </li>
           <?php } else { ?>
           
           <li class="navItem">
             <button class="btn loginBtn">
-              <a href="<?= base_url('/login')?>" class="login">Ingresar</a>
+              <a href="<?= base_url('/login')?>" class="login">Ir al Login</a>
             </button>
           </li>
           
@@ -185,5 +185,37 @@ updateClock(); // Llamar inicialmente
 </script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function confirmarAccionSalir(event) {
+      event.preventDefault(); // Detiene la navegación automática
+
+      Swal.fire({
+          title: "¿Desea Cerrar Sesión y Salir?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Sí, Salir",
+          cancelButtonText: "Cancelar",
+          customClass: {
+              popup: 'small-swal' // Clases personalizadas
+          }
+      }).then((result) => {
+          if (result.isConfirmed) {
+              window.location.href = "<?= base_url('/logout') ?>";
+          }
+      });
+
+      return false; // Evita la navegación si no se confirma
+  }
+</script>
+
+<style>
+  /* Reducir tamaño del cuadro de diálogo */
+  .small-swal {
+      width: 300px !important; /* Ancho más pequeño */
+      font-size: 14px !important; /* Texto más pequeño */
+      padding: 10px !important;
+  }
+</style>
 </body>
 </html>
