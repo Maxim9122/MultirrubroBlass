@@ -243,22 +243,6 @@ class Pedidos_controller extends Controller{
      session()->setFlashdata('msg', 'Pedido Actualizado!');
      return redirect()->to($this->request->getHeader('referer')->getValue());
     }
-        
-    
-    //Guarda el pedido Completado
-    public function Pedido_completado($id_pedido)
-    {
-        $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
-        $pedidosModel = new Cabecera_model();
-
-        $pedidosModel->cambiarEstado($id_pedido, 'Entregado');
-        session()->setFlashdata('msg', 'Pedido Completado!');
-        return redirect()->to($this->request->getHeader('referer')->getValue());
-    }
 
 
     public function cargar_pedido_en_carrito($id_pedido)
@@ -274,6 +258,7 @@ class Pedidos_controller extends Controller{
     $id_pedido = $cabecera ? $cabecera['id'] : null;
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
     $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
+    $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
     //print_r($fecha_pedido);
     //exit;
     // Obtener los productos del pedido
@@ -295,8 +280,8 @@ class Pedidos_controller extends Controller{
                     'id_cliente' => $id_cliente, // Guardar el id_cliente en las opciones
                     'id_venta'  =>  $id_pedido,
                     'fecha_pedido' => $fecha_pedido,
-                    'tipo_compra' => $tipo_compra
-                    
+                    'tipo_compra' => $tipo_compra,
+                    'tipo_pago' => $tipo_pago
                 )
             ]);
         }
@@ -351,9 +336,8 @@ class Pedidos_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
-        $filtros = [
-            'estado' => 'Entregado',
-            'estado2' => 'Cancelado',
+        $filtros = [            
+            'estado' => '',           
             'fecha_hoy' => '',            
         ];
         // Instanciar el modelo
@@ -378,7 +362,7 @@ class Pedidos_controller extends Controller{
         echo view('footer/footer');
     }
 
-//Filtrado de pedidos por fecha y barber
+//Filtrado de pedidos por fecha y vendedor
 public function filtrarPedidos()
 {
     $session = session();
@@ -388,8 +372,8 @@ public function filtrarPedidos()
         }
     $cabeceraModel = new Cabecera_model();
     $filtros = [
-        'fecha_hoy' => '',
-        'estado' => 'Entregado',
+        'estado' => '',
+        'fecha_hoy' => '',       
         'fecha_desde' => $this->request->getVar('fecha_desde'),
         'fecha_hasta' => $this->request->getVar('fecha_hasta'),
         'id_usuario' => $this->request->getVar('id_usuario'),

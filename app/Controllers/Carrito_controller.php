@@ -1,16 +1,13 @@
 <?php
 namespace App\Controllers;
 
-require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
-
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
 Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
 use App\Models\Usuarios_model;
+use App\Models\Cae_model;
 
 
 class Carrito_controller extends Controller{
@@ -27,18 +24,60 @@ class Carrito_controller extends Controller{
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
     // Instanciar el modelo
+    $USmodel = new Usuarios_model();
     $cabeceraModel = new Cabecera_model();
     
     // Llamar al método del modelo para obtener las ventas con clientes
     $datos['ventas'] = $cabeceraModel->getVentasConClientes();
-    
+    $datos2['usuarios'] = $USmodel->getUsBaja('NO');
     // Pasar el título y los datos a las vistas
     $data['titulo'] = 'Listado de Compras';
     echo view('navbar/navbar');
     echo view('header/header', $data);
-    echo view('comprasXcliente/ListaVentas_view', $datos);
+    echo view('comprasXcliente/ListaVentas_view', $datos + $datos2);
     echo view('footer/footer');
 }
+
+//Filtrado de ventas por fechas y vendedor.
+public function filtrarVentas()
+{
+    $session = session();
+
+    // Verifica si el usuario está logueado
+    if (!$session->get('id')) { 
+        return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+    }
+
+    // Cargar modelos
+    $cabeceraModel = new Cabecera_model();
+    $usuariosModel = new Usuarios_model();
+
+    // Obtener y limpiar filtros
+    $filtros = [
+        'fecha_hoy' => '',
+        'fecha_desde' => trim($this->request->getVar('fecha_desde') ?? ''),
+        'fecha_hasta' => trim($this->request->getVar('fecha_hasta') ?? ''),
+        'estado' => trim($this->request->getVar('estado') ?? ''),
+    ];
+
+    // Obtener datos
+    $datos['ventas'] = $cabeceraModel->getVentasConClientes($filtros);
+    $datos['usuarios'] = $usuariosModel->getUsBaja('NO');
+
+    // Pasar filtros a la vista para mantener los valores seleccionados
+    $datos['filtros'] = $filtros;
+
+    // Definir título
+    $data['titulo'] = 'Listado de Pedidos Filtrados';
+
+    // Cargar vistas
+    return view('navbar/navbar')
+        . view('header/header', $data)
+        . view('comprasXcliente/ListaVentas_view', $datos)
+        . view('footer/footer');
+}
+
+
 
 public function ListaComprasCabeceraCliente($id)
 {
@@ -73,7 +112,7 @@ public function ListCompraDetalle($id)
     $datos['ventas'] = $cabeceraModel->getDetallesVenta($id);
 
     // Preparar el título y cargar las vistas
-    $data['titulo'] = 'Listado de Compras';
+    $data['titulo'] = 'Detalle de Compras';
     echo view('navbar/navbar');
     echo view('header/header', $data);
     echo view('comprasXcliente/CompraDetalle_view', $datos);
@@ -308,22 +347,31 @@ public function ListCompraDetalle($id)
 		echo view('footer/footer');
     }
 
+
+//GUARDA LA COMPRA
     public function guarda_compra()
-{
+{    
     $cart = \Config\Services::cart();
     $session = session();
     
+
+    //id del vendedor
     $id_usuario = $session->get('id');
+
+    //id del cliente seleccionado o se selecciona Consumidor final por defecto.
     $id_cliente = $this->request->getPost('cliente_id');
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
 
-    
+    //Tipo de pago enviado del formulario (Transferencia o Efectivo)
     $tipo_pago = $this->request->getPost('tipo_pago');
+    //Total de la venta
     $total = $this->request->getPost('total_venta');
+    //Total menos el descuento si se pago en efectivo.
     $total_conDescuento = $this->request->getPost('total_con_descuento');
+    //Si no trajo el descuento y esa variable quedo vacia se asigna el mismo valor de la venta total.
     if (!$total_conDescuento) {
         $total_conDescuento = $total;
     }
@@ -332,29 +380,34 @@ public function ListCompraDetalle($id)
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
     $fecha = date('d-m-Y'); // Formato DATE
+    //Rescato el tipo de compra (Pedido o Compra_Normal)
     $tipo_compra = $this->request->getVar('tipo_compra');
     //$tipo_compra = $this->request->getPost('tipo_compra_input');
     
+    //Si no se selecciono una fecha se asigna la fecha de hoy por defecto para el pedido.
     $fecha_pedido = $this->request->getPost('fecha_pedido_input');
     if (!$fecha_pedido){
         $fecha_pedido = date('d-m-Y');
     }
     //print_r($tipo_compra);
     //exit;
+    //Formateamos la fecha del pedido al formato dia-mes-año
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
     
-    // Obtener el id_venta del carrito del pedido modificado
+    // Obtener el id_venta del carrito si es un pedido modificado
     $id_venta_anterior = null;
+    //recorremos el carrito porque si fue un pedido modificado guarde el id en una variable del carrito
     foreach ($cart->contents() as $item) {
         if (isset($item['options']['id_venta'])) {
             $id_venta_anterior = $item['options']['id_venta'];
-            break; // No es necesario seguir recorriendo si ya encontramos el id_venta
+            break; // recorre solo el 1ero, No es necesario seguir recorriendo si ya encontramos el id_venta
         }
     }
     
-    
+
+    // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
     if ($id_venta_anterior) {
-        // Eliminar el pedido anterior, restaurar stock
+        
         $VentaDetalle_model = new VentaDetalle_model();
         $Producto_model = new Productos_model();
 
@@ -376,7 +429,61 @@ public function ListCompraDetalle($id)
         $Cabecera_model->delete($id_venta_anterior);
     }
     
-    // Guardar la nueva cabecera de la venta
+
+    //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
+    $facturacion = $this->request->getPost('tipo_proceso');
+    //Si el tipo de proceso es para facturar se manda a otra funcion.
+    if($facturacion == "factura"){
+        //print_r($facturacion);
+        //exit;
+        // Guardar cabecera de la venta para Facturar, mientras el estado esta para Verificar.
+        $cabecera_model = new Cabecera_model();
+        $ventas_id = $cabecera_model->save([
+            'fecha'        => $fecha,
+            'hora'         => $hora,
+            'id_cliente'   => $id_cliente,
+            'id_usuario'   => $id_usuario,
+            'total_venta'  => $total,
+            'tipo_pago'    => $tipo_pago,
+            'total_bonificado' => $total_conDescuento,
+            'tipo_compra' => $tipo_compra,
+            'estado' => 'Sin_Facturar'
+        ]);
+
+        // Obtener ID de la nueva cabecera guardada
+        $id_cabecera = $cabecera_model->getInsertID();
+
+        // Guardar detalles de la venta si el carrito no está vacío
+    if ($cart):
+        foreach ($cart->contents() as $item):
+            $VentaDetalle_model = new VentaDetalle_model();
+            $VentaDetalle_model->save([
+                'venta_id'    => $id_cabecera,
+                'producto_id' => $item['id'],
+                'cantidad'    => $item['qty'],
+                'precio'      => $item['price'],
+                'total'       => $item['subtotal'],
+            ]);
+
+            // Actualizar stock del producto
+            $Producto_model = new Productos_model();
+            $producto = $Producto_model->find($item['id']); // Asegúrate de usar el método correcto para obtener datos
+
+            if ($producto && isset($producto['stock'])) {
+                $stock_edit = $producto['stock'] - $item['qty'];
+                $Producto_model->update($item['id'], ['stock' => $stock_edit]);
+            }
+        endforeach;
+        endif;
+
+        // Limpiar el carrito
+        $cart->destroy();
+        //Una vez guardada la compra manda a verificar la factura en ARCA.
+        return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
+    }
+
+
+    // Guardar la nueva cabecera del Pedido (Nuevo o Modidicado segun sea) utiliza el mismo carrito.
     if ($tipo_compra == 'Pedido') { 
         // Guardar cabecera de la venta tipo pedido
         $cabecera_model = new Cabecera_model();
@@ -406,7 +513,7 @@ public function ListCompraDetalle($id)
             'tipo_pago'    => $tipo_pago,
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
-            'estado' => 'Realizada'
+            'estado' => 'Sin_Facturar'
         ]);
     }
 
@@ -449,106 +556,7 @@ public function ListCompraDetalle($id)
 }
 
 
-
-	function FacturaAdmin($id)
-	{
-		//$dompdf = new Dompdf();
-
-		$db = db_connect();
-		$builder2 = $db->table('ventas_cabecera a');
-		$builder2->where('a.id',$id);
-		$builder2->select('a.id , c.nombre , c.apellido, c.telefono , c.direccion , a.total_venta , a.fecha , a.tipo_pago');
-		$builder2->join('usuarios c','a.usuario_id = c.id');
-		$ventas2= $builder2->get();
-		$datos2['datos']=$ventas2->getResultArray();
-		//print_r($datos2);
-		//exit;
-
-		$builder = $db->table('ventas_detalle u');
-		$builder->where('venta_id',$id);
-		$builder->select('d.id , d.nombre , u.cantidad , u.precio , u.total ,');
-		$builder->join('productos d','u.producto_id = d.id');
-		$ventas= $builder->get();
-		$datos['ventas']=$ventas->getResultArray();
-		//print_r($datos);
-		//exit;
-		
-		$data['titulo'] ='Factura';
-		echo view('navbar/navbar');
-		echo view('header/header',$data);		
-		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
-		echo view('footer/footer');
-
-		
-	}
-
-	function FacturaCliente($id)
-	{
-		//$dompdf = new Dompdf();
-
-		$db = db_connect();
-		$builder2 = $db->table('ventas_cabecera a');
-		$builder2->where('a.id',$id);
-		$builder2->select('a.id , c.nombre , c.apellido, c.telefono , c.direccion , a.total_venta , a.fecha , a.tipo_pago');
-		$builder2->join('usuarios c','a.usuario_id = c.id');
-		$ventas2= $builder2->get();
-		$datos2['datos']=$ventas2->getResultArray();
-		//print_r($datos2);
-		//exit;
-
-		$builder = $db->table('ventas_detalle u');
-		$builder->where('venta_id',$id);
-		$builder->select('d.id , d.nombre , u.cantidad , u.precio , u.total ,');
-		$builder->join('productos d','u.producto_id = d.id');
-		$ventas= $builder->get();
-		$datos['ventas']=$ventas->getResultArray();
-		//print_r($datos);
-		//exit;
-		
-		$data['titulo'] ='Factura';
-		echo view('navbar/navbar');
-		echo view('header/header',$data);		
-		echo view('comprasXcliente/facturacion_view',$datos2+$datos);
-		echo view('footer/footer');
-
-		
-	}
-
-	//Genero factura de la compra
-public function verfactura($id)
-{
-    $facturaModel = new Cabecera_model();
-    $detalleModel = new VentaDetalle_model();
-    $productoModel = new Productos_model();
-    $clienteModel = new Clientes_model(); // Suponiendo que tienes un modelo de usuarios
-    
-    // Obtener la cabecera de la venta
-    $cabecera = $facturaModel->find($id);
-    
-    // Obtener los detalles de la venta
-    $detalles = $detalleModel->where('venta_id', $id)->findAll();
-    
-    // Obtener detalles del usuario
-    $cliente = $clienteModel->find($cabecera['id_cliente']);
-    //print_r($cliente);
-	//exit;
-    // Obtener detalles de los productos
-    $productos = [];
-    foreach ($detalles as $detalle) {
-        $producto = $productoModel->find($detalle['producto_id']);
-        $productos[] = $producto;
-    }
-    
-    // Pasar los datos a la vista
-    return view('facturacion/factura_compra', [
-        'cabecera' => $cabecera,
-        'detalles' => $detalles,
-        'usuario' => $cliente, // Detalles del usuario
-        'productos' => $productos, // Detalles de los productos
-    ]);
-}
-
-
+//Genera ticket venta normal
 public function generarTicket($id_venta)
 {
     // Cargar los modelos necesarios
@@ -580,30 +588,51 @@ public function generarTicket($id_venta)
     // Cabecera del ticket
     // Definir ancho del papel en caracteres
     $titulo = "MULTIRUBRO BLASS";
-    $ancho_papel = 40; // Ajusta el ancho del ticket según la impresora
-    $espacios_izq = ($ancho_papel - strlen($titulo)) / 2;
+    $ancho_papel = 25; // Ajusta el ancho del ticket según la impresora
+    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
 
-    // Construir el ticket con el título centrado
-    $ticket = "";
-    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n\n";
+    // Agregar la advertencia "REMITO no válido como factura"
+    $remito = "REMITO";
+    $remito2 = "No válido como factura.";
+
+    $espacios_remito = intval(($ancho_papel - strlen($remito)) / 2);
+    $espacios_remito2 = intval(($ancho_papel - strlen($remito2)) / 2);
+
+    $ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
+    $ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
+
+    // **Activar negrita y ancho doble sin altura doble**
+    $ticket .= "\x1B\x45\x01"; // Activar negrita
+    $ticket .= "\x1D\x21\x10"; // Doble ancho, altura normal
+    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
+    $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
+    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
 
     $ticket .= "Calle Belgrano 2077, casi Brasil\n";
     $ticket .= "Cel: 3794-095020\n";
     $ticket .= "Instagram: @Blass.Multirubro\n";
     $ticket .= "Facebook: Blass Multirubro\n\n";
 
+
     // Información de la venta
     $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
-    $ticket .= "Cliente: " . $cliente['nombre'] . "\n";
-    $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n\n";
+    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
+    if($cliente['cuil'] > 0){
+        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
+    }else{
+        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
+    }
+    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
+    $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
 
+    $ticket .= "=====================================\n";
     // Detalle de la compra
     $ticket .= "Detalle de Compra:\n";
     foreach ($detalles as $detalle) {
         $producto = $productos[$detalle['producto_id']];
         $ticket .= $producto['nombre'] . " x " . $detalle['cantidad'] . " - $" . $detalle['precio'] . "\n";
     }
-
+    $ticket .= "=====================================\n";
     // Total a pagar
     if ($cabecera['tipo_pago'] == 'Efectivo') {
         $ticket .= "\nDescuento Efectivo: $" . ($cabecera['total_venta'] * 0.05) . "\n";
@@ -621,33 +650,465 @@ public function generarTicket($id_venta)
     // Imprimir el ticket
     $this->imprimirTicket($ticket);
 
+    if($cabecera['tipo_compra'] == 'Pedido'){
+
+        $ventaModel->cambiarEstado($id_venta, 'Sin_Facturar');
+    }
+
+    session()->setFlashdata('msg', 'Gracias por su compra.!');
     return redirect()->to(base_url('catalogo'));
 }
 
 private function imprimirTicket($content)
 {
-    // Configuración de la impresora térmica
-    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Reemplaza con el nombre de tu impresora térmica
+    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Nombre de la impresora
 
-    // Abrir la impresora
     $printer = fopen($printerName, 'w');
 
     if ($printer) {
-        // Escribir el contenido en la impresora
-        fwrite($printer, $content);
+        // Enviar el contenido línea por línea con una pequeña pausa
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+            fwrite($printer, $line . "\n");
+            usleep(50000); // 50ms de pausa entre líneas
+        }
 
         // Avanzar el papel varias líneas antes de cortar
-        fwrite($printer, "\n\n\n\n"); // Avanza 4 líneas
+        fwrite($printer, "\n\n\n\n");
+        usleep(100000); // 100ms de pausa antes del corte
 
-        // Enviar el comando de corte de papel
-        fwrite($printer, "\x1D\x56\x00"); // Comando de corte de papel
+        // Comando de corte de papel
+        fwrite($printer, "\x1D\x56\x00");
 
-        // Cerrar la impresora
         fclose($printer);
     } else {
-        // Manejar el error si no se puede abrir la impresora
         die("No se pudo abrir la impresora.");
     }
 }
+
+
+
+//Verifica que todo este bien para Facturar
+public function verificarTA($id_cabecera = null) {
+    $ventaModel = new \App\Models\Cabecera_model();
+    // Obtener los detalles de la venta
+    $cabecera = $ventaModel->find($id_cabecera);
+    //print_r($cabecera);
+    //exit;
+    if ($cabecera['estado'] == 'Facturado' || $cabecera['id_cae'] > 0) {
+        session()->setFlashdata('msgEr', 'No se puede facturar una misma venta dos veces, solo puede volver a imprimir la factura.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    //$id_cabecera = 252;
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    //$id_cabecera = 24;
+    // Ruta del archivo TA.xml
+    $taPath = ROOTPATH . 'writable/facturacionARCA/TA.xml';
+
+    // Zona horaria de Argentina
+    $zonaHorariaArgentina = new \DateTimeZone('America/Argentina/Buenos_Aires');
+
+   // Verificar si el archivo TA.xml existe
+   if (!file_exists($taPath)) {
+    $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
+    session()->setFlashdata('msgEr', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
+    return redirect()->to(base_url('catalogo'));
+    } 
+    // Cargar el XML    
+    $xml = simplexml_load_file($taPath);
+    if (!$xml) {
+        $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
+        session()->setFlashdata('msgER', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
+        return redirect()->to($this->request->getHeader('referer')->getValue());
+    }
+    
+
+    // Obtener la fecha de expiración del XML
+    $expirationTime = (string)$xml->header->expirationTime;
+    $expirationDateTime = new \DateTime($expirationTime, new \DateTimeZone('UTC')); // AFIP usa UTC
+    $expirationDateTime->setTimezone($zonaHorariaArgentina); // Convertir a Argentina
+
+    // Obtener la fecha y hora actuales en la misma zona horaria
+    $currentDateTime = new \DateTime('now', $zonaHorariaArgentina);
+
+    // Comparar fechas
+    if ($expirationDateTime > $currentDateTime) {
+        // El ticket sigue siendo válido, continuar con la facturación
+        $TA = [
+            'token' => (string)$xml->credentials->token,
+            'sign'  => (string)$xml->credentials->sign            
+        ];
+        //print_r($TA);
+        //exit;
+        //Manda a facturar con el TA y el id de cabecera, y redireccion con msg si es venta o pedido facturado con exito.
+        $this->facturar($TA,$id_cabecera);
+        session()->setFlashdata('msg', 'La Factura se realizo con Exito.!');
+        return redirect()->to(base_url('catalogo'));
+    } else {
+        // El ticket ha expirado, eliminar el archivo y generar uno nuevo
+        //unlink($taPath);
+        rename($taPath, $taPath . ".bak");
+        //echo "El ticket ha expirado y se eliminó TA.xml. Generando uno nuevo...<br>";
+        return redirect()->to('Carrito_controller/generarTA/'. $id_cabecera);
+        //$this->generarTA($id_cabecera);
+
+        // Verificar si se generó correctamente antes de continuar
+        if (!file_exists($taPath)) {
+
+            session()->setFlashdata('msgER', 'Problemas con el Servidor ARCA, intente mas tarde.!');
+            return redirect()->to(base_url('casiListo'));
+        }
+    }
+}
+
+//Genera un nuevo TA.xml si es necesario.
+public function generarTA($id_cabecera = null) {
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    // Ruta al script wsaa-client.php
+    $path = APPPATH . 'Libraries/afip/wsaa-client.php';
+
+    // Ejecutar el script PHP mediante shell_exec()
+    $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
+    //print_r($output);
+    //exit;
+
+    return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
+}
+
+//Aqui va el xml de factura para enviar a ARCA
+//re copiar abajo $TA,$id_cabecera
+public function facturar($TA = null,$id_cabecera = null) {
+    $ventaModel = new \App\Models\Cabecera_model();
+    // Obtener los detalles de la venta
+    $cabecera = $ventaModel->find($id_cabecera);
+    //print_r($cabecera);
+    //exit;
+    if ($cabecera['estado'] == 'Facturado' || $cabecera['id_cae'] > 0 ) {
+        session()->setFlashdata('msgEr', 'No se puede facturar una misma Venta dos Veces, Solo puede volver a imprimir la factura.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    // Cargar los modelos necesarios 
+    $clienteModel = new \App\Models\Clientes_model();
+    //Obtengo el ultimo id del cae
+    $caeModel = new \App\Models\Cae_model();    
+    $ultimoRegistro = $caeModel->orderBy('id_cae', 'DESC')->first(); // Trae el último registro de la tabla cae
+    $ultimo_id_cae = $ultimoRegistro ? $ultimoRegistro['id_cae'] : 0;
+    //echo "Último ID registrado: " . $ultimo_id_cae;
+    //exit;
+    //sumamos uno al ultimo id_cae para que ARCA lo acepte porque tiene que ser de 1 en 1.
+    $id_cae_siguiente = $ultimo_id_cae + 1;
+    //print_r($id_cae_siguiente);
+    //exit;
+    // Obtener los detalles de la venta
+    
+    //print_r($cabecera);
+    //exit;
+    //Obtengo el total de la venta, con descuento o sin
+    $total_venta = $cabecera['total_bonificado'];
+    //Obtengo la fecha
+    $fecha_venta = $cabecera['fecha'];
+    $fecha_formateadaF = date('Ymd', strtotime($fecha_venta)); // Ajusta y suma 2 dias porque es el rango permitido por AFIP.
+    //print_r($fecha_formateadaF);    
+    //exit;
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    //Obtener el cuil del cliente
+    $cuil_cliente = $cliente['cuil'];
+    //print_r($cuil_cliente);
+    //Obtener el tipo de Documento.
+    $tipoDoc = 80; //Si tiene un cuil real
+    if($cuil_cliente == 0){
+        $tipoDoc = 99; //Si no tiene Cuil
+    }
+    //print_r($tipoDoc);
+    //exit;
+
+    $new_cae = null;
+    //echo "Token para crear la factura xml para ARCA.\n";
+    //print_r($TA['token']);
+    $token = $TA['token'];
+    //print_r($token);
+    //echo "\nSign para crear la factura xml para ARCA.\n";
+    //print_r($TA['sign']);
+    $sign = $TA['sign'];
+    //print_r($sign);
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                      xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <ar:FECAESolicitar>
+                <ar:Auth>
+                    <ar:Token>' . $token . '</ar:Token>
+                    <ar:Sign>' . $sign . '</ar:Sign>
+                    <ar:Cuit>20369557263</ar:Cuit>
+                </ar:Auth>
+                <ar:FeCAEReq>
+        <ar:FeCabReq>
+            <ar:CantReg>1</ar:CantReg>
+            <ar:PtoVta>2</ar:PtoVta>
+            <ar:CbteTipo>11</ar:CbteTipo> <!-- 11 para FACTURA C -->
+        </ar:FeCabReq>
+        <ar:FeDetReq>
+            <ar:FECAEDetRequest>
+                <ar:Concepto>1</ar:Concepto> <!-- Productos -->
+                <ar:DocTipo>' . $tipoDoc . '</ar:DocTipo> <!-- 80 CUIT, 99 C_Final-->
+                <ar:DocNro>' . $cuil_cliente . '</ar:DocNro> <!-- 0 para C_final-->
+                <ar:CbteDesde>' . $id_cae_siguiente . '</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
+                <ar:CbteHasta>' . $id_cae_siguiente . '</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
+                <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5 -->
+                <ar:ImpTotal>' . $total_venta . '</ar:ImpTotal> <!-- Suma de ImpNeto + ImpTrib -->
+                <ar:ImpTotConc>0</ar:ImpTotConc>
+                <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
+                <ar:MonId>PES</ar:MonId>
+                <ar:MonCotiz>1</ar:MonCotiz>
+                <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> 
+                
+            </ar:FECAEDetRequest>
+        </ar:FeDetReq>
+    </ar:FeCAEReq>
+    </ar:FECAESolicitar>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECAESolicitar',
+        'Content-Type: text/xml; charset=utf-8',        
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    
+    
+    // **Extraer los datos del XML**
+    
+        // Cargar el XML y registrar el namespace
+        $xml = new \SimpleXMLElement($response);
+        $xml->registerXPathNamespace('ns', 'http://ar.gov.afip.dif.FEV1/');
+
+        // Buscar los valores dentro del XML
+        $resultado_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Resultado');
+        $cae_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAE');
+        $cae_vencimiento_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAEFchVto');
+        $observaciones_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Observaciones/ns:Obs/ns:Msg');
+
+        // Verificar si los nodos existen antes de acceder a ellos
+        $resultado = isset($resultado_nodes[0]) ? (string) $resultado_nodes[0] : 'No encontrado';
+        $cae = isset($cae_nodes[0]) ? (string) $cae_nodes[0] : 'No encontrado';
+        $cae_vencimiento = isset($cae_vencimiento_nodes[0]) ? (string) $cae_vencimiento_nodes[0] : 'No encontrado';
+        // Capturar mensaje de error si la factura fue rechazada
+        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : '';
+        //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
+    if($resultado == 'A'){ 
+        $caeModel->save([
+            'cae'       => $cae,
+            'vto_cae'   => $cae_vencimiento
+        ]); // Muestra los errores si la inserción falla
+        //Rescato el id del ultimo cae generado y guardado en la DB.
+        $new_cae = $caeModel->getInsertID();
+        //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
+        $ventaModel->facturado($id_cabecera,$new_cae);
+
+    }else{ 
+        //print_r($response);
+        //exit;
+        $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
+        //Si tiene una R en resultado redirecciona por rechazado
+        session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: ' . $mensaje_error . ' La venta se guardó para facturar despues de corregir el error.');
+        return redirect()->to(base_url('catalogo'));
+    }
+        // Mostrar los datos obtenidos
+        //echo "Resultado: $resultado\n";
+        //echo "CAE: $cae\n";
+        //echo "Vencimiento CAE: $cae_vencimiento\n";
+        $this->generarTicketFacturaC($id_cabecera);
+}
+
+
+//Genera el ticket factura tipo C
+public function generarTicketFacturaC($id_cabecera = null)
+{   
+    
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    // Cargar los modelos necesarios
+    $ventaModel = new \App\Models\Cabecera_model();
+    $detalleModel = new \App\Models\VentaDetalle_model();
+    $productoModel = new \App\Models\Productos_model();
+    $clienteModel = new \App\Models\Clientes_model();
+    $caeModel = new \App\Models\Cae_model();
+    // Obtener los detalles de la venta y el CAE
+    $cabecera = $ventaModel->find($id_cabecera);
+    //print_r($cabecera);
+    //exit;
+    $detalle_CAE = $caeModel->find($cabecera['id_cae']);
+    //print_r($detalle_CAE);
+    //exit;
+    $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
+
+    // Obtener los productos relacionados
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $productos[$detalle['producto_id']] = $productoModel->find($detalle['producto_id']);
+    }
+
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+
+    // Obtener el nombre del vendedor desde la sesión
+    $session = session();
+    $nombreVendedor = $session->get('nombre');
+
+    // Generar el contenido del ticket en texto
+    $ticket = "";
+    //$ancho_papel2 = 50; // Ancho del papel para centrar la advertencia
+    $ancho_papel = 25;  // Ancho del papel para el título
+
+    // Cabecera del ticket
+    $titulo = "MULTIRRUBRO BLASS";
+    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
+
+    // Agregar la advertencia "Factura C" con CAE y Vto.
+    //$remito = "Factura C";
+    //$remito2 = "CAE: " . $detalle_CAE['cae'] . " Vto Fecha: " . $detalle_CAE['vto_cae'];
+
+    //$espacios_remito = intval(($ancho_papel2 - strlen($remito)) / 2);
+    //$espacios_remito2 = intval(($ancho_papel2 - strlen($remito2)) / 2);
+
+    // Agregar la advertencia centrada con "Factura C" en negrita
+    //$ticket .= "\x1B\x45\x01"; // Activar negrita
+    //$ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
+    //$ticket .= "\x1B\x45\x00"; // Desactivar negrita
+    //$ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
+
+    // **Activar negrita y doble ancho sin doble altura para el título**
+    $ticket .= "\x1B\x45\x01"; // Activar negrita
+    $ticket .= "\x1D\x21\x10"; // Ancho doble, altura normal
+    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
+    $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
+    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
+
+    // Datos de la empresa
+    $ticket .= "GONZALEZ EMMANUEL ALEJANDRO\n";
+    $ticket .= "CUIT Nro: 20-36955726-3\n";
+    $ticket .= "Domicilio: Belgrano 2077\n"; 
+    $ticket .= "Corrientes (3400) - Corrientes\n"; 
+    $ticket .= "Cel: 3794-095020\n";
+    $ticket .= "Inicio de actividades: 01/02/2023\n";     
+    $ticket .= "Ingresos Brutos: 20-36955726-3\n";
+    $ticket .= "Resp. Monotributo\n";
+    $ticket .= "----------------------------------\n";
+    // Información de la venta
+    if($cabecera['tipo_compra'] == 'Pedido'){
+        // Establecer zona horaria y obtener fecha/hora en formato correcto
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $fechaHoy = date('d-m-Y'); // Formato: dd-mm-yyyy
+        $horaHoy = date('H:i:s');  // Formato: HH:MM:SS
+
+        $ticket .= "Fecha: " . $fechaHoy . " Hora: " . $horaHoy . "\n";
+    }else{
+        $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
+    }
+    $ticket .= "----------------------------------\n";
+
+    $ticket .= "Factura C (Cod.011) a Consumidor Final\n";
+    $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
+    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
+    if($cliente['cuil'] > 0){
+        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
+    }else{
+        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
+    }
+    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
+    $ticket .= "----------------------------------\n";
+
+    // Detalle de la compra
+    $ticket .= "Detalle de Compra:\n";
+    foreach ($detalles as $detalle) {
+        $producto = $productos[$detalle['producto_id']];
+        $ticket .= $producto['nombre'] . "  x  " . $detalle['cantidad'] . "  - $" . $detalle['precio'] . "\n";
+    }
+    // Total a pagar
+    $ticket .= "Subtotal sin descuentos: $" . $cabecera['total_venta'] . "\n";
+    if ($cabecera['tipo_pago'] == 'Efectivo') {
+        $ticket .= "Descuentos: $" . ($cabecera['total_venta'] * 0.05) . "\n";
+    }else{
+        $ticket .= "Descuentos: $0.00\n";
+    }
+    $ticket .= "Total: $" . $cabecera['total_bonificado'] . "\n";
+    $ticket .= "----------------------------------\n";
+
+
+    $ticket .= "Reg. Transparencia fiscal al consumidor\n";
+    $ticket .= "IVA CONTENIDO: $0.00\n";
+    $ticket .= "Otros Imp. Nac. Indirectos: $0.00\n";        
+    $ticket .= "Tipo de Pago: " . $cabecera['tipo_pago'] . "\n";
+    $ticket .= "Referencia electronica del comprobante:\n";
+    //Transformo la fecha de 20250210 a 10-02-2025
+    $fecha_vencimiento = date('d-m-Y', strtotime($detalle_CAE['vto_cae']));
+    $ticket .= "CAE: " . $detalle_CAE['cae'] . " - Vto: " . $fecha_vencimiento ."\n";
+    // Footer con notas
+    $ticket .= "\nImportante:\n";
+    $ticket .= "La mercaderia viaja por cuenta y riesgo del comprador.\n";
+    $ticket .= "Es responsabilidad del cliente controlar su compra antes de salir del local.\n";
+    $ticket .= "Su compra tiene 48hs para cambio ante fallas previas del producto.\n";
+    $ticket .= "Instagram: @Blass.Multirrubro\n";
+    $ticket .= "Facebook: Blass Multirrubro\n\n";
+    $ticket .= "Muchas Gracias por su Compra.!\n";
+
+   
+    // Imprimir el ticket
+    $this->imprimirTicket($ticket);
+    //Mensaje de factura impresa cuando solo quiere volver a imprimir la factura
+    session()->setFlashdata('msg', 'Facturar Impresa con Éxito.');
+    return redirect()->to(base_url('catalogo'));
+}
+
 
 }

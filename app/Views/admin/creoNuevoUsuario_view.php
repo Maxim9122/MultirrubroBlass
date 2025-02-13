@@ -17,7 +17,7 @@
 <div class ="" media="(max-width:768px)">
   <div class="">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
-   <input name="nombre" type="text"  class="form-control" placeholder="nombre" >
+   <input name="nombre" type="text"  class="form-control" placeholder="nombre" required minlength="3" maxlength="20">
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -27,7 +27,7 @@
   </div>
   <div class="">
    <label for="exampleFormControlTextarea1" class="">Apellido</label>
-    <input type="text" name="apellido"class="" placeholder="apellido" >
+    <input type="text" name="apellido"class="" placeholder="apellido" required minlength="3" maxlength="20" >
     <!-- Error -->
         <?php if($validation->getError('apellido')) {?>
             <div class='alert alert-danger mt-2'>
@@ -36,9 +36,9 @@
         <?php }?>
     </div>
     <div class="">
-       <label for="exampleFormControlInput1" class="">email</label>
-   <input name="email"  type="femail" class=""  placeholder="correo@algo.com" >
-    <!-- Error -->
+       <label for="exampleFormControlInput1" class="">Email</label>
+       <input name="email"  type="email" class="form-control"  placeholder="correo@algo.com" required  maxlength="50">
+       <!-- Error -->
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
               <?= $error = $validation->getError('email'); ?>
@@ -48,7 +48,7 @@
   
   <div class="mb-3">
   <label for="exampleFormControlInput1" class="form-label">Telefono</label>
-   <input  type="text" name="telefono" class="form-control" placeholder="Telefono">
+   <input  type="text" name="telefono" class="form-control" placeholder="Telefono" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
         <?php if($validation->getError('telefono')) {?>
             <div class='alert alert-danger mt-2'>
@@ -59,7 +59,7 @@
 
   <div class="mb-3">
   <label for="exampleFormControlInput1" class="form-label">Direccion</label>
-   <input  type="text" name="direccion" class="form-control" placeholder="Direccion">
+   <input  type="text" name="direccion" class="form-control" placeholder="Direccion" maxlength="100">
    <!-- Error -->
         <?php if($validation->getError('direccion')) {?>
             <div class='alert alert-danger mt-2'>
@@ -69,7 +69,9 @@
   </div>
 
   <div class="mb-3">
-   <input name="pass" type="hidden" class=""  placeholder="password" value="123">
+  <label for="exampleFormControlInput1" class="form-label">Contraseña:</label>
+
+   <input name="pass" type="text" class=""  placeholder="password" value="" minlength="3" maxlength="20"required="required">
    <!-- Error -->
         <?php if($validation->getError('pass')) {?>
             <div class='alert alert-danger mt-2'>
