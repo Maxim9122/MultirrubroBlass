@@ -74,9 +74,9 @@ class Usuario_controller extends Controller{
             'nombre'   => 'required|min_length[3]',
             'apellido' => 'required|min_length[3]|max_length[25]',
             'email'    => 'required|min_length[4]|max_length[100]|valid_email|is_unique[usuarios.email]',
-            'telefono'  => 'required|min_length[10]|max_length[10]',
-            'direccion'  => 'required|max_length[100]',
-            'pass'     => 'required|min_length[3]|max_length[10]',
+            'telefono'  => 'min_length[10]|max_length[10]',
+            'direccion'  => 'max_length[100]',
+            'pass'     => 'required|min_length[3]|max_length[20]',
             'perfil_id'=> 'required|max_length[1]'
             
         ]);
