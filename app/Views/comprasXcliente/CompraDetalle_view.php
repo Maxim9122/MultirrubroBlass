@@ -65,6 +65,17 @@
   <br>
 
   <h2 class="detalle-compra-titulo">Detalle de la Compra</h2>
+  <br>
+  <?php if (!empty($ventas)): ?>
+    <?php foreach ($ventas as $vta): ?>
+      <?php if($vta['vto_cae'] != null){ ?>
+        <?php $VTO_CAE = date('d-m-Y', strtotime($vta['vto_cae'])); ?> 
+        <?php break; // Salir del bucle después del primer elemento ?>
+        <?php  } ?>
+      <?php endforeach; ?>
+      <?php endif; ?>
+
+<?php if($VTO_CAE != null){ ?>
   <table class="comprados detalle-compra-tabla">
     <thead>
       <tr>
@@ -74,18 +85,27 @@
       </tr>
     </thead>
     <tbody>
-    <?php if ($ventas): ?>
+    <?php if (!empty($ventas)): ?>
       <?php foreach ($ventas as $vta): ?>
-      <tr>      
+      <tr>
+         
           <td><?php echo $vta['id_cae']; ?></td>
-          <td><?php echo $vta['cae']; ?></td>
-          <?php $VTO_CAE = date('d-m-Y', strtotime($vta['vto_cae'])); ?>
+          <td><?php echo $vta['cae']; ?></td>                   
           <td><?php echo $VTO_CAE; ?></td>
+        
       </tr>
+      <?php break; // Salir del bucle después del primer elemento ?>
       <?php endforeach; ?>
-        <?php endif; ?>
+    <?php else: ?>
+      <tr>
+          <td colspan="3">No hay datos disponibles</td>
+      </tr>
+    <?php endif; ?>
     </tbody>
   </table>
+  <?php  } ?>
+
+
   <br>
   <div class="detalle-compra-tabla-container">
     <table class="detalle-compra-tabla comprados">
