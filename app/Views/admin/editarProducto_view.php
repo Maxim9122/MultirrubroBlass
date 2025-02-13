@@ -17,7 +17,7 @@
 <div class ="card-body" media="(max-width:768px)">
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
-   <input name="codigo_barra" type="text" pattern="[0-9]+" required="required" value="<?php echo $data['codigo_barra']?>">
+   <input name="codigo_barra" type="text" pattern="[0-9]+" required="required" value="<?php echo $data['codigo_barra']?>" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    
      <!-- Error -->
         <?php if($validation->getError('codigo_barra')) {?>
@@ -30,7 +30,7 @@
   <div class="mb-2">
    <label for="exampleFormControlInput1" class="form-label">Nombre</label>
    <input name="nombre" type="text"  class="form-control" placeholder="nombre" 
-   value="<?php echo $data['nombre']?>" required>
+   value="<?php echo $data['nombre']?>" required minlength="5" maxlength="20">
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
             <div class='alert alert-danger mt-2'>
@@ -61,8 +61,8 @@
         <?php }?>
   </div>
     <div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Precio</label>
-   <input required type="text" name="precio" class="form-control" value="<?php echo $data['precio']?>">
+  <label for="exampleFormControlInput1" class="form-label">Precio Costo</label>
+   <input required type="text" name="precio" class="form-control" value="<?php echo $data['precio']?>" step="0.01" min="0"  maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
         <?php if($validation->getError('precio')) {?>
             <div class='alert alert-danger mt-2'>
@@ -73,7 +73,7 @@
   
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Precio Venta</label>
-   <input required name="precio_vta" type="text" class="form-control" value="<?php echo $data['precio_vta']?>">
+   <input required name="precio_vta" type="text" class="form-control" value="<?php echo $data['precio_vta']?>" step="0.01" min="0"  maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
         <?php if($validation->getError('precio_vta')) {?>
             <div class='alert alert-danger mt-2'>
@@ -84,7 +84,7 @@
 
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Stock</label>
-   <input required name="stock" type="text" class="form-control" value="<?php echo $data['stock']?>">
+   <input required name="stock" type="text" class="form-control" value="<?php echo $data['stock']?>" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
         <?php if($validation->getError('stock')) {?>
             <div class='alert alert-danger mt-2'>
@@ -95,7 +95,7 @@
 
   <div class="mb-3">
    <label for="exampleFormControlInput1" class="form-label">Stock Minimo</label>
-   <input name="stock_min" type="text" class="form-control" value="<?php echo $data['stock_min']?>">
+   <input name="stock_min" type="text" class="form-control" value="<?php echo $data['stock_min']?>" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
         <?php if($validation->getError('stock_min')) {?>
             <div class='alert alert-danger mt-2'>

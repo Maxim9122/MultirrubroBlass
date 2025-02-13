@@ -1,10 +1,6 @@
 <?php
 namespace App\Controllers;
 
-require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
-
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
