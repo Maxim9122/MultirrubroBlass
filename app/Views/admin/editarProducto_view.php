@@ -18,7 +18,11 @@
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
    <input name="codigo_barra" type="text" pattern="[0-9]+" required="required" value="<?php echo $data['codigo_barra']?>" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+=======
+   <input name="codigo_barra" type="text" pattern="[0-9]+" value="<?php echo $data['codigo_barra']?>">
+>>>>>>> Stashed changes
 =======
    <input name="codigo_barra" type="text" pattern="[0-9]+" value="<?php echo $data['codigo_barra']?>">
 >>>>>>> Stashed changes
