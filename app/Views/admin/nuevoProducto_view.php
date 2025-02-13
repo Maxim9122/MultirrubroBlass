@@ -22,7 +22,11 @@
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
    <input name="codigo_barra" type="text" maxlength="15" required="required" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+=======
+   <input name="codigo_barra" type="text">
+>>>>>>> Stashed changes
 =======
    <input name="codigo_barra" type="text">
 >>>>>>> Stashed changes
