@@ -789,8 +789,8 @@ public function generarTA($id_cabecera = null) {
 
     // Ejecutar el script PHP mediante shell_exec()
     $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
-    //print_r($output);
-    //exit;
+    print_r($output);
+    exit;
 
     return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
 }

@@ -107,8 +107,8 @@ if (!is_dir($dir)) {
 
 // Guardar el archivo en la ruta especificada
 if (!file_put_contents($path, $TA)) {
-    exit("❌ ERROR: No se pudo escribir el archivo ficticio TA.xml en: $path \n");
+    exit("❌ ERROR: No se pudo escribir el archivo TA.xml en: $path \n");
 } else {
-    echo "✅ Archivo ficticio TA.xml guardado correctamente en: $path \n";
+    echo "✅ Archivo TA.xml guardado correctamente en: $path \n";
 }
 ?>
