@@ -17,12 +17,9 @@
 <div class ="card-body" media="(max-width:768px)">
 <div class="mb-2">
   <label for="exampleFormControlTextarea1" class="">Codigo de Barra</label>
-<<<<<<< Updated upstream
+
    <input name="codigo_barra" type="text" pattern="[0-9]+" required="required" value="<?php echo $data['codigo_barra']?>" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-=======
-   <input name="codigo_barra" type="text" pattern="[0-9]+" value="<?php echo $data['codigo_barra']?>">
->>>>>>> Stashed changes
-   
+
      <!-- Error -->
         <?php if($validation->getError('codigo_barra')) {?>
             <div class='alert alert-danger mt-2'>
