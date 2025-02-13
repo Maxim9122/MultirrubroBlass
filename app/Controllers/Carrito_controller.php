@@ -116,7 +116,7 @@ public function ListCompraDetalle($id)
     $datos['ventas'] = $cabeceraModel->getDetallesVenta($id);
 
     // Preparar el título y cargar las vistas
-    $data['titulo'] = 'Listado de Compras';
+    $data['titulo'] = 'Detalle de Compras';
     echo view('navbar/navbar');
     echo view('header/header', $data);
     echo view('comprasXcliente/CompraDetalle_view', $datos);
