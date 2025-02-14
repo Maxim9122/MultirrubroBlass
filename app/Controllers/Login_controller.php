@@ -18,62 +18,75 @@ class Login_controller extends Controller
         echo view('footer/footer');
     } 
   
-    public function auth()
-    {
-        $session = session();
-        $model = new Usuarios_model();
-        $email = $this->request->getVar('email');
-        $password = $this->request->getVar('pass');
-        $data = $model->where('email', $email)->first();
-        if($data){
-            $pass = $data['pass'];
-            $verify_pass = password_verify($password, $pass);
-            if($verify_pass){
-                if($data['baja']=='SI'){
-                    $session->setFlashdata('msg', 'Usted fue dado de Baja');
-                    return redirect()->to('login');
-                }else{
+ public function auth()
+{
+    $session = session();
+    $model = new Usuarios_model();
+    $registro_sesion = new Sesion_model();
+    
+    $email = $this->request->getVar('email');
+    $password = $this->request->getVar('pass');
+    
+    $data = $model->where('email', $email)->first();
 
-                //registrando inicio de sesion
-                $registro_sesion = new Sesion_model();
-                date_default_timezone_set('America/Argentina/Buenos_Aires');
-                $registro_sesion ->save([
-                    'id_usuario' => $data['id'],
-                    'inicio_sesion' => date('d-m-Y H:i'), // Fecha y hora actual de Argentina
-                    'estado' => 'activa'
-                ]); 
-                //print_r($data['id']);
-                //exit;
-                $id_regSesion = $registro_sesion->getInsertID(); 
+    if ($data) {
+        $pass = $data['pass'];
+        $verify_pass = password_verify($password, $pass);
 
-                $ses_data = [
-                    'id' => $data['id'],
-                    'nombre' => $data['nombre'],
-                    'apellido'=> $data['apellido'],
-                    'email' =>  $data['email'],
-                    'telefono' => $data['telefono'],
-                    'direccion' => $data['direccion'],
-                    'perfil_id'=> $data['perfil_id'],
-                    'id_sesion'=> $id_regSesion,
-                    'logged_in'     => TRUE
-                ];
-                
-
-                $session->set($ses_data);
-                if($ses_data['perfil_id'] == 2){
-                return redirect()->to('catalogo');
-                }else{
-                return redirect()->to('/Lista_Productos');
-                }
-            }}else{
-                $session->setFlashdata('msg', 'Password Incorrecta');
+        if ($verify_pass) {
+            if ($data['baja'] == 'SI') {
+                $session->setFlashdata('msg', 'Usted fue dado de Baja');
                 return redirect()->to('login');
             }
-        }else{
-            $session->setFlashdata('msg', 'Email Incorrecto');
+
+            // ✅ 1️⃣ Verificar si el usuario ya tiene una sesión activa
+            $sesion_activa = $registro_sesion->where([
+                'id_usuario' => $data['id'],
+                'estado' => 'activa'
+            ])->first();
+
+            if ($sesion_activa) {
+                $session->setFlashdata('msg', 'Este usuario ya tiene una sesión activa.');
+                return redirect()->to('login');
+            }
+
+            // ✅ 2️⃣ Registrar nueva sesión
+            date_default_timezone_set('America/Argentina/Buenos_Aires');
+            $registro_sesion->save([
+                'id_usuario' => $data['id'],
+                'inicio_sesion' => date('Y-m-d H:i:s'), // Formato correcto de timestamp
+                'estado' => 'activa'
+            ]);
+
+            $id_regSesion = $registro_sesion->getInsertID();
+
+            // ✅ 3️⃣ Guardar datos en sesión
+            $ses_data = [
+                'id' => $data['id'],
+                'nombre' => $data['nombre'],
+                'apellido' => $data['apellido'],
+                'email' => $data['email'],
+                'telefono' => $data['telefono'],
+                'direccion' => $data['direccion'],
+                'perfil_id' => $data['perfil_id'],
+                'id_sesion' => $id_regSesion,
+                'logged_in' => TRUE
+            ];
+
+            $session->set($ses_data);
+
+            // Redirigir según el perfil
+            return ($ses_data['perfil_id'] == 2) ? redirect()->to('catalogo') : redirect()->to('/Lista_Productos');
+        } else {
+            $session->setFlashdata('msg', 'Password Incorrecta');
             return redirect()->to('login');
         }
+    } else {
+        $session->setFlashdata('msg', 'Email Incorrecto');
+        return redirect()->to('login');
     }
+}
+
 
 
     public function logout()

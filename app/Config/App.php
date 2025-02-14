@@ -174,7 +174,7 @@ class App extends BaseConfig
      *
      * @var int
      */
-    public $sessionExpiration = 3600; //Expira la sesion en 1 hora.
+    public $sessionExpiration = 60; //Expira la sesion en 1 hora.
 
     public int $cookie_lifetime = 0;
     /**
@@ -219,7 +219,7 @@ class App extends BaseConfig
      *
      * @var int
      */
-    public $sessionTimeToUpdate = 300;
+    public $sessionTimeToUpdate = 60;
 
     /**
      * --------------------------------------------------------------------------
