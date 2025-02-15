@@ -44,6 +44,7 @@ class Autoload extends AutoloadConfig
         'CodeIgniterCart' => ROOTPATH . 'vendor/jason-napolitano/codeigniter4-cart-module/src',
         'APP_NAMESPACE' => APPPATH, // For custom app namespace
         'Config'      => APPPATH . 'Config',
+        'Mike42\\Escpos\\' => APPPATH . 'Libraries/Escpos/src',
     ];
 
     /**

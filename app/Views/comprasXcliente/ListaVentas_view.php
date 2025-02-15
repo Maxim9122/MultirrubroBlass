@@ -77,28 +77,26 @@
               <span class="dropdown-toggle btn">Acciones▼</span>
                <ul class="dropdown-menu">
                <li>
-                <a class="btn btn-outline-primary" href="<?php echo base_url('DetalleVta/'.$vta['id']);?>">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
-                <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
-                </svg> Ver Detalle
+                <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;" href="<?php echo base_url('DetalleVta/'.$vta['id']);?>">
+                    Ver Detalle
+                </a>
+            </li>
+            <li>
+                <?php if($vta['estado'] == 'Facturada'){?>
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
+                        Imp.Factura
                     </a>
-                </li>  
-                <li>
-                  <?php if($vta['estado'] == 'Facturada'){?>
-                    <a  style="background-color: #a4b09f; border-radius: 10px; padding:7px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
-                        📄 Imprimir Factura
+                <?php  } if($vta['estado'] == 'Sin_Facturar'){  ?>
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
+                        Imp.Ticket
                     </a>
-                  <?php  } if($vta['estado'] == 'Sin_Facturar'){  ?>
-                    <a style="background-color: #a4b09f; border-radius: 10px; padding:10px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
-                        📄 Imprimir Solo Ticket
+                <?php } if($vta['estado'] == 'Error_factura') { ?>
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
+                        Re.Facturar
                     </a>
-                  <?php } if($vta['estado'] == 'Error_factura') {?>
-                    <a  style="background-color: #a4b09f; border-radius: 10px; padding:7px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
-                        📄 Reintentar Facturar
-                    </a>
-                  <?php } ?> 
-                </li>                                    
+                <?php } ?> 
+                 </li>
+                                            
                     </ul>
                 </div>
 
