@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+
+
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
@@ -8,13 +10,34 @@ Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
 use App\Models\Usuarios_model;
 use App\Models\Cae_model;
-
+use App\Libraries\Escpos\Escpos;
+use Mike42\Escpos\Printer;
 
 class Carrito_controller extends Controller{
 
 	public function __construct(){
            helper(['form', 'url']);
 	}
+
+    public function printTest()
+{
+    // Configuración para una impresora en Windows
+    $escpos = new Escpos('windows', [
+        'printer_name' => 'smb://LAPTOP-U96GGQHJ/EPSONTMT20', // Notación SMB
+    ]);
+
+    // Obtener la instancia de la impresora
+    $printer = $escpos->getPrinter();
+
+    // Imprimir texto
+    $printer->text("Hola, mundo!\n");
+    $printer->cut();
+
+    // Cerrar la conexión (se hace automáticamente en el destructor)
+    echo "Impresión completada.";
+}
+
+
 
 	public function ListVentasCabecera()
 {
@@ -585,63 +608,45 @@ public function generarTicket($id_venta)
     // Generar el contenido del ticket en texto
     $ticket = "";
 
-    // Cabecera del ticket
-    // Definir ancho del papel en caracteres
-    $titulo = "MULTIRUBRO BLASS";
-    $ancho_papel = 25; // Ajusta el ancho del ticket según la impresora
-    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
-
-    // Agregar la advertencia "REMITO no válido como factura"
-    $remito = "REMITO";
-    $remito2 = "No válido como factura.";
-
-    $espacios_remito = intval(($ancho_papel - strlen($remito)) / 2);
-    $espacios_remito2 = intval(($ancho_papel - strlen($remito2)) / 2);
-
-    $ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
-    $ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
-
-    // **Activar negrita y ancho doble sin altura doble**
+    // **Centrar el título, aplicar negrita y doble tamaño**
+    $ticket .= "\x1B\x61\x01"; // Centrar texto
     $ticket .= "\x1B\x45\x01"; // Activar negrita
     $ticket .= "\x1D\x21\x10"; // Doble ancho, altura normal
-    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
+    $ticket .= "MULTIRRUBRO BLASS\n"; // Título
     $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
-    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
+    $ticket .= "\x1B\x45\x00"; // Desactivar negrita
+    $ticket .= "\x1B\x61\x00"; // Restaurar alineación (izquierda)
 
+    // Datos de la empresa
     $ticket .= "Calle Belgrano 2077, casi Brasil\n";
     $ticket .= "Cel: 3794-095020\n";
     $ticket .= "Instagram: @Blass.Multirubro\n";
     $ticket .= "Facebook: Blass Multirubro\n\n";
 
-
     // Información de la venta
     $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
-    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
-    if($cliente['cuil'] > 0){
-        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
-    }else{
-        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
+    if ($cliente['cuil'] > 0) {
+        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] . "\n";
+    } else {
+        $ticket .= "Cliente: " . $cliente['nombre'] . "\n";
     }
-    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
+    $ticket .= "Atendido Por: " . $nombreVendedor . "\n";
     $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
 
     $ticket .= "=====================================\n";
-    // Detalle de la compra
     $ticket .= "Detalle de Compra:\n";
     foreach ($detalles as $detalle) {
         $producto = $productos[$detalle['producto_id']];
         $ticket .= $producto['nombre'] . " x " . $detalle['cantidad'] . " - $" . $detalle['precio'] . "\n";
     }
     $ticket .= "=====================================\n";
-    // Total a pagar
     if ($cabecera['tipo_pago'] == 'Efectivo') {
         $ticket .= "\nDescuento Efectivo: $" . ($cabecera['total_venta'] * 0.05) . "\n";
     }
     $ticket .= "\nTotal a Pagar: $" . $cabecera['total_bonificado'] . "\n";
-    
 
     // Footer con notas
-    $ticket .= "\nImportante:.\n";
+    $ticket .= "\nImportante:\n";
     $ticket .= "\nLa mercadería viaja por cuenta y riesgo del comprador.\n";
     $ticket .= "Es responsabilidad del cliente controlar su compra antes de salir del local.\n";
     $ticket .= "Su compra tiene 48hs para cambio ante fallas previas del producto.\n";
@@ -650,8 +655,7 @@ public function generarTicket($id_venta)
     // Imprimir el ticket
     $this->imprimirTicket($ticket);
 
-    if($cabecera['tipo_compra'] == 'Pedido'){
-
+    if ($cabecera['tipo_compra'] == 'Pedido') {
         $ventaModel->cambiarEstado($id_venta, 'Sin_Facturar');
     }
 
@@ -659,31 +663,35 @@ public function generarTicket($id_venta)
     return redirect()->to(base_url('catalogo'));
 }
 
+
+
 private function imprimirTicket($content)
 {
-    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Nombre de la impresora
+    // Cargar la clase Escpos
+    require_once APPPATH . 'Libraries/Escpos/Escpos.php';
 
-    $printer = fopen($printerName, 'w');
+    // Configuración para una impresora en Windows
+    $escpos = new \App\Libraries\Escpos\Escpos('windows', [
+        'printer_name' => 'smb://LAPTOP-U96GGQHJ/EPSONTMT20', // Notación SMB
+    ]);
 
-    if ($printer) {
-        // Enviar el contenido línea por línea con una pequeña pausa
-        $lines = explode("\n", $content);
-        foreach ($lines as $line) {
-            fwrite($printer, $line . "\n");
-            usleep(50000); // 50ms de pausa entre líneas
-        }
+    // Obtener la instancia de la impresora
+    $printer = $escpos->getPrinter();
 
-        // Avanzar el papel varias líneas antes de cortar
-        fwrite($printer, "\n\n\n\n");
-        usleep(100000); // 100ms de pausa antes del corte
-
-        // Comando de corte de papel
-        fwrite($printer, "\x1D\x56\x00");
-
-        fclose($printer);
-    } else {
-        die("No se pudo abrir la impresora.");
+    // Imprimir el contenido línea por línea
+    $lines = explode("\n", $content);
+    foreach ($lines as $line) {
+        $printer->text($line . "\n");
     }
+
+    // Avanzar el papel varias líneas antes de cortar
+    $printer->feed(4);
+
+    // Cortar el papel
+    $printer->cut();
+
+    // Cerrar la conexión (se hace automáticamente en el destructor)
+    echo "Impresión completada.";
 }
 
 
@@ -718,6 +726,7 @@ public function verificarTA($id_cabecera = null) {
 
    // Verificar si el archivo TA.xml existe
    if (!file_exists($taPath)) {
+    
     $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
     session()->setFlashdata('msgEr', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
     return redirect()->to(base_url('catalogo'));
@@ -772,24 +781,46 @@ public function verificarTA($id_cabecera = null) {
 //Genera un nuevo TA.xml si es necesario.
 public function generarTA($id_cabecera = null) {
     $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        } 
+
+    // Verifica si el usuario está logueado
+    if (!$session->has('id')) { 
+        return redirect()->to(base_url('login')); 
+    } 
+
     if ($id_cabecera === null) {
-        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
         return redirect()->to(base_url('catalogo'));
     }
+
     // Ruta al script wsaa-client.php
     $path = APPPATH . 'Libraries/afip/wsaa-client.php';
 
-    // Ejecutar el script PHP mediante shell_exec()
-    $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
-    //print_r($output);
-    //exit;
+    // Configuración de descriptores para la ejecución
+    $descriptorspec = [
+        0 => ["pipe", "r"],  // Entrada estándar (no usada)
+        1 => ["pipe", "w"],  // Salida estándar
+        2 => ["pipe", "w"]   // Salida de error
+    ];
 
-    return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
+    // Ejecutar el script PHP con proc_open
+    $process = proc_open("php " . escapeshellarg($path) . " wsfe", $descriptorspec, $pipes);
+
+    if (is_resource($process)) {
+        $output = stream_get_contents($pipes[1]); // Captura la salida
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process); // Cierra el proceso
+
+        // Mostrar la salida para depuración (puedes comentar esto en producción)
+        //echo "<pre>$output</pre>";
+        //exit;
+    } else {
+        echo "Error al ejecutar el proceso.";
+        exit;
+    }
+
+    return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
 }
+
 
 //Aqui va el xml de factura para enviar a ARCA
 //re copiar abajo $TA,$id_cabecera
@@ -966,30 +997,27 @@ public function facturar($TA = null,$id_cabecera = null) {
 
 //Genera el ticket factura tipo C
 public function generarTicketFacturaC($id_cabecera = null)
-{   
-    
+{
     $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        } 
+    // Verifica si el usuario está logueado
+    if (!$session->has('id')) {
+        return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+    }
+
     if ($id_cabecera === null) {
-        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
         return redirect()->to(base_url('catalogo'));
     }
+
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     $caeModel = new \App\Models\Cae_model();
+
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
-    //print_r($cabecera);
-    //exit;
     $detalle_CAE = $caeModel->find($cabecera['id_cae']);
-    //print_r($detalle_CAE);
-    //exit;
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
 
     // Obtener los productos relacionados
@@ -1002,97 +1030,84 @@ public function generarTicketFacturaC($id_cabecera = null)
     $cliente = $clienteModel->find($cabecera['id_cliente']);
 
     // Obtener el nombre del vendedor desde la sesión
-    $session = session();
     $nombreVendedor = $session->get('nombre');
 
     // Generar el contenido del ticket en texto
     $ticket = "";
-    //$ancho_papel2 = 50; // Ancho del papel para centrar la advertencia
-    $ancho_papel = 25;  // Ancho del papel para el título
 
-    // Cabecera del ticket
-    $titulo = "MULTIRRUBRO BLASS";
-    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
-
-    // Agregar la advertencia "Factura C" con CAE y Vto.
-    //$remito = "Factura C";
-    //$remito2 = "CAE: " . $detalle_CAE['cae'] . " Vto Fecha: " . $detalle_CAE['vto_cae'];
-
-    //$espacios_remito = intval(($ancho_papel2 - strlen($remito)) / 2);
-    //$espacios_remito2 = intval(($ancho_papel2 - strlen($remito2)) / 2);
-
-    // Agregar la advertencia centrada con "Factura C" en negrita
-    //$ticket .= "\x1B\x45\x01"; // Activar negrita
-    //$ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
-    //$ticket .= "\x1B\x45\x00"; // Desactivar negrita
-    //$ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
-
-    // **Activar negrita y doble ancho sin doble altura para el título**
+    // **Centrar el título, aplicar negrita y doble tamaño**
+    $ticket .= "\x1B\x61\x01"; // Centrar texto
     $ticket .= "\x1B\x45\x01"; // Activar negrita
-    $ticket .= "\x1D\x21\x10"; // Ancho doble, altura normal
-    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
+    $ticket .= "\x1D\x21\x10"; // Doble ancho, altura normal
+    $ticket .= "MULTIRRUBRO BLASS\n"; // Título
     $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
-    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
+    $ticket .= "\x1B\x45\x00"; // Desactivar negrita
+    $ticket .= "\x1B\x61\x00"; // Restaurar alineación (izquierda)
 
     // Datos de la empresa
     $ticket .= "GONZALEZ EMMANUEL ALEJANDRO\n";
     $ticket .= "CUIT Nro: 20-36955726-3\n";
-    $ticket .= "Domicilio: Belgrano 2077\n"; 
-    $ticket .= "Corrientes (3400) - Corrientes\n"; 
+    $ticket .= "Domicilio: Belgrano 2077\n";
+    $ticket .= "Corrientes (3400) - Corrientes\n";
     $ticket .= "Cel: 3794-095020\n";
-    $ticket .= "Inicio de actividades: 01/02/2023\n";     
+    $ticket .= "Inicio de actividades: 01/02/2023\n";
     $ticket .= "Ingresos Brutos: 20-36955726-3\n";
     $ticket .= "Resp. Monotributo\n";
     $ticket .= "----------------------------------\n";
+
     // Información de la venta
-    if($cabecera['tipo_compra'] == 'Pedido'){
+    if ($cabecera['tipo_compra'] == 'Pedido') {
         // Establecer zona horaria y obtener fecha/hora en formato correcto
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fechaHoy = date('d-m-Y'); // Formato: dd-mm-yyyy
         $horaHoy = date('H:i:s');  // Formato: HH:MM:SS
 
         $ticket .= "Fecha: " . $fechaHoy . " Hora: " . $horaHoy . "\n";
-    }else{
+    } else {
         $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
     }
     $ticket .= "----------------------------------\n";
 
     $ticket .= "Factura C (Cod.011) a Consumidor Final\n";
     $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
-    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
-    if($cliente['cuil'] > 0){
-        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
-    }else{
-        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
+
+    // Si tiene un CUIL lo muestra, si no solo muestra el nombre del cliente
+    if ($cliente['cuil'] > 0) {
+        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] . "\n";
+    } else {
+        $ticket .= "Cliente: " . $cliente['nombre'] . "\n";
     }
-    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
+    $ticket .= "Atendido Por: " . $nombreVendedor . "\n";
     $ticket .= "----------------------------------\n";
 
     // Detalle de la compra
     $ticket .= "Detalle de Compra:\n";
     foreach ($detalles as $detalle) {
         $producto = $productos[$detalle['producto_id']];
-        $ticket .= $producto['nombre'] . "  x  " . $detalle['cantidad'] . "  - $" . $detalle['precio'] . "\n";
+        $ticket .= $producto['nombre'] . " x " . $detalle['cantidad'] . " - $" . $detalle['precio'] . "\n";
     }
+
     // Total a pagar
     $ticket .= "Subtotal sin descuentos: $" . $cabecera['total_venta'] . "\n";
     if ($cabecera['tipo_pago'] == 'Efectivo') {
         $ticket .= "Descuentos: $" . ($cabecera['total_venta'] * 0.05) . "\n";
-    }else{
+    } else {
         $ticket .= "Descuentos: $0.00\n";
     }
     $ticket .= "Total: $" . $cabecera['total_bonificado'] . "\n";
     $ticket .= "----------------------------------\n";
 
-
+    // Información fiscal
     $ticket .= "Reg. Transparencia fiscal al consumidor\n";
     $ticket .= "IVA CONTENIDO: $0.00\n";
-    $ticket .= "Otros Imp. Nac. Indirectos: $0.00\n";        
+    $ticket .= "Otros Imp. Nac. Indirectos: $0.00\n";
     $ticket .= "Tipo de Pago: " . $cabecera['tipo_pago'] . "\n";
     $ticket .= "Referencia electronica del comprobante:\n";
-    //Transformo la fecha de 20250210 a 10-02-2025
+
+    // Transformar la fecha de vencimiento del CAE
     $fecha_vencimiento = date('d-m-Y', strtotime($detalle_CAE['vto_cae']));
-    $ticket .= "CAE: " . $detalle_CAE['cae'] . " - Vto: " . $fecha_vencimiento ."\n";
+    $ticket .= "CAE: " . $detalle_CAE['cae'] . " - Vto: " . $fecha_vencimiento . "\n";
+
     // Footer con notas
     $ticket .= "\nImportante:\n";
     $ticket .= "La mercaderia viaja por cuenta y riesgo del comprador.\n";
@@ -1102,13 +1117,16 @@ public function generarTicketFacturaC($id_cabecera = null)
     $ticket .= "Facebook: Blass Multirrubro\n\n";
     $ticket .= "Muchas Gracias por su Compra.!\n";
 
-   
     // Imprimir el ticket
     $this->imprimirTicket($ticket);
-    //Mensaje de factura impresa cuando solo quiere volver a imprimir la factura
-    session()->setFlashdata('msg', 'Facturar Impresa con Éxito.');
+
+    if ($cabecera['tipo_compra'] == 'Pedido') {
+        $ventaModel->cambiarEstado($id_cabecera, 'Sin_Facturar');
+    }
+
+    // Mensaje de factura impresa
+    session()->setFlashdata('msg', 'Factura Impresa con Éxito.');
     return redirect()->to(base_url('catalogo'));
 }
-
 
 }

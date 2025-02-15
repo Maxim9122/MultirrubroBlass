@@ -17,7 +17,7 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home');
+$routes->setDefaultController('Login_controller');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -160,6 +160,8 @@ $routes->get('factura/(:num)', 'Carrito_controller::FacturaCliente/$1');
 //AFIP
 $routes->get('verificarTA','Carrito_controller::verificarTA');
 $routes->get('generarTicket', 'Carrito_controller::facturar');
+
+$routes->get('printTest', 'Carrito_controller::printTest');
 
 $routes->get('verificarTA/(:num)','Carrito_controller::verificarTA/$1');
 $routes->get('generarTicket/(:num)', 'Carrito_controller::generarTicket/$1');
