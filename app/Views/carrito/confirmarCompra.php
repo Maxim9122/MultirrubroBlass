@@ -126,7 +126,7 @@ endif;
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
                 <br>
                         <label for="pago" class="cambio" style="color: #ffff; font-weight: 600;">Paga con: $</label>
-                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" oninput="formatearMiles()" onkeyup="calcularCambio()">
+                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularCambio()">
 
                         <h4 class="cambio" style="color: #ffff; font-weight: 900;">Cambio: $ <span id="cambio">0.00</span></h4>
                 <br>

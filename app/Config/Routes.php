@@ -165,7 +165,7 @@ $routes->get('verificarTA/(:num)','Carrito_controller::verificarTA/$1');
 $routes->get('generarTicket/(:num)', 'Carrito_controller::generarTicket/$1');
 $routes->get('generarTicketFacturaC/(:num)', 'Carrito_controller::generarTicketFacturaC/$1');
 
-
+$routes->get('generar_pdf', 'Carrito_controller::generar_pdf');
 
 /*
 	
