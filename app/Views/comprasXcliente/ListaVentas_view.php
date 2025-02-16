@@ -2,6 +2,19 @@
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
           $id=$session->get('id');?>
+
+<?php if (session()->getFlashdata('msg')): ?>
+        <div id="flash-message" class="flash-message success">
+            <?= session()->getFlashdata('msg') ?>
+        </div>
+    <?php endif; ?>   
+    <script>
+        setTimeout(function() {
+            document.getElementById('flash-message').style.display = 'none';
+        }, 3000); // 3000 milisegundos = 3 segundos
+    </script>
+
+
 <section class="Fondo">
 <div class="" style="width: 100%;" align="center">
 <section class="contenedor-titulo">

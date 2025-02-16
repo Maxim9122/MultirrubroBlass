@@ -1,6 +1,12 @@
 <?php
 namespace App\Controllers;
 
+require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
+
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 use CodeIgniter\Controller;
 Use App\Models\Productos_model;
 Use App\Models\Cabecera_model;
@@ -556,18 +562,19 @@ public function ListCompraDetalle($id)
 }
 
 
-//Genera ticket venta normal
-public function generarTicket($id_venta)
+
+public function generarTicket($id_cabecera)
 {
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
-
-    // Obtener los detalles de la venta
-    $cabecera = $ventaModel->find($id_venta);
-    $detalles = $detalleModel->where('venta_id', $id_venta)->findAll();
+    
+    // Obtener los detalles de la venta y el CAE
+    $cabecera = $ventaModel->find($id_cabecera);
+    
+    $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
 
     // Obtener los productos relacionados
     $productos = [];
@@ -582,109 +589,148 @@ public function generarTicket($id_venta)
     $session = session();
     $nombreVendedor = $session->get('nombre');
 
-    // Generar el contenido del ticket en texto
-    $ticket = "";
+    // Crear el HTML para la vista previa
+    ob_start();
+    ?>
+    <html>
+    <head>
+        <style>
+            /* Estilos CSS para el ticket */
+            body {
+                font-family: Arial, sans-serif; /* Cambiar a una fuente más legible */
+                margin: 0;
+                padding: 0;
+                width: 220px; /* Ancho del ticket */
+            }
+            .ticket {
+                width: 100%;
+                font-size: 12px; /* Ajustar tamaño de fuente */
+            }
+            h1 {
+                font-size: 18px;
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h3 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            .ticket p {
+                margin: 2px 0;
+                font-size: 10px;
+                font-weight: bold;
+                text-align: justify; /* Justificar el texto */
+            }
+            .ticket hr {
+                border: 0.5px solid #000;
+                margin: 5px 0;
+            }
+            .ticket .header,
+            .ticket .footer {
+                text-align: center;
+                font-size: 10px;
+            }
+            .ticket .details {
+                margin-top: 3px;
+                font-size: 10px;
+            }
+            .ticket .details td {
+                padding: 0px;
+            }
+            .ticket .details th {
+                text-align: left;
+                padding-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ticket">
+            <h3>Remito</h3>
+            <p align="center">no valido como factura</p>
+            <!-- Cabecera del ticket -->
+            <h1>MULTIRUBRO BLASS</h1>
+            <p>GONZALEZ EMMANUEL ALEJANDRO</p>
+            <p>CUIT Nro: 20-36955726-3</p>
+            <p>Domicilio: Belgrano 2077, Corrientes (3400)</p>
+            <p>Cel: 3794-095020</p>
+            <p>Inicio de actividades: 01/02/2023</p>
+            <p>Ingresos Brutos: 20-36955726-3</p>
+            <p>Resp. Monotributo</p>
+            <hr>
 
-    // Cabecera del ticket
-    // Definir ancho del papel en caracteres
-    $titulo = "MULTIRUBRO BLASS";
-    $ancho_papel = 25; // Ajusta el ancho del ticket según la impresora
-    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
+            <!-- Información de la venta -->
+            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Factura C (Cod.011) a Consumidor Final</p>
+            <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
+            <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
+            <p>Atendido por: <?= $nombreVendedor ?></p>
+            <hr>
 
-    // Agregar la advertencia "REMITO no válido como factura"
-    $remito = "REMITO";
-    $remito2 = "No válido como factura.";
+            <!-- Detalle de la compra -->
+            <div class="details" style="width: 100%; font-size: 10px;">
+                <h3>Productos Adquiridos</h3>
+                <?php foreach ($detalles as $detalle): ?>
+                    <div>
+                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                    </div>
+                <?php endforeach; ?>            
+            </div>
 
-    $espacios_remito = intval(($ancho_papel - strlen($remito)) / 2);
-    $espacios_remito2 = intval(($ancho_papel - strlen($remito2)) / 2);
+            <!-- Totales -->
+            <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
+            <p>Descuentos: <?= ($cabecera['tipo_pago'] == 'Efectivo') ? '$' . number_format($cabecera['total_venta'] * 0.05, 2) : '$0.00' ?></p>
+            <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <hr>
 
-    $ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
-    $ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
+            <!-- Footer -->
+            <div class="footer">
+                <p>Importante:</p>
+                <p>La mercaderia viaja por cuenta y riesgo del comprador.</p>
+                <p>Es responsabilidad del cliente controlar su compra antes de salir del local.</p>
+                <p>Su compra tiene 48hs para cambio ante fallas previas del producto.</p>
+                <p>Instagram: @Blass.Multirrubro</p>
+                <p>Facebook: Blass Multirrubro</p>
+                <h3>Muchas Gracias por su Compra.!</h3>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    // Almacenar el HTML generado
+    $html = ob_get_clean();
 
-    // **Activar negrita y ancho doble sin altura doble**
-    $ticket .= "\x1B\x45\x01"; // Activar negrita
-    $ticket .= "\x1D\x21\x10"; // Doble ancho, altura normal
-    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
-    $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
-    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
+    // Cargar la librería dompdf
+    $dompdf = new \Dompdf\Dompdf();
 
-    $ticket .= "Calle Belgrano 2077, casi Brasil\n";
-    $ticket .= "Cel: 3794-095020\n";
-    $ticket .= "Instagram: @Blass.Multirubro\n";
-    $ticket .= "Facebook: Blass Multirubro\n\n";
+    // Configurar dompdf para no agregar márgenes
+    $dompdf->set_option('isPhpEnabled', true);
+    $dompdf->set_option('defaultPaperSize', 'custom');
+    $dompdf->setPaper(array(0, 0, 220, 1000)); // Ancho: 220px, Alto: suficiente para el contenido
 
+    // Cargar el HTML en dompdf
+    $dompdf->loadHtml($html);
 
-    // Información de la venta
-    $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
-    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
-    if($cliente['cuil'] > 0){
-        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
-    }else{
-        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
-    }
-    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
-    $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
+    // Renderizar el PDF
+    $dompdf->render();
 
-    $ticket .= "=====================================\n";
-    // Detalle de la compra
-    $ticket .= "Detalle de Compra:\n";
-    foreach ($detalles as $detalle) {
-        $producto = $productos[$detalle['producto_id']];
-        $ticket .= $producto['nombre'] . " x " . $detalle['cantidad'] . " - $" . $detalle['precio'] . "\n";
-    }
-    $ticket .= "=====================================\n";
-    // Total a pagar
-    if ($cabecera['tipo_pago'] == 'Efectivo') {
-        $ticket .= "\nDescuento Efectivo: $" . ($cabecera['total_venta'] * 0.05) . "\n";
-    }
-    $ticket .= "\nTotal a Pagar: $" . $cabecera['total_bonificado'] . "\n";
-    
+    $filename = 'c:FacturasYticketsPDF/ticket.pdf';
+    file_put_contents($filename, $dompdf->output());
 
-    // Footer con notas
-    $ticket .= "\nImportante:.\n";
-    $ticket .= "\nLa mercadería viaja por cuenta y riesgo del comprador.\n";
-    $ticket .= "Es responsabilidad del cliente controlar su compra antes de salir del local.\n";
-    $ticket .= "Su compra tiene 48hs para cambio ante fallas previas del producto.\n";
-    $ticket .= "\nMuchas Gracias por su Compra!.\n";
+    $perfil = $session->get('perfil_id');
+    session()->setFlashdata('msg', 'Imprimiendo Factura...');
 
-    // Imprimir el ticket
-    $this->imprimirTicket($ticket);
-
-    if($cabecera['tipo_compra'] == 'Pedido'){
-
-        $ventaModel->cambiarEstado($id_venta, 'Sin_Facturar');
-    }
-
-    session()->setFlashdata('msg', 'Gracias por su compra.!');
-    return redirect()->to(base_url('catalogo'));
-}
-
-private function imprimirTicket($content)
-{
-    $printerName = "\\\\LAPTOP-U96GGQHJ\\EPSONTMT20"; // Nombre de la impresora
-
-    $printer = fopen($printerName, 'w');
-
-    if ($printer) {
-        // Enviar el contenido línea por línea con una pequeña pausa
-        $lines = explode("\n", $content);
-        foreach ($lines as $line) {
-            fwrite($printer, $line . "\n");
-            usleep(50000); // 50ms de pausa entre líneas
-        }
-
-        // Avanzar el papel varias líneas antes de cortar
-        fwrite($printer, "\n\n\n\n");
-        usleep(100000); // 100ms de pausa antes del corte
-
-        // Comando de corte de papel
-        fwrite($printer, "\x1D\x56\x00");
-
-        fclose($printer);
+    if ($perfil == 2) {
+        return redirect()->to(base_url('catalogo'));
     } else {
-        die("No se pudo abrir la impresora.");
+        return redirect()->to(base_url('compras'));
     }
+
+
 }
+
+
 
 
 
@@ -965,31 +1011,18 @@ public function facturar($TA = null,$id_cabecera = null) {
 
 
 //Genera el ticket factura tipo C
-public function generarTicketFacturaC($id_cabecera = null)
-{   
-    
-    $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        } 
-    if ($id_cabecera === null) {
-        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
-        return redirect()->to(base_url('catalogo'));
-    }
+public function generarTicketFacturaC($id_cabecera)
+{
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     $caeModel = new \App\Models\Cae_model();
+
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
-    //print_r($cabecera);
-    //exit;
     $detalle_CAE = $caeModel->find($cabecera['id_cae']);
-    //print_r($detalle_CAE);
-    //exit;
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
 
     // Obtener los productos relacionados
@@ -1005,110 +1038,148 @@ public function generarTicketFacturaC($id_cabecera = null)
     $session = session();
     $nombreVendedor = $session->get('nombre');
 
-    // Generar el contenido del ticket en texto
-    $ticket = "";
-    //$ancho_papel2 = 50; // Ancho del papel para centrar la advertencia
-    $ancho_papel = 25;  // Ancho del papel para el título
+    // Crear el HTML para la vista previa
+    ob_start();
+    ?>
+    <html>
+    <head>
+        <style>
+            /* Estilos CSS para la factura */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                width: 220px;
+            }
+            .ticket {
+                width: 100%;
+                font-size: 12px;
+            }
+            h1 {
+                font-size: 18px;
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h3 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            .ticket p {
+                margin: 2px 0;
+                font-size: 10px;
+                font-weight: bold;
+                text-align: justify;
+            }
+            .ticket hr {
+                border: 0.5px solid #000;
+                margin: 5px 0;
+            }
+            .ticket .header,
+            .ticket .footer {
+                text-align: center;
+                font-size: 10px;
+            }
+            .ticket .details {
+                margin-top: 3px;
+                font-size: 10px;
+            }
+            .ticket .details td {
+                padding: 0px;
+            }
+            .ticket .details th {
+                text-align: left;
+                padding-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ticket">
+            <h3>Factura C</h3>
+            <p align="center">CAE: <?= $detalle_CAE['cae'] ?>   Vto: <?= date('d-m-Y', strtotime($detalle_CAE['vto_cae'])) ?></p>
+            <!-- Cabecera del ticket -->
+            <h1>MULTIRUBRO BLASS</h1>
+            <p>GONZALEZ EMMANUEL ALEJANDRO</p>
+            <p>CUIT Nro: 20-36955726-3</p>
+            <p>Domicilio: Belgrano 2077, Corrientes (3400)</p>
+            <p>Cel: 3794-095020</p>
+            <p>Inicio de actividades: 01/02/2023</p>
+            <p>Ingresos Brutos: 20-36955726-3</p>
+            <p>Resp. Monotributo</p>
+            <hr>
 
-    // Cabecera del ticket
-    $titulo = "MULTIRRUBRO BLASS";
-    $espacios_izq = intval(($ancho_papel - strlen($titulo)) / 2);
+            <!-- Información de la venta -->
+            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Factura C (Cod.011) a Consumidor Final</p>
+            <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
+            <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
+            <p>Atendido por: <?= $nombreVendedor ?></p>
+            <hr>
 
-    // Agregar la advertencia "Factura C" con CAE y Vto.
-    //$remito = "Factura C";
-    //$remito2 = "CAE: " . $detalle_CAE['cae'] . " Vto Fecha: " . $detalle_CAE['vto_cae'];
+            <!-- Detalle de la compra -->
+            <div class="details" style="width: 100%; font-size: 10px;">
+                <h3>Productos Adquiridos</h3>
+                <?php foreach ($detalles as $detalle): ?>
+                    <div>
+                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                    </div>
+                <?php endforeach; ?>            
+            </div>
 
-    //$espacios_remito = intval(($ancho_papel2 - strlen($remito)) / 2);
-    //$espacios_remito2 = intval(($ancho_papel2 - strlen($remito2)) / 2);
+            <!-- Totales -->
+            <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
+            <p>Descuentos: <?= ($cabecera['tipo_pago'] == 'Efectivo') ? '$' . number_format($cabecera['total_venta'] * 0.05, 2) : '$0.00' ?></p>
+            <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <hr>
 
-    // Agregar la advertencia centrada con "Factura C" en negrita
-    //$ticket .= "\x1B\x45\x01"; // Activar negrita
-    //$ticket .= str_repeat(" ", max(0, $espacios_remito)) . $remito . "\n";
-    //$ticket .= "\x1B\x45\x00"; // Desactivar negrita
-    //$ticket .= str_repeat(" ", max(0, $espacios_remito2)) . $remito2 . "\n\n";
+            <!-- Footer -->
+            <div class="footer">
+                <p>Importante:</p>
+                <p>La mercaderia viaja por cuenta y riesgo del comprador.</p>
+                <p>Es responsabilidad del cliente controlar su compra antes de salir del local.</p>
+                <p>Su compra tiene 48hs para cambio ante fallas previas del producto.</p>
+                <p>Instagram: @Blass.Multirrubro</p>
+                <p>Facebook: Blass Multirrubro</p>
+                <h3>Muchas Gracias por su Compra.!</h3>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    // Almacenar el HTML generado
+    $html = ob_get_clean();
 
-    // **Activar negrita y doble ancho sin doble altura para el título**
-    $ticket .= "\x1B\x45\x01"; // Activar negrita
-    $ticket .= "\x1D\x21\x10"; // Ancho doble, altura normal
-    $ticket .= str_repeat(" ", max(0, $espacios_izq)) . $titulo . "\n";
-    $ticket .= "\x1D\x21\x00"; // Restaurar tamaño normal
-    $ticket .= "\x1B\x45\x00\n\n"; // Desactivar negrita
+    // Cargar la librería dompdf
+    $dompdf = new \Dompdf\Dompdf();
 
-    // Datos de la empresa
-    $ticket .= "GONZALEZ EMMANUEL ALEJANDRO\n";
-    $ticket .= "CUIT Nro: 20-36955726-3\n";
-    $ticket .= "Domicilio: Belgrano 2077\n"; 
-    $ticket .= "Corrientes (3400) - Corrientes\n"; 
-    $ticket .= "Cel: 3794-095020\n";
-    $ticket .= "Inicio de actividades: 01/02/2023\n";     
-    $ticket .= "Ingresos Brutos: 20-36955726-3\n";
-    $ticket .= "Resp. Monotributo\n";
-    $ticket .= "----------------------------------\n";
-    // Información de la venta
-    if($cabecera['tipo_compra'] == 'Pedido'){
-        // Establecer zona horaria y obtener fecha/hora en formato correcto
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
-        $fechaHoy = date('d-m-Y'); // Formato: dd-mm-yyyy
-        $horaHoy = date('H:i:s');  // Formato: HH:MM:SS
+    // Configurar dompdf para no agregar márgenes
+    $dompdf->set_option('isPhpEnabled', true);
+    $dompdf->set_option('defaultPaperSize', 'custom');
+    $dompdf->setPaper(array(0, 0, 220, 1000)); // Ancho: 220px, Alto: suficiente para el contenido
 
-        $ticket .= "Fecha: " . $fechaHoy . " Hora: " . $horaHoy . "\n";
-    }else{
-        $ticket .= "Fecha: " . $cabecera['fecha'] . " Hora: " . $cabecera['hora'] . "\n";
+    // Cargar el HTML en dompdf
+    $dompdf->loadHtml($html);
+
+    // Renderizar el PDF
+    $dompdf->render();
+
+    // Ruta donde se guardará el PDF en la carpeta C:\FacturasYticketsPDF
+    $filename = 'c:FacturasYticketsPDF/ticket.pdf';
+    file_put_contents($filename, $dompdf->output());
+
+    $perfil = $session->get('perfil_id');
+    session()->setFlashdata('msg', 'Imprimiendo Factura...');
+
+    if ($perfil == 2) {
+        return redirect()->to(base_url('catalogo'));
+    } else {
+        return redirect()->to(base_url('compras'));
     }
-    $ticket .= "----------------------------------\n";
 
-    $ticket .= "Factura C (Cod.011) a Consumidor Final\n";
-    $ticket .= "Numero de Ticket: " . $cabecera['id'] . "\n";
-    //Si tiene un cuil lo muestra si no solo muestra el nombre del cliente.
-    if($cliente['cuil'] > 0){
-        $ticket .= "Cliente: " . $cliente['nombre'] . " Cuil: " . $cliente['cuil'] ."\n";
-    }else{
-        $ticket .= "Cliente: " . $cliente['nombre'] ."\n";
-    }
-    $ticket .= "Vendedor: " . $nombreVendedor . "\n";
-    $ticket .= "----------------------------------\n";
-
-    // Detalle de la compra
-    $ticket .= "Detalle de Compra:\n";
-    foreach ($detalles as $detalle) {
-        $producto = $productos[$detalle['producto_id']];
-        $ticket .= $producto['nombre'] . "  x  " . $detalle['cantidad'] . "  - $" . $detalle['precio'] . "\n";
-    }
-    // Total a pagar
-    $ticket .= "Subtotal sin descuentos: $" . $cabecera['total_venta'] . "\n";
-    if ($cabecera['tipo_pago'] == 'Efectivo') {
-        $ticket .= "Descuentos: $" . ($cabecera['total_venta'] * 0.05) . "\n";
-    }else{
-        $ticket .= "Descuentos: $0.00\n";
-    }
-    $ticket .= "Total: $" . $cabecera['total_bonificado'] . "\n";
-    $ticket .= "----------------------------------\n";
-
-
-    $ticket .= "Reg. Transparencia fiscal al consumidor\n";
-    $ticket .= "IVA CONTENIDO: $0.00\n";
-    $ticket .= "Otros Imp. Nac. Indirectos: $0.00\n";        
-    $ticket .= "Tipo de Pago: " . $cabecera['tipo_pago'] . "\n";
-    $ticket .= "Referencia electronica del comprobante:\n";
-    //Transformo la fecha de 20250210 a 10-02-2025
-    $fecha_vencimiento = date('d-m-Y', strtotime($detalle_CAE['vto_cae']));
-    $ticket .= "CAE: " . $detalle_CAE['cae'] . " - Vto: " . $fecha_vencimiento ."\n";
-    // Footer con notas
-    $ticket .= "\nImportante:\n";
-    $ticket .= "La mercaderia viaja por cuenta y riesgo del comprador.\n";
-    $ticket .= "Es responsabilidad del cliente controlar su compra antes de salir del local.\n";
-    $ticket .= "Su compra tiene 48hs para cambio ante fallas previas del producto.\n";
-    $ticket .= "Instagram: @Blass.Multirrubro\n";
-    $ticket .= "Facebook: Blass Multirrubro\n\n";
-    $ticket .= "Muchas Gracias por su Compra.!\n";
-
-   
-    // Imprimir el ticket
-    $this->imprimirTicket($ticket);
-    //Mensaje de factura impresa cuando solo quiere volver a imprimir la factura
-    session()->setFlashdata('msg', 'Facturar Impresa con Éxito.');
-    return redirect()->to(base_url('catalogo'));
+    
 }
+
 
 
 }
