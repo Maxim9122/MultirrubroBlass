@@ -72,7 +72,8 @@ function cerrarMensaje() {
   <button type="submit" class="success" style="display: none;">Agregar por Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
-        <input type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
+        <input oninput="this.value = this.value.replace(/\D/g, '')" type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
+        <input type="hidden" id="cantidad" name="cantidad">
         <select id="product_select" name="product_id" required size="3">
             <option class="separador">Seleccione un Producto!</option>
             <?php if ($productos): ?>
@@ -102,96 +103,121 @@ function cerrarMensaje() {
     </section>
   
   <table class="" id="users-list">
-       <thead>
-          <tr class="colorTexto2">
-             <th>Nombre</th>
-             <th>Precio Venta</th>
-             <th class="ocultar-en-movil">Categoría</th>
-             <th>Imagen</th>
-             <th>Stock</th>
-             <th>Acciones</th>
-          </tr>
-       </thead>
-       <tbody>
-          <?php if($productos): ?>
-          <?php foreach($productos as $prod): ?>
-          <tr>
-             <td><?php echo $prod['nombre']; ?></td>
-             <td>$<?php echo $prod['precio_vta']; ?></td>
-             <?php 
-             $categoria_nombre = 'Desconocida';
-             foreach ($categorias as $categoria) {
-                 if ($categoria['categoria_id'] == $prod['categoria_id']) {
-                     $categoria_nombre = $categoria['descripcion'];
-                     break;
-                 }
+   <thead>
+      <tr class="colorTexto2">
+         <th>Nombre</th>
+         <th>Precio Venta</th>
+         <th class="ocultar-en-movil">Categoría</th>
+         <th>Imagen</th>
+         <th>Stock</th>
+         <th>Cantidad</th>
+         <th>Acciones</th>
+      </tr>
+   </thead>
+   <tbody>
+      <?php if($productos): ?>
+      <?php foreach($productos as $prod): ?>
+      <tr>
+         <td><?php echo $prod['nombre']; ?></td>
+         <td>$<?php echo $prod['precio_vta']; ?></td>
+         <?php 
+         $categoria_nombre = 'Desconocida';
+         foreach ($categorias as $categoria) {
+             if ($categoria['categoria_id'] == $prod['categoria_id']) {
+                 $categoria_nombre = $categoria['descripcion'];
+                 break;
              }
-             ?>
-             <td class="ocultar-en-movil"><?php echo $categoria_nombre; ?></td>
-             <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
-             
-             <?php if($prod['stock'] <= $prod['stock_min']){ ?>
-                <td class="text-center">
-                    <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
-                </td>
-            <?php } else { ?>
-                    <td class="text-center"><?php echo $prod['stock']; ?></td>
-            <?php } ?>
-
-             <td>
-             <?php
-                                     if($prod['stock'] <= 0){
-                                         $btn = array(
-                                         'class' => 'danger',
-                                              'value' => 'Sin Stock',
-                                             'disabled' => '',
-                                             'name' => 'action'
-                                             );
-                                      echo form_submit($btn);
-                                       echo form_close();
-
-                                           ?>
-                                          <?php
-                                          
-                                      } else if ($session){
-                                        if ($perfil == 2 || $perfil == 1) {
-                                            
-                                           // Envia los datos en forma de formulario para agregar al carrito
-                                           //Comienzo del fomulario oculto de php
-                                           echo form_open('Carrito_agrega', ['id' => 'formCarrito']);
-                                           echo form_hidden('id', $prod['id']);
-                                           echo form_hidden('nombre', $prod['nombre']);
-                                           echo form_hidden('precio_vta', $prod['precio_vta']);
-                                           echo form_hidden('stock', $prod['stock']);
-                                           
-                                           $btn = array(
-                                               'class' => 'btn',
-                                               'value' => 'Agregar',
-                                               'name' => 'action'
-                                           );
-                                           echo form_submit($btn);
-                                           echo form_close();
-                                           //Aqui termina el form php
-   
-                                           }else{
-                                           ?>
-                                           <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
-                                           <?php  }
-                                           ?>
-                                           <?php
-                                           } 
-                                           ?>
-             </td>
-             
-            </tr>
-         <?php endforeach; ?>
+         }
+         ?>
+         <td class="ocultar-en-movil"><?php echo $categoria_nombre; ?></td>
+         <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
          
-         <?php endif; ?>
-       
-     </table>
+         <?php if($prod['stock'] <= $prod['stock_min']){ ?>
+            <td class="text-center">
+                <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
+            </td>
+         <?php } else { ?>
+                <td class="text-center"><?php echo $prod['stock']; ?></td>
+         <?php } ?>
+
+         <td>
+            <!-- Campo para ingresar la cantidad -->
+            <input oninput="this.value = this.value.replace(/\D/g, ''); if (this.value < 1) this.value = 1;" type="number" id="cantidad_<?php echo $prod['id']; ?>" min="1" max="<?php echo $prod['stock']; ?>" value="1" class="input-cantidad">
+         </td>
+
+         <td>
+            <?php if($prod['stock'] <= 0){ ?>
+               <button class="btn danger" disabled>Sin Stock</button>
+            <?php } else if ($session && ($perfil == 2 || $perfil == 1)) { ?>
+               
+               <!-- Formulario para agregar al carrito -->
+               <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
+               <?php echo form_hidden('id', $prod['id']); ?>
+               <?php echo form_hidden('nombre', $prod['nombre']); ?>
+               <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
+               
+               <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
+               
+               <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
+               <?php echo form_close(); ?>
+
+            <?php } else { ?>
+               <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
+            <?php } ?>
+         </td>
+         
+      </tr>
+      <?php endforeach; ?>
+      <?php endif; ?>
+   </tbody>
+</table>
      <br>
   </div>
 </div>
+
+
+<!-- Modal de Confirmación -->
+<div id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div style="color:white; background: black; padding: 20px; border-radius: 10px; text-align: center;">
+        <h2 id="modal_product_name"></h2>
+        <br>
+        <p>Stock Disponible: <span id="modal_product_stock"></span></p>
+        <br>
+        <label for="modal_quantity" style="color:white;">Cantidad:</label>
+        <input type="number" id="modal_quantity" min="1" required maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <br><br>
+        <button id="confirm_add" class="btn">Agregar</button>
+        <button id="cancel_add" class="btn">Cancelar</button>
+    </div>
+</div>
+
+
+<script>
+//Script para manejo de stock en la tabla con boton Agregar
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".form-carrito").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            let productId = form.querySelector(".btn-agregar").getAttribute("data-id");
+            let cantidadInput = document.getElementById("cantidad_" + productId);
+            let cantidadHidden = document.getElementById("inputCantidad_" + productId);
+            let stockMax = parseInt(cantidadInput.getAttribute("max"));
+
+            // Verifica que la cantidad no sea mayor al stock
+            if (parseInt(cantidadInput.value) > stockMax) {
+                alert("No puedes agregar más de " + stockMax + " unidades.");
+                cantidadInput.value = stockMax; // Ajusta la cantidad al máximo permitido
+                cantidadHidden.value = stockMax;
+                event.preventDefault(); // Evita que se envíe el formulario
+                return;
+            }
+
+            // Actualiza el input hidden antes de enviar
+            cantidadHidden.value = cantidadInput.value;
+        });
+    });
+});
+
+</script>
 
 <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
 <script src="<?php echo base_url('./assets/js/jquery-ui.js');?>"></script>
@@ -205,7 +231,7 @@ function cerrarMensaje() {
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página e _PAGE_ de _PAGES_",
+            "info": "Mostrando la página _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
             "search": "Buscar: ",
@@ -222,129 +248,101 @@ function cerrarMensaje() {
 <script>
 const input = document.getElementById('product_input');
 const select = document.getElementById('product_select');
-const form = document.getElementById('product_form'); // Obtener el formulario
+const form = document.getElementById('product_form');
 
-// Filtrar opciones al escribir en el input
-input.addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
+// Elementos del modal
+const modal = document.getElementById('confirmModal');
+const modalProductName = document.getElementById('modal_product_name');
+const modalProductStock = document.getElementById('modal_product_stock');
+const modalQuantity = document.getElementById('modal_quantity');
+const confirmAdd = document.getElementById('confirm_add');
+const cancelAdd = document.getElementById('cancel_add');
+
+let selectedProduct = {}; // Almacena temporalmente los datos del producto
+
+// Detectar cuando se ingresa un código de barras completo (con Enter)
+input.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        buscarProductoPorCodigo(input.value.trim());
+    }
+});
+
+// Función para buscar el producto por código de barras
+function buscarProductoPorCodigo(codigo) {
     const options = select.options;
+    let productoEncontrado = false;
 
-    let hasOptions = false; // Para mostrar/ocultar el select
-    let firstMatchIndex = -1; // Para recordar la primera coincidencia
-    let exactMatch = false; // Para detectar una coincidencia exacta
+    for (let i = 1; i < options.length; i++) { // Saltar la primera opción ("Seleccione un Producto!")
+        if (options[i].text.trim() === codigo) {
+            productoEncontrado = true;
+            select.selectedIndex = i;
 
-    for (let i = 1; i < options.length; i++) { // Comenzar desde 1 para omitir la opción por defecto
-        const optionText = options[i].text.toLowerCase();
-        options[i].style.display = optionText.includes(searchTerm) ? 'block' : 'none';
-        if (options[i].style.display === 'block') {
-            hasOptions = true; // Hay opciones que coinciden
-            if (firstMatchIndex === -1) {
-                firstMatchIndex = i; // Guarda la primera coincidencia
-            }
-            // Verificar si hay una coincidencia exacta
-            if (optionText === searchTerm) {
-                exactMatch = true;
-                select.selectedIndex = i; // Seleccionar la opción que coincide exactamente
-                select.dispatchEvent(new Event('change')); // Despachar evento de cambio
-                form.submit(); // Enviar el formulario automáticamente
-            }
+            selectedProduct = {
+                id: options[i].value,
+                nombre: options[i].getAttribute('data-nombre'),
+                precio: options[i].getAttribute('data-precio'),
+                stock: parseInt(options[i].getAttribute('data-stock'))
+            };
+
+            // Mostrar el modal con la información del producto
+            modalProductName.textContent = selectedProduct.nombre;
+            modalProductStock.textContent = selectedProduct.stock;
+            modalQuantity.value = 1; // Iniciar cantidad en 1
+            modal.style.display = 'flex';
+            modalQuantity.focus(); // Enfocar el input de cantidad
+
+            break; // Salimos del bucle ya que encontramos el producto
         }
     }
 
-    // Mostrar el select solo si hay opciones y se ha ingresado al menos una letra
-    select.style.display = hasOptions && searchTerm.length > 0 ? 'block' : 'none';
-
-    // Si hay opciones que coinciden, selecciona la primera
-    if (firstMatchIndex !== -1 && !exactMatch) {
-        select.selectedIndex = firstMatchIndex; // Selecciona la primera opción que coincide
-    } else if (!exactMatch) {
-        select.selectedIndex = 0; // Reinicia la selección si no hay coincidencias
-    }
-});
-
-// Manejar la selección al cambiar el select
-select.addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const nombre = selectedOption.getAttribute('data-nombre');
-    const precio = selectedOption.getAttribute('data-precio');
-    const stock = selectedOption.getAttribute('data-stock'); // Obtener el stock correctamente
-
-    // Actualizar los campos ocultos
-    document.getElementById('nombre').value = nombre;
-    document.getElementById('precio_vta').value = precio;
-    document.getElementById('product_id').value = selectedOption.value;
-    document.getElementById('producto_stock').value = stock; // Asignar el stock correctamente
-
-    // Reiniciar el campo de búsqueda
-    input.value = nombre; // Para que el input muestre el nombre del producto
-    select.style.display = 'none'; // Ocultar el select
-    highlightedIndex = -1; // Reiniciar el índice
-});
-
-// Navegación con flechas y selección con Enter
-let highlightedIndex = -1;
-input.addEventListener('keydown', function(event) {
-    const options = Array.from(select.options).filter(option => option.style.display === 'block');
-
-    if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        if (highlightedIndex < options.length - 1) {
-            highlightedIndex++;
-        }
-        updateHighlight(options);
-    } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        if (highlightedIndex > 0) {
-            highlightedIndex--;
-        }
-        updateHighlight(options);
-    } else if (event.key === 'Enter') {
-        event.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < options.length) {
-            select.value = options[highlightedIndex].value; // Asignar el valor al select
-            select.dispatchEvent(new Event('change')); // Despachar evento de cambio
-            select.style.display = 'none'; // Ocultar el select
-            form.submit(); // Enviar el formulario
-        }
-    }
-});
-
-// Función para actualizar el resaltado de las opciones
-function updateHighlight(options) {
-    for (let i = 0; i < options.length; i++) {
-        options[i].style.backgroundColor = i === highlightedIndex ? '#5bb852' : ''; // Color de resaltado
+    if (!productoEncontrado) {
+        alert('Producto no encontrado. Verifica el código de barras.');
+        input.value = ''; // Limpiar input para un nuevo intento
     }
 }
 
-// Ocultar el select si se hace clic fuera de él
-document.addEventListener('click', function(event) {
-    if (!input.contains(event.target) && !select.contains(event.target)) {
-        select.style.display = 'none';
-    }
-});
+// Confirmar la adición del producto al carrito
+confirmAdd.addEventListener('click', function() {
+    const cantidad = parseInt(modalQuantity.value);
 
-// Enviar el formulario cuando se presiona Enter después de seleccionar un producto
-form.addEventListener('submit', function(event) {
-    const productId = document.getElementById('product_id').value;
-    if (!productId) {
-        event.preventDefault(); // Prevenir el envío si no hay un ID de producto
-        alert('Por favor, selecciona un producto antes de agregar al carrito.'); // Mensaje de error
+    if (cantidad > 0 && cantidad <= selectedProduct.stock) {
+        // Asignar los valores al formulario
+        document.getElementById('nombre').value = selectedProduct.nombre;
+        document.getElementById('precio_vta').value = selectedProduct.precio;
+        document.getElementById('product_id').value = selectedProduct.id;
+        document.getElementById('cantidad').value = cantidad; // Guardar cantidad seleccionada en el campo correcto
+
+        modal.style.display = 'none'; // Ocultar el modal
+        form.submit(); // Enviar formulario
     } else {
-        // Reiniciar el estado después del envío
-        input.value = '';
-        select.value = ''; // Reiniciar el select
-        highlightedIndex = -1; // Reiniciar el índice destacado
-        Array.from(select.options).forEach(option => option.style.display = 'block'); // Mostrar todas las opciones
-        select.style.display = 'none'; // Asegurarse de que el select esté oculto
+        alert('Cantidad inválida o insuficiente.');
     }
 });
 
-// Al cargar el documento
-document.addEventListener("DOMContentLoaded", function() {
-    const productInput = document.getElementById('product_input');
-    productInput.focus();  // Enfoca el input
-    productInput.select(); // Selecciona el texto en el input
+// Cancelar la operación y cerrar el modal
+cancelAdd.addEventListener('click', function() {
+    modal.style.display = 'none'; // Ocultar modal
+    input.value = ''; // Limpiar el input para volver a escanear
+    input.focus();
 });
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        modal.style.display = 'none';
+        input.value = '';
+        input.focus();
+    } else if (event.key === 'Enter' && modal.style.display === 'flex') {
+        confirmAdd.click(); // Simular clic en "Agregar"
+    }
+});
+
+// Enfocar el input al cargar la página
+document.addEventListener("DOMContentLoaded", function() {
+    input.focus();
+});
+
 </script>
 
 <br><br>

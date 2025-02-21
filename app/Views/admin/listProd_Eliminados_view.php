@@ -8,7 +8,7 @@
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
     </script>
-<div class="container mt-5 fondo3 rounded">
+<div class="container mt-5 fondo3 rounded" align="center">
 <h3 class="titulo-vidrio">Productos Eliminados</h3> 
   <br><br>
   <a class="btn btn-primary float-end" href="<?php echo base_url('Lista_Productos');?>" tabindex="-1" aria-disabled="true">

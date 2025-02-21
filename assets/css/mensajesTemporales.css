@@ -10,7 +10,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 33%;
+    width: 35%;
     text-align: center;
     z-index: 1000;
     padding: 5px;
@@ -21,6 +21,8 @@
     opacity: 0.95;
     font-weight: 500;
 }
+
+
 
 .flash-message.success {
     background-color: #d4edda;
@@ -56,6 +58,7 @@
                   0px -2px 0 #000,
                   0px  2px 0 #000;
 }
+
 
 /* Botón de cierre */
 .flash-message .close-btn {

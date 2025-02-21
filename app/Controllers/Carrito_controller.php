@@ -1,8 +1,7 @@
 <?php
 namespace App\Controllers;
 
-require_once APPPATH . 'libraries/dompdf/autoload.inc.php';
-
+require_once APPPATH . 'Libraries/dompdf/autoload.inc.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -137,21 +136,30 @@ public function ListCompraDetalle($id)
 
     //Agrega elemento al carrito
 	function add()
-    {
-    $cart = \Config\Services::cart();
+{
     $producto_id = $_POST['id'];
     $nombre = $_POST['nombre'];
     $precio = $_POST['precio_vta'];
-    $stock = $_POST['stock'];
+    $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1; // Obtener la cantidad enviada
 
-    // Obtener todos los productos en el carrito
+    $prodModel = new Productos_model();
+    $producto = $prodModel->getProducto($producto_id);
+    $stock = $producto['stock'];
+
+    // Verificar si hay suficiente stock
+    if ($stock <= 0) {
+        session()->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    $cart = \Config\Services::cart();
     $cart_items = $cart->contents();
     $producto_encontrado = false;
 
     foreach ($cart_items as $item) {
         if ($item['id'] == $producto_id) {
-            // Si el producto ya está en el carrito, incrementar cantidad
-            $nueva_cantidad = $item['qty'] + 1;
+            // Si el producto ya está en el carrito, incrementar la cantidad seleccionada
+            $nueva_cantidad = $item['qty'] + $cantidad;
 
             // Verificar si supera el stock disponible
             if ($nueva_cantidad > $stock) {
@@ -170,14 +178,14 @@ public function ListCompraDetalle($id)
         }
     }
 
-    // Si el producto no está en el carrito, agregarlo
+    // Si el producto no está en el carrito, agregarlo con la cantidad seleccionada
     if (!$producto_encontrado) {
         $cart->insert([
             'id'      => $producto_id,
-            'qty'     => 1,
+            'qty'     => $cantidad, // Insertamos la cantidad seleccionada
             'price'   => $precio,
             'name'    => $nombre,
-            'options' => ['stock' => $stock] // Almacenar stock disponible
+            'options' => ['stock' => $stock] // Guardamos el stock disponible como referencia
         ]);
     }
 
@@ -355,12 +363,14 @@ public function ListCompraDetalle($id)
 
 
 //GUARDA LA COMPRA
-    public function guarda_compra()
+    public function guarda_compra($id_pedido = null)
 {    
     $cart = \Config\Services::cart();
     $session = session();
     
-
+    if(!$cart){
+    return redirect()->to(base_url('catalogo'));
+    }
     //id del vendedor
     $id_usuario = $session->get('id');
 
@@ -398,41 +408,25 @@ public function ListCompraDetalle($id)
     //print_r($tipo_compra);
     //exit;
     //Formateamos la fecha del pedido al formato dia-mes-año
-    $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));
+    $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));   
     
-    // Obtener el id_venta del carrito si es un pedido modificado
-    $id_venta_anterior = null;
-    //recorremos el carrito porque si fue un pedido modificado guarde el id en una variable del carrito
-    foreach ($cart->contents() as $item) {
-        if (isset($item['options']['id_venta'])) {
-            $id_venta_anterior = $item['options']['id_venta'];
-            break; // recorre solo el 1ero, No es necesario seguir recorriendo si ya encontramos el id_venta
-        }
-    }
     
 
     // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
-    if ($id_venta_anterior) {
+    if ($id_pedido) {
         
         $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model = new Productos_model();
-
-        // Obtener detalles de los productos de la venta anterior
-        $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_venta_anterior)->findAll();
+        $Producto_model = new Productos_model();     
         
-        foreach ($detalles_venta_anterior as $detalle) {
-            // Restaurar el stock de los productos
-            $producto = $Producto_model->find($detalle['producto_id']);
-            if ($producto) {
-                $stock_edit = $producto['stock'] + $detalle['cantidad'];
-                $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
-            }
-        }
 
         // Eliminar los detalles y la cabecera de la venta anterior
-        $VentaDetalle_model->where('venta_id', $id_venta_anterior)->delete();
+        $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
         $Cabecera_model = new Cabecera_model();
         $Cabecera_model->delete($id_venta_anterior);
+
+        // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
+        $session = session();
+        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
     }
     
 
@@ -562,7 +556,7 @@ public function ListCompraDetalle($id)
 }
 
 
-
+//Genera ticket venta normal
 public function generarTicket($id_cabecera)
 {
     // Cargar los modelos necesarios
@@ -571,11 +565,12 @@ public function generarTicket($id_cabecera)
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     
-    // Obtener los detalles de la venta y el CAE
+    // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
     
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
-
+    //print_r($detalles);
+    //exit;
     // Obtener los productos relacionados
     $productos = [];
     foreach ($detalles as $detalle) {
@@ -588,7 +583,12 @@ public function generarTicket($id_cabecera)
     // Obtener el nombre del vendedor desde la sesión
     $session = session();
     $nombreVendedor = $session->get('nombre');
+    
+    //Cambia el estado del Pedido
+    if($cabecera['tipo_compra'] == 'Pedido'){
 
+        $ventaModel->cambiarEstado($id_cabecera, 'Sin_Facturar');
+    }
     // Crear el HTML para la vista previa
     ob_start();
     ?>
@@ -650,7 +650,7 @@ public function generarTicket($id_cabecera)
             <h3>Remito</h3>
             <p align="center">no valido como factura</p>
             <!-- Cabecera del ticket -->
-            <h1>MULTIRUBRO BLASS</h1>
+            <h1>MULTIRRUBRO BLASS</h1>
             <p>GONZALEZ EMMANUEL ALEJANDRO</p>
             <p>CUIT Nro: 20-36955726-3</p>
             <p>Domicilio: Belgrano 2077, Corrientes (3400)</p>
@@ -662,7 +662,6 @@ public function generarTicket($id_cabecera)
 
             <!-- Información de la venta -->
             <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
-            <p>Factura C (Cod.011) a Consumidor Final</p>
             <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
@@ -698,44 +697,71 @@ public function generarTicket($id_cabecera)
     </body>
     </html>
     <?php
-    // Almacenar el HTML generado
+       
+    // Generar el PDF
     $html = ob_get_clean();
-
-    // Cargar la librería dompdf
     $dompdf = new \Dompdf\Dompdf();
-
-    // Configurar dompdf para no agregar márgenes
-    $dompdf->set_option('isPhpEnabled', true);
-    $dompdf->set_option('defaultPaperSize', 'custom');
-    $dompdf->setPaper(array(0, 0, 220, 1000)); // Ancho: 220px, Alto: suficiente para el contenido
-
-    // Cargar el HTML en dompdf
     $dompdf->loadHtml($html);
-
-    // Renderizar el PDF
     $dompdf->render();
-
-    $filename = 'c:FacturasYticketsPDF/ticket.pdf';
-    file_put_contents($filename, $dompdf->output());
-
-    $perfil = $session->get('perfil_id');
-    session()->setFlashdata('msg', 'Imprimiendo Factura...');
-
-    if ($perfil == 2) {
-        return redirect()->to(base_url('catalogo'));
-    } else {
-        return redirect()->to(base_url('compras'));
+    
+    // Guardar el archivo PDF en un archivo temporal
+    $output = $dompdf->output();
+    $tempFolder = 'path/to/temp/folder';  // Ruta de la carpeta temporal
+    $tempFile = $tempFolder . '/ticket.pdf';  // Ruta completa del archivo PDF
+    
+    // Crear la carpeta si no existe
+    if (!is_dir($tempFolder)) {
+        mkdir($tempFolder, 0777, true);  // Crea la carpeta con permisos 0777 (lectura, escritura y ejecución)
     }
+    
+    // Guardar el archivo PDF en la carpeta temporal
+    file_put_contents($tempFile, $output);
+    
+     // Obtener el perfil del usuario desde la sesión
+    $perfil = session()->get('perfil_id');
+    
+    // Redirigir a una página de confirmación con JavaScript
+    echo "<script type='text/javascript'>
+            // Descargar el archivo PDF
+            window.location.href = '" . base_url('descargar_ticket') . "';
+            
+            // Pasar el valor de perfil desde PHP a JavaScript
+            var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+            
+            // Redirigir a la página deseada después de la descarga dependiendo del perfil usuario
+            window.setTimeout(function() {
+                if (perfil == 1) {
+                    window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
+                } else if (perfil == 2) {
+                    window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
+                } else {
+                    window.location.href = '" . base_url('home') . "'; // Redirigir por defecto si no es perfil 1 ni 2
+                }
+            }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
+          </script>";
+    exit;
 
-
+    // Forzar la descarga del PDF
+    //$dompdf->stream("ticket.pdf", array("Attachment" => true));
+   
 }
 
-
-
+// En tu ruta 'descargar_ticket', puedes usar:
+public function descargar_ticket()
+{
+    $filePath = 'path/to/temp/folder/ticket.pdf';
+    if (file_exists($filePath)) {
+        return $this->response->download($filePath, null)->setFileName('ticket.pdf');
+    }
+    // Si no existe el archivo, muestra un error o redirige a otra página.
+}
 
 
 //Verifica que todo este bien para Facturar
 public function verificarTA($id_cabecera = null) {
+    
+    //phpinfo();
+    //exit;
     $ventaModel = new \App\Models\Cabecera_model();
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
@@ -764,6 +790,7 @@ public function verificarTA($id_cabecera = null) {
 
    // Verificar si el archivo TA.xml existe
    if (!file_exists($taPath)) {
+
     $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
     session()->setFlashdata('msgEr', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
     return redirect()->to(base_url('catalogo'));
@@ -818,24 +845,46 @@ public function verificarTA($id_cabecera = null) {
 //Genera un nuevo TA.xml si es necesario.
 public function generarTA($id_cabecera = null) {
     $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        } 
+
+    // Verifica si el usuario está logueado
+    if (!$session->has('id')) { 
+        return redirect()->to(base_url('login')); 
+    } 
+
     if ($id_cabecera === null) {
-        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
         return redirect()->to(base_url('catalogo'));
     }
+
     // Ruta al script wsaa-client.php
     $path = APPPATH . 'Libraries/afip/wsaa-client.php';
 
-    // Ejecutar el script PHP mediante shell_exec()
-    $output = shell_exec("php " . escapeshellarg($path) . " wsfe");
-    //print_r($output);
-    //exit;
+    // Configuración de descriptores para la ejecución
+    $descriptorspec = [
+        0 => ["pipe", "r"],  // Entrada estándar (no usada)
+        1 => ["pipe", "w"],  // Salida estándar
+        2 => ["pipe", "w"]   // Salida de error
+    ];
 
-    return redirect()->to('Carrito_controller/verificarTA/'. $id_cabecera);
+    // Ejecutar el script PHP con proc_open
+    $process = proc_open("php " . escapeshellarg($path) . " wsfe", $descriptorspec, $pipes);
+
+    if (is_resource($process)) {
+        $output = stream_get_contents($pipes[1]); // Captura la salida
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process); // Cierra el proceso
+
+        // Mostrar la salida para depuración (puedes comentar esto en producción)
+        //echo "<pre>$output</pre>";
+        //exit;
+    } else {
+        echo "Error al ejecutar el proceso.";
+        exit;
+    }
+
+    return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
 }
+
 
 //Aqui va el xml de factura para enviar a ARCA
 //re copiar abajo $TA,$id_cabecera
@@ -929,17 +978,17 @@ public function facturar($TA = null,$id_cabecera = null) {
                 <ar:FeCAEReq>
         <ar:FeCabReq>
             <ar:CantReg>1</ar:CantReg>
-            <ar:PtoVta>2</ar:PtoVta>
+            <ar:PtoVta>2</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
             <ar:CbteTipo>11</ar:CbteTipo> <!-- 11 para FACTURA C -->
         </ar:FeCabReq>
         <ar:FeDetReq>
             <ar:FECAEDetRequest>
                 <ar:Concepto>1</ar:Concepto> <!-- Productos -->
-                <ar:DocTipo>' . $tipoDoc . '</ar:DocTipo> <!-- 80 CUIT, 99 C_Final-->
+                <ar:DocTipo>' . $tipoDoc . '</ar:DocTipo> <!-- 80 CUIT, 99 Consumidor_Final-->
                 <ar:DocNro>' . $cuil_cliente . '</ar:DocNro> <!-- 0 para C_final-->
                 <ar:CbteDesde>' . $id_cae_siguiente . '</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
                 <ar:CbteHasta>' . $id_cae_siguiente . '</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
-                <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5 -->
+                <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
                 <ar:ImpTotal>' . $total_venta . '</ar:ImpTotal> <!-- Suma de ImpNeto + ImpTrib -->
                 <ar:ImpTotConc>0</ar:ImpTotConc>
                 <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
@@ -1096,10 +1145,8 @@ public function generarTicketFacturaC($id_cabecera)
     </head>
     <body>
         <div class="ticket">
-            <h3>Factura C</h3>
-            <p align="center">CAE: <?= $detalle_CAE['cae'] ?>   Vto: <?= date('d-m-Y', strtotime($detalle_CAE['vto_cae'])) ?></p>
             <!-- Cabecera del ticket -->
-            <h1>MULTIRUBRO BLASS</h1>
+            <h1>MULTIRRUBRO BLASS</h1>
             <p>GONZALEZ EMMANUEL ALEJANDRO</p>
             <p>CUIT Nro: 20-36955726-3</p>
             <p>Domicilio: Belgrano 2077, Corrientes (3400)</p>
@@ -1110,7 +1157,7 @@ public function generarTicketFacturaC($id_cabecera)
             <hr>
 
             <!-- Información de la venta -->
-            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Fecha y Hora: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
             <p>Factura C (Cod.011) a Consumidor Final</p>
             <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
@@ -1119,7 +1166,7 @@ public function generarTicketFacturaC($id_cabecera)
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
-                <h3>Productos Adquiridos</h3>
+                <h3>Detalle de la Compra</h3>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
                         <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
@@ -1132,7 +1179,16 @@ public function generarTicketFacturaC($id_cabecera)
             <p>Descuentos: <?= ($cabecera['tipo_pago'] == 'Efectivo') ? '$' . number_format($cabecera['total_venta'] * 0.05, 2) : '$0.00' ?></p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
             <hr>
-
+            
+            <p>Reg. Transparencia fiscal al consumidor</p>
+            <p>IVA CONTENIDO: $0.00</p>
+            <p>Otros Imp. Nac. Indirectos: $0.00</p>
+            <p>Tipo de pago: <?=$cabecera['tipo_pago'];?></p>
+            <p>Referencia electronica del Comprobante:</p>
+            <p>CAE: <?= $detalle_CAE['cae'] ?>   Vto: <?= date('d-m-Y', strtotime($detalle_CAE['vto_cae'])) ?></p>
+            <p>P.Venta: 002    NroCAE/Factura: <?= $detalle_CAE['id_cae'] ?></p>
+            <hr>
+            
             <!-- Footer -->
             <div class="footer">
                 <p>Importante:</p>
@@ -1147,39 +1203,50 @@ public function generarTicketFacturaC($id_cabecera)
     </body>
     </html>
     <?php
-    // Almacenar el HTML generado
+    // Generar el PDF
     $html = ob_get_clean();
-
-    // Cargar la librería dompdf
     $dompdf = new \Dompdf\Dompdf();
-
-    // Configurar dompdf para no agregar márgenes
-    $dompdf->set_option('isPhpEnabled', true);
-    $dompdf->set_option('defaultPaperSize', 'custom');
-    $dompdf->setPaper(array(0, 0, 220, 1000)); // Ancho: 220px, Alto: suficiente para el contenido
-
-    // Cargar el HTML en dompdf
     $dompdf->loadHtml($html);
-
-    // Renderizar el PDF
     $dompdf->render();
-
-    // Ruta donde se guardará el PDF en la carpeta C:\FacturasYticketsPDF
-    $filename = 'c:FacturasYticketsPDF/ticket.pdf';
-    file_put_contents($filename, $dompdf->output());
-
-    $perfil = $session->get('perfil_id');
-    session()->setFlashdata('msg', 'Imprimiendo Factura...');
-
-    if ($perfil == 2) {
-        return redirect()->to(base_url('catalogo'));
-    } else {
-        return redirect()->to(base_url('compras'));
-    }
-
     
-}
+    // Guardar el archivo PDF en un archivo temporal
+    $output = $dompdf->output();
+    $tempFolder = 'path/to/temp/folder';  // Ruta de la carpeta temporal
+    $tempFile = $tempFolder . '/ticket.pdf';  // Ruta completa del archivo PDF
+    
+    // Crear la carpeta si no existe
+    if (!is_dir($tempFolder)) {
+        mkdir($tempFolder, 0777, true);  // Crea la carpeta con permisos 0777 (lectura, escritura y ejecución)
+    }
+    
+    // Guardar el archivo PDF en la carpeta temporal
+    file_put_contents($tempFile, $output);
+    
+    // Obtener el perfil del usuario desde la sesión
+    $perfil = session()->get('perfil_id');
+    
+    // Redirigir a una página de confirmación con JavaScript
+    echo "<script type='text/javascript'>
+            // Descargar el archivo PDF
+            window.location.href = '" . base_url('descargar_ticket') . "';
+            
+            // Pasar el valor de perfil desde PHP a JavaScript
+            var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+            
+            // Redirigir a la página deseada después de la descarga dependiendo del perfil usuario
+            window.setTimeout(function() {
+                if (perfil == 1) {
+                    window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
+                } else if (perfil == 2) {
+                    window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
+                } else {
+                    window.location.href = '" . base_url('home') . "'; // Redirigir por defecto si no es perfil 1 ni 2
+                }
+            }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
+          </script>";
+    exit;
 
+}
 
 
 }

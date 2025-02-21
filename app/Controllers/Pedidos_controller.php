@@ -247,6 +247,7 @@ class Pedidos_controller extends Controller{
 
     public function cargar_pedido_en_carrito($id_pedido)
 {
+    $session = session();
     $cart = \Config\Services::cart();
     $detalle_model = new VentaDetalle_model();
     $cabecera_model = new Cabecera_model(); // Asegúrate de tener este modelo
@@ -261,11 +262,37 @@ class Pedidos_controller extends Controller{
     $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
     //print_r($fecha_pedido);
     //exit;
+    // Guardar los datos en la sesión para no perderlos si el carrito queda vacío
+    $session->set([
+        'id_pedido' => $id_pedido,
+        'id_cliente_pedido' => $id_cliente,        
+        'fecha_pedido' => $fecha_pedido,
+        'tipo_compra' => $tipo_compra,
+        'tipo_pago' => $tipo_pago
+    ]);
     // Obtener los productos del pedido
     $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
 
     // Limpiar el carrito antes de cargar los productos
     $cart->destroy();
+
+
+    if (!$detalles) {
+        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+        return redirect()->to($this->request->getHeader('referer')->getValue());
+    }
+
+    // Restaurar el stock de cada producto
+    foreach ($detalles as $detalle) {
+        $producto = $producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+        }
+    }
+
+    // Actualizar el estado del pedido a "Modificado"
+    $cabecera_model->update($id_pedido, ['estado' => 'Modificado']);
 
     foreach ($detalles as $detalle) {
         $producto = $producto_model->find($detalle['producto_id']);
@@ -276,12 +303,7 @@ class Pedidos_controller extends Controller{
                 'price' => $detalle['precio'],
                 'name'  => $producto['nombre'],
                 'options' => array(
-                    'stock' => $producto['stock'],
-                    'id_cliente' => $id_cliente, // Guardar el id_cliente en las opciones
-                    'id_venta'  =>  $id_pedido,
-                    'fecha_pedido' => $fecha_pedido,
-                    'tipo_compra' => $tipo_compra,
-                    'tipo_pago' => $tipo_pago
+                    'stock' => $producto['stock'],                   
                 )
             ]);
         }
@@ -290,6 +312,37 @@ class Pedidos_controller extends Controller{
     // Redirigir a la vista de edición del pedido
     return redirect()->to('CarritoList');
     }
+
+
+//Cancelamos la edicion del Pedido.
+public function cancelar_edicion($id_pedido){
+        //print_r($id_pedido);
+        //exit;
+        $cart = \Config\Services::cart();
+        $Cabecera_model = new Cabecera_model();
+        $VentaDetalle_model = new VentaDetalle_model();
+        $Producto_model = new Productos_model();
+
+        // Obtener detalles de los productos de la venta anterior
+        $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
+        
+        foreach ($detalles_venta_anterior as $detalle) {
+            // Restaurar el stock de los productos
+            $producto = $Producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $stock_edit = $producto['stock'] - $detalle['cantidad'];
+                $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
+            }
+        }        
+        // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
+        $session = session();
+        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        // Actualizar el estado del pedido a "Pendiente"
+        $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
+        $cart->destroy();
+        return redirect()->to(base_url('pedidos'));
+    }
+
 
     //Elimina el pedido Cancelado
     public function Pedido_cancelado($id_pedido)
