@@ -152,7 +152,7 @@ class Producto_controller extends Controller{
         $data['productos'] = $productos;
         echo view('navbar/navbar');
         echo view('header/header',$dato1);
-         echo view('admin/Productos_view', $data + $dato);
+         echo view('admin/productos_view', $data + $dato);
           echo view('footer/footer');
        
     } 

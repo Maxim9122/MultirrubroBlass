@@ -5,7 +5,7 @@ class Cabecera_model extends Model
 {
 	protected $table = 'ventas_cabecera';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido', 'estado'];
+    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado'];
 
     public function getVentasCabecera(){
       $db = db_connect();
@@ -27,12 +27,16 @@ class Cabecera_model extends Model
             c.nombre AS nombre_cliente, 
             v.nombre AS nombre_vendedor, 
             u.estado, 
-            u.total_venta, 
+            u.total_venta,
+            u.tipo_compra,
             (CASE 
                 WHEN u.tipo_compra = 'Pedido' THEN u.fecha_pedido 
                 ELSE u.fecha 
             END) AS fecha, 
-            u.hora, 
+            (CASE 
+                WHEN u.tipo_compra = 'Pedido' THEN u.hora_entrega
+                ELSE u.hora 
+            END) AS hora, 
             u.tipo_pago, 
             u.total_bonificado
         ");
@@ -125,7 +129,7 @@ class Cabecera_model extends Model
      
          // Construir la consulta con los joins necesarios
          $builder = $db->table($this->table . ' u');
-         $builder->select('u.id, c.nombre AS nombre_cliente, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado, u.estado, u.fecha_pedido, usuarios.nombre AS nombre_usuario');
+         $builder->select('u.id, c.nombre AS nombre_cliente, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado, u.estado, u.fecha_pedido, u.hora_entrega, usuarios.nombre AS nombre_usuario');
          $builder->join('cliente c', 'u.id_cliente = c.id_cliente'); // Relación con cliente
          $builder->join('usuarios usuarios', 'u.id_usuario = usuarios.id'); // Relación con usuario
          $builder->where('u.tipo_compra', 'Pedido');
@@ -163,9 +167,11 @@ class Cabecera_model extends Model
     {
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fechaHoy = date('d-m-Y');
+        $horaEntrega = date('H:i:s');
         return $this->update($id_turno, [
                 'estado' => $estado,
-                'fecha_pedido' => $fechaHoy
+                'fecha_pedido' => $fechaHoy,
+                'hora_entrega' => $horaEntrega
             ]); // Asegúrate de que el campo "estado" existe en la base de datos
                                             
     }
@@ -176,10 +182,12 @@ class Cabecera_model extends Model
         // Establecer zona horaria y obtener fecha/hora en formato correcto
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fechaHoy = date('d-m-Y');
+        $horaEntrega = date('H:i:s');
         return $this->update($id_cabecera, [
             'estado' => 'Facturada', // Asegúrate de que el campo "estado" existe en la base de datos
             'id_cae' => $new_cae, // Guarda el ID del CAE en la cabecera
-            'fecha_pedido' => $fechaHoy     
+            'fecha_pedido' => $fechaHoy,
+            'hora_entrega' => $horaEntrega
         ]);
     }
      

@@ -141,7 +141,7 @@ label {
 .danger:hover {
     background-image: linear-gradient(to right, #921d2d, #adb5bd);
 }
-.danger {
+.danger2 {
     background-image: linear-gradient(to right, #d33363, #adb5bd);
     padding: 12px;
     border-radius: 20px;
@@ -151,7 +151,7 @@ label {
     box-shadow: 2px 2px 4px #000000;
     
 } 
-.danger:hover {
+.danger2:hover {
     background-image: linear-gradient(to right, #d4495c, #adb5bd);
 }
 

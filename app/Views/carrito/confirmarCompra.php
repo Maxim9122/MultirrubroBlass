@@ -17,20 +17,28 @@ $nombre = $session->get('nombre');
 $perfil = $session->get('perfil_id');
 
 
-// Obtener los datos del carrito
+// Inicializar las variables con una cadena vacía
 $id_cliente = '';
 $fecha_pedido = '';
-$tipo_compra = ''; // Añadido para el tipo de compra
+$tipo_compra = '';
 $tipo_pago = '';
+$id_pedido = '';
 
-$cart_items = $cart->contents(); // Obtener los artículos del carrito
-if (!empty($cart_items)) {
-    // Tomamos los datos de las opciones del primer artículo del carrito
-    $first_item = reset($cart_items); // Obtener el primer ítem del carrito
-    $id_cliente = isset($first_item['options']['id_cliente']) ? $first_item['options']['id_cliente'] : '';
-    $fecha_pedido = isset($first_item['options']['fecha_pedido']) ? $first_item['options']['fecha_pedido'] : '';
-    $tipo_compra = isset($first_item['options']['tipo_compra']) ? $first_item['options']['tipo_compra'] : ''; // Establecemos el tipo de compra por defecto
-    $tipo_pago = isset($first_item['options']['tipo_pago']) ? $first_item['options']['tipo_pago'] : '';
+// Asignar valores desde la sesión solo si existen
+if ($session->has('id_cliente_pedido')) {
+    $id_cliente = $session->get('id_cliente_pedido');
+}
+if ($session->has('fecha_pedido')) {
+    $fecha_pedido = $session->get('fecha_pedido');
+}
+if ($session->has('tipo_compra')) {
+    $tipo_compra = $session->get('tipo_compra');
+}
+if ($session->has('tipo_pago')) {
+    $tipo_pago = $session->get('tipo_pago');
+}
+if ($session->has('id_pedido')) {
+    $id_pedido = $session->get('id_pedido');
 }
 //print_r($fecha_pedido);
 //exit;
@@ -47,17 +55,17 @@ if ($cart):
 endif;
 ?>
 
-<div align="center" style="width:100%;">
+<div style="width:100%;"align="center">
     <div id="">
         <?php 
         // Crea formulario para guardar los datos de la venta
         echo form_open("confirma_compra", ['class' => 'form-signin', 'role' => 'form']);
         ?>
         <br>
-        <div style="width:60%;" align="center">
+        <div align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
 
-            <table style="font-weight: 900;">
+            <table style="font-weight: 900;" class="tableResponsive">
                 <tr>
                     <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
                     <td style="color: #ffff;"><strong id="totalCompra">$<?php echo number_format($gran_total, 2); ?></strong></td>
@@ -67,28 +75,28 @@ endif;
                     <td style="color: #ffff;"><?php echo($nombre) ?></td>
                 </tr>
                 <tr>
-                    <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
-                    <td>
-                        <?php if ($clientes): ?>
-                            <select name="cliente_id">
-                                <option value="Anonimo">Consumidor Final</option>
-                                <?php foreach ($clientes as $cl): ?>
-                                    <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
-                                        <?php echo $cl['nombre']; ?>
-                                        <?php echo "Cuil:" . $cl['cuil']; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php else: ?>
-                            <span>No hay clientes disponibles</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
+                <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
+                <td>
+                    <?php if ($clientes): ?>
+                        <select name="cliente_id" class="selector">
+                            <option value="Anonimo">Consumidor Final</option>
+                            <?php foreach ($clientes as $cl): ?>
+                                <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
+                                    <?php echo $cl['nombre']; ?>
+                                    <?php echo "Cuil:" . $cl['cuil']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else: ?>
+                        <span>No hay clientes disponibles</span>
+                    <?php endif; ?>
+                </td>
+                 </tr>
                                 
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Seleccione Tipo de Pago:</strong></td>
                     <td>
-                        <select name="tipo_pago" id="tipoPago">
+                        <select name="tipo_pago" id="tipoPago" class="selector">
                             <option value="Transferencia" <?php echo isset($tipo_pago) && $tipo_pago == 'Transferencia' ? 'selected' : ''; ?>>Transferencia</option>
                             <option value="Efectivo" <?php echo isset($tipo_pago) && $tipo_pago == 'Efectivo' ? 'selected' : ''; ?>>Efectivo (-5%)</option>                            
                         </select>
@@ -99,59 +107,50 @@ endif;
                     <td style="color: #ffff;"><strong id="totalConDescuento">-</strong></td>
                 </tr>
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
-                    <td>
-                    <?php if($id_cliente){ ?>
-                        <select name="tipo_compra" id="tipoCompra">
-                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
-                            <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>                           
-                        </select>
-                    <?php  } else {  ?>
-                        <select name="tipo_compra" id="tipoCompra">
-                            <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>
-                            <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
-                        </select>
-                        <?php  } ?>
-                        <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
-                    </td>
+                <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
+                <td>
+                    <select name="tipo_compra" id="tipoCompra" class="selector">
+                        <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
+                        <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
+                    </select>
+                    <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
+                </td>
                 </tr>
-                <tr id="fechaPedidoFila" style="display: <?php echo $fecha_pedido ? 'table-row' : 'none'; ?>;">
-                    <td style="color: rgb(192, 250, 214);"><strong>Fecha de entrega del Pedido:</strong></td>
-                    <td>
-                        <input type="date" name="fecha_pedido" id="fechaPedido" value="<?php echo $fecha_pedido; ?>" min="<?php echo date('Y-m-d'); ?>">
-                        <?php echo form_hidden('fecha_pedido_input', $fecha_pedido); ?>
-                    </td>
+                <tr id="fechaPedidoFila" style="display: <?php echo !empty($fecha_pedido) ? 'table-row' : 'none'; ?>;">
+                <td style="color: rgb(192, 250, 214);"><strong>Fecha de entrega del Pedido:</strong></td>
+                <td>
+                    <input class="selector" type="date" name="fecha_pedido" id="fechaPedido" 
+                           value="<?php echo !empty($fecha_pedido) ? date('Y-m-d', strtotime($fecha_pedido)) : date('Y-m-d'); ?>" 
+                           min="<?php echo date('Y-m-d'); ?>">
+                    <?php echo form_hidden('fecha_pedido_input', $fecha_pedido); ?>
+                </td>
                 </tr>
                 <?php echo form_hidden('total_venta', $gran_total); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
                 <br>
                         <label for="pago" class="cambio" style="color: #ffff; font-weight: 600;">Paga con: $</label>
-                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularCambio()">
+                        <input class="no-border-input" type="text" id="pago" placeholder="Monto en $"  maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularCambio()">
 
                         <h4 class="cambio" style="color: #ffff; font-weight: 900;">Cambio: $ <span id="cambio">0.00</span></h4>
                 <br>
             </table>
-            <br> <br>
-            <a class='btn' href="<?php echo base_url('CarritoList') ?>">Volver</a>
-            <br>
-            <!-- Cancelar edicion de pedido -->
+            <section class="botones-container" style="width:65%;">
+            <a class="btn" href="<?php echo base_url('CarritoList') ?>">Volver</a>
+        
             <?php if ($id_cliente) { ?>
-                <br>
-                <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
+                <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionPedido();">
                     Cancelar Modificación
                 </a>
-            <?php } else {?>
-                <br>
-                <!-- Borrar carrito usa mensaje de confirmacion -->
-                <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
-                            Borrar Todo
+            <?php } else { ?>
+                <a href="<?php echo base_url('carrito_elimina/all');?>" class="btn danger" onclick="return confirmarAccionCompra();">
+                    Cancelar Todo
                 </a>
-                <?php  } ?>
-            <!-- Identificador oculto de que la compra es para Factura C-->
-                <?php echo form_hidden('tipo_proceso', ''); ?>
+            <?php } ?>
+        
+            <?php echo form_hidden('tipo_proceso', ''); ?>
+            <?php echo form_submit('confirmar', 'Confirmar', "class='btn'"); ?>
+            </section>
 
-            <?php echo form_submit('confirmar', 'Confirmar',"class='btn'"); ?>
-            <br> <br>
         </div>
     </div>
     <?php echo form_close(); ?>
@@ -186,7 +185,7 @@ endif;
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+                window.location.href = "<?php echo base_url('cancelar_edicion/'.$id_pedido); ?>";
             }
         });
         return false; // Evita que el enlace siga su curso normal
@@ -205,6 +204,15 @@ endif;
 </div>
 
 <style>
+.tableResponsive{
+    width: 50%;
+    text-align: center;
+}
+@media screen and (max-width: 768px) {
+.tableResponsive{
+    width: 100%;
+}
+}
     /* Estilos para el modal */
 .modal {
     display: none; /* Oculto por defecto */
@@ -256,6 +264,72 @@ endif;
     cursor: pointer;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
+
+/*Estilos para los selectores de fecha, cliente y tipo compra*/
+.selector {
+    width: 85%;
+    padding: 8px;
+    border: 2px solid #50fa7b;
+    background-color: #282a36;
+    color: #f8f8f2;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.selector:focus {
+    outline: none;
+    border-color: #8be9fd;
+    box-shadow: 0 0 5px #8be9fd;
+}
+
+/*Estilos para los botones de confirmar, cancelar modif o volver*/
+.botones-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center; /* Centra los botones horizontalmente */
+    padding: 15px;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #50fa7b;
+    color: #282a36;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background 0.3s;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn:hover {
+    background-color: #8be9fd;
+}
+
+.danger {
+    background-color: #ff5555;
+    color: white;
+}
+
+.danger:hover {
+    background-color: #ff4444;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .botones-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 </style>
 
 

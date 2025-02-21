@@ -4,7 +4,7 @@
   <div style="" >
   
     <div>
-    <h2>Nuevo Cliente/Pedido<h2>
+    <h2>Nuevo Cliente<h2>
     </div>
   
  <?php $validation = \Config\Services::validation(); ?>

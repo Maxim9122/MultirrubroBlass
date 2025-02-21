@@ -181,7 +181,7 @@ class Usuario_controller extends Controller{
         $dato['titulo']='Usuarios Eliminados';
         echo view('navbar/navbar'); 
         echo view('header/header',$dato);
-         echo view('admin/listUS_Eliminados_view',$data);
+         echo view('admin/listUs_Eliminados_view.php',$data);
           echo view('footer/footer');
     }
 

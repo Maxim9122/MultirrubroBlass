@@ -79,7 +79,7 @@
   <table class="comprados detalle-compra-tabla">
     <thead>
       <tr>
-          <th>Nro CAE</th>
+          <th>Nro Factura</th>
           <th>CAE</th>
           <th>Vencimiento CAE</th>
       </tr>

@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Multirrubro Blass</title>
   <link rel="icon" href="<?php echo base_url('./assets/img/iconMB2.png');?>">
-  <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/navbar.css">
-  <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/clock.css">
-  <link rel="stylesheet" href="<?php echo base_url();?>./assets/css/mensajesTemporales.css">
+  <link rel="stylesheet" href="<?php echo base_url('./assets/css/navbar.css');?>">
+  <link rel="stylesheet" href="<?php echo base_url('./assets/css/clock.css');?>">
+  <link rel="stylesheet" href="<?php echo base_url('./assets/css/mensajesTemporales.css');?>">
 
-  <script src="<?php echo base_url();?>./assets/js/a25933befb.js" crossorigin="anonymous"></script>
+  <script src="<?php echo base_url('./assets/js/a25933befb.js');?>" crossorigin="anonymous"></script>
   
 </head>
 
@@ -47,6 +47,9 @@
           <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
           </li>
           <li class="nnavItem">
+            <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
+          </li>
+          <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
           </li>
           <li class="nnavItem">
@@ -60,9 +63,6 @@
           </li>
           <li class="nnavItem">
             <a href="<?= base_url('ListaCategorias')?>" class="btn">P_Categorias</a>
-          </li>
-          <li class="nnavItem">
-            <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>
           <li class="nnavItem">
           <a href="<?= base_url('/logout')?>" class="btn" onclick="return confirmarAccionSalir(event);">Salir</a>

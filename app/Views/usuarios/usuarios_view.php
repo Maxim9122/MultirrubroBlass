@@ -94,7 +94,7 @@
                 </svg> Eliminar</a>
                 
                 <?php else :  ?> 
-                <button hidden>Eliminar</button>
+                <button hidden >Eliminar</button>
                 
                 <?php endif; ?>
 

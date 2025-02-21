@@ -57,6 +57,7 @@
              <th>Vendedor</th>
              <th>Total</th>
              <th>Fecha Registro</th>
+             <th>Hora Reg.</th>
              <th>Fecha Entrega</th>
              <th>Estado</th>                          
              <th>Acciones</th>
@@ -72,6 +73,7 @@
         <td><?php echo $p['nombre_usuario'];?></td>
         <td>$<?php echo $p['total_bonificado'];?></td>
         <td><?php echo $p['fecha'];?></td>
+        <td><?php echo $p['hora'];?></td>
         <td><?php echo $p['fecha_pedido'];?></td>
         <td><?php echo $p['estado'];?></td>
         <!-- Formulario por cada turno -->
@@ -97,11 +99,11 @@
                 <a href="<?php echo base_url('cargar_pedido/'.$p['id']); ?>">
                     ✏️ Modificar
                 </a>
-            </li>
+            </li> 
             <li>
-                <button class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
+                <a class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
                     ✅ Listo
-                </button>
+                </a>
             </li>
                 </ul>
             </div>

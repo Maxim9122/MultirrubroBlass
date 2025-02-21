@@ -14,7 +14,7 @@ class Login_controller extends Controller
         
         echo view('navbar/navbar');
         echo view('header/header',$dato);
-        echo view('login/login');
+        echo view('Login/login');
         echo view('footer/footer');
     } 
   

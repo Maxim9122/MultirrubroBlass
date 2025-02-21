@@ -76,17 +76,16 @@
 
 
 <?php
-// Obtener los datos del carrito
-$id_cliente = '';
-// Añadido para el tipo de compra
 
-$cart_items = $cart->contents(); // Obtener los artículos del carrito
-if (!empty($cart_items)) {
-    // Tomamos los datos de las opciones del primer artículo del carrito
-    $first_item = reset($cart_items); // Obtener el primer ítem del carrito
-    $id_cliente = isset($first_item['options']['id_cliente']) ? $first_item['options']['id_cliente'] : '';
-    
+$id_pedido = '';
+// Añadido para el tipo de compra
+$session = session();
+
+if (!empty($session)) {
+    $id_pedido = $session->get('id_pedido');
 }
+//print_r($id_pedido);
+//exit;
 ?>
 
 <div class="compados" style="width:100%;">
@@ -151,6 +150,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <td class="separador ocultar-en-movil"  style="color: #ffff;">
                         $ARS <?php  echo number_format($item['price'], 2);?>
                         </td>
+                        
                         <td class="separador" style="color: #ffff;">
                         <?php 
                             if ($item['id'] < 10000) {
@@ -170,6 +170,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             }
                             ?>
                         </td>
+                        
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
                         <td class="separador" style="color: #ffff;">
                         $ARS <?php echo number_format($item['subtotal'], 2) ?>
@@ -209,8 +210,8 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Cancelar edicion de pedido -->
-                        <?php if ($id_cliente) { ?>
-                            <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionPedido();">
+                        <?php if ($id_pedido) { ?>
+                            <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionPedido();">
                                 Cancelar Modificación
                             </a>
                             <?php } else {?>
@@ -279,7 +280,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+                window.location.href = "<?php echo base_url('cancelar_edicion/'.$id_pedido); ?>";
             }
         });
         return false; // Evita que el enlace siga su curso normal
