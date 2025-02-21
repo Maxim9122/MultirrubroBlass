@@ -137,21 +137,30 @@ public function ListCompraDetalle($id)
 
     //Agrega elemento al carrito
 	function add()
-    {
-    $cart = \Config\Services::cart();
+{
     $producto_id = $_POST['id'];
     $nombre = $_POST['nombre'];
     $precio = $_POST['precio_vta'];
-    $stock = $_POST['stock'];
+    $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1; // Obtener la cantidad enviada
 
-    // Obtener todos los productos en el carrito
+    $prodModel = new Productos_model();
+    $producto = $prodModel->getProducto($producto_id);
+    $stock = $producto['stock'];
+
+    // Verificar si hay suficiente stock
+    if ($stock <= 0) {
+        session()->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    $cart = \Config\Services::cart();
     $cart_items = $cart->contents();
     $producto_encontrado = false;
 
     foreach ($cart_items as $item) {
         if ($item['id'] == $producto_id) {
-            // Si el producto ya está en el carrito, incrementar cantidad
-            $nueva_cantidad = $item['qty'] + 1;
+            // Si el producto ya está en el carrito, incrementar la cantidad seleccionada
+            $nueva_cantidad = $item['qty'] + $cantidad;
 
             // Verificar si supera el stock disponible
             if ($nueva_cantidad > $stock) {
@@ -170,14 +179,14 @@ public function ListCompraDetalle($id)
         }
     }
 
-    // Si el producto no está en el carrito, agregarlo
+    // Si el producto no está en el carrito, agregarlo con la cantidad seleccionada
     if (!$producto_encontrado) {
         $cart->insert([
             'id'      => $producto_id,
-            'qty'     => 1,
+            'qty'     => $cantidad, // Insertamos la cantidad seleccionada
             'price'   => $precio,
             'name'    => $nombre,
-            'options' => ['stock' => $stock] // Almacenar stock disponible
+            'options' => ['stock' => $stock] // Guardamos el stock disponible como referencia
         ]);
     }
 
