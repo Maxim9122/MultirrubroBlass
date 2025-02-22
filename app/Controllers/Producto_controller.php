@@ -54,8 +54,7 @@ class Producto_controller extends Controller{
         }
         $input = $this->validate([
             'codigo_barra' => 'is_unique[productos.codigo_barra]',
-            'nombre'   => 'required|min_length[3]',
-            'descripcion'   => 'required',
+            'nombre'   => 'required|min_length[3]',          
             'categoria_id' => 'required|min_length[1]|max_length[20]',
             'precio'    => 'required|min_length[2]|max_length[10]',
             'precio_vta'  => 'required|min_length[2]',
@@ -91,7 +90,7 @@ class Producto_controller extends Controller{
                 
             ]);  
             session()->setFlashdata('msg','Producto Creado con Éxito!');
-             return redirect()->to(base_url('Lista_Productos'));
+             return redirect()->to(base_url('nuevoProducto'));
         }
     }
     // verifica los datos de la categoria nueva
@@ -305,8 +304,7 @@ class Producto_controller extends Controller{
         
         $input = $this->validate([
             'codigo_barra' => "required|is_unique[productos.codigo_barra,id,{$_POST['id']}]", // Ignora el ID actual
-            'nombre'   => 'required|min_length[3]',
-            'descripcion'   => 'required|max_length[200]',
+            'nombre'   => 'required|min_length[3]',            
             'categoria_id' => 'required|min_length[1]|max_length[2]',
             'precio'    => 'required|min_length[2]|max_length[10]',
             'precio_vta'  => 'required|min_length[2]',
