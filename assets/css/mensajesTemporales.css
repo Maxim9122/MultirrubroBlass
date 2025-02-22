@@ -1,9 +1,4 @@
-@font-face {
-    font-family: 'Bangers';
-    src: url('../fonts/FeVQS0BTqb0h60ACH55Q2A.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
+
 
 .flash-message {
     position: fixed;
@@ -16,7 +11,7 @@
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    font-family: 'Bangers', sans-serif;
+    font-family: Arial;
     font-size: 50px;
     opacity: 0.95;
     font-weight: 500;
