@@ -2,3 +2,6 @@
 /writable/session
 /writable/logs
 COM3
+.env
+app/Config/Database.php
+app/Config/Routes.php

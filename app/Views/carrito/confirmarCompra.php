@@ -146,7 +146,7 @@ endif;
                     Cancelar Todo
                 </a>
             <?php } ?>
-        
+            <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
             <?php echo form_submit('confirmar', 'Confirmar', "class='btn'"); ?>
             </section>

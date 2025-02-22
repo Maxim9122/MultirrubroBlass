@@ -410,8 +410,7 @@ public function ListCompraDetalle($id)
     //Formateamos la fecha del pedido al formato dia-mes-año
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));   
     
-    
-
+    $id_pedido = $this->request->getPost('id_pedido');
     // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
     if ($id_pedido) {
         
@@ -422,7 +421,7 @@ public function ListCompraDetalle($id)
         // Eliminar los detalles y la cabecera de la venta anterior
         $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
         $Cabecera_model = new Cabecera_model();
-        $Cabecera_model->delete($id_venta_anterior);
+        $Cabecera_model->delete($id_pedido);
 
         // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
         $session = session();
