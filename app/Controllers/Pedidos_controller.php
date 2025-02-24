@@ -255,6 +255,7 @@ class Pedidos_controller extends Controller{
 
     // Obtener los datos de la cabecera de la venta para obtener el id_cliente
     $cabecera = $cabecera_model->find($id_pedido);
+    if($cabecera['estado'] == 'Pendiente'){
     $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
     $id_pedido = $cabecera ? $cabecera['id'] : null;
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
@@ -291,8 +292,8 @@ class Pedidos_controller extends Controller{
         }
     }
 
-    // Actualizar el estado del pedido a "Modificado"
-    $cabecera_model->update($id_pedido, ['estado' => 'Modificado']);
+    // Actualizar el estado del pedido a "Modificando"
+    $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
 
     foreach ($detalles as $detalle) {
         $producto = $producto_model->find($detalle['producto_id']);
@@ -308,9 +309,12 @@ class Pedidos_controller extends Controller{
             ]);
         }
     }
-
     // Redirigir a la vista de edición del pedido
     return redirect()->to('CarritoList');
+    }
+    
+    session()->setFlashdata('msg', 'Este pedido ya esta siendo Modificado por otro usuario!');
+    return redirect()->to('pedidos');
     }
 
 
