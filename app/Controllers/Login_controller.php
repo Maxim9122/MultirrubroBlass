@@ -76,14 +76,40 @@ class Login_controller extends Controller
     }
 
 
+    
     public function logout()
     {
         $session = session();
+        //CANCELAMOS LA MODIFICACION DEL PEDIDO ANTES DE SALIR, SI ES NECESARIO.
+        $id_pedido = $session->get('id_pedido');
+        if($id_pedido){
+        $cart = \Config\Services::cart();
+        $Cabecera_model = new Cabecera_model();
+        $VentaDetalle_model = new VentaDetalle_model();
+        $Producto_model = new Productos_model();
+
+        // Obtener detalles de los productos de la venta anterior
+        $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
+        
+        foreach ($detalles_venta_anterior as $detalle) {
+            // Restaurar el stock de los productos
+            $producto = $Producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $stock_edit = $producto['stock'] - $detalle['cantidad'];
+                $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
+            }
+        }        
+        // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
+        $session = session();
+        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        // Actualizar el estado del pedido a "Pendiente"
+        $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
+        $cart->destroy();
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
-
+        }
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
          //print_r();

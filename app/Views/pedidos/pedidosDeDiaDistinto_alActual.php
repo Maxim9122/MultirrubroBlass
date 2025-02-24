@@ -24,9 +24,7 @@
         <?php
         $session = session();
         $id_cliente_seleccionado = $session->get('id_cliente') ?? '';
-        $nombre_cliente = $session->get('nombre_cliente') ?? '';
-        $fecha_turno = $session->get('fecha_turno') ?? '';
-        $hora_turno = $session->get('hora_turno') ?? '';
+        $id_pedido = $session->get('id_pedido') ?? '';
         ?>
 
 <div style="width: 100%;">
@@ -96,9 +94,11 @@
                 </a>
             </li>
             <li>
+                <?php if(!$id_pedido){?>
                 <a href="<?php echo base_url('cargar_pedido/'.$p['id']); ?>">
                     ✏️ Modificar
                 </a>
+                <?php } ?>
             </li> 
             <li>
                 <a class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
