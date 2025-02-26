@@ -21,13 +21,14 @@
   </section>
   <br>
 <div style="width: 100%; text-align: end;">
-  <a class="btn" href="<?php echo base_url('nuevoCategoria');?>">
-  Nueva Categoria</a>
-  <a class="btn" href="<?php echo base_url('eliminadosCateg');?>">
-  Eliminadas</a>
+ 
 
   
   <div class="contenedor-titulo">
+  <div style="display: flex; gap: 10px;">
+    <a class="btn" href="<?php echo base_url('nuevoCategoria'); ?>">Nueva Categoria</a>
+    <a class="btn" href="<?php echo base_url('eliminadosCateg'); ?>">Eliminadas</a>
+</div><br>
   
   <table class="table table-responsive table-hover" id="users-list">
        <thead>
@@ -95,7 +96,7 @@
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página e _PAGE_ de _PAGES_",
+            "info": "Mostrando la página _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
             "search": "Buscar: ",

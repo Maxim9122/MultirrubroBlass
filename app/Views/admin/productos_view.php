@@ -70,7 +70,7 @@
 <!-- Fin de los mensajes temporales -->
  
 <section class="contenedor-titulo">
-  <strong class="titulo-vidrio">Listado de Productos</strong>
+  <strong class="titulo-vidrio">ABM de Productos</strong>
   </section>
 <div style="width: 100%; text-align: end;">
   
@@ -123,8 +123,8 @@
           <?php foreach($productos as $prod): ?>
           <tr>
              <td><?php echo $prod['nombre']; ?></td>
-             <td><?php echo $prod['precio']; ?></td>
-             <td><?php echo $prod['precio_vta']; ?></td>
+             <td>$<?php echo $prod['precio']; ?></td>
+             <td>$<?php echo $prod['precio_vta']; ?></td>
              <?php 
              $categoria_nombre = 'Desconocida';
              foreach ($categorias as $categoria) {
@@ -177,7 +177,7 @@
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página e _PAGE_ de _PAGES_",
+            "info": "Mostrando la página  _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
             "search": "Buscar: ",

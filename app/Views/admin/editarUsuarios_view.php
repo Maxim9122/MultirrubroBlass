@@ -95,11 +95,17 @@
         $perfil = 'Vendedor';
         break;
 }?>
-   <label for="exampleFormControlInput1" class="form-label">Categoria</label>
+   <label for="exampleFormControlInput1" class="form-label">Tipo de Perfil</label>
    <select name="perfil_id">
+       <?php if($data['id'] == 1){?>
     <option value="<?php echo $data['perfil_id']?>"><?php echo $perfil ?></option>
-    <option value="2">Vendedor</option>
-    <option value="1">Admin</option>
+    
+        <?php } else {?>
+        <option value="<?php echo $data['perfil_id']?>"><?php echo $perfil ?></option>
+        <option value="2">Vendedor</option>
+        <option value="1">Admin</option>
+        
+        <?php } ?>
     </select>
    <!-- Error -->
         <?php if($validation->getError('perfil_id')) {?>

@@ -72,7 +72,7 @@ function cerrarMensaje() {
   <button type="submit" class="success" style="display: none;">Agregar por Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
-        <input type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
+        <input oninput="this.value = this.value.replace(/\D/g, '')" type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
         <input type="hidden" id="cantidad" name="cantidad">
         <select id="product_select" name="product_id" required size="3">
             <option class="separador">Seleccione un Producto!</option>
@@ -103,93 +103,74 @@ function cerrarMensaje() {
     </section>
   
   <table class="" id="users-list">
-       <thead>
-          <tr class="colorTexto2">
-             <th>Nombre</th>
-             <th>Precio Venta</th>
-             <th class="ocultar-en-movil">Categoría</th>
-             <th>Imagen</th>
-             <th>Stock</th>
-             <th>Acciones</th>
-          </tr>
-       </thead>
-       <tbody>
-          <?php if($productos): ?>
-          <?php foreach($productos as $prod): ?>
-          <tr>
-             <td><?php echo $prod['nombre']; ?></td>
-             <td>$<?php echo $prod['precio_vta']; ?></td>
-             <?php 
-             $categoria_nombre = 'Desconocida';
-             foreach ($categorias as $categoria) {
-                 if ($categoria['categoria_id'] == $prod['categoria_id']) {
-                     $categoria_nombre = $categoria['descripcion'];
-                     break;
-                 }
+   <thead>
+      <tr class="colorTexto2">
+         <th>Nombre</th>
+         <th>Precio Venta</th>
+         <th class="ocultar-en-movil">Categoría</th>
+         <th>Imagen</th>
+         <th>Stock</th>
+         <th>Cantidad</th>
+         <th>Acciones</th>
+      </tr>
+   </thead>
+   <tbody>
+      <?php if($productos): ?>
+      <?php foreach($productos as $prod): ?>
+      <tr>
+         <td><?php echo $prod['nombre']; ?></td>
+         <td>$<?php echo $prod['precio_vta']; ?></td>
+         <?php 
+         $categoria_nombre = 'Desconocida';
+         foreach ($categorias as $categoria) {
+             if ($categoria['categoria_id'] == $prod['categoria_id']) {
+                 $categoria_nombre = $categoria['descripcion'];
+                 break;
              }
-             ?>
-             <td class="ocultar-en-movil"><?php echo $categoria_nombre; ?></td>
-             <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
-             
-             <?php if($prod['stock'] <= $prod['stock_min']){ ?>
-                <td class="text-center">
-                    <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
-                </td>
-            <?php } else { ?>
-                    <td class="text-center"><?php echo $prod['stock']; ?></td>
-            <?php } ?>
-
-             <td>
-             <?php
-                                     if($prod['stock'] <= 0){
-                                         $btn = array(
-                                         'class' => 'danger',
-                                              'value' => 'Sin Stock',
-                                             'disabled' => '',
-                                             'name' => 'action'
-                                             );
-                                      echo form_submit($btn);
-                                       echo form_close();
-
-                                           ?>
-                                          <?php
-                                          
-                                      } else if ($session){
-                                        if ($perfil == 2 || $perfil == 1) {
-                                            
-                                           // Envia los datos en forma de formulario para agregar al carrito
-                                           //Comienzo del fomulario oculto de php
-                                           echo form_open('Carrito_agrega', ['id' => 'formCarrito']);
-                                           echo form_hidden('id', $prod['id']);
-                                           echo form_hidden('nombre', $prod['nombre']);
-                                           echo form_hidden('precio_vta', $prod['precio_vta']);
-                                           echo form_hidden('stock', $prod['stock']);
-                                           
-                                           $btn = array(
-                                               'class' => 'btn',
-                                               'value' => 'Agregar',
-                                               'name' => 'action'
-                                           );
-                                           echo form_submit($btn);
-                                           echo form_close();
-                                           //Aqui termina el form php
-   
-                                           }else{
-                                           ?>
-                                           <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
-                                           <?php  }
-                                           ?>
-                                           <?php
-                                           } 
-                                           ?>
-             </td>
-             
-            </tr>
-         <?php endforeach; ?>
+         }
+         ?>
+         <td class="ocultar-en-movil"><?php echo $categoria_nombre; ?></td>
+         <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
          
-         <?php endif; ?>
-       
-     </table>
+         <?php if($prod['stock'] <= $prod['stock_min']){ ?>
+            <td class="text-center">
+                <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
+            </td>
+         <?php } else { ?>
+                <td class="text-center"><?php echo $prod['stock']; ?></td>
+         <?php } ?>
+
+         <td>
+            <!-- Campo para ingresar la cantidad -->
+            <input oninput="this.value = this.value.replace(/\D/g, ''); if (this.value < 1) this.value = 1;" type="number" id="cantidad_<?php echo $prod['id']; ?>" min="1" max="<?php echo $prod['stock']; ?>" value="1" class="input-cantidad">
+         </td>
+
+         <td>
+            <?php if($prod['stock'] <= 0){ ?>
+               <button class="btn danger" disabled>Sin Stock</button>
+            <?php } else if ($session && ($perfil == 2 || $perfil == 1)) { ?>
+               
+               <!-- Formulario para agregar al carrito -->
+               <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
+               <?php echo form_hidden('id', $prod['id']); ?>
+               <?php echo form_hidden('nombre', $prod['nombre']); ?>
+               <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
+               
+               <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
+               
+               <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
+               <?php echo form_close(); ?>
+
+            <?php } else { ?>
+               <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
+            <?php } ?>
+         </td>
+         
+      </tr>
+      <?php endforeach; ?>
+      <?php endif; ?>
+   </tbody>
+</table>
      <br>
   </div>
 </div>
@@ -211,6 +192,33 @@ function cerrarMensaje() {
 </div>
 
 
+<script>
+//Script para manejo de stock en la tabla con boton Agregar
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".form-carrito").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            let productId = form.querySelector(".btn-agregar").getAttribute("data-id");
+            let cantidadInput = document.getElementById("cantidad_" + productId);
+            let cantidadHidden = document.getElementById("inputCantidad_" + productId);
+            let stockMax = parseInt(cantidadInput.getAttribute("max"));
+
+            // Verifica que la cantidad no sea mayor al stock
+            if (parseInt(cantidadInput.value) > stockMax) {
+                alert("No puedes agregar más de " + stockMax + " unidades.");
+                cantidadInput.value = stockMax; // Ajusta la cantidad al máximo permitido
+                cantidadHidden.value = stockMax;
+                event.preventDefault(); // Evita que se envíe el formulario
+                return;
+            }
+
+            // Actualiza el input hidden antes de enviar
+            cantidadHidden.value = cantidadInput.value;
+        });
+    });
+});
+
+</script>
+
 <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
 <script src="<?php echo base_url('./assets/js/jquery-ui.js');?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
@@ -223,7 +231,7 @@ function cerrarMensaje() {
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página e _PAGE_ de _PAGES_",
+            "info": "Mostrando la página _PAGE_ de _PAGES_",
             "infoEmpty": "No hay registros disponibles.",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
             "search": "Buscar: ",
@@ -336,6 +344,5 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 </script>
-
 
 <br><br>
