@@ -12,6 +12,7 @@ Use App\Models\Cabecera_model;
 Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
 use App\Models\Usuarios_model;
+use App\Models\barcode;
 use App\Models\Cae_model;
 
 
@@ -1061,12 +1062,24 @@ public function facturar($TA = null,$id_cabecera = null) {
 //Genera el ticket factura tipo C
 public function generarTicketFacturaC($id_cabecera)
 {
+    // Instanciar el modelo
+    $caeModel = new Cae_model();
+
+    // Generar la URL del QR
+ //   $url_qr = $caeModel->generarQR($id_cabecera);
+     // Instanciar el modelo   
+    
+ //    print_r($url_qr);
+ //    exit;
+
+    
+
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
-    $caeModel = new \App\Models\Cae_model();
+    
 
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
