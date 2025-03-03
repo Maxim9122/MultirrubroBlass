@@ -134,6 +134,17 @@ public function ListCompraDetalle($id)
         echo view('footer/footer');
     }
 
+    //edicion de ventas ya relaizadas
+    public function productosAgregados_vta(){
+        $cart = \Config\Services::cart();
+		$carrito['carrito']=$cart->contents();
+        $data['titulo']='Productos en el Carrito'; 
+		echo view('navbar/navbar');
+        echo view('header/header',$data);        
+        echo view('carrito/edicionVta',$carrito);
+        echo view('footer/footer');
+    }
+
     //Agrega elemento al carrito
 	function add()
 {

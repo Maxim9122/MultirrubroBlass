@@ -44,6 +44,9 @@ $routes->post('pedido_actualizar/(:num)', 'Pedidos_controller::pedido_actualizar
 $routes->post('clienteListo/(:num)', 'Pedidos_controller::Pedido_completado/$1');
 $routes->get('cancelar/(:num)', 'Pedidos_controller::Pedido_cancelado/$1');
 $routes->post('pedidoClienteRegistrado', 'Pedidos_controller::pedidoClienteRegistrado');
+//edicion pedido
+$routes->get('cancelar_edicion/(:num)', 'Pedidos_controller::cancelar_edicion/$1');
+$routes->get('cancelar_edicion_vta/(:num)', 'Producto_controller::cancelar_edicion_vta/$1');
 
 //Servicios
 $routes->get('/Lista_servicios', 'Servicios_controller::Servicios');
@@ -138,7 +141,9 @@ $routes->post('/filtrarSesiones', 'Login_controller::mostrarSesiones');
 $routes->post('filtrarVentas', 'Carrito_controller::filtrarVentas');
 $routes->get('filtrarPedidos', 'Carrito_controller::filtrarPedidos');
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');
+$routes->get('CarritoList_vta', 'Carrito_controller::productosAgregados_vta');
 $routes->get('cargar_pedido/(:num)', 'Pedidos_controller::cargar_pedido_en_carrito/$1');
+$routes->get('cargar_venta/(:num)', 'Producto_controller::cargar_venta_en_carrito/$1');
 $routes->post('Carrito_agrega', 'Carrito_controller::add');
 $routes->post('Agregamos', 'Carrito_controller::agregarDesdeListaProd');
 $routes->post('Otros_gastos', 'Carrito_controller::agregar');
@@ -146,8 +151,11 @@ $routes->get('carrito_elimina/(:any)', 'Carrito_controller::remove/$1');
 $routes->post('carrito_actualiza', 'Carrito_controller::actualiza_carrito');
 $routes->post('comprar', 'Carrito_controller::actualiza_carrito_antesDeConfirmar');
 $routes->post('carrito/procesarCarrito', 'Carrito_controller::procesarCarrito');
+$routes->post('venta/procesarCarrito', 'cajero_controller::procesarCarrito');
 $routes->get('casiListo', 'Carrito_controller::muestra_compra');
+$routes->get('casiListo_vta', 'cajero_controller::muestra_compra_vta');
 $routes->post('confirma_compra', 'Carrito_controller::guarda_compra');
+$routes->post('confirma_compra_vta', 'cajero_controller::guarda_compra');
 $routes->get('compras', 'Carrito_controller::ListVentasCabecera');
 $routes->get('DetalleVta/(:num)', 'Carrito_controller::ListCompraDetalle/$1');
 $routes->get('Gracias', 'Carrito_controller::GraciasPorSuCompra');

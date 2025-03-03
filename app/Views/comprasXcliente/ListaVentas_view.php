@@ -7,6 +7,11 @@
             <?= session()->getFlashdata('msg') ?>
         </div>
     <?php endif; ?>   
+    <?php
+        $session = session();
+        $id_cliente_seleccionado = $session->get('id_cliente') ?? '';
+        $id_pedido = $session->get('id_pedido') ?? '';
+        ?>
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
@@ -102,6 +107,11 @@
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
                         Imp.Ticket
                     </a>
+                    
+                <a href="<?php echo base_url('cargar_venta/'.$vta['id']); ?>">
+                    ✏️ Modificar
+                </a>
+               
                 <?php } if($vta['estado'] == 'Error_factura') { ?>
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
                         Re.Facturar
