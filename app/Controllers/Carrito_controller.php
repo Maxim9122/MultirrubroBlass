@@ -12,7 +12,6 @@ Use App\Models\Cabecera_model;
 Use App\Models\VentaDetalle_model;
 Use App\Models\Clientes_model;
 use App\Models\Usuarios_model;
-use App\Models\barcode;
 use App\Models\Cae_model;
 
 
@@ -146,7 +145,8 @@ public function ListCompraDetalle($id)
     $prodModel = new Productos_model();
     $producto = $prodModel->getProducto($producto_id);
     $stock = $producto['stock'];
-
+    //print_r($_POST);
+    //exit;
     // Verificar si hay suficiente stock
     if ($stock <= 0) {
         session()->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
@@ -364,10 +364,13 @@ public function ListCompraDetalle($id)
 
 
 //GUARDA LA COMPRA
-    public function guarda_compra($id_pedido = null)
+    public function guarda_compra()
 {    
     $cart = \Config\Services::cart();
     $session = session();
+    
+    //print_r($id_pedido);
+    //exit;
     
     if(!$cart){
     return redirect()->to(base_url('catalogo'));
@@ -412,22 +415,93 @@ public function ListCompraDetalle($id)
     $fecha_pedido_formateada = date('d-m-Y', strtotime($fecha_pedido));   
     
     $id_pedido = $this->request->getPost('id_pedido');
-    // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
-    if ($id_pedido) {
-        
-        $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model = new Productos_model();     
-        
+    
+    $Producto_model = new Productos_model();
 
-        // Eliminar los detalles y la cabecera de la venta anterior
-        $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
-        $Cabecera_model = new Cabecera_model();
-        $Cabecera_model->delete($id_pedido);
+    // **CONTROL DE STOCK ANTES DE PROCESAR LA COMPRA**
+    foreach ($cart->contents() as $item) {
+        $producto = $Producto_model->find($item['id']); 
 
-        // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
-        $session = session();
-        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        if (!$producto || $producto['stock'] < $item['qty']) {
+            session()->setFlashdata('msgEr', "Stock insuficiente para {$item['name']} (Stock disponible: {$producto['stock']}).");
+            return redirect()->to('CarritoList');
+        }
     }
+
+    // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
+    //if ($id_pedido) {
+        
+    //     $VentaDetalle_model = new VentaDetalle_model();
+   // $Producto_model = new Productos_model();
+    //$Cabecera_model = new Cabecera_model();
+    
+
+    // Eliminar los detalles y la cabecera de la venta anterior
+   // $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
+    //$Cabecera_model->eliminarPedido($id_pedido);
+
+    // Eliminar datos de la sesión relacionados con el pedido
+    //$session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+   // }
+    
+    
+    // Si se encontró un id de pedido, actualizar el pedido existente con los nuevos datos
+ if ($id_pedido) {
+    // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
+   $VentaDetalle_model = new VentaDetalle_model();
+    $Producto_model = new Productos_model();
+    $Cabecera_model = new Cabecera_model();
+    
+    // Actualizar la cabecera de la venta con los nuevos datos
+    $cabecera_model = new Cabecera_model();
+    $cabecera_model->update($id_pedido, [
+        'fecha' => $fecha, // Actualizamos la fecha del pedido
+        'hora' => $hora, // Actualizamos la hora
+        'id_cliente' => $id_cliente, // Actualizamos el id del cliente
+        'id_usuario' => $id_usuario, // Actualizamos el id del usuario (vendedor)
+        'total_venta' => $total, // Actualizamos el total de la venta
+        'tipo_pago' => $tipo_pago, // Actualizamos el tipo de pago
+        'total_bonificado' => $total_conDescuento, // Actualizamos el total con descuento (si aplica)
+       'tipo_compra' => 'Pedido', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
+        'estado' => 'Pendiente', // Mantenemos el estado como "Sin_Facturar" (puede cambiar según el flujo)
+        'fecha_pedido' => $fecha_pedido_formateada // Actualizamos la fecha de pedido
+   ]);
+    
+    // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
+    $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
+
+    // Insertar los nuevos detalles del carrito en la base de datos
+    if ($cart) {
+        foreach ($cart->contents() as $item) {
+            // Guardar cada producto del carrito como un nuevo detalle de la venta
+            $VentaDetalle_model->save([
+                'venta_id' => $id_pedido,  // Usamos el id del pedido existente para vincular el detalle
+               'producto_id' => $item['id'], // Producto id desde el carrito
+               'cantidad' => $item['qty'], // Cantidad del producto en el carrito
+                'precio' => $item['price'], // Precio del producto
+                'total' => $item['subtotal'], // Total por ese producto (precio * cantidad)
+            ]);
+
+            // Actualizar el stock de cada producto después de la venta
+            $producto = $Producto_model->find($item['id']); // Obtener el producto desde la base de datos
+            if ($producto && isset($producto['stock'])) {
+                // Restar la cantidad vendida del stock del producto
+               $stock_edit = $producto['stock'] - $item['qty'];
+               $Producto_model->update($item['id'], ['stock' => $stock_edit]); // Actualizamos el stock en la base de datos
+           }
+        }
+    }
+    $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+    // Limpiar el carrito después de guardar los datos
+    $cart->destroy();
+    
+    // Redirigir al usuario con un mensaje de éxito según el tipo de compra
+        session()->setFlashdata('msg', 'Pedido Actualizado con Éxito!');
+        return redirect()->to('pedidos');
+    
+  
+ }
+
     
 
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
@@ -556,6 +630,7 @@ public function ListCompraDetalle($id)
 }
 
 
+
 //Genera ticket venta normal
 public function generarTicket($id_cabecera)
 {
@@ -662,7 +737,7 @@ public function generarTicket($id_cabecera)
 
             <!-- Información de la venta -->
             <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
-            <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
+        
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
             <hr>
@@ -679,7 +754,11 @@ public function generarTicket($id_cabecera)
 
             <!-- Totales -->
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
-            <p>Descuentos: <?= ($cabecera['tipo_pago'] == 'Efectivo') ? '$' . number_format($cabecera['total_venta'] * 0.05, 2) : '$0.00' ?></p>
+            <p>Descuento: 
+            <?= ($cabecera['tipo_pago'] == 'Efectivo') 
+                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_venta'] / 1.05), 2) 
+                : '$0.00' ?>
+            </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
             <hr>
 
@@ -1062,24 +1141,12 @@ public function facturar($TA = null,$id_cabecera = null) {
 //Genera el ticket factura tipo C
 public function generarTicketFacturaC($id_cabecera)
 {
-    // Instanciar el modelo
-    $caeModel = new Cae_model();
-
-    // Generar la URL del QR
- //   $url_qr = $caeModel->generarQR($id_cabecera);
-     // Instanciar el modelo   
-    
- //    print_r($url_qr);
- //    exit;
-
-    
-
     // Cargar los modelos necesarios
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
-    
+    $caeModel = new \App\Models\Cae_model();
 
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
@@ -1171,8 +1238,8 @@ public function generarTicketFacturaC($id_cabecera)
             <!-- Información de la venta -->
             <p>Fecha y Hora: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
             <p>Factura C (Cod.011) a Consumidor Final</p>
-            <p>Numero de Ticket: <?= $cabecera['id'] ?></p>
-            <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
+            
+            <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : 'Consumidor Final Cuil: 0' ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
             <hr>
 
@@ -1188,7 +1255,11 @@ public function generarTicketFacturaC($id_cabecera)
 
             <!-- Totales -->
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
-            <p>Descuentos: <?= ($cabecera['tipo_pago'] == 'Efectivo') ? '$' . number_format($cabecera['total_venta'] * 0.05, 2) : '$0.00' ?></p>
+            <p>Descuento: 
+            <?= ($cabecera['tipo_pago'] == 'Efectivo') 
+                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_venta'] / 1.05), 2) 
+                : '$0.00' ?>
+            </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
             <hr>
             
