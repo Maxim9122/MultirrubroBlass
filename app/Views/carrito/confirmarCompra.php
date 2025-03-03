@@ -40,10 +40,23 @@ if ($session->has('tipo_pago')) {
 if ($session->has('id_pedido')) {
     $id_pedido = $session->get('id_pedido');
 }
-//print_r($fecha_pedido);
+//print_r($id_pedido);
 //exit;
 ?>
+<style>
+    .resaltado {
+    color: orange;
+    border: 2px solid orange;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px;
+    text-align: center;
+}
 
+.contenedor {
+    text-align: center;
+}
+</style>
 <?php
 $gran_total = 0;
 
@@ -64,7 +77,13 @@ endif;
         <br>
         <div align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
-
+                <br>
+        <?php if (!empty($id_pedido)): ?>
+            <h3 class="resaltado">
+                Modificando Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
+            </h3>
+            <br>
+        <?php endif; ?>
             <table style="font-weight: 900;" class="tableResponsive">
                 <tr>
                     <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
@@ -109,12 +128,15 @@ endif;
                 <tr>
                 <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                 <td>
-                    <select name="tipo_compra" id="tipoCompra" class="selector">
+                <select name="tipo_compra" id="tipoCompra" class="selector">
+                    <?php if ($tipo_compra != 'Pedido') : ?>
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
-                        <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
-                    </select>
-                    <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
+                    <?php endif; ?>
+                    <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
+                </select>
+                <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
                 </td>
+
                 </tr>
                 <tr id="fechaPedidoFila" style="display: <?php echo !empty($fecha_pedido) ? 'table-row' : 'none'; ?>;">
                 <td style="color: rgb(192, 250, 214);"><strong>Fecha de entrega del Pedido:</strong></td>
@@ -432,8 +454,8 @@ endif;
         let descuento = 0;
 
         if (seleccion === "Efectivo") {
-            descuento = granTotalOriginal * 0.05;
-            const totalConDescuentoCalculado = granTotalOriginal - descuento;
+           // descuento = granTotalOriginal * 0.05;
+            const totalConDescuentoCalculado = granTotalOriginal / 1.05;
             totalConDescuentoFila.style.display = "table-row";
             totalConDescuento.textContent = `$${totalConDescuentoCalculado.toFixed(2)}`;
             totalConDescuentoInput.value = totalConDescuentoCalculado.toFixed(2); // Actualiza el campo oculto
