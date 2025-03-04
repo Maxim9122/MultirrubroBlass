@@ -65,7 +65,7 @@ class Caja_controller extends Controller{
     // Obtener los datos de la cabecera de la venta para obtener el id_cliente
     $cabecera = $cabecera_model->find($id_vta);
     if($cabecera['estado'] == 'Pendiente'){
-    // Actualizar el estado del pedido a "Modificando"
+    // Actualizar el estado del pedido a "Cobrando"
     $cabecera_model->update($id_vta, ['estado' => 'Cobrando']);
 
     $id_vendedor = $cabecera ? $cabecera['id_usuario'] : null;
@@ -105,6 +105,120 @@ class Caja_controller extends Controller{
         $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         session()->setFlashdata('msg', 'Se Cancelo el cobro de la Venta!');
         return redirect()->to('caja');
+    }
+
+
+    //Funcion para modificar la venta
+    public function cargar_Venta_en_Carrito($id_pedido)
+{
+    $session = session();
+    $cart = \Config\Services::cart();
+    $US_model = new Usuarios_model();
+    $detalle_model = new VentaDetalle_model();
+    $cabecera_model = new Cabecera_model(); // Asegúrate de tener este modelo
+    $producto_model = new Productos_model();
+
+    // Obtener los datos de la cabecera de la venta para obtener el id_cliente
+    $cabecera = $cabecera_model->find($id_pedido);
+    if($cabecera['estado'] == 'Pendiente'){
+    $id_vendedor = $cabecera ? $cabecera['id_usuario'] : null;
+    $vendedor = $US_model->find($id_vendedor);
+    $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
+    $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
+    $id_pedido = $cabecera ? $cabecera['id'] : null;
+    $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
+    $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
+    $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
+    $total_venta = $cabecera ? $cabecera['total_venta'] : null;
+    $session->set([
+        'id_vendedor' => $id_vendedor,
+        'nombre_vendedor' => $nombre_vendedor,
+        'id_cliente' => $id_cliente,
+        'id_pedido' => $id_pedido,
+        'fecha_pedido' => $fecha_pedido,
+        'tipo_compra' => $tipo_compra,
+        'tipo_pago' => $tipo_pago,
+        'total_venta' => $total_venta
+    ]);
+    // Obtener los productos del pedido
+    $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+
+    // Limpiar el carrito antes de cargar los productos
+    $cart->destroy();
+
+
+    if (!$detalles) {
+        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+        return redirect()->to($this->request->getHeader('referer')->getValue());
+    }
+
+    // Restaurar el stock de cada producto
+    foreach ($detalles as $detalle) {
+        $producto = $producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+        }
+    }
+
+    // Actualizar el estado de la Venta a "Modificando"
+    $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
+
+    foreach ($detalles as $detalle) {
+        $producto = $producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $cart->insert([
+                'id'    => $producto['id'],
+                'qty'   => $detalle['cantidad'],
+                'price' => $detalle['precio'],
+                'name'  => $producto['nombre'],
+                'options' => array(
+                    'stock' => $producto['stock'],                   
+                )
+            ]);
+        }
+    }
+    // Redirigir a la vista de edición del pedido
+    return redirect()->to('CarritoList');
+    }
+    
+    session()->setFlashdata('msg', 'Este Venta ya esta siendo Modificada por otro Cajero!');
+    return redirect()->to('caja');
+    }
+
+//Cancelar la modificacion de la Venta
+public function cancelar_edicion_Venta($id_pedido){
+    //print_r($id_pedido);
+    //exit;
+    $cart = \Config\Services::cart();
+    $Cabecera_model = new Cabecera_model();
+    $VentaDetalle_model = new VentaDetalle_model();
+    $Producto_model = new Productos_model();
+
+    // Obtener detalles de los productos de la venta anterior
+    $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
+    
+    foreach ($detalles_venta_anterior as $detalle) {
+        // Restaurar el stock de los productos
+        $producto = $Producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $stock_edit = $producto['stock'] - $detalle['cantidad'];
+            $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
+        }
+    }        
+    // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
+    $session = session();
+    $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+    // Actualizar el estado del pedido a "Pendiente"
+    $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
+    $cart->destroy();
+    return redirect()->to(base_url('caja'));
+}
+
+//Modificar Venta Seleccionada
+    public function ModificarVenta(){
+        
+
     }
 
 }

@@ -42,7 +42,7 @@ class Cabecera_model extends Model
         ");
         $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
         $builder->join('usuarios v', 'u.id_usuario = v.id');
-        $builder->whereNotIn('u.estado', ['Cancelado', 'Modificando']);
+        $builder->whereNotIn('u.estado', ['Cancelado', 'Cobrando']);
         // Aplicar filtros opcionales
         if (!empty($filtros['tipo_compra'])) {
             $builder->where('u.tipo_compra', $filtros['tipo_compra']);

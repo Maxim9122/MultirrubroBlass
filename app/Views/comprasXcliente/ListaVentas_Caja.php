@@ -68,7 +68,7 @@
        <thead>
           <tr class="colorTexto2">
              <th>Nro Venta</th>
-             <th>Cliente</th>
+             <th style="color:orange">Cliente</th>
              <th>Vendedor</th>
              <th>Tipo Compra</th>
              <th>ESTADO</th>
@@ -83,7 +83,7 @@
           <?php foreach($ventas as $vta): ?>
           <tr>
              <td><?php echo $vta['id']; ?></td>
-             <td><?php echo $vta['nombre_cliente']; ?></td>
+             <td style="color:orange"><?php echo $vta['nombre_cliente']; ?></td>
              <td><?php echo $vta['nombre_vendedor']; ?></td>
              <td><?php echo $vta['tipo_compra']; ?></td>
              <td><?php echo $vta['estado']; ?></td>
@@ -103,12 +103,14 @@
             </li>
             <li>
                 <?php if($vta['estado'] == 'Pendiente' && $cobro == null ){?>
-                    <a class="btnDesplegable" style="color:#ffff; background-color:#467c62; border-radius:10px; padding:8px; text-align: center;" href="<?php echo base_url('cargarVenta/'.$vta['id']); ?>">
-                        COBRAR
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;" href="<?php echo base_url('modificarVenta/'.$vta['id']);?>">
+                    Modificar
                     </a>
-                <?php  } if($vta['estado'] == 'Sin_Facturar'){  ?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
-                        Imp.Ticket
+            </li>
+            <li>                          
+                <?php  } if($vta['estado'] == 'Pendiente' && $cobro == null ){  ?>
+                    <a class="btnDesplegable" style="color:#ffff; background-color:#467c62; border-radius:10px; padding:8px; text-align: center;" href="<?php echo base_url('cargarVenta/'.$vta['id']); ?>">
+                    ✅COBRAR
                     </a>
                 <?php } if($vta['estado'] == 'Error_factura') { ?>
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
