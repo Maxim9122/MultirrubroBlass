@@ -31,7 +31,7 @@
   <div>
        <label for="exampleFormControlInput1">Teléfono</label>
    <input name="telefono"  type="text"  placeholder="Telefono" required
-   minlength="10" maxlength="10"
+   minlength="1" maxlength="10"
     
     oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?php echo $data['telefono']?>" >
     <!-- Error -->
@@ -44,16 +44,20 @@
 
   <div>
        <label for="exampleFormControlInput1">Cuil</label>
-   <input name="cuil"  type="text"  placeholder="Cuil" required
-    minlength="11" maxlength="11"
-    pattern="[0-9]{11}"
-    oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?php echo $data['cuil']?>">
+       <input name="cuil" type="text" placeholder="Cuil" required
+        minlength="1" maxlength="11"
+        pattern="0|[0-9]{11}"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+        value="<?php echo $data['cuil']; ?>">
+
     <!-- Error -->
-        <?php if($validation->getError('cuil')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('cuil'); ?>
-            </div>
-        <?php }?>
+    <?php if(session()->getFlashdata('msgEr')) { ?>
+    <div class='alert alert-danger mt-2'>
+        <?= session()->getFlashdata('msgEr'); ?>
+    </div>
+  <?php } ?>
+
+
   </div>  
 
     

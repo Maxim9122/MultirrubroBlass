@@ -18,15 +18,23 @@ $perfil = $session->get('perfil_id');
 
 
 // Inicializar las variables con una cadena vacía
+$id_vendedor = '';
+$nombre_vendedor = '';
 $id_cliente = '';
 $fecha_pedido = '';
 $tipo_compra = '';
 $tipo_pago = '';
 $id_pedido = '';
+$total_venta = '';
 
+$id_cliente_cobro = '';
 // Asignar valores desde la sesión solo si existen
 if ($session->has('id_cliente_pedido')) {
     $id_cliente = $session->get('id_cliente_pedido');
+}
+if ($session->has('id_cliente')) {
+    $id_cliente = $session->get('id_cliente');
+    $id_cliente_cobro = $session->get('id_cliente');
 }
 if ($session->has('fecha_pedido')) {
     $fecha_pedido = $session->get('fecha_pedido');
@@ -39,6 +47,17 @@ if ($session->has('tipo_pago')) {
 }
 if ($session->has('id_pedido')) {
     $id_pedido = $session->get('id_pedido');
+}
+if ($session->has('id_vendedor')) {
+    $id_vendedor = $session->get('id_vendedor');
+}
+if ($session->has('nombre_vendedor')) {
+    $nombre_vendedor = $session->get('nombre_vendedor');
+}
+//print_r($nombre_vendedor);
+//exit;
+if ($session->has('total_venta')) {
+    $total_venta = $session->get('total_venta');
 }
 //print_r($id_pedido);
 //exit;
@@ -78,21 +97,27 @@ endif;
         <div align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
                 <br>
-        <?php if (!empty($id_pedido)): ?>
+        <?php if (!empty($id_pedido) && $total_venta == ''): ?>
             <h3 class="resaltado">
                 Modificando Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
             </h3>
             <br>
         <?php endif; ?>
             <table style="font-weight: 900;" class="tableResponsive">
-                <tr>
-                    <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
-                    <td style="color: #ffff;"><strong id="totalCompra">$<?php echo number_format($gran_total, 2); ?></strong></td>
-                </tr>
-                <tr>
-                    <td style="color:rgb(192, 250, 214);"><strong>Vendedor:</strong></td>
-                    <td style="color: #ffff;"><?php echo($nombre) ?></td>
-                </tr>
+            <tr>
+            <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
+            <td style="color: #ffff;">
+                <strong id="totalCompra">
+                    $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2); ?>
+                </strong>
+            </td>
+            </tr>
+            <tr>
+            <td style="color:rgb(192, 250, 214);"><strong>Vendedor:</strong></td>
+            <td style="color: #ffff;">
+                <?php echo (!empty($nombre_vendedor) ? $nombre_vendedor : $nombre); ?>
+            </td>
+            </tr>
                 <tr>
                 <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
                 <td>
@@ -117,7 +142,9 @@ endif;
                     <td>
                         <select name="tipo_pago" id="tipoPago" class="selector">
                             <option value="Transferencia" <?php echo isset($tipo_pago) && $tipo_pago == 'Transferencia' ? 'selected' : ''; ?>>Transferencia</option>
+                            <?php if($perfil == 3):?>
                             <option value="Efectivo" <?php echo isset($tipo_pago) && $tipo_pago == 'Efectivo' ? 'selected' : ''; ?>>Efectivo (-5%)</option>                            
+                            <?php endif; ?>
                         </select>
                     </td>
                 </tr>
@@ -147,7 +174,7 @@ endif;
                     <?php echo form_hidden('fecha_pedido_input', $fecha_pedido); ?>
                 </td>
                 </tr>
-                <?php echo form_hidden('total_venta', $gran_total); ?>
+                <?php echo form_hidden('total_venta', ($gran_total > 0 ? $gran_total : $total_venta)); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
                 <br>
                         <label for="pago" class="cambio" style="color: #ffff; font-weight: 600;">Paga con: $</label>
@@ -157,9 +184,16 @@ endif;
                 <br>
             </table>
             <section class="botones-container" style="width:65%;">
+
+            <?php if ($total_venta == '') { ?>               
             <a class="btn" href="<?php echo base_url('CarritoList') ?>">Volver</a>
-        
-            <?php if ($id_cliente) { ?>
+            <?php } ?>
+
+            <?php if ($total_venta != '') { ?>
+                <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger">
+                    Cancelar Cobro
+                </a>
+            <?php } else if ($id_cliente) { ?>
                 <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionPedido();">
                     Cancelar Modificación
                 </a>
@@ -168,6 +202,7 @@ endif;
                     Cancelar Todo
                 </a>
             <?php } ?>
+            <?php echo form_hidden('cobro', $id_cliente_cobro); ?>
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
             <?php echo form_submit('confirmar', 'Confirmar', "class='btn'"); ?>
@@ -219,9 +254,14 @@ endif;
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
+        <?php if($perfil == 3):?>
         <p>Desea Facturar (Factura tipo C) o solo imprimir ticket.?</p>
         <button id="invoiceArca" class="btn">Factura C (Arca)</button>
-        <button id="printTicket" class="btn">Imprimir Ticket</button>        
+        <button id="printTicket" class="btn">Imprimir Ticket</button> 
+        <?php endif; if($perfil == 2):?>
+            <p>Registrar Compra?</p>
+            <button id="printTicket" class="btn">Si, Registrar</button>
+        <?php endif; ?>       
     </div>
 </div>
 
@@ -445,7 +485,7 @@ endif;
     const tipoPago = document.getElementById("tipoPago");
     const totalConDescuentoFila = document.getElementById("totalConDescuentoFila");
     const totalConDescuento = document.getElementById("totalConDescuento");
-    const granTotalOriginal = <?php echo $gran_total; ?>;
+    const granTotalOriginal = <?php echo ($gran_total > 0 ? $gran_total : $total_venta) ?>;
     const totalConDescuentoInput = document.querySelector('input[name="total_con_descuento"]');
 
     // Función para actualizar la fila y el descuento

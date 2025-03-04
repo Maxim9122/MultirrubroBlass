@@ -148,7 +148,7 @@ function cerrarMensaje() {
          <td>
             <?php if($prod['stock'] <= 0){ ?>
                <button class="btn danger" disabled>Sin Stock</button>
-            <?php } else if ($session && ($perfil == 2 || $perfil == 1)) { ?>
+            <?php } else if ($session && ($perfil == 2 || $perfil == 1 || $perfil == 3)) { ?>
                
                <!-- Formulario para agregar al carrito -->
                <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>

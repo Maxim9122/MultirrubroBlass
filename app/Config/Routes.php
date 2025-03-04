@@ -33,7 +33,14 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Login_controller');
 
+//Rutas para el Cajero
+$routes->get('caja', 'Caja_controller::Caja');
+$routes->get('cargarVenta/(:num)', 'Caja_controller::CargarVenta/$1');
+$routes->get('cancelarCobro/(:num)', 'Caja_controller::CancelarCobro/$1');
+
+
 //Todo sobre Pedidos
+$routes->get('cancelar_edicion/(:num)', 'Pedidos_controller::cancelar_edicion/$1');
 $routes->get('/pedidosCompletados', 'Pedidos_controller::PedidosCompletados');
 $routes->post('/filtrarPedidos', 'Pedidos_controller::filtrarPedidos');
 $routes->get('/pedidos', 'Pedidos_controller::ListarPedidos');
@@ -160,6 +167,8 @@ $routes->get('factura/(:num)', 'Carrito_controller::FacturaCliente/$1');
 //AFIP
 $routes->get('verificarTA','Carrito_controller::verificarTA');
 $routes->get('generarTicket', 'Carrito_controller::facturar');
+
+$routes->get('descargar_ticket', 'Carrito_controller::descargar_ticket');
 
 $routes->get('verificarTA/(:num)','Carrito_controller::verificarTA/$1');
 $routes->get('generarTicket/(:num)', 'Carrito_controller::generarTicket/$1');
