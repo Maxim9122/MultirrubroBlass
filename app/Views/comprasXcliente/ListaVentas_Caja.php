@@ -74,8 +74,7 @@
              <th>ESTADO</th>
              <th style="color:orange">Total Venta</th>
              <th>Fecha</th>
-             <th>Hora</th>
-             <th>Tipo Pago</th>
+             <th>Hora</th>             
              <th>Acciones</th>
           </tr>
        </thead>
@@ -90,8 +89,7 @@
              <td><?php echo $vta['estado']; ?></td>
              <td style="color:orange">$<?php echo $vta['total_bonificado']; ?></td>
              <td><?php echo $vta['fecha'];?></td>
-             <td><?php echo $vta['hora']; ?></td>
-             <td><?php echo $vta['tipo_pago']; ?></td>
+             <td><?php echo $vta['hora']; ?></td>             
              
              <td class="row">               
 

@@ -70,6 +70,19 @@
     }
 }
 
+.resaltado {
+    color: orange;
+    border: 2px solid orange;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.contenedor {
+    text-align: center;
+}
+
 </style>
 
 
@@ -91,8 +104,14 @@ if (!empty($session)) {
 <div class="compados" style="width:100%;">
 
 <div class="" >
-        <div class = "">
-            <u><i><h2>Productos En Carrito</h2></i></u>
+<div class="contenedor">
+        <u><i><h2>Productos En Carrito</h2></i></u>
+        <br>
+        <?php if (!empty($id_pedido)): ?>
+            <h3 class="resaltado">
+                Modificando Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
+            </h3>
+        <?php endif; ?>
         </div>
         <br>
         <div class="sinProductos" style="color:#ffff; " align="center" >
