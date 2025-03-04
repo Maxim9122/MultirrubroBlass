@@ -68,10 +68,16 @@
           <a href="<?= base_url('/logout')?>" class="btn" onclick="return confirmarAccionSalir(event);">Salir</a>
           </li>
 
-          <?php } else if( (($perfil =='2')) ) { ?>
+          <?php } else if( (($perfil == 2 || $perfil == 3)) ) { ?>
           <li class="navItem">
             <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?></h5>
           </li>
+          <?php if($perfil == 3) { ?>
+          <li class="nnavItem">
+            <a class="btn" href="<?php echo base_url('caja');?>">CAJA</a>
+            <li class="navItem">            
+          </li>
+          <?php } ?>
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('clientes');?>">CLIENTES</a>
           </li>

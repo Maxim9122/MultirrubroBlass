@@ -20,7 +20,7 @@
 
   <div>
    <label for="exampleFormControlInput1">Nombre</label>
-   <input name="nombre" type="text" placeholder="Nombre del Cliente" required
+   <input name="nombre" type="text" placeholder="Nombre del Cliente o Apodo" required
    minlength="3" maxlength="20" >
      <!-- Error -->
         <?php if($validation->getError('nombre')) {?>
@@ -33,7 +33,7 @@
   <div>
   <label for="exampleFormControlInput1" class="form-label">Telefono</label>
    <input  type="text" name="telefono" class="form-control" placeholder="Telefono" required
-   minlength="10" maxlength="10"
+   minlength="1" maxlength="10"
     
     oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
@@ -46,16 +46,16 @@
 
   <div>
   <label for="exampleFormControlInput1" class="form-label">Cuil</label>
-   <input  type="text" name="cuil" class="form-control" placeholder="Cuil" required
-   minlength="11" maxlength="11"
-    
-    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+  <input name="cuil" type="text" placeholder="Cuil" required
+        minlength="1" maxlength="11"
+        pattern="0|[0-9]{11}"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    <!-- Error -->
-        <?php if($validation->getError('cuil')) {?>
-            <div class='alert alert-danger mt-2'>
-              <?= $error = $validation->getError('cuil'); ?>
-            </div>
-        <?php }?>
+   <?php if(session()->getFlashdata('msgEr')) { ?>
+    <div class='alert alert-danger mt-2'>
+        <?= session()->getFlashdata('msgEr'); ?>
+    </div>
+  <?php } ?>
   </div>
 
     <br>

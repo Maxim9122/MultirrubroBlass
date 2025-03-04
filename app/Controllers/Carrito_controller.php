@@ -368,7 +368,7 @@ public function ListCompraDetalle($id)
 {    
     $cart = \Config\Services::cart();
     $session = session();
-    
+    $perfil = $session->get('perfil_id');
     //print_r($id_pedido);
     //exit;
     
@@ -383,8 +383,9 @@ public function ListCompraDetalle($id)
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
-
-
+    $id_cliente_COBRO = $this->request->getPost('cobro');
+    //print_r($id_COBRO);
+    //exit;
     //Tipo de pago enviado del formulario (Transferencia o Efectivo)
     $tipo_pago = $this->request->getPost('tipo_pago');
     //Total de la venta
@@ -446,7 +447,7 @@ public function ListCompraDetalle($id)
     
     
     // Si se encontró un id de pedido, actualizar el pedido existente con los nuevos datos
- if ($id_pedido) {
+ if ($id_pedido > 0 && $tipo_compra == 'Pedido') {
     // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
    $VentaDetalle_model = new VentaDetalle_model();
     $Producto_model = new Productos_model();
@@ -575,7 +576,9 @@ public function ListCompraDetalle($id)
         ]);
         
     } else {
+        //Si el perfil es vendedor guarda la compra con el estado Pendiente
         
+        if($perfil == 2){ 
         // Guardar cabecera de la venta tipo compra normal
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
@@ -587,8 +590,29 @@ public function ListCompraDetalle($id)
             'tipo_pago'    => $tipo_pago,
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
-            'estado' => 'Sin_Facturar'
+            'estado' => 'Pendiente'
         ]);
+        }
+        if($perfil == 3){ 
+            //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
+            if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+                $Cabecera_model = new Cabecera_model();
+                $Cabecera_model->update($id_pedido, [
+                    'estado'            => 'Sin_Facturar',
+                    'total_venta'       => $total,
+                    'tipo_pago'         => $tipo_pago,
+                    'total_bonificado'  => $total_conDescuento,
+                    'tipo_compra'       => $tipo_compra,
+                    'fecha_pedido'      => $fecha_pedido_formateada,
+                    'fecha'        => $fecha,
+                    'hora'         => $hora,
+                    'id_cliente'   => $id_cliente,
+                ]);           
+                $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+            }
+            $cart->destroy();            
+            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
+            }
     }
 
     // Obtener ID de la nueva cabecera guardada
@@ -616,11 +640,15 @@ public function ListCompraDetalle($id)
             }
         endforeach;
     endif;
-
+    
     // Limpiar el carrito y redirigir con mensaje
     $cart->destroy();
     if ($tipo_compra == 'Pedido') {
         session()->setFlashdata('msg', 'Pedido Guardado con Éxito!');
+        return redirect()->to('catalogo');
+    }
+    if($perfil == 2){
+        session()->setFlashdata('msg', 'Compra Registrada con Exito!');
         return redirect()->to('catalogo');
     }
 
@@ -795,7 +823,7 @@ public function generarTicket($id_cabecera)
     
     // Guardar el archivo PDF en la carpeta temporal
     file_put_contents($tempFile, $output);
-    
+    session()->setFlashdata('msg', 'Compra realizada con Exito!');
      // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
     
@@ -813,8 +841,8 @@ public function generarTicket($id_cabecera)
                     window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
                 } else if (perfil == 2) {
                     window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
-                } else {
-                    window.location.href = '" . base_url('home') . "'; // Redirigir por defecto si no es perfil 1 ni 2
+                } else if (perfil == 3){
+                    window.location.href = '" . base_url('caja') . "'; // Redirigir a la caja si es perfil 3
                 }
             }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
           </script>";

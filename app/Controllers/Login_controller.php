@@ -3,7 +3,10 @@ namespace App\Controllers;
 use CodeIgniter\Controller;
 use App\Models\Usuarios_model;
 use App\Models\Sesion_model;
-  
+use App\Models\Cabecera_model;
+use App\Models\VentaDetalle_model;
+use App\Models\Productos_model;
+
 class Login_controller extends Controller
 {
     public function index()
@@ -62,8 +65,10 @@ class Login_controller extends Controller
                 $session->set($ses_data);
                 if($ses_data['perfil_id'] == 2){
                 return redirect()->to('catalogo');
+                }else if($ses_data['perfil_id'] == 3){
+                return redirect()->to('caja');
                 }else{
-                return redirect()->to('/Lista_Productos');
+                return redirect()->to('/Lista_Productos');   
                 }
             }}else{
                 $session->setFlashdata('msg', 'Password Incorrecta');
@@ -82,7 +87,8 @@ class Login_controller extends Controller
         $session = session();
         //CANCELAMOS LA MODIFICACION DEL PEDIDO ANTES DE SALIR, SI ES NECESARIO.
         $id_pedido = $session->get('id_pedido');
-        if($id_pedido){
+        $tipo_compra = $session->get('tipo_compra');
+        if($id_pedido > 0 && $tipo_compra == 'Pedido'){
         $cart = \Config\Services::cart();
         $Cabecera_model = new Cabecera_model();
         $VentaDetalle_model = new VentaDetalle_model();
@@ -110,6 +116,13 @@ class Login_controller extends Controller
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
         }
+        //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
+        if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+            $Cabecera_model = new Cabecera_model();
+            $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
+            $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        }
+        
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
          //print_r();
