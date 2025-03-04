@@ -44,8 +44,19 @@
             <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
           </li>
           <li class="navItem">
-          <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
-          </li>
+            <?php 
+                $session = session();
+                $id_venta = $session->get('id_pedido');
+                $estado_venta = $session->get('estado');
+                //echo "Estado en sesión: " . $session->get('estado').$session->get('id_pedido');
+                // Si hay una venta activa y está "sin facturar", cambia la ruta
+                $ruta = (!empty($id_venta)) ? 'CarritoList_vta' : 'CarritoList';
+            ?>
+            <a href="<?php echo base_url($ruta); ?>">
+                <img class="navImg" src="<?php echo base_url('assets/img/icons/iconMB2.png'); ?>">
+            </a>
+        </li>
+
           <li class="nnavItem">
             <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>

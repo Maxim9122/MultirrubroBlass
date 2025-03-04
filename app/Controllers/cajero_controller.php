@@ -370,4 +370,112 @@ class cajero_controller extends Controller
         // Redirige a la vista de la factura
         return redirect()->to('Carrito_controller/generarTicket/' . $id_cabecera);
     }
+    //cargar la venta al carrito para modificar la venta que ya se realizo
+    public function cargar_venta_en_carrito($id_pedido)
+{
+    $session = session();
+    $cart = \Config\Services::cart();
+    $detalle_model = new VentaDetalle_model();
+    $cabecera_model = new Cabecera_model(); 
+    $producto_model = new Productos_model();
+
+    // ✅ Verificar si ya hay una venta en estado "Modificando"
+    $ventaEnModificacion = $cabecera_model->where('estado', 'Modificando')->first();
+
+    if ($ventaEnModificacion) {
+        session()->setFlashdata('msg', 'Primero debe terminar de modificar la Venta anterior.');
+        return redirect()->to('CarritoList_vta'); // Bloquea la modificación
+    }
+
+    // Obtener los datos de la cabecera de la venta
+    $cabecera = $cabecera_model->find($id_pedido);
+    if ($cabecera['estado'] == 'Sin_Facturar') {
+        $id_cliente = $cabecera['id_cliente'];
+        $id_pedido = $cabecera['id'];
+        $fecha_pedido = $cabecera['fecha_pedido'];
+        $tipo_compra = $cabecera['tipo_compra'];
+        $tipo_pago = $cabecera['tipo_pago'];
+        $estado = $cabecera['estado'];
+
+        // Guardar en sesión
+        $session->set([
+            'id_pedido' => $id_pedido,
+            'id_cliente_pedido' => $id_cliente,
+            'fecha_pedido' => $fecha_pedido,
+            'tipo_compra' => $tipo_compra,
+            'tipo_pago' => $tipo_pago,
+            'estado' => 'Modificando' // Guardamos en la sesión
+        ]);
+
+        // Obtener los productos
+        $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+        
+        if (!$detalles) {
+            session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+            return redirect()->to('compras');
+        } 
+
+        // Restaurar stock
+        foreach ($detalles as $detalle) {
+            $producto = $producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+                $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+            }
+        }
+
+        // ✅ Actualizar el estado del pedido a "Modificando"
+        $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
+
+        // Insertar productos en el carrito
+        foreach ($detalles as $detalle) {
+            $producto = $producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $cart->insert([
+                    'id'    => $producto['id'],
+                    'qty'   => $detalle['cantidad'],
+                    'price' => $detalle['precio'],
+                    'name'  => $producto['nombre'],
+                    'options' => array(
+                        'stock' => $producto['stock'],                   
+                    )
+                ]);
+            }
+        }
+
+        // Redirigir a la vista de edición
+        return redirect()->to('CarritoList_vta');
+    }
+
+    session()->setFlashdata('msg', 'Este pedido ya está siendo Modificado por otro usuario!');
+    return redirect()->to('compras');
+}
+ //Cancelamos la edicion de la Venta.
+ public function cancelar_edicion_vta($id_pedido){
+    //print_r($id_pedido);
+    //exit;
+    $cart = \Config\Services::cart();
+    $Cabecera_model = new Cabecera_model();
+    $VentaDetalle_model = new VentaDetalle_model();
+    $Producto_model = new Productos_model();
+
+    // Obtener detalles de los productos de la venta anterior
+    $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
+    
+    foreach ($detalles_venta_anterior as $detalle) {
+        // Restaurar el stock de los productos
+        $producto = $Producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $stock_edit = $producto['stock'] - $detalle['cantidad'];
+            $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
+        }
+    }        
+    // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
+    $session = session();
+    $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago','estado']);
+    // Actualizar el estado del pedido a "Pendiente"
+    $Cabecera_model->update($id_pedido, ['estado' => 'Sin_Facturar']);
+    $cart->destroy();
+    return redirect()->to(base_url('compras'));
+}
 }

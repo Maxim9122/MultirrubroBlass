@@ -98,26 +98,34 @@
                     Ver Detalle
                 </a>
             </li>
-            <li>
-                <?php if($vta['estado'] == 'Facturada'){?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
-                        Imp.Factura
-                    </a>
-                <?php  } if($vta['estado'] == 'Sin_Facturar'){  ?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
-                        Imp.Ticket
-                    </a>
-                    
+                <li>
+        <?php if ($vta['estado'] == 'Facturada') { ?>
+            <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
+                Imp.Factura
+            </a>
+        <?php } elseif ($vta['estado'] == 'Sin_Facturar' || $vta['estado'] == 'Modificando') { ?>
+            <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
+                Imp.Ticket
+            </a>
+
+            <!-- Bloquear botón si hay una venta en estado "Modificando" -->
+            <?php if ($hayVentaModificando) { ?>
+                <button disabled style="background-color: gray; cursor: not-allowed;">
+                    ✏️ Modificar
+                </button>
+            <?php } else { ?>
                 <a href="<?php echo base_url('cargar_venta/'.$vta['id']); ?>">
                     ✏️ Modificar
                 </a>
-               
-                <?php } if($vta['estado'] == 'Error_factura') { ?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
-                        Re.Facturar
-                    </a>
-                <?php } ?> 
-                 </li>                                  
+            <?php } ?>
+
+        <?php } elseif ($vta['estado'] == 'Error_factura') { ?>
+            <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
+                Re.Facturar
+            </a>
+        <?php } ?> 
+                </li>
+                    
                     </ul>
                 </div>
 

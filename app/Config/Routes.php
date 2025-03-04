@@ -46,7 +46,7 @@ $routes->get('cancelar/(:num)', 'Pedidos_controller::Pedido_cancelado/$1');
 $routes->post('pedidoClienteRegistrado', 'Pedidos_controller::pedidoClienteRegistrado');
 //edicion pedido
 $routes->get('cancelar_edicion/(:num)', 'Pedidos_controller::cancelar_edicion/$1');
-$routes->get('cancelar_edicion_vta/(:num)', 'Producto_controller::cancelar_edicion_vta/$1');
+$routes->get('cancelar_edicion_vta/(:num)', 'cajero_controller::cancelar_edicion_vta/$1');
 
 //Servicios
 $routes->get('/Lista_servicios', 'Servicios_controller::Servicios');
@@ -143,7 +143,7 @@ $routes->get('filtrarPedidos', 'Carrito_controller::filtrarPedidos');
 $routes->get('CarritoList', 'Carrito_controller::productosAgregados');
 $routes->get('CarritoList_vta', 'Carrito_controller::productosAgregados_vta');
 $routes->get('cargar_pedido/(:num)', 'Pedidos_controller::cargar_pedido_en_carrito/$1');
-$routes->get('cargar_venta/(:num)', 'Producto_controller::cargar_venta_en_carrito/$1');
+$routes->get('cargar_venta/(:num)', 'cajero_controller::cargar_venta_en_carrito/$1');
 $routes->post('Carrito_agrega', 'Carrito_controller::add');
 $routes->post('Agregamos', 'Carrito_controller::agregarDesdeListaProd');
 $routes->post('Otros_gastos', 'Carrito_controller::agregar');
