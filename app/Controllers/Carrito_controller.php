@@ -383,15 +383,29 @@ public function ListCompraDetalle($id)
     if ($id_cliente == "Anonimo") {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
-    $id_cliente_COBRO = $this->request->getPost('cobro');
-    //print_r($id_COBRO);
-    //exit;
-    //Tipo de pago enviado del formulario (Transferencia o Efectivo)
-    $tipo_pago = $this->request->getPost('tipo_pago');
+
+    $monto_transferencia = floatval($this->request->getPost('pagoTransferencia'));
+    $monto_en_Efectivo = floatval($this->request->getPost('pagoEfectivo'));
+    $tipo_pago_cobro = '';
+    switch (true) {
+        case ($monto_en_Efectivo > 0 && $monto_transferencia == 0):
+            $tipo_pago_cobro = 'Efectivo';
+            break;
+        case ($monto_transferencia > 0 && $monto_en_Efectivo == 0):
+            $tipo_pago_cobro = 'Transferencia';
+            break;
+        case ($monto_transferencia > 0 && $monto_en_Efectivo > 0):
+            $tipo_pago_cobro = 'Mixto';
+            break;        
+    }
+    //print_r($monto_en_Efectivo);
+    //exit;    
     //Total de la venta
     $total = $this->request->getPost('total_venta');
     //Total menos el descuento si se pago en efectivo.
-    $total_conDescuento = $this->request->getPost('total_con_descuento');
+    $total_conDescuento = $monto_transferencia + $monto_en_Efectivo;
+    //print_r($total_conDescuento);
+    //exit;
     //Si no trajo el descuento y esa variable quedo vacia se asigna el mismo valor de la venta total.
     if (!$total_conDescuento) {
         $total_conDescuento = $total;
@@ -461,7 +475,6 @@ public function ListCompraDetalle($id)
         'id_cliente' => $id_cliente, // Actualizamos el id del cliente
         'id_usuario' => $id_usuario, // Actualizamos el id del usuario (vendedor)
         'total_venta' => $total, // Actualizamos el total de la venta
-        'tipo_pago' => $tipo_pago, // Actualizamos el tipo de pago
         'total_bonificado' => $total_conDescuento, // Actualizamos el total con descuento (si aplica)
        'tipo_compra' => 'Pedido', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
         'estado' => 'Pendiente', // Mantenemos el estado como "Sin_Facturar" (puede cambiar según el flujo)
@@ -567,8 +580,7 @@ public function ListCompraDetalle($id)
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
             'id_usuario'   => $id_usuario,
-            'total_venta'  => $total,
-            'tipo_pago'    => $tipo_pago,
+            'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
             'fecha_pedido' => $fecha_pedido_formateada,
@@ -586,8 +598,7 @@ public function ListCompraDetalle($id)
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
             'id_usuario'   => $id_usuario,
-            'total_venta'  => $total,
-            'tipo_pago'    => $tipo_pago,
+            'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
             'estado' => 'Pendiente'
@@ -600,7 +611,7 @@ public function ListCompraDetalle($id)
                 $Cabecera_model->update($id_pedido, [
                     'estado'            => 'Sin_Facturar',
                     'total_venta'       => $total,
-                    'tipo_pago'         => $tipo_pago,
+                    'tipo_pago'         => $tipo_pago_cobro,
                     'total_bonificado'  => $total_conDescuento,
                     'tipo_compra'       => $tipo_compra,
                     'fecha_pedido'      => $fecha_pedido_formateada,
@@ -764,7 +775,7 @@ public function generarTicket($id_cabecera)
             <hr>
 
             <!-- Información de la venta -->
-            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
         
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
@@ -784,7 +795,7 @@ public function generarTicket($id_cabecera)
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo') 
-                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_venta'] / 1.05), 2) 
+                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_bonificado']), 2) 
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
