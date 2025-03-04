@@ -338,9 +338,117 @@ public function ListCompraDetalle($id)
             // Redirige a la página de confirmacion de compra si los calculos de stock estan bien.
             return redirect()->to(base_url('casiListo'));
 
+//Si el proceso es de una Venta que se esta modificando entra aqui.
+        } elseif ($accion == 'modificar') {
 
-        } else {
-            log_message('error', 'Acción no reconocida: ' . $accion);
+
+            $cart = \Config\Services::cart();
+        // Recibe los datos del carrito, calcula y actualiza
+        $cart_info = $this->request->getPost('cart');
+        $errores_stock = false; // Variable para controlar si hay errores de stock
+        $total_venta = 0; // Inicializar el total de la venta
+
+        foreach ($cart_info as $id => $carrito) {
+            $prod = new Productos_model();
+            $idprod = $prod->getProducto($carrito['id']);
+            if ($carrito['id'] < 100000) {
+                $stock = $idprod['stock'];
+            }
+            $rowid = $carrito['rowid'];
+            $price = $carrito['price'];
+            $amount = $price * $carrito['qty'];
+            $qty = $carrito['qty'];
+
+            if ($carrito['id'] < 100000) {
+                if ($qty <= $stock && $qty >= 1) {
+                    $cart->update(array(
+                        'rowid' => $rowid,
+                        'price' => $price,
+                        'amount' => $amount,
+                        'qty' => $qty
+                    ));
+                    // Sumar el subtotal al total de la venta
+                    $total_venta += $amount;
+                } else {
+                    // Si hay un error de stock, marca la variable de error y guarda el mensaje
+                    $errores_stock = true;
+                    session()->setFlashdata('msgEr', 'La Cantidad Solicitada de algunos productos no están disponibles o SELECCIONASTE 0!');
+                }
+            }
+        }
+
+        // Si hubo errores de stock, redirige a la página de carrito
+        if ($errores_stock) {
+            return redirect()->to(base_url('CarritoList'));
+        }
+
+        $cart = \Config\Services::cart();
+        $session = session();
+
+        $id_vendedor = $session->get('id_vendedor');
+        $id_cliente = $session->get('id_cliente');
+        $id_pedido = $session->get('id_pedido');
+        $fecha_pedido = $session->get('fecha_pedido');
+        $tipo_compra = $session->get('tipo_compra');
+
+        // Establecer zona horaria y obtener fecha/hora en formato correcto
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $hora = date('H:i:s'); // Formato TIME
+        $fecha = date('d-m-Y'); // Formato DATE
+
+        // Actualizar el pedido o Venta existente con los nuevos datos
+        if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
+            // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
+            $VentaDetalle_model = new VentaDetalle_model();
+            $Producto_model = new Productos_model();
+            $Cabecera_model = new Cabecera_model();
+
+            // Actualizar la cabecera de la venta con los nuevos datos
+            $cabecera_model = new Cabecera_model();
+            $cabecera_model->update($id_pedido, [
+        'fecha' => $fecha, // Actualizamos la fecha del pedido
+        'hora' => $hora, // Actualizamos la hora
+        'id_cliente' => $id_cliente, // Actualizamos el id del cliente
+        'id_usuario' => $id_vendedor, // Actualizamos el id del usuario (vendedor)
+        'total_venta' => $total_venta, // Actualizamos el total de la venta
+        'total_bonificado' => $total_venta, // Actualizamos el total con descuento (si aplica)
+        'tipo_compra' => 'Compra_Normal', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
+        'estado' => 'Pendiente', // Mantenemos el estado como "Pendiente" (puede cambiar según el flujo)
+        ]);
+
+    // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
+    $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
+
+    // Insertar los nuevos detalles del carrito en la base de datos
+    if ($cart) {
+        foreach ($cart->contents() as $item) {
+            // Guardar cada producto del carrito como un nuevo detalle de la venta
+            $VentaDetalle_model->save([
+                'venta_id' => $id_pedido,  // Usamos el id del pedido existente para vincular el detalle
+                'producto_id' => $item['id'], // Producto id desde el carrito
+                'cantidad' => $item['qty'], // Cantidad del producto en el carrito
+                'precio' => $item['price'], // Precio del producto
+                'total' => $item['subtotal'], // Total por ese producto (precio * cantidad)
+            ]);
+
+            // Actualizar el stock de cada producto después de la venta
+            $producto = $Producto_model->find($item['id']); // Obtener el producto desde la base de datos
+            if ($producto && isset($producto['stock'])) {
+                // Restar la cantidad vendida del stock del producto
+                $stock_edit = $producto['stock'] - $item['qty'];
+                $Producto_model->update($item['id'], ['stock' => $stock_edit]); // Actualizamos el stock en la base de datos
+            }
+            }
+        }
+
+        $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago', 'total_venta']);
+        // Limpiar el carrito después de guardar los datos
+        $cart->destroy();
+
+        // Redirigir al usuario con un mensaje de éxito según el tipo de compra
+        session()->setFlashdata('msg', 'Venta Actualizada con Éxito!');
+        return redirect()->to('caja');
+        }
         }
     }
 
@@ -442,23 +550,6 @@ public function ListCompraDetalle($id)
             return redirect()->to('CarritoList');
         }
     }
-
-    // Si se encontro un id, eliminar el pedido anterior porque se va crear uno nuevo modificado y restaura el stock.
-    //if ($id_pedido) {
-        
-    //     $VentaDetalle_model = new VentaDetalle_model();
-   // $Producto_model = new Productos_model();
-    //$Cabecera_model = new Cabecera_model();
-    
-
-    // Eliminar los detalles y la cabecera de la venta anterior
-   // $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
-    //$Cabecera_model->eliminarPedido($id_pedido);
-
-    // Eliminar datos de la sesión relacionados con el pedido
-    //$session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
-   // }
-    
     
     // Si se encontró un id de pedido, actualizar el pedido existente con los nuevos datos
  if ($id_pedido > 0 && $tipo_compra == 'Pedido') {
@@ -794,7 +885,7 @@ public function generarTicket($id_cabecera)
             <!-- Totales -->
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
-            <?= ($cabecera['tipo_pago'] == 'Efectivo') 
+            <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
                 ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_bonificado']), 2) 
                 : '$0.00' ?>
             </p>

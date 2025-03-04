@@ -93,9 +93,10 @@
 $id_pedido = '';
 // Añadido para el tipo de compra
 $session = session();
-
+$perfil = $session->get('id_perfil');
 if (!empty($session)) {
     $id_pedido = $session->get('id_pedido');
+    $tipo_compra = $session->get('tipo_compra');
 }
 //print_r($id_pedido);
 //exit;
@@ -109,7 +110,7 @@ if (!empty($session)) {
         <br>
         <?php if (!empty($id_pedido)): ?>
             <h3 class="resaltado">
-                Modificando Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
+                Modificando Venta/Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
             </h3>
         <?php endif; ?>
         </div>
@@ -229,27 +230,34 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <input type="hidden" id="accion" name="accion" value=""> <!-- Este campo controlará a qué función se envía -->
 
                         <!-- Cancelar edicion de pedido -->
-                        <?php if ($id_pedido) { ?>
+                        <?php if ($id_pedido > 0 && $tipo_compra == 'Pedido') { ?>
                             <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionPedido();">
                                 Cancelar Modificación
                             </a>
-                            <?php } else {?>
-                            <!-- Borrar carrito usa mensaje de confirmacion -->
+                            <?php } else if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){?>
+                                <a href="<?php echo base_url('cancelar_edicion_Venta/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionVenta();">
+                                Cancelar Modificación Venta
+                                </a>
+                            <?php  } else {?>
+                                <!-- Borrar carrito usa mensaje de confirmacion -->
                             <a href="<?php echo base_url('carrito_elimina/all');?>" class="danger" onclick="return confirmarAccionCompra();">
                                         Borrar Todo
                             </a>
                             <?php  } ?>
-
                         <!-- Submit boton. Actualiza los datos en el carrito -->
                         <button type="submit" class="success" onclick="setAccion('actualizar')">
                             Actualizar Importes
-                        </button>
-                        
-
+                        </button>                        
+                                
                             <br><br>
+                            <?php if($perfil == 2) { ?>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
-                        <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Confirmar Compra</a>
-
+                        <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Continuar Compra</a>
+                                
+                        <?php }else if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){ ?>            
+                            <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
+                        <a href="javascript:void(0);" class="success" onclick="setAccion('modificar')">Modificar Compra</a>
+                            <?php } ?>
                         
                     </td>
                 </tr>
@@ -283,6 +291,22 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "<?php echo base_url('carrito_elimina/all'); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+
+    function confirmarAccionVenta() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Se cancelara la modificacion de la Venta y quedara como estaba.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Eliminar Todo",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('cancelar_edicion_Venta/'.$id_pedido); ?>";
             }
         });
         return false; // Evita que el enlace siga su curso normal

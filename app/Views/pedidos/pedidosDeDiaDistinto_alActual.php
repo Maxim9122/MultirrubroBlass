@@ -101,9 +101,11 @@
                 <?php } ?>
             </li> 
             <li>
+            <?php if($perfil == 3) { ?>
                 <a class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
                     ✅ Listo
                 </a>
+                <?php } ?>
             </li>
                 </ul>
             </div>
