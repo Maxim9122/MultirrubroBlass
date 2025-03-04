@@ -39,7 +39,7 @@ class Carrito_controller extends Controller{
     $data['titulo'] = 'Listado de Compras';
     echo view('navbar/navbar');
     echo view('header/header', $data);
-    echo view('comprasXcliente/ListaVentas_view', $datos + $datos2);
+    echo view('comprasXcliente/ListaVentas_view', $datos + $datos2 );
     echo view('footer/footer');
 }
 
