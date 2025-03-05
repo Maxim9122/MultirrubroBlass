@@ -215,10 +215,45 @@ public function cancelar_edicion_Venta($id_pedido){
     return redirect()->to(base_url('caja'));
 }
 
-//Modificar Venta Seleccionada
-    public function ModificarVenta(){
-        
+//Cancela la Venta
+public function Venta_cancelar($id_pedido)
+{
+    $session = session();
+        $perfil=$session->get('perfil_id');
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        if($perfil == 2){
+            return redirect()->to(base_url('catalogo'));
+        }
+    $cabecera_model = new Cabecera_model();
+    $detalle_model = new VentaDetalle_model();
+    $producto_model = new Productos_model();
 
+    // Obtener los detalles de la Venta
+    $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+
+    if (!$detalles) {
+        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+        return redirect()->to($this->request->getHeader('referer')->getValue());
     }
+
+    // Restaurar el stock de cada producto
+    foreach ($detalles as $detalle) {
+        $producto = $producto_model->find($detalle['producto_id']);
+        if ($producto) {
+            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+        }
+    }
+
+    // Actualizar el estado del pedido a "Cancelado"
+    $cabecera_model->update($id_pedido, ['estado' => 'Cancelado']);
+
+    session()->setFlashdata('msg', 'Venta cancelada y stock restaurado.');
+
+    return redirect()->to($this->request->getHeader('referer')->getValue());
+}
 
 }

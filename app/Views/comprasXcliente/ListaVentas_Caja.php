@@ -103,18 +103,22 @@
             </li>
             <li>
                 <?php if($vta['estado'] == 'Pendiente' && $cobro == null ){?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;" href="<?php echo base_url('modificarVenta/'.$vta['id']);?>">
-                    Modificar
-                    </a>
+                    <a href="<?php echo base_url('cancelarVenta/'.$vta['id']);?>" style="color:#ffff; background-color:#d52c0b;" class="danger" onclick="return confirmarAccionCancelar();">
+                    Cancelar
+                     </a>                   
+                    
             </li>
             <li>                          
                 <?php  } if($vta['estado'] == 'Pendiente' && $cobro == null ){  ?>
+                    <a class="btnDesplegable" style="color:#ffff; background-color: transparent; border: 2px solid #f1775f; border-radius: 10px; box-shadow: 0 0 3px #f1775f, 0 0 15px rgba(241, 119, 95, 0.6);" href="<?php echo base_url('modificarVenta/'.$vta['id']);?>">
+                    Modificar
+                    </a>
+
+            </li>
+            <li>        
+                <?php } if($vta['estado'] == 'Pendiente' && $cobro == null ) { ?>
                     <a class="btnDesplegable" style="color:#ffff; background-color:#467c62; border-radius:10px; padding:8px; text-align: center;" href="<?php echo base_url('cargarVenta/'.$vta['id']); ?>">
                     ✅COBRAR
-                    </a>
-                <?php } if($vta['estado'] == 'Error_factura') { ?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
-                        Re.Facturar
                     </a>
                 <?php } ?> 
                  </li>                                  
@@ -191,10 +195,27 @@ const formatter = new Intl.DateTimeFormat('es-AR', {
 });
 
 const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
-
-
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarAccionCancelar() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esto eliminará la Venta y devolvera los productos.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Cancelar Venta",
+            cancelButtonText: "No, Volver"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('cancelarVenta/'.$vta['id']); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+    
+</script>
 
 
 
