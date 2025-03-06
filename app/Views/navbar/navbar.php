@@ -18,7 +18,9 @@
 <?php $session = session();
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
-          $id=$session->get('id');?>
+          $id=$session->get('id');
+          $estado =$session->get('estado'); 
+          ?>
 
 <section class="navBarSection">
     <div class="headernav">
@@ -70,7 +72,26 @@
 
           <?php } else if( (($perfil == 2 || $perfil == 3)) ) { ?>
           <li class="navItem">
-            <h5 class="colorTexto2"><?php echo "Bienvenido ".$nombre?></h5>
+          <?php if ($estado): ?>
+          <?php 
+              $mensaje = "ATENCIÓN! Se está Procesando una Venta o Pedido";
+              $color = "orange"; // Color por defecto
+
+              switch ($estado) {
+                  case 'Modificando':
+                      $mensaje = "ATENCIÓN! Se está Modificando una Venta o Pedido";
+                      break;
+                  case 'Cobrando':
+                      $mensaje = "ATENCIÓN! Se está Cobrando una Venta o Pedido";
+                      $color = "green"; // Cambia el color a verde
+                      break;
+              }
+          ?>
+          <h5 class="resaltado" style="color: <?php echo $color; ?>; border-color: <?php echo $color; ?>;">
+              <?php echo $mensaje; ?>
+          </h5>
+         <?php endif; ?>
+
           </li>
           <?php if($perfil == 3) { ?>
           <li class="nnavItem">
@@ -107,6 +128,17 @@
         </div>
     </div>
 </section>
+
+<style>
+  .resaltado {
+    color: orange;
+    border: 2px solid orange;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px;
+    text-align: center;
+}
+</style>
 
 <script>
   // Obtén el botón de hamburguesa y la barra de navegación

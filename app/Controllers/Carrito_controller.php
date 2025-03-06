@@ -441,7 +441,7 @@ public function ListCompraDetalle($id)
             }
         }
 
-        $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago', 'total_venta']);
+       $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         // Limpiar el carrito después de guardar los datos
         $cart->destroy();
 
@@ -528,7 +528,9 @@ public function ListCompraDetalle($id)
     //$tipo_compra = $this->request->getPost('tipo_compra_input');
     
     //Si no se selecciono una fecha se asigna la fecha de hoy por defecto para el pedido.
-    $fecha_pedido = $this->request->getPost('fecha_pedido_input');
+    $fecha_pedido = $this->request->getPost('fecha_pedido');
+    //print_r($fecha_pedido);
+    //exit;
     if (!$fecha_pedido){
         $fecha_pedido = date('d-m-Y');
     }
@@ -563,12 +565,11 @@ public function ListCompraDetalle($id)
     $cabecera_model->update($id_pedido, [
         'fecha' => $fecha, // Actualizamos la fecha del pedido
         'hora' => $hora, // Actualizamos la hora
-        'id_cliente' => $id_cliente, // Actualizamos el id del cliente
-        'id_usuario' => $id_usuario, // Actualizamos el id del usuario (vendedor)
+        'id_cliente' => $id_cliente, // Actualizamos el id del cliente        
         'total_venta' => $total, // Actualizamos el total de la venta
         'total_bonificado' => $total_conDescuento, // Actualizamos el total con descuento (si aplica)
-       'tipo_compra' => 'Pedido', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
-        'estado' => 'Pendiente', // Mantenemos el estado como "Sin_Facturar" (puede cambiar según el flujo)
+        'tipo_compra' => 'Pedido', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
+        'estado' => 'Pendiente', // Volvemos el estado a Pendiente )
         'fecha_pedido' => $fecha_pedido_formateada // Actualizamos la fecha de pedido
    ]);
     
@@ -596,7 +597,7 @@ public function ListCompraDetalle($id)
            }
         }
     }
-    $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+    $session->remove(['estado','id_vendedor', 'nombre_vendedor','id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
     // Limpiar el carrito después de guardar los datos
     $cart->destroy();
     
@@ -710,7 +711,7 @@ public function ListCompraDetalle($id)
                     'hora'         => $hora,
                     'id_cliente'   => $id_cliente,
                 ]);           
-                $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+                $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
             $cart->destroy();            
             return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);

@@ -16,7 +16,8 @@ $session = session();
 $nombre = $session->get('nombre');
 $perfil = $session->get('perfil_id');
 
-
+//print_r($session->get());
+//exit;
 // Inicializar las variables con una cadena vacía
 $id_vendedor = '';
 $nombre_vendedor = '';
@@ -155,16 +156,17 @@ endif;
                 <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                 <td>
                 <select name="tipo_compra" id="tipoCompra" class="selector">
-                    <?php if ($tipo_compra == 'Compra_Normal') : ?>
+                    <?php if ($tipo_compra == 'Compra_Normal') {  ?>
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
-                        <?php endif; ?>
-                    <?php if ($tipo_compra == 'Pedido') : ?>
+            
+                    <?php } else if ($tipo_compra == 'Pedido') {  ?>
                         <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
-                    <?php endif; ?>
-                    <?php if ($perfil == 2) : ?>
+                    
+                    <?php } else {  ?>                    
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>
                         <option value="Pedido" <?php echo $tipo_compra == 'Pedido' ? 'selected' : ''; ?>>Reservar Pedido</option>
-                    <?php endif; ?>
+                    
+                    <?php } ?>
                 </select>
                 <?php echo form_hidden('tipo_compra_input', $tipo_compra); ?>
                 </td>
@@ -176,7 +178,7 @@ endif;
                     <input class="selector" type="date" name="fecha_pedido" id="fechaPedido" 
                            value="<?php echo !empty($fecha_pedido) ? date('Y-m-d', strtotime($fecha_pedido)) : date('Y-m-d'); ?>" 
                            min="<?php echo date('Y-m-d'); ?>">
-                    <?php echo form_hidden('fecha_pedido_input', $fecha_pedido); ?>
+                    <?php echo form_hidden('fecha_pedido_input', ''); ?>
                 </td>
                 </tr>
                 <?php echo form_hidden('total_venta', ($gran_total > 0 ? $gran_total : $total_venta)); ?>
@@ -196,7 +198,7 @@ endif;
                 </a>
             <?php } else if ($id_cliente) { ?>
                 <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionPedido();">
-                    Cancelar Modificación
+                    Cancelar Modificación Pedido
                 </a>
             <?php } else { ?>
                 <a href="<?php echo base_url('carrito_elimina/all');?>" class="btn danger" onclick="return confirmarAccionCompra();">
