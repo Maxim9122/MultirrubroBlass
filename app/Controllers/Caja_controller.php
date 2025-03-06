@@ -105,6 +105,8 @@ class Caja_controller extends Controller{
     //Cancelar Cobro de la venta
     public function CancelarCobro($id_pedido){
         $session = session();
+        $cart = \Config\Services::cart();
+        $cart->destroy();
         $Cabecera_model = new Cabecera_model();
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
         $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);

@@ -1,7 +1,9 @@
 <?php $session = session();
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
-          $id=$session->get('id');?>
+          $id=$session->get('id');
+          $estado =$session->get('estado');          
+          ?>
           
 <!-- Mensajes temporales -->
 <?php if(session()->getFlashdata('mensaje_stock')): ?>
@@ -101,7 +103,7 @@ function cerrarMensaje() {
 </form>
 
     </section>
-  
+   
   <table class="" id="users-list">
    <thead>
       <tr class="colorTexto2">
@@ -157,8 +159,9 @@ function cerrarMensaje() {
                <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
                
                <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
-               
+               <?php if($perfil == 2 || $estado == 'Modificando') {?>
                <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
+               <?php  } ?>
                <?php echo form_close(); ?>
 
             <?php } else { ?>
