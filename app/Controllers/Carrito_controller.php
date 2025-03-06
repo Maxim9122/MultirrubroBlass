@@ -477,7 +477,8 @@ public function ListCompraDetalle($id)
     $cart = \Config\Services::cart();
     $session = session();
     $perfil = $session->get('perfil_id');
-    //print_r($id_pedido);
+    $estado = $session->get('estado');
+    //print_r($estado);
     //exit;
     
     if(!$cart){
@@ -492,8 +493,10 @@ public function ListCompraDetalle($id)
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
-    $monto_transferencia = floatval($this->request->getPost('pagoTransferencia'));
-    $monto_en_Efectivo = floatval($this->request->getPost('pagoEfectivo'));
+    $monto_transferencia = number_format(floatval($this->request->getPost('pagoTransferencia')), 2, '.', '');
+    $monto_en_Efectivo = number_format(floatval($this->request->getPost('pagoEfectivo')), 2, '.', '');
+    //print_r($monto_en_Efectivo);
+    //exit; 
     $tipo_pago_cobro = '';
     switch (true) {
         case ($monto_en_Efectivo > 0 && $monto_transferencia == 0):
@@ -506,14 +509,14 @@ public function ListCompraDetalle($id)
             $tipo_pago_cobro = 'Mixto';
             break;        
     }
-    //print_r($monto_en_Efectivo);
-    //exit;    
+       
     //Total de la venta
     $total = $this->request->getPost('total_venta');
     //Total menos el descuento si se pago en efectivo.
-    $total_conDescuento = $monto_transferencia + $monto_en_Efectivo;
-    //print_r($total_conDescuento);
-    //exit;
+    $total_conDescuento = number_format($monto_transferencia + $monto_en_Efectivo, 2, '.', '');
+
+    print_r($total_conDescuento);
+    exit;
     //Si no trajo el descuento y esa variable quedo vacia se asigna el mismo valor de la venta total.
     if (!$total_conDescuento) {
         $total_conDescuento = $total;
@@ -554,7 +557,7 @@ public function ListCompraDetalle($id)
     }
     
     // Si se encontró un id de pedido, actualizar el pedido existente con los nuevos datos
- if ($id_pedido > 0 && $tipo_compra == 'Pedido') {
+ if ($estado == 'Modificando' && $tipo_compra == 'Pedido') {
     // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
    $VentaDetalle_model = new VentaDetalle_model();
     $Producto_model = new Productos_model();
@@ -612,54 +615,27 @@ public function ListCompraDetalle($id)
 
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
     $facturacion = $this->request->getPost('tipo_proceso');
-    //Si el tipo de proceso es para facturar se manda a otra funcion.
-    if($facturacion == "factura"){
-        //print_r($facturacion);
-        //exit;
-        // Guardar cabecera de la venta para Facturar, mientras el estado esta para Verificar.
-        $cabecera_model = new Cabecera_model();
-        $ventas_id = $cabecera_model->save([
-            'fecha'        => $fecha,
-            'hora'         => $hora,
-            'id_cliente'   => $id_cliente,
-            'id_usuario'   => $id_usuario,
-            'total_venta'  => $total,
-            'tipo_pago'    => $tipo_pago,
-            'total_bonificado' => $total_conDescuento,
-            'tipo_compra' => $tipo_compra,
-            'estado' => 'Sin_Facturar'
-        ]);
-
-        // Obtener ID de la nueva cabecera guardada
-        $id_cabecera = $cabecera_model->getInsertID();
-
-        // Guardar detalles de la venta si el carrito no está vacío
-    if ($cart):
-        foreach ($cart->contents() as $item):
-            $VentaDetalle_model = new VentaDetalle_model();
-            $VentaDetalle_model->save([
-                'venta_id'    => $id_cabecera,
-                'producto_id' => $item['id'],
-                'cantidad'    => $item['qty'],
-                'precio'      => $item['price'],
-                'total'       => $item['subtotal'],
-            ]);
-
-            // Actualizar stock del producto
-            $Producto_model = new Productos_model();
-            $producto = $Producto_model->find($item['id']); // Asegúrate de usar el método correcto para obtener datos
-
-            if ($producto && isset($producto['stock'])) {
-                $stock_edit = $producto['stock'] - $item['qty'];
-                $Producto_model->update($item['id'], ['stock' => $stock_edit]);
-            }
-        endforeach;
-        endif;
-
-        // Limpiar el carrito
-        $cart->destroy();
+    //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
+    if($estado == 'Cobrando' && $facturacion == "factura"){
+        //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
+        if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+            $Cabecera_model = new Cabecera_model();
+            $Cabecera_model->update($id_pedido, [
+                'estado'            => 'Facturada',
+                'total_venta'       => $total,
+                'tipo_pago'         => $tipo_pago_cobro,
+                'total_bonificado'  => $total_conDescuento,
+                'tipo_compra'       => $tipo_compra,
+                'fecha_pedido'      => $fecha_pedido_formateada,
+                'fecha'        => $fecha,
+                'hora'         => $hora,
+                'id_cliente'   => $id_cliente,
+            ]);           
+            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        }
+        $cart->destroy(); 
         //Una vez guardada la compra manda a verificar la factura en ARCA.
-        return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
+        return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
     }
 
 
@@ -927,6 +903,7 @@ public function generarTicket($id_cabecera)
     // Guardar el archivo PDF en la carpeta temporal
     file_put_contents($tempFile, $output);
     session()->setFlashdata('msg', 'Compra realizada con Exito!');
+
      // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
     
@@ -1435,7 +1412,8 @@ public function generarTicketFacturaC($id_cabecera)
     
     // Guardar el archivo PDF en la carpeta temporal
     file_put_contents($tempFile, $output);
-    
+    session()->setFlashdata('msg', 'Compra Facturada con Exito!');
+
     // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
     
@@ -1453,8 +1431,8 @@ public function generarTicketFacturaC($id_cabecera)
                     window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
                 } else if (perfil == 2) {
                     window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
-                } else {
-                    window.location.href = '" . base_url('home') . "'; // Redirigir por defecto si no es perfil 1 ni 2
+                } else if (perfil == 3){
+                    window.location.href = '" . base_url('caja') . "'; // Redirigir a la caja si es perfil 3
                 }
             }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
           </script>";
