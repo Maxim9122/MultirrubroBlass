@@ -109,7 +109,7 @@
             </a>
 
             <!-- Bloquear botón si hay una venta en estado "Modificando" -->
-            <?php if (session('estado') === 'Modificando') { ?>
+            <?php if (session('estado') == 'Modificando') { ?>
                 <button disabled style="background-color: gray; cursor: not-allowed;">
                     ✏️ Modificar
                 </button>
@@ -117,6 +117,7 @@
                 <a href="<?php echo base_url('cargar_venta/'.$vta['id']); ?>">
                     ✏️ Modificar
                 </a>
+
             <?php } ?>
 
         <?php } elseif ($vta['estado'] == 'Error_factura') { ?>

@@ -233,7 +233,7 @@ class cajero_controller extends Controller
                }
             }
         }
-        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago','estado']);
         // Limpiar el carrito después de guardar los datos
         $cart->destroy();
         
@@ -380,7 +380,7 @@ class cajero_controller extends Controller
     $producto_model = new Productos_model();
 
     // ✅ Verificar si ya hay una venta en estado "Modificando"
-    $ventaEnModificacion = $cabecera_model->where('estado', 'Modificando')->first();
+    $ventaEnModificacion = session('estado') === 'Modificando';
 
     if ($ventaEnModificacion) {
         session()->setFlashdata('msg', 'Primero debe terminar de modificar la Venta anterior.');
