@@ -515,8 +515,8 @@ public function ListCompraDetalle($id)
     //Total menos el descuento si se pago en efectivo.
     $total_conDescuento = number_format($monto_transferencia + $monto_en_Efectivo, 2, '.', '');
 
-    print_r($total_conDescuento);
-    exit;
+    //print_r($total_conDescuento);
+    //exit;
     //Si no trajo el descuento y esa variable quedo vacia se asigna el mismo valor de la venta total.
     if (!$total_conDescuento) {
         $total_conDescuento = $total;
@@ -556,7 +556,7 @@ public function ListCompraDetalle($id)
         }
     }
     
-    // Si se encontró un id de pedido, actualizar el pedido existente con los nuevos datos
+    // Si se encontró un id de pedido y estado modificando, actualizar el pedido existente con los nuevos datos
  if ($estado == 'Modificando' && $tipo_compra == 'Pedido') {
     // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
    $VentaDetalle_model = new VentaDetalle_model();
@@ -617,30 +617,28 @@ public function ListCompraDetalle($id)
     $facturacion = $this->request->getPost('tipo_proceso');
     //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
     if($estado == 'Cobrando' && $facturacion == "factura"){
-        //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
-        if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+                
             $Cabecera_model = new Cabecera_model();
             $Cabecera_model->update($id_pedido, [
                 'estado'            => 'Facturada',
                 'total_venta'       => $total,
                 'tipo_pago'         => $tipo_pago_cobro,
-                'total_bonificado'  => $total_conDescuento,
-                'tipo_compra'       => $tipo_compra,
+                'total_bonificado'  => $total_conDescuento,                
                 'fecha_pedido'      => $fecha_pedido_formateada,
                 'fecha'        => $fecha,
                 'hora'         => $hora,
                 'id_cliente'   => $id_cliente,
             ]);           
             $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-        }
+        
         $cart->destroy(); 
         //Una vez guardada la compra manda a verificar la factura en ARCA.
         return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
     }
 
 
-    // Guardar la nueva cabecera del Pedido (Nuevo o Modidicado segun sea) utiliza el mismo carrito.
-    if ($tipo_compra == 'Pedido') { 
+    // Guardar la nueva cabecera del Pedido (Nuevo) utiliza el mismo carrito.
+    if ($tipo_compra == 'Pedido' && $estado == '') { 
         // Guardar cabecera de la venta tipo pedido
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
@@ -674,14 +672,13 @@ public function ListCompraDetalle($id)
         }
         if($perfil == 3){ 
             //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
-            if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+            if($estado == 'Cobrando'){
                 $Cabecera_model = new Cabecera_model();
                 $Cabecera_model->update($id_pedido, [
                     'estado'            => 'Sin_Facturar',
                     'total_venta'       => $total,
                     'tipo_pago'         => $tipo_pago_cobro,
-                    'total_bonificado'  => $total_conDescuento,
-                    'tipo_compra'       => $tipo_compra,
+                    'total_bonificado'  => $total_conDescuento,                 
                     'fecha_pedido'      => $fecha_pedido_formateada,
                     'fecha'        => $fecha,
                     'hora'         => $hora,
@@ -742,6 +739,7 @@ public function ListCompraDetalle($id)
 public function generarTicket($id_cabecera)
 {
     // Cargar los modelos necesarios
+    $Us_Model = new \App\Models\Usuarios_model();
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
@@ -762,9 +760,9 @@ public function generarTicket($id_cabecera)
     // Obtener la información del cliente
     $cliente = $clienteModel->find($cabecera['id_cliente']);
 
-    // Obtener el nombre del vendedor desde la sesión
-    $session = session();
-    $nombreVendedor = $session->get('nombre');
+    // Obtener el nombre del vendedor    
+    $vendedor = $Us_Model->find($cabecera['id_usuario']);
+    $nombreVendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
     
     //Cambia el estado del Pedido
     if($cabecera['tipo_compra'] == 'Pedido'){
@@ -963,10 +961,16 @@ public function verificarTA($id_cabecera = null) {
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        } 
+        }
+    //Si es un vendedor no le permite
+    $perfil=$session->get('perfil_id');
+    if($perfil == 2){
+            return redirect()->to(base_url('catalogo'));
+        }
+    
     if ($id_cabecera === null) {
         //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
-        return redirect()->to(base_url('catalogo'));
+        return redirect()->to(base_url('caja'));
     }
     //$id_cabecera = 24;
     // Ruta del archivo TA.xml
@@ -1250,6 +1254,7 @@ public function facturar($TA = null,$id_cabecera = null) {
 public function generarTicketFacturaC($id_cabecera)
 {
     // Cargar los modelos necesarios
+    $Us_Model = new Usuarios_model;
     $ventaModel = new \App\Models\Cabecera_model();
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
@@ -1270,9 +1275,9 @@ public function generarTicketFacturaC($id_cabecera)
     // Obtener la información del cliente
     $cliente = $clienteModel->find($cabecera['id_cliente']);
 
-    // Obtener el nombre del vendedor desde la sesión
-    $session = session();
-    $nombreVendedor = $session->get('nombre');
+    // Obtener el nombre del vendedor    
+    $vendedor = $Us_Model->find($cabecera['id_usuario']);
+    $nombreVendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
 
     // Crear el HTML para la vista previa
     ob_start();
@@ -1364,8 +1369,8 @@ public function generarTicketFacturaC($id_cabecera)
             <!-- Totales -->
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
-            <?= ($cabecera['tipo_pago'] == 'Efectivo') 
-                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_venta'] / 1.05), 2) 
+            <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
+                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_bonificado']), 2) 
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
