@@ -72,25 +72,38 @@
 
           <?php } else if( (($perfil == 2 || $perfil == 3)) ) { ?>
           <li class="navItem">
-          <?php if ($estado): ?>
-          <?php 
-              $mensaje = "ATENCIÓN! Se está Procesando una Venta o Pedido";
-              $color = "orange"; // Color por defecto
+          
 
-              switch ($estado) {
-                  case 'Modificando':
-                      $mensaje = "ATENCIÓN! Se está Modificando una Venta o Pedido";
-                      break;
-                  case 'Cobrando':
-                      $mensaje = "ATENCIÓN! Se está Cobrando una Venta o Pedido";
-                      $color = "green"; // Cambia el color a verde
-                      break;
-              }
-          ?>
-          <h5 class="resaltado" style="color: <?php echo $color; ?>; border-color: <?php echo $color; ?>;">
-              <?php echo $mensaje; ?>
-          </h5>
+          <?php if ($estado): ?>
+        <?php 
+        $mensaje = "ATENCIÓN! Se está Procesando una Venta o Pedido";
+        $color = "orange"; // Color por defecto
+
+        switch ($estado) {
+            case 'Modificando':
+                $mensaje = "ATENCIÓN! Se está Modificando una Venta o Pedido";
+                $color = "#FF6700"; // Naranja neón
+                break;
+            case 'Cobrando':
+                $mensaje = "ATENCIÓN! Se está Cobrando una Venta o Pedido";
+                $color = "#00FF00"; // Verde neón
+                break;
+        }
+        ?>
+        <h5 class="resaltado" style="
+            color: white; 
+            font-weight: bold; 
+            border: 1px solid <?php echo $color; ?>; 
+            padding: 7px; 
+            display: inline-block; 
+            border-radius: 5px; 
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 0 3px <?php echo $color; ?>, 0 0 5px <?php echo $color; ?>;">
+            <?php echo $mensaje; ?>
+        </h5>
          <?php endif; ?>
+
 
           </li>
           <?php if($perfil == 3) { ?>

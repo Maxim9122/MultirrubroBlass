@@ -105,9 +105,12 @@
             </li>
             <li>
                 <?php if($vta['estado'] == 'Pendiente' && ($tipo_compra == 'Compra_Normal' || empty($tipo_compra)) ){?>
-                    <a href="<?php echo base_url('cancelarVenta/'.$vta['id']);?>" style="color:#ffff; background-color:#d52c0b;" class="danger" onclick="return confirmarAccionCancelar();">
-                    Cancelar
-                     </a>                   
+                    <a href="#" 
+                    style="color:#ffff; background-color:#d52c0b;" 
+                    class="danger" 
+                    onclick="return confirmarAccionCancelar('<?php echo $vta['id']; ?>');">
+                        Cancelar
+                    </a>                
                     
             </li>
             <li>                          
@@ -199,24 +202,25 @@ const formatter = new Intl.DateTimeFormat('es-AR', {
 const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
 </script>
 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmarAccionCancelar() {
+    function confirmarAccionCancelar(idVenta) {
         Swal.fire({
             title: "¿Estás seguro?",
-            text: "Esto eliminará la Venta y devolvera los productos.",
+            text: "Esto eliminará la Venta y devolverá los productos.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, Cancelar Venta",
             cancelButtonText: "No, Volver"
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "<?php echo base_url('cancelarVenta/'.$vta['id']); ?>";
+                window.location.href = "<?php echo base_url('cancelarVenta'); ?>/" + idVenta;
             }
         });
+
         return false; // Evita que el enlace siga su curso normal
     }
-    
 </script>
 
 
