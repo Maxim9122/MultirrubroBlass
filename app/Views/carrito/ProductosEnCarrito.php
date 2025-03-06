@@ -97,6 +97,7 @@ $perfil = $session->get('perfil_id');
 if (!empty($session)) {
     $id_pedido = $session->get('id_pedido');
     $tipo_compra = $session->get('tipo_compra');
+    $estado = $session->get('estado');
 }
 //print_r($perfil);
 //exit;
@@ -108,7 +109,7 @@ if (!empty($session)) {
 <div class="contenedor">
         <u><i><h2>Productos En Carrito</h2></i></u>
         <br>
-        <?php if (!empty($id_pedido)): ?>
+        <?php if ($estado == 'Modificando'): ?>
             <h3 class="resaltado">
                 Modificando Venta/Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
             </h3>
@@ -234,7 +235,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionPedido();">
                                 Cancelar Modificación Pedido
                             </a>
-                            <?php } else if ($perfil == 3 && $tipo_compra == 'Compra_Normal'){?>
+                            <?php } else if ($perfil == 3 && $tipo_compra == 'Compra_Normal' && $estado == 'Modificando'){?>
                                 <a href="<?php echo base_url('cancelar_edicion_Venta/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionVenta();">
                                 Cancelar Modificación Venta
                                 </a>
@@ -254,7 +255,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Continuar Compra</a>
                                 
-                        <?php }else if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){ ?>            
+                        <?php }else if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal' && $estado == 'Modificando'){ ?>            
                             <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('modificar')">Modificar Compra</a>
                             <?php } ?>
