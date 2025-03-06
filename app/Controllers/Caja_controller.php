@@ -25,7 +25,9 @@ class Caja_controller extends Controller{
         }
         if($perfil == 2){
             return redirect()->to(base_url('catalogo'));
-        }
+       }
+    //print_r($session->get());
+    //exit;
     // Instanciar el modelo
     $USmodel = new Usuarios_model();
     $cabeceraModel = new Cabecera_model();
@@ -76,7 +78,9 @@ class Caja_controller extends Controller{
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
     $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
     $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
-    $total_venta = $cabecera ? $cabecera['total_venta'] : null;
+    $total_venta = $cabecera ? $cabecera['total_venta'] : null;    
+    //print_r($estado);
+    //exit;
     $session->set([
         'id_vendedor' => $id_vendedor,
         'nombre_vendedor' => $nombre_vendedor,
@@ -85,7 +89,8 @@ class Caja_controller extends Controller{
         'fecha_pedido' => $fecha_pedido,
         'tipo_compra' => $tipo_compra,
         'tipo_pago' => $tipo_pago,
-        'total_venta' => $total_venta
+        'total_venta' => $total_venta,
+        'estado' => 'Cobrando'
     ]);
     //print_r($fecha_pedido);
     //exit;    
@@ -102,7 +107,7 @@ class Caja_controller extends Controller{
         $session = session();
         $Cabecera_model = new Cabecera_model();
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
-        $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         session()->setFlashdata('msg', 'Se Cancelo el cobro de la Venta!');
         return redirect()->to('caja');
     }
@@ -138,7 +143,8 @@ class Caja_controller extends Controller{
         'fecha_pedido' => $fecha_pedido,
         'tipo_compra' => $tipo_compra,
         'tipo_pago' => $tipo_pago,
-        'total_venta' => $total_venta
+        'total_venta' => $total_venta,
+        'estado' => 'Modificando'
     ]);
     // Obtener los productos del pedido
     $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
@@ -208,7 +214,7 @@ public function cancelar_edicion_Venta($id_pedido){
     }        
     // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
     $session = session();
-    $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+    $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
     // Actualizar el estado del pedido a "Pendiente"
     $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
     $cart->destroy();

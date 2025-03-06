@@ -93,12 +93,12 @@
 $id_pedido = '';
 // Añadido para el tipo de compra
 $session = session();
-$perfil = $session->get('id_perfil');
+$perfil = $session->get('perfil_id');
 if (!empty($session)) {
     $id_pedido = $session->get('id_pedido');
     $tipo_compra = $session->get('tipo_compra');
 }
-//print_r($id_pedido);
+//print_r($perfil);
 //exit;
 ?>
 
@@ -232,9 +232,9 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <!-- Cancelar edicion de pedido -->
                         <?php if ($id_pedido > 0 && $tipo_compra == 'Pedido') { ?>
                             <a href="<?php echo base_url('cancelar_edicion/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionPedido();">
-                                Cancelar Modificación
+                                Cancelar Modificación Pedido
                             </a>
-                            <?php } else if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){?>
+                            <?php } else if ($perfil == 3 && $tipo_compra == 'Compra_Normal'){?>
                                 <a href="<?php echo base_url('cancelar_edicion_Venta/'.$id_pedido);?>" class="danger" onclick="return confirmarAccionVenta();">
                                 Cancelar Modificación Venta
                                 </a>
@@ -250,7 +250,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         </button>                        
                                 
                             <br><br>
-                            <?php if($perfil == 2) { ?>
+                            <?php if($tipo_compra == 'Pedido' || $perfil == 2) { ?>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Continuar Compra</a>
                                 

@@ -25,6 +25,7 @@
         $session = session();
         $id_cliente_seleccionado = $session->get('id_cliente') ?? '';
         $id_pedido = $session->get('id_pedido') ?? '';
+        $estado = $session->get('estado') ?? '';
         ?>
 
 <div style="width: 100%;">
@@ -94,14 +95,14 @@
                 </a>
             </li>
             <li>
-                <?php if(!$id_pedido){?>
+                <?php if($p['estado'] == 'Pendiente' && $estado == ''){?>
                 <a href="<?php echo base_url('cargar_pedido/'.$p['id']); ?>">
                     ✏️ Modificar
                 </a>
                 <?php } ?>
             </li> 
             <li>
-            <?php if($perfil == 3) { ?>
+            <?php if($perfil == 3 && $estado == '') { ?>
                 <a class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
                     ✅ Listo
                 </a>
