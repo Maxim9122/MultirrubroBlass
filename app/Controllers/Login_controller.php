@@ -88,7 +88,9 @@ class Login_controller extends Controller
         //CANCELAMOS LA MODIFICACION DEL PEDIDO ANTES DE SALIR, SI ES NECESARIO.
         $id_pedido = $session->get('id_pedido');
         $tipo_compra = $session->get('tipo_compra');
-        if($id_pedido > 0 && $tipo_compra == 'Pedido'){
+        $estado = $session->get('estado');
+
+        if($estado == 'Modificando' && $tipo_compra == 'Pedido'){
         $cart = \Config\Services::cart();
         $Cabecera_model = new Cabecera_model();
         $VentaDetalle_model = new VentaDetalle_model();
@@ -107,17 +109,14 @@ class Login_controller extends Controller
         }        
         // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
         $session = session();
-        $session->remove(['id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         // Actualizar el estado del pedido a "Pendiente"
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
-        $cart->destroy();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        $cart->destroy();        
         }
-        }
+        
         //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
-        if($id_pedido > 0 && $tipo_compra == 'Compra_Normal'){
+        if($estado == 'Modificando' && $tipo_compra == 'Compra_Normal'){
             $cart = \Config\Services::cart();
             $Cabecera_model = new Cabecera_model();
             $VentaDetalle_model = new VentaDetalle_model();
@@ -138,6 +137,13 @@ class Login_controller extends Controller
             $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         }
         
+        if($estado == 'Cobrando'){
+        $cart = \Config\Services::cart();
+        $cart->destroy();
+        $Cabecera_model = new Cabecera_model();
+        $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
+        $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        }
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
          //print_r();

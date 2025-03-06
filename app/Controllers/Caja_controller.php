@@ -105,13 +105,19 @@ class Caja_controller extends Controller{
     //Cancelar Cobro de la venta
     public function CancelarCobro($id_pedido){
         $session = session();
+        $tipo_compra = $session->get('tipo_compra');
         $cart = \Config\Services::cart();
         $cart->destroy();
         $Cabecera_model = new Cabecera_model();
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
         $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-        session()->setFlashdata('msg', 'Se Cancelo el cobro de la Venta!');
+        if($tipo_compra == 'Compra_Normal'){ 
+            session()->setFlashdata('msg', 'Se Cancelo el cobro de la Venta!');
         return redirect()->to('caja');
+        } else {
+            session()->setFlashdata('msg', 'Se Cancelo el cobro del Pedido!');
+        return redirect()->to('pedidos');
+        }
     }
 
 

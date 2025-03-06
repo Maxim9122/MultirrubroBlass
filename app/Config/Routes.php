@@ -41,6 +41,7 @@ $routes->get('modificarVenta/(:num)', 'Caja_controller::cargar_Venta_en_Carrito/
 $routes->get('cancelar_edicion_Venta/(:num)', 'Caja_controller::cancelar_edicion_Venta/$1');
 $routes->post('ventaModificada', 'Caja_controller::ModificarVenta');
 $routes->get('cancelarVenta/(:num)', 'Caja_controller::Venta_cancelar/$1');
+$routes->get('cobrarPedido/(:num)', 'Caja_controller::CargarVenta/$1');
 
 
 //Todo sobre Pedidos

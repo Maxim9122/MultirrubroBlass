@@ -27,11 +27,15 @@ $tipo_compra = '';
 $tipo_pago = '';
 $id_pedido = '';
 $total_venta = '';
+$estado = '';
 
 $id_cliente_cobro = '';
 // Asignar valores desde la sesión solo si existen
 if ($session->has('id_cliente_pedido')) {
     $id_cliente = $session->get('id_cliente_pedido');
+}
+if ($session->has('estado')) {
+    $estado = $session->get('estado');
 }
 if ($session->has('id_cliente')) {
     $id_cliente = $session->get('id_cliente');    
@@ -145,7 +149,7 @@ endif;
                 </td>
                 </tr>
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-5%):</strong></td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-10%):</strong></td>
                     <td>
                         <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
                     </td>
@@ -156,7 +160,7 @@ endif;
                 <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                 <td>
                 <select name="tipo_compra" id="tipoCompra" class="selector">
-                    <?php if ($tipo_compra == 'Compra_Normal') {  ?>
+                    <?php if ($tipo_compra == 'Compra_Normal' || $estado == 'Cobrando') {  ?>
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
             
                     <?php } else if ($tipo_compra == 'Pedido') {  ?>
@@ -418,15 +422,15 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         // Calcula cuánto falta pagar después del pago en transferencia
         const faltaPagar = totalVenta - pagoTransferencia;
 
-        // Aplica el descuento del 5% al monto en efectivo
-        const montoEfectivoConDescuento = faltaPagar / 1.05; // Aplica el 5% de descuento
+        // Aplica el descuento del 10% al monto en efectivo
+        const montoEfectivoConDescuento = faltaPagar / 1.1; // Aplica el 10% de descuento
 
         // Muestra el monto en efectivo con descuento
         document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { minimumFractionDigits: 2 });
 
         // Si no se ingresa monto en transferencia, el monto en efectivo es el total con descuento
         if (pagoTransferencia === 0) {
-            const totalConDescuento = totalVenta * 0.95;
+            const totalConDescuento = totalVenta / 1.1;
             document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { minimumFractionDigits: 2 });
         }
     }
