@@ -157,10 +157,10 @@ if (!empty($session)) {
         <div class="sinProductos" style="color:#ffff; " align="center" >
             <h2>
             <?php  
-            // Si el carrito está vacio, mostrar el siguiente mensaje
-            if (empty($carrito))
-            {
-                echo 'No hay productos agregados Todavia.!';                
+            // Si el carrito está vacío, mostrar el siguiente mensaje
+            if (empty($carrito)) {
+                echo 'No hay productos agregados todavía.!<br><br>';
+                echo '<a href="' . base_url('cancelar_edicion/' . $id_pedido) . '" class="danger" onclick="return confirmarAccionPedido();">Cancelar Modificación Pedido</a>';
             }
             ?>
             </h2>
