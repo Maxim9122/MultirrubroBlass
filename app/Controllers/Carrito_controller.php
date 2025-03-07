@@ -620,8 +620,8 @@ public function ListCompraDetalle($id)
             $cart->destroy();
     
             // Redirigir al usuario con un mensaje de éxito según el tipo de compra
-            session()->setFlashdata('msg', 'Venta Modificada con Éxito!');
-            return redirect()->to('compras');
+            //session()->setFlashdata('msg', 'Venta Modificada con Éxito!');
+            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
             }
         }
     }
@@ -1050,7 +1050,7 @@ public function generarTicket($id_cabecera)
                 <p>Instagram: @Blass.Multirrubro</p>
                 <p>Facebook: Blass Multirrubro</p>
                 <h3>Muchas Gracias por su Compra.!</h3>
-            </div>
+            </div>            
         </div>
     </body>
     </html>

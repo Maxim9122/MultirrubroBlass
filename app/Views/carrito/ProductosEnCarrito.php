@@ -312,13 +312,13 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         </button>                        
                                 
                             <br><br>
-                            <?php if(($tipo_compra == 'Pedido' || $perfil == 2) && $estado == 'Modificando') { ?>
+                            <?php if(($tipo_compra == 'Pedido' || $perfil == 2) && ($estado == '' || $estado == 'Modificando')) { ?>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Continuar Compra</a>
                                 
                         <?php }else if ($perfil == 3 && $tipo_compra == 'Compra_Normal' && $estado == 'Modificando'){ ?>            
                         <!-- Envia los cambios y Modifica e impacta los cambios de la venta modificada -->
-                        <a href="javascript:void(0);" class="success" onclick="setAccion('modificar')">Modificar Compra</a>
+                        <a href="javascript:void(0);" class="success" onclick="setAccion('modificar')">Modificar Venta</a>
 
                         <?php } else if($perfil == 3 && $estado == 'Modificando_SF') {?>
                         <!-- Envia los cambios y Modifica e impacta los cambios de la venta modificada -->
