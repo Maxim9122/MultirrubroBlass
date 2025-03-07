@@ -532,9 +532,11 @@ public function ListCompraDetalle($id)
             $id_cliente = $session->get('id_cliente');
             $id_pedido = $session->get('id_pedido');
             $fecha_pedido = $session->get('fecha_pedido');
-            $tipo_compra = $session->get('tipo_compra');
+            $tipo_compra = $session->get('tipo_compra');            
             $total_anterior = $session->get('total_bonificado');
-            $estado = $session->get('estado');            
+            $estado = $session->get('estado');   
+            //print_r($estado);
+            //exit;         
             //El resto entre el total actual de la venta menos el total anterior que usamos el total bonificado
             $resul_descuento = 0;           
             $total_bonificado_OK = 0;
@@ -574,7 +576,7 @@ public function ListCompraDetalle($id)
                 $VentaDetalle_model = new VentaDetalle_model();
                 $Producto_model = new Productos_model();
                 $Cabecera_model = new Cabecera_model();
-    
+                  
                 // Actualizar la cabecera de la venta con los nuevos datos
                 $cabecera_model = new Cabecera_model();
                 $cabecera_model->update($id_pedido, [
@@ -587,9 +589,12 @@ public function ListCompraDetalle($id)
             'total_bonificado' => $total_bonificado_OK, // Actualizamos el total con descuento (si aplica)
             'motivo' => $motivo, //Agregamos el motivo de los cambios
             'total_anterior' => $total_anterior, //Guardamos el total anterior            
-            'estado' => 'Modificada_SF', // Mantenemos el estado como "Pendiente" (puede cambiar según el flujo)
+            'estado' => 'Modificada_SF', // Cambiamos el estado a Modificada_SF para saber que esta venta se modif.
             ]);
-    
+        //$cabecera = $Cabecera_model->find($id_pedido);
+        //$estado2 = $cabecera['estado'];
+        //print_r($estado2);
+        //exit;
         // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
         $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
     
@@ -622,6 +627,7 @@ public function ListCompraDetalle($id)
             // Redirigir al usuario con un mensaje de éxito según el tipo de compra
             //session()->setFlashdata('msg', 'Venta Modificada con Éxito!');
             return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
+            //return redirect()->to('compras');
             }
         }
     }
@@ -941,7 +947,7 @@ public function generarTicket($id_cabecera)
     $nombreVendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
     
     //Cambia el estado del Pedido
-    if($cabecera['tipo_compra'] == 'Pedido'){
+    if($cabecera['tipo_compra'] == 'Pedido' && $cabecera['total_anterior'] == 0){
 
         $ventaModel->cambiarEstado($id_cabecera, 'Sin_Facturar');
     }
@@ -1057,10 +1063,15 @@ public function generarTicket($id_cabecera)
             <?php if (!empty($cabecera['motivo'])): ?>
             <hr>
             <p>---------------------Recortar Aqui-------------------------</p>
-            <p><strong>Motivo:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
+            <p><strong>Motivo de los Cambios:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
             <p><strong>Cajero:</strong> <?= nl2br(htmlspecialchars($cajero_nombre)) ?></p>
-            <p><strong>Fecha y Hora de Cambios:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
+            <p><strong>Fecha y Hora:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
+            <p><strong>Total Anterior: $ </strong> <?= number_format($cabecera['total_anterior'], 2) ?></p>
+            <p><strong>Total Actual: $ </strong> <?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <p><strong>Diferencia: $ </strong> <?= number_format($cabecera['total_bonificado'] - $cabecera['total_anterior'], 2) ?></p>
+            <p>Si la Diferencia es negativa, eso es saldo a favor para el Cliente.</p>
             <?php endif; ?>
+
 
             
         </div>

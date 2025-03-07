@@ -376,7 +376,7 @@ public function cancelar_edicion_Venta_SF($id_pedido){
         }
     }
     
-    if($tiene_saldo_anterior != null){ 
+    if($tiene_saldo_anterior != 0){ 
         $Cabecera_model->update($id_pedido, ['estado' => 'Modificada_SF']);
     }else {
         $Cabecera_model->update($id_pedido, ['estado' => 'Sin_Facturar']);
