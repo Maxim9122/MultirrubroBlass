@@ -68,10 +68,12 @@ function cerrarMensaje() {
   <h2 class="textoColor" align="center">Listado de Productos</h2>
   <br>
 
-  <section class="buscador">
+  <section class="buscador" >
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <button type="submit" class="success" style="display: none;">Agregar por Codigo de Barra</button>
+  <label style="color: white; font-weight: bold;">Codigo de Barra</label>
+
+  <button type="submit" class="success" style="display: none;">Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
         <input oninput="this.value = this.value.replace(/\D/g, '')" type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
@@ -228,25 +230,28 @@ document.addEventListener("DOMContentLoaded", function() {
 <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
 
 <script>
-    
-    $(document).ready( function () {
-      $('#users-list').DataTable( {
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles.",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar: ",
-            "paginate": {
-              "next": "Siguiente",
-              "previous": "Anterior"
-            }
+  $(document).ready(function () {
+    $('#users-list').DataTable({
+      "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Lo sentimos! No hay resultados.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+          "next": "Siguiente",
+          "previous": "Anterior"
         }
-    } );
-  } );
-
+      },
+      initComplete: function () {
+        // Cambiar el texto del placeholder en el input de búsqueda
+        $('#users-list_filter input').attr('placeholder', 'Nombre; Categoría, etc...');
+      }
+    });
+  });
 </script>
+
 
 <script>
 const input = document.getElementById('product_input');
