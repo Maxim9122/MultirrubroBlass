@@ -421,7 +421,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, Cancelar",
-            cancelButtonText: "Cancelar"
+            cancelButtonText: "Volver"
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "<?php echo base_url('cancelar_edicion/'.$id_pedido); ?>";
