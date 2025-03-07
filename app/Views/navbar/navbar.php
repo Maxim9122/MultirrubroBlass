@@ -81,7 +81,7 @@
         $link = ""; // Variable para el enlace
 
         switch ($estado) {
-            case 'Modificando':
+            case 'Modificando' || 'Modificando_SF':
                 $mensaje = "ATENCIÓN! Se está Modificando una Venta o Pedido";
                 $color = "#FF6700"; // Naranja neón
                 $link = base_url('CarritoList'); // Ruta del enlace

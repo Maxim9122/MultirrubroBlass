@@ -159,7 +159,7 @@ function cerrarMensaje() {
                <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
                
                <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
-               <?php if($perfil == 2 || $estado == 'Modificando') {?>
+               <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
                <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
                <?php  } ?>
                <?php echo form_close(); ?>

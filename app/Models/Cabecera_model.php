@@ -5,7 +5,7 @@ class Cabecera_model extends Model
 {
 	protected $table = 'ventas_cabecera';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado'];
+    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado', 'total_anterior', 'motivo'];
 
     public function getVentasCabecera(){
       $db = db_connect();
@@ -103,7 +103,7 @@ class Cabecera_model extends Model
         ");
         $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
         $builder->join('usuarios v', 'u.id_usuario = v.id');
-        $builder->whereNotIn('u.estado', ['Cancelado', 'Pendiente']);
+        $builder->whereNotIn('u.estado', ['Pendiente']);
     
         // Aplicar filtros opcionales
         if (!empty($filtros['estado'])) {
