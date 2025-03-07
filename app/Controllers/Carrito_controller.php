@@ -140,19 +140,38 @@ public function ListCompraDetalle($id)
 
     //Agrega elemento al carrito
 	function add()
-{
+    {
+    $session = session();
+    $estado = $session->get('estado'); // Verificamos el estado de la sesión
+    $id_pedido = $session->get('id_pedido');
+
     $producto_id = $_POST['id'];
     $nombre = $_POST['nombre'];
     $precio = $_POST['precio_vta'];
-    $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1; // Obtener la cantidad enviada
+    $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1;
 
     $prodModel = new Productos_model();
     $producto = $prodModel->getProducto($producto_id);
-    $stock = $producto['stock'];
-    //print_r($_POST);
-    //exit;
+    $stock_actual = $producto['stock'];
+
+    $VentaDetalle_model = new VentaDetalle_model();
+    
+    // Si estamos en modo modificación, obtener la cantidad ya reservada
+    $cantidad_reservada = 0;
+    if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
+        $cantidad_reservada = $VentaDetalle_model
+            ->where('venta_id', $id_pedido)
+            ->where('producto_id', $producto_id)
+            ->select('cantidad')
+            ->get()
+            ->getRowArray()['cantidad'] ?? 0;
+    }
+
+    // Calcular el stock disponible real
+    $stock_disponible = $stock_actual + $cantidad_reservada;
+
     // Verificar si hay suficiente stock
-    if ($stock <= 0) {
+    if ($stock_disponible <= 0) {
         session()->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
         return redirect()->to(base_url('catalogo'));
     }
@@ -167,7 +186,7 @@ public function ListCompraDetalle($id)
             $nueva_cantidad = $item['qty'] + $cantidad;
 
             // Verificar si supera el stock disponible
-            if ($nueva_cantidad > $stock) {
+            if ($nueva_cantidad > $stock_disponible) {
                 session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
                 return redirect()->to(base_url('catalogo'));
             }
@@ -187,16 +206,17 @@ public function ListCompraDetalle($id)
     if (!$producto_encontrado) {
         $cart->insert([
             'id'      => $producto_id,
-            'qty'     => $cantidad, // Insertamos la cantidad seleccionada
+            'qty'     => $cantidad,
             'price'   => $precio,
             'name'    => $nombre,
-            'options' => ['stock' => $stock] // Guardamos el stock disponible como referencia
+            'options' => ['stock' => $stock_disponible] // Guardamos el stock disponible como referencia
         ]);
     }
 
     session()->setFlashdata('msg', 'Producto Agregado!');
     return redirect()->to(base_url('catalogo'));
-}
+    }
+
 
 
 	//Agrega elemento al carrito desde confirmar
