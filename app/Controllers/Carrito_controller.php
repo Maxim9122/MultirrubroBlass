@@ -919,6 +919,8 @@ public function generarTicket($id_cabecera)
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     
+    $session = session();
+    $cajero_nombre = $session->get('nombre');
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
     
@@ -1050,7 +1052,17 @@ public function generarTicket($id_cabecera)
                 <p>Instagram: @Blass.Multirrubro</p>
                 <p>Facebook: Blass Multirrubro</p>
                 <h3>Muchas Gracias por su Compra.!</h3>
-            </div>            
+            </div>
+
+            <?php if (!empty($cabecera['motivo'])): ?>
+            <hr>
+            <p>---------------------Recortar Aqui-------------------------</p>
+            <p><strong>Motivo:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
+            <p><strong>Cajero:</strong> <?= nl2br(htmlspecialchars($cajero_nombre)) ?></p>
+            <p><strong>Fecha y Hora de Cambios:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
+            <?php endif; ?>
+
+            
         </div>
     </body>
     </html>
