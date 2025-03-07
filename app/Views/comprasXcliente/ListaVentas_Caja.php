@@ -104,7 +104,7 @@
                 </a>
             </li>
             <li>
-                <?php if($vta['estado'] == 'Pendiente' && ($tipo_compra == 'Compra_Normal' || empty($tipo_compra)) ){?>
+                <?php if(($vta['estado'] == 'Pendiente' || $vta['estado'] == 'Modificada_SF') && ($tipo_compra == 'Compra_Normal' || empty($tipo_compra)) ){?>
                     <a href="#" 
                     style="color:#ffff; background-color:#d52c0b;" 
                     class="danger" 
@@ -121,7 +121,7 @@
 
             </li>
             <li>        
-                <?php } if ($vta['estado'] == 'Pendiente' && (empty($estado))) { ?>
+                <?php } if (($vta['estado'] == 'Pendiente' || $vta['estado'] == 'Modificada_SF') && $estado == '') { ?>
                     <a class="btnDesplegable" style="color:#ffff; background-color:#467c62; border-radius:10px; padding:8px; text-align: center;" href="<?php echo base_url('cargarVenta/'.$vta['id']); ?>">
                     ✅COBRAR
                     </a>

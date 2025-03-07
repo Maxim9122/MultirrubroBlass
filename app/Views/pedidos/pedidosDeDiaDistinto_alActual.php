@@ -103,8 +103,8 @@
             </li> 
             <li>
             <?php if($perfil == 3 && $estado == '') { ?>
-                <a class="text-success btn" onclick="mostrarConfirmacion(event, <?php echo $p['id']; ?>)">
-                    ✅ Listo
+                <a class="text-success btn" href="<?php echo base_url('cobrarPedido/'.$p['id']);?>">
+                    ✅ Cobrar
                 </a>
                 <?php } ?>
             </li>
@@ -195,17 +195,7 @@ function cerrarConfirmacion() {
 
 
 
-<!-- Cuadro de confirmación Pedido Listo-->
-<div id="confirm-dialog" class="confirm-dialog" style="display: none;">
-    <div class="confirm-content btn2">
-        <p id="confirm-message">¿Cómo desea continuar?</p>
-        <div class="confirm-buttons">
-            <button id="confirm-factura" class="btn btn-yes" autofocus>Facturar C</button>
-            <button id="confirm-ticket" class="btn btn-no">Solo Ticket</button>
-            <button id="confirm-cancelar" class="btn btn-cancel">Cancelar</button>
-        </div>
-    </div>
-</div>
+
      
   </div>
 </div>
@@ -261,50 +251,6 @@ fechaInput.setAttribute('value', formattedDate);
 //Rescata la hora del input por medio del id y asigna la hora actual (Lo mismo con la fecha)
 document.getElementById('hora').value = formattedTime;
 
-</script>
-
-<!-- Esta parte es del cartel de confirmacion de Cancelar pedido o pedido Listo-->
-<script>
-
-function mostrarConfirmacion(event, id) {
-    event.preventDefault(); // Previene la acción por defecto del enlace
-    const confirmDialog = document.getElementById('confirm-dialog');
-    const confirmFactura = document.getElementById('confirm-factura');
-    const confirmTicket = document.getElementById('confirm-ticket');
-    const confirmCancelar = document.getElementById('confirm-cancelar');
-
-    // Muestra el cuadro de confirmación
-    confirmDialog.style.display = 'flex';
-    // Base URL desde PHP
-    let urlBase = "<?php echo base_url(); ?>";
-
-    // Facturar C -> Redirige a verificarTA con el ID
-    confirmFactura.onclick = function () {
-        window.location.href = `${"<?php echo base_url('verificarTA'); ?>"}/${id}`;
-    };
-
-    // Solo Ticket -> Redirige a generarTicket con el ID
-    confirmTicket.onclick = function () {
-        window.location.href = `${"<?php echo base_url('generarTicket'); ?>"}/${id}`;
-    };
-
-
-    // Cancelar -> Cierra el cuadro de confirmación
-    confirmCancelar.onclick = cerrarConfirmacion;
-
-    // Detectar la tecla Escape para cerrar el cuadro
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-            cerrarConfirmacion();
-        }
-    }, { once: true }); // Elimina el evento después de ejecutarse una vez
-}
-
-// Función para cerrar el cuadro de confirmación
-function cerrarConfirmacion() {
-    document.getElementById('confirm-dialog').style.display = 'none';
-}    
-    
 </script>
 
 

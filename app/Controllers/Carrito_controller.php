@@ -28,6 +28,10 @@ class Carrito_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
         }
+    $perfil = $session->get('perfil_id');
+        if($perfil == 2){
+            return redirect()->to(base_url('catalogo'));
+        }
     // Instanciar el modelo
     $USmodel = new Usuarios_model();
     $cabeceraModel = new Cabecera_model();
@@ -449,6 +453,176 @@ public function ListCompraDetalle($id)
         session()->setFlashdata('msg', 'Venta Actualizada con Éxito!');
         return redirect()->to('caja');
         }
+
+//Modifica y guarda los cambios de la venta realizada Sin Facturar
+        } elseif ($accion == 'GuardarCambios'){
+
+            $cart = \Config\Services::cart();           
+            $session = session();
+            // Recibe los datos del carrito, calcula y actualiza
+            $cart_info = $this->request->getPost('cart');
+            $motivo = $this->request->getPost('motivo_modif');
+            $tipo_pago_dif = $this->request->getPost('tipo_pago_dif'); // Puede ser 'Efectivo' o 'Transferencia'
+            $tipo_pago_anterior = $session->get('tipo_pago'); // Puede ser 'Mixto', 'Transferencia' o 'Efectivo'
+            $tipo_pago_Modif = '';
+
+            // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
+            switch ($tipo_pago_dif) {
+                case 'Efectivo':
+                    if ($tipo_pago_anterior == 'Efectivo') {
+                        $tipo_pago_Modif = 'Efectivo'; // Coinciden
+                    } else {
+                        $tipo_pago_Modif = 'Mixto'; // No coinciden
+                    }
+                    break;
+            
+                case 'Transferencia':
+                    if ($tipo_pago_anterior == 'Transferencia') {
+                        $tipo_pago_Modif = 'Transferencia'; // Coinciden
+                    } else {
+                        $tipo_pago_Modif = 'Mixto'; // No coinciden
+                    }
+                    break;
+            
+                default:
+                    // Si $tipo_pago_dif no es 'Efectivo' ni 'Transferencia', se asigna el valor anterior
+                    $tipo_pago_Modif = $tipo_pago_anterior;
+                    break;
+            }            
+
+            $errores_stock = false; // Variable para controlar si hay errores de stock
+            $total_venta = 0; // Inicializar el total de la venta
+            
+            foreach ($cart_info as $id => $carrito) {
+                $prod = new Productos_model();
+                $idprod = $prod->getProducto($carrito['id']);
+                if ($carrito['id'] < 100000) {
+                    $stock = $idprod['stock'];
+                }
+                $rowid = $carrito['rowid'];
+                $price = $carrito['price'];
+                $amount = $price * $carrito['qty'];
+                $qty = $carrito['qty'];
+    
+                if ($carrito['id'] < 100000) {
+                    if ($qty <= $stock && $qty >= 1) {
+                        $cart->update(array(
+                            'rowid' => $rowid,
+                            'price' => $price,
+                            'amount' => $amount,
+                            'qty' => $qty
+                        ));
+                        // Sumar el subtotal al total de la venta
+                        $total_venta += $amount;
+                    } else {
+                        // Si hay un error de stock, marca la variable de error y guarda el mensaje
+                        $errores_stock = true;
+                        session()->setFlashdata('msgEr', 'La Cantidad Solicitada de algunos productos no están disponibles o SELECCIONASTE 0!');
+                    }
+                }
+            }
+    
+            // Si hubo errores de stock, redirige a la página de carrito
+            if ($errores_stock) {
+                return redirect()->to(base_url('CarritoList'));
+            }   
+            
+    
+            $id_vendedor = $session->get('id_vendedor');
+            $id_cliente = $session->get('id_cliente');
+            $id_pedido = $session->get('id_pedido');
+            $fecha_pedido = $session->get('fecha_pedido');
+            $tipo_compra = $session->get('tipo_compra');
+            $total_anterior = $session->get('total_bonificado');
+            $estado = $session->get('estado');            
+            //El resto entre el total actual de la venta menos el total anterior que usamos el total bonificado
+            $resul_descuento = 0;           
+            $total_bonificado_OK = 0;
+            $resto_ActualMenosAnterior = $total_venta - $total_anterior;
+            //Si el resultado de la resta de los totales actual y anterior da mayor a 0, significa que tiene 
+            //que pagar una diferencia, en efectivo o transferencia.
+            if($resto_ActualMenosAnterior > 0){ 
+
+            if($tipo_pago_dif == 'Efectivo'){
+                //Calculo cuanto tengo que restar al total general de la venta nueva modificada (Bonificacion)
+                $resul_descuento = $resto_ActualMenosAnterior / 1.1;
+                $total_bonificado_OK = $total_anterior + $resul_descuento;
+
+             //Si el pago es con transferencia el total con bonificacion es igual al total general.   
+            }elseif ($tipo_pago_dif == 'Transferencia'){
+                $total_bonificado_OK = $total_venta;
+            }
+            //Si el resto del total actual menos el total anterior(Bonif) es negativo o igual a 0
+            //significa que tiene que devolver parte de la plata del gasto en la venta anterior
+            //por eso se le asigna el mismo valor de la venta actual al total bonificado
+            }elseif ($resto_ActualMenosAnterior <= 0){
+
+                $total_bonificado_OK = $total_venta;
+            }
+            //Formateo para que solo guarde 2 decimales.
+            $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
+            //print_r($total_bonificado_OK);
+            //exit;
+            //Establecer zona horaria y obtener fecha/hora en formato correcto
+            date_default_timezone_set('America/Argentina/Buenos_Aires');
+            $hora = date('H:i:s'); // Formato TIME
+            $fecha = date('d-m-Y'); // Formato DATE
+    
+            // Actualizar el pedido o Venta existente con los nuevos datos
+            if ($estado == 'Modificando_SF') {
+                // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
+                $VentaDetalle_model = new VentaDetalle_model();
+                $Producto_model = new Productos_model();
+                $Cabecera_model = new Cabecera_model();
+    
+                // Actualizar la cabecera de la venta con los nuevos datos
+                $cabecera_model = new Cabecera_model();
+                $cabecera_model->update($id_pedido, [
+            'fecha' => $fecha, // Actualizamos la fecha del pedido
+            'hora' => $hora, // Actualizamos la hora
+            'id_cliente' => $id_cliente, // Conservamos el id del cliente
+            'id_usuario' => $id_vendedor, // Conservamos el id del usuario (vendedor)
+            'tipo_pago' => $tipo_pago_Modif,//reasigno el tipo de pago segun sea.
+            'total_venta' => $total_venta, // Actualizamos el total de la venta
+            'total_bonificado' => $total_bonificado_OK, // Actualizamos el total con descuento (si aplica)
+            'motivo' => $motivo, //Agregamos el motivo de los cambios
+            'total_anterior' => $total_anterior, //Guardamos el total anterior            
+            'estado' => 'Modificada_SF', // Mantenemos el estado como "Pendiente" (puede cambiar según el flujo)
+            ]);
+    
+        // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
+        $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
+    
+        // Insertar los nuevos detalles del carrito en la base de datos
+        if ($cart) {
+            foreach ($cart->contents() as $item) {
+                // Guardar cada producto del carrito como un nuevo detalle de la venta
+                $VentaDetalle_model->save([
+                    'venta_id' => $id_pedido,  // Usamos el id del pedido existente para vincular el detalle
+                    'producto_id' => $item['id'], // Producto id desde el carrito
+                    'cantidad' => $item['qty'], // Cantidad del producto en el carrito
+                    'precio' => $item['price'], // Precio del producto
+                    'total' => $item['subtotal'], // Total por ese producto (precio * cantidad)
+                ]);
+    
+                // Actualizar el stock de cada producto después de la venta
+                $producto = $Producto_model->find($item['id']); // Obtener el producto desde la base de datos
+                if ($producto && isset($producto['stock'])) {
+                    // Restar la cantidad vendida del stock del producto
+                    $stock_edit = $producto['stock'] - $item['qty'];
+                    $Producto_model->update($item['id'], ['stock' => $stock_edit]); // Actualizamos el stock en la base de datos
+                }
+                }
+            }
+    
+           $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta','total_bonificado','total_anterior']);
+            // Limpiar el carrito después de guardar los datos
+            $cart->destroy();
+    
+            // Redirigir al usuario con un mensaje de éxito según el tipo de compra
+            session()->setFlashdata('msg', 'Venta Modificada con Éxito!');
+            return redirect()->to('compras');
+            }
         }
     }
 

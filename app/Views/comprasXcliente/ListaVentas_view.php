@@ -1,7 +1,9 @@
 <?php $session = session();
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
-          $id=$session->get('id');?>
+          $id=$session->get('id');
+          $estado =$session->get('estado');
+          ?>
           <?php if (session()->getFlashdata('msg')): ?>
         <div id="flash-message" class="flash-message success">
             <?= session()->getFlashdata('msg') ?>
@@ -34,6 +36,7 @@
             <option value="Facturada" <?= ($filtros['estado'] ?? '') == 'Facturada' ? 'selected' : '' ?>>Facturada</option>
             <option value="Sin_Facturar" <?= ($filtros['estado'] ?? '') == 'Sin_Facturar' ? 'selected' : '' ?>>Sin_Facturar</option>
             <option value="Error_factura" <?= ($filtros['estado'] ?? '') == 'Error_factura' ? 'selected' : '' ?>>Error_factura</option>
+            <option value="Cancelado" <?= ($filtros['estado'] ?? '') == 'Cancelado' ? 'selected' : '' ?>>Cancelada</option>
         </select>
 
           <button type="submit" class="btn">Filtrar</button>
@@ -98,21 +101,32 @@
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
                         Imp.Factura
                     </a>
-                <?php  } if($vta['estado'] == 'Sin_Facturar'){  ?>
+            </li>
+            <li>      
+                <?php  } if($vta['estado'] == 'Sin_Facturar' || $vta['estado'] == 'Modificada_SF'){  ?>
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('generarTicket/'.$vta['id']); ?>">
                         Imp.Ticket
                     </a>
+                </li>
+                <?php if($estado == '') {?>
+            <li>                
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('modificarVenta_SF/'.$vta['id']); ?>">
+                        Modificar
+                    </a>                
+            </li>
+                <?php  } ?>
+            <li>      
                 <?php } if($vta['estado'] == 'Error_factura') { ?>
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
                         Re.Facturar
                     </a>
                 <?php } ?> 
-                 </li>                                  
+            </li>                                  
                     </ul>
                 </div>
 
               </td>
-              <?php if($vta['estado'] != 'Error_factura'){?>
+              <?php if($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Cancelado'){?>
               <?php $TotalRecaudado = $TotalRecaudado + $vta['total_bonificado']; ?>
               <?php } ?> 
             </tr>
@@ -121,7 +135,7 @@
        
      </table>
      <!-- Recaudacion de Ventas (Todas o por filtro)-->
-     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?> (Excluyendo las que dieron Error al Facturar)</h2>
+     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?> (No suman las Canceladas ni las que dieron Error_Factura)</h2>
      <br>
   </div>
 </div>
