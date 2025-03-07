@@ -157,12 +157,30 @@ if (!empty($session)) {
         <div class="sinProductos" style="color:#ffff; " align="center" >
             <h2>
             <?php  
-            // Si el carrito está vacío, mostrar el siguiente mensaje
-            if (empty($carrito)) {
-                echo 'No hay productos agregados todavía.!<br><br>';
-                echo '<a href="' . base_url('cancelar_edicion/' . $id_pedido) . '" class="danger" onclick="return confirmarAccionPedido();">Cancelar Modificación Pedido</a>';
-            }
-            ?>
+                if (empty($carrito)) {
+                    echo 'No hay productos agregados todavía.!<br><br>';
+                    
+                    if ($id_pedido > 0 && $tipo_compra == 'Pedido' && $estado == 'Modificando') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionPedido();">
+                            Cancelar Modificación Pedido
+                        </a>
+                        <br><br>
+                    <?php 
+                    } elseif ($perfil == 3 && $tipo_compra == 'Compra_Normal' && $estado == 'Modificando') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion_Venta/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionVenta();">
+                            Cancelar Modificación Venta
+                        </a>
+                        <br><br>
+                    <?php  
+                    } elseif ($perfil == 3 && $estado == 'Modificando_SF') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion_Venta_SF/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionVenta_SF();">
+                            Cancelar Cambios en Venta
+                        </a>
+                        <br><br>
+                    <?php 
+                    } 
+                } 
+                ?>
             </h2>
         </div>
    
