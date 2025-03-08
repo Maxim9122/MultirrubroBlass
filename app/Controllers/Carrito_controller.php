@@ -1195,6 +1195,7 @@ public function generarTicket($id_cabecera)
             <p>---------------------Recortar Aqui-------------------------</p>
             <p><strong>Motivo de los Cambios:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
             <p><strong>Cajero:</strong> <?= nl2br(htmlspecialchars($cajero_nombre)) ?></p>
+            <p><strong>Vendedor:</strong> <?= nl2br(htmlspecialchars($nombreVendedor)) ?></p>
             <p><strong>Fecha y Hora:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
             <p><strong>Total Anterior: $ </strong> <?= number_format($cabecera['total_anterior'], 2) ?></p>
             <p><strong>Total Actual: $ </strong> <?= number_format($cabecera['total_bonificado'], 2) ?></p>
