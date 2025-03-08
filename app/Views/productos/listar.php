@@ -65,13 +65,50 @@ function cerrarMensaje() {
 <br>
 <div class="" style="width: 100%;">
   <div class="">
-  <h2 class="textoColor" align="center">Listado de Productos</h2>
+  <h2 class="textoColor" text-align: center !important; >Listado de Productos</h2>
   <br>
+  <style>
+    /* Mover el buscador a la derecha */
+    .dataTables_filter {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
 
-  <section class="buscador" >
+    /* Mover el selector de "registros por página" a la derecha */
+    .dataTables_length {
+        text-align: right;
+        width: 100%;
+    }
+
+    .dataTables_length select {
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    /* Hacer el campo de búsqueda más largo y ancho */
+    .dataTables_filter input {
+        width: 300px; /* Ajusta el tamaño según sea necesario */
+        height: 55px; /* Ajusta la altura si lo deseas */
+        font-size: 24px; /* Tamaño de la fuente */
+        padding: 5px 10px; /* Añadir espacio dentro del campo */
+        border-radius: 5px; /* Bordes redondeados */
+        border: 1px solid #ccc; /* Borde gris claro */
+    }
+
+    /* Cambiar el color y hacer más nítida la letra del placeholder */
+    .dataTables_filter input::placeholder {
+        color: white; /* Cambiar a blanco */
+        opacity: 1; /* Asegura que el color del placeholder no sea opaco */
+        font-weight: bold; /* Hacer el texto más nítido */
+    }
+</style>
+
+
+  <section class="buscador">
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <label style="color: white; font-weight: bold;">Codigo de Barra</label>
+  <label style="color: white; font-weight: bold;"><h1>Codigo de Barra</h1></label>
 
   <button type="submit" class="success" style="display: none;">Codigo de Barra</button>
   <br>
@@ -246,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function() {
       },
       initComplete: function () {
         // Cambiar el texto del placeholder en el input de búsqueda
-        $('#users-list_filter input').attr('placeholder', 'Nombre; Categoría, etc...');
+        $('#users-list_filter input').attr('placeholder', 'Nombre, Categoría, etc...');
       }
     });
   });
