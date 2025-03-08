@@ -686,8 +686,10 @@ public function ListCompraDetalle($id)
                 // Actualizar la cabecera de la venta con los nuevos datos
                 $cabecera_model = new Cabecera_model();
                 $cabecera_model->update($id_pedido, [
-            'fecha' => $fecha, // Actualizamos la fecha del pedido
+            'fecha' => $fecha,// Actualizamos la fecha del pedido/venta
+            'fecha_pedido' => $fecha, // Actualizamos la fecha del pedido/venta
             'hora' => $hora, // Actualizamos la hora
+            'hora_entrega' => $hora,
             'id_cliente' => $id_cliente, // Conservamos el id del cliente
             'id_usuario' => $id_vendedor, // Conservamos el id del usuario (vendedor)
             'tipo_pago' => $tipo_pago_Modif,//reasigno el tipo de pago segun sea.
@@ -978,7 +980,7 @@ public function ListCompraDetalle($id)
         ]);
         }
         if($perfil == 3){ 
-            //Si el $id_pedido es un id de compra normal vuelve el estado a Pendiente.
+            //se esta cobrando una venta
             if($estado == 'Cobrando'){
                 $Cabecera_model = new Cabecera_model();
                 $Cabecera_model->update($id_pedido, [
@@ -987,8 +989,9 @@ public function ListCompraDetalle($id)
                     'tipo_pago'         => $tipo_pago_cobro,
                     'total_bonificado'  => $total_conDescuento,                 
                     'fecha_pedido'      => $fecha_pedido_formateada,
-                    'fecha'        => $fecha,
+                    'fecha'        => $fecha,                    
                     'hora'         => $hora,
+                    'hora_entrega' => $hora,
                     'id_cliente'   => $id_cliente,
                 ]);           
                 $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
