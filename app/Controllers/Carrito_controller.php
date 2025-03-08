@@ -395,54 +395,46 @@ public function ListCompraDetalle($id)
 
 //Si el proceso es de una Venta que se esta modificando entra aqui.
         } elseif ($accion == 'modificar') {
-
-
-            $cart = \Config\Services::cart();
-        // Recibe los datos del carrito, calcula y actualiza
-        $cart_info = $this->request->getPost('cart');
-        $errores_stock = false; // Variable para controlar si hay errores de stock
-        $total_venta = 0; // Inicializar el total de la venta
-
-        foreach ($cart_info as $id => $carrito) {
-            $prod = new Productos_model();
-            $idprod = $prod->getProducto($carrito['id']);
-            if ($carrito['id'] < 100000) {
-                $stock = $idprod['stock'];
-            }
-            $rowid = $carrito['rowid'];
-            $price = $carrito['price'];
-            $amount = $price * $carrito['qty'];
-            $qty = $carrito['qty'];
-
-            if ($carrito['id'] < 100000) {
-                if ($qty <= $stock && $qty >= 1) {
-                    $cart->update(array(
-                        'rowid' => $rowid,
-                        'price' => $price,
-                        'amount' => $amount,
-                        'qty' => $qty
-                    ));
-                    // Sumar el subtotal al total de la venta
-                    $total_venta += $amount;
-                } else {
-                    // Si hay un error de stock, marca la variable de error y guarda el mensaje
-                    $errores_stock = true;
-                    session()->setFlashdata('msgEr', 'La Cantidad Solicitada de algunos productos no están disponibles o SELECCIONASTE 0!');
-                }
-            }
-        }
-
-        // Si hubo errores de stock, redirige a la página de carrito
-        if ($errores_stock) {
-            return redirect()->to(base_url('CarritoList'));
-        }
-
-        $cart = \Config\Services::cart();
+            
         $session = session();
+        $cart = \Config\Services::cart();
+
+    // Inicializar la variable para la suma total de la venta
+        $total_venta = 0;
+
+        // Recorrer el carrito y calcular el total
+        foreach ($cart->contents() as $item) {
+            $total_venta += $item['subtotal']; // Sumar cada subtotal (precio * cantidad)
+        }
+    // Recibe los datos del carrito, calcula y actualiza
+        $cart_info = $this->request->getPost('cart');
+        $id_pedido = $session->get('id_pedido');
+    // **CONTROL DE STOCK ANTES DE PROCESAR LA COMPRA MODIFICADA**
+        foreach ($cart->contents() as $item) {
+            $Producto_model = new Productos_model();
+            $producto = $Producto_model->find($item['id']); 
+            $VentaDetalle_model = new VentaDetalle_model();
+            // Obtener la cantidad reservada en el pedido anterior
+            $cantidad_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)
+                                                    ->where('producto_id', $item['id'])
+                                                    ->select('cantidad')
+                                                    ->first();
+            $cantidad_anterior = $cantidad_anterior ? $cantidad_anterior['cantidad'] : 0;
+        
+            // Calcular el stock disponible real
+            $stock_disponible = $producto['stock'] + $cantidad_anterior;
+        
+            // Validar que la cantidad nueva no exceda el stock disponible
+            if (!$producto || $stock_disponible < $item['qty']) {
+                session()->setFlashdata('msgEr', "Stock insuficiente para {$item['name']} (Stock disponible: {$stock_disponible}).");
+                return redirect()->to('CarritoList');
+            }
+        }
+
+        
 
         $id_vendedor = $session->get('id_vendedor');
-        $id_cliente = $session->get('id_cliente');
-        $id_pedido = $session->get('id_pedido');
+        $id_cliente = $session->get('id_cliente');        
         $fecha_pedido = $session->get('fecha_pedido');
         $tipo_compra = $session->get('tipo_compra');
 
@@ -451,7 +443,7 @@ public function ListCompraDetalle($id)
         $hora = date('H:i:s'); // Formato TIME
         $fecha = date('d-m-Y'); // Formato DATE
 
-        // Actualizar el pedido o Venta existente con los nuevos datos
+        // Actualizar Venta existente con los nuevos datos
         if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
             // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
             $VentaDetalle_model = new VentaDetalle_model();
@@ -471,6 +463,18 @@ public function ListCompraDetalle($id)
         'estado' => 'Pendiente', // Mantenemos el estado como "Pendiente" (puede cambiar según el flujo)
         ]);
 
+        // Obtener los productos del pedido anterior
+        $productos_anteriores = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
+    
+        // 1️⃣ **Devolver stock del pedido anterior**
+        foreach ($productos_anteriores as $detalle) {
+            $producto = $Producto_model->find($detalle['producto_id']);
+            if ($producto) {
+                $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
+                $Producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+            }
+        }
+        
     // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
     $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
 
