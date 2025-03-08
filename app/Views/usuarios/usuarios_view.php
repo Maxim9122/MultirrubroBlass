@@ -101,6 +101,9 @@
                 case 2:
                     $perfil = 'Vendedor';
                     break;
+                    case 3:
+                      $perfil = 'Cajero';
+                      break;
             }?>
              <td><?php echo $perfil  ?></td>
              <td><?php echo $user['baja'];  ?></td>
