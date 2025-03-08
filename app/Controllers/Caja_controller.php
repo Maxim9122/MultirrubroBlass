@@ -166,15 +166,6 @@ class Caja_controller extends Controller{
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
 
-    // Restaurar el stock de cada producto
-    foreach ($detalles as $detalle) {
-        $producto = $producto_model->find($detalle['producto_id']);
-        if ($producto) {
-            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
-        }
-    }
-
     // Actualizar el estado de la Venta a "Modificando"
     $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
 
@@ -206,20 +197,7 @@ public function cancelar_edicion_Venta($id_pedido){
     //exit;
     $cart = \Config\Services::cart();
     $Cabecera_model = new Cabecera_model();
-    $VentaDetalle_model = new VentaDetalle_model();
-    $Producto_model = new Productos_model();
-
-    // Obtener detalles de los productos de la venta anterior
-    $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-    
-    foreach ($detalles_venta_anterior as $detalle) {
-        // Restaurar el stock de los productos
-        $producto = $Producto_model->find($detalle['producto_id']);
-        if ($producto) {
-            $stock_edit = $producto['stock'] - $detalle['cantidad'];
-            $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
-        }
-    }        
+      
     // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
     $session = session();
     $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
