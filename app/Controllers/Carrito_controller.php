@@ -280,7 +280,7 @@ public function ListCompraDetalle($id)
     public function procesarCarrito()
     {
         $accion = $this->request->getPost('accion');
-        
+     //Actualizamos los importes del carrito y cantidades   
         if ($accion == 'actualizar') {
             
         $session = session();

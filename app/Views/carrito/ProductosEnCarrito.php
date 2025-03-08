@@ -270,7 +270,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <tr>
                             <td colspan="6" align="right">
                                 <label style="color:orange;" for="motivo_cambio">Motivo de los cambios de la Venta:</label>
-                                <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios" required>
+                                <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios">
                                 <h4 class="total_ant">Total Anterior: $
                                     <?php //Gran Total
                                     echo number_format($total_anterior, 2);
