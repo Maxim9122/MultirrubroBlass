@@ -248,6 +248,7 @@ public function Venta_cancelar($id_pedido)
     return redirect()->to($this->request->getHeader('referer')->getValue());
 }
 
+
 //Modificar Venta Sin_Facturar
 public function cargar_Venta_Sin_Facturar($id_pedido)
 {
@@ -297,14 +298,6 @@ public function cargar_Venta_Sin_Facturar($id_pedido)
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
 
-    // Restaurar el stock de cada producto (Devolver momentaneamente)
-    foreach ($detalles as $detalle) {
-        $producto = $producto_model->find($detalle['producto_id']);
-        if ($producto) {
-            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
-        }
-    }
 
     // Actualizar el estado de la Venta a "Modificando"
     $cabecera_model->update($id_pedido, ['estado' => 'Modificando_SF']);
@@ -335,24 +328,11 @@ public function cargar_Venta_Sin_Facturar($id_pedido)
 public function cancelar_edicion_Venta_SF($id_pedido){
     
     $cart = \Config\Services::cart();
-    $Cabecera_model = new Cabecera_model();
-    $VentaDetalle_model = new VentaDetalle_model();
-    $Producto_model = new Productos_model();
+    $Cabecera_model = new Cabecera_model();    
     $session = session();
     $tiene_saldo_anterior = $session->get('total_anterior');
     //print_r($estado);
-    //exit;
-    // Obtener detalles de los productos de la venta anterior
-    $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-    
-    foreach ($detalles_venta_anterior as $detalle) {
-        // Restaurar el stock de los productos
-        $producto = $Producto_model->find($detalle['producto_id']);
-        if ($producto) {
-            $stock_edit = $producto['stock'] - $detalle['cantidad'];
-            $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
-        }
-    }
+    //exit;   
     
     if($tiene_saldo_anterior != 0){ 
         $Cabecera_model->update($id_pedido, ['estado' => 'Modificada_SF']);
