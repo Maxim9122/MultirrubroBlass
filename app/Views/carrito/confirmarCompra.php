@@ -161,7 +161,9 @@ endif;
                 <td>
                 <select name="tipo_compra" id="tipoCompra" class="selector">
                 <?php if ($estado == 'Cobrando') {  ?>
-                    <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Venta/Pedido (Cobrar)</option>
+                    <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>
+                    <?php echo $estado; ?> -> <?php echo $tipo_compra; ?>
+                    </option>
 
                     <?php } else if ($tipo_compra == 'Compra_Normal') {  ?>
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
