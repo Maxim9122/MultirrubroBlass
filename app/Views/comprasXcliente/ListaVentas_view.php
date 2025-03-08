@@ -14,6 +14,24 @@
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
     </script>
+    <style>
+         /* Hacer el campo de búsqueda más largo y ancho */
+    .dataTables_filter input {
+        width: 300px; /* Ajusta el tamaño según sea necesario */
+        height: 55px; /* Ajusta la altura si lo deseas */
+        font-size: 20px; /* Tamaño de la fuente */
+        padding: 5px 10px; /* Añadir espacio dentro del campo */
+        border-radius: 5px; /* Bordes redondeados */
+        border: 1px solid #ccc; /* Borde gris claro */
+    }
+
+    /* Cambiar el color y hacer más nítida la letra del placeholder */
+    .dataTables_filter input::placeholder {
+        color: white; /* Cambiar a blanco */
+        opacity: 1; /* Asegura que el color del placeholder no sea opaco */
+        font-weight: bold; /* Hacer el texto más nítido */
+    }
+    </style>
 <section class="Fondo">
 <div class="" style="width: 100%;" align="center">
 <section class="contenedor-titulo">
@@ -162,42 +180,42 @@
           <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
           <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
           <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
-<script>
-    
-    $(document).ready( function () {
-      $('#users-list').DataTable( {
-        "order": [[0, "desc"]],
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles.",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar: ",
-            "paginate": {
-              "next": "Siguiente",
-              "previous": "Anterior"
-            }
+          <script>
+  $(document).ready(function () {
+    $('#users-list').DataTable({
+      "order": [[0, "desc"]],
+      "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Lo sentimos! No hay resultados.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+          "next": "Siguiente",
+          "previous": "Anterior"
         }
-    } );
-    
-  } );
+      },
+      initComplete: function () {
+        // Agregar el placeholder personalizado al buscador
+        $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
+      }
+    });
+  });
 
+  // Crear un objeto Date en UTC
+  const today = new Date();
 
-    // Crear un objeto Date en UTC
-    const today = new Date();
-
-// Ajustar la hora a la zona horaria de Argentina (UTC-3)
-const options = { timeZone: 'America/Argentina/Buenos_Aires', hour12: false };
-const formatter = new Intl.DateTimeFormat('es-AR', {
+  // Ajustar la hora a la zona horaria de Argentina (UTC-3)
+  const options = { timeZone: 'America/Argentina/Buenos_Aires', hour12: false };
+  const formatter = new Intl.DateTimeFormat('es-AR', {
     ...options,
     year: 'numeric', month: '2-digit', day: '2-digit'
-});
+  });
 
-const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
-
-
+  const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
 </script>
+
 
 
 

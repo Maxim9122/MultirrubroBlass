@@ -191,13 +191,12 @@ table.dataTable tbody tr:hover {
 
 .buscador{
     display: grid 1fr;
-    margin-left: auto;
+    margin: auto;
     width: 100%;
-    max-width: 150px;
+    max-width: 285px;
     background: rgb(255, 255, 255, 0.2);
     padding: 10px 10px 10px;
     text-align: center;
     border-radius:12px ;
     backdrop-filter: blur(5px);
 }
-
