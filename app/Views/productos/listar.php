@@ -65,13 +65,52 @@ function cerrarMensaje() {
 <br>
 <div class="" style="width: 100%;">
   <div class="">
-  <h2 class="textoColor" align="center">Listado de Productos</h2>
+  <h2 class="textoColor" text-align: center !important; >Listado de Productos</h2>
   <br>
+  <style>
+    /* Mover el buscador a la derecha */
+    .dataTables_filter {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    /* Mover el selector de "registros por página" a la derecha */
+    .dataTables_length {
+        text-align: right;
+        width: 100%;
+    }
+
+    .dataTables_length select {
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    /* Hacer el campo de búsqueda más largo y ancho */
+    .dataTables_filter input {
+        width: 300px; /* Ajusta el tamaño según sea necesario */
+        height: 55px; /* Ajusta la altura si lo deseas */
+        font-size: 24px; /* Tamaño de la fuente */
+        padding: 5px 10px; /* Añadir espacio dentro del campo */
+        border-radius: 5px; /* Bordes redondeados */
+        border: 1px solid #ccc; /* Borde gris claro */
+    }
+
+    /* Cambiar el color y hacer más nítida la letra del placeholder */
+    .dataTables_filter input::placeholder {
+        color: white; /* Cambiar a blanco */
+        opacity: 1; /* Asegura que el color del placeholder no sea opaco */
+        font-weight: bold; /* Hacer el texto más nítido */
+    }
+</style>
+
 
   <section class="buscador">
   
   <form id="product_form" action="<?php echo base_url('Carrito_agrega'); ?>" method="post">
-  <button type="submit" class="success" style="display: none;">Agregar por Codigo de Barra</button>
+  <label style="color: white; font-weight: bold;"><h1>Codigo de Barra</h1></label>
+
+  <button type="submit" class="success" style="display: none;">Codigo de Barra</button>
   <br>
     <div style="position: relative; display: inline-block;">
         <input oninput="this.value = this.value.replace(/\D/g, '')" type="text" id="product_input" placeholder="Agregar producto por codigo de barra..." autocomplete="off" required onfocus="this.value=''" />
@@ -228,25 +267,28 @@ document.addEventListener("DOMContentLoaded", function() {
 <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
 
 <script>
-    
-    $(document).ready( function () {
-      $('#users-list').DataTable( {
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Lo sentimos! No hay resultados.",
-            "info": "Mostrando la página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles.",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar: ",
-            "paginate": {
-              "next": "Siguiente",
-              "previous": "Anterior"
-            }
+  $(document).ready(function () {
+    $('#users-list').DataTable({
+      "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Lo sentimos! No hay resultados.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+          "next": "Siguiente",
+          "previous": "Anterior"
         }
-    } );
-  } );
-
+      },
+      initComplete: function () {
+        // Cambiar el texto del placeholder en el input de búsqueda
+        $('#users-list_filter input').attr('placeholder', 'Nombre, Categoría, etc...');
+      }
+    });
+  });
 </script>
+
 
 <script>
 const input = document.getElementById('product_input');
