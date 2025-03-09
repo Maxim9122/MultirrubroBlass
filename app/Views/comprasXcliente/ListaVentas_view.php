@@ -108,7 +108,7 @@
                         Imp.Ticket
                     </a>
                 </li>
-                <?php if($estado == '') {?>
+                <?php if($estado == '' && $perfil == 3) {?>
                     <li>                
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" 
                     href="#" onclick="abrirModal('<?php echo base_url('modificarVenta_SF/'.$vta['id']); ?>'); return false;">

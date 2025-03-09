@@ -68,7 +68,7 @@ class Login_controller extends Controller
                 }else if($ses_data['perfil_id'] == 3){
                 return redirect()->to('caja');
                 }else{
-                return redirect()->to('/Lista_Productos');   
+                return redirect()->to('compras');   
                 }
             }}else{
                 $session->setFlashdata('msg', 'Password Incorrecta');

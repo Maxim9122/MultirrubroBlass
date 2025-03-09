@@ -40,14 +40,8 @@
 
         <div id="navBar" class="navBar">
             <ul class="navList flex">
-        <?php if( ($perfil =='1')) { ?>
+        <?php if( ($perfil =='1')) { ?>          
           
-          <li class="nnavItem">
-            <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
-          </li>
-          <li class="navItem">
-          <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
-          </li>
           <li class="nnavItem">
             <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
           </li>
