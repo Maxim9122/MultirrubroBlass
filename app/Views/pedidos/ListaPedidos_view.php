@@ -31,7 +31,24 @@
         $tipo_compra = $session->get('tipo_compra') ?? '';
         $estado = $session->get('estado') ?? '';
         ?>
+ <style>
+         /* Hacer el campo de búsqueda más largo y ancho */
+    .dataTables_filter input {
+        width: 300px; /* Ajusta el tamaño según sea necesario */
+        height: 55px; /* Ajusta la altura si lo deseas */
+        font-size: 20px; /* Tamaño de la fuente */
+        padding: 5px 10px; /* Añadir espacio dentro del campo */
+        border-radius: 5px; /* Bordes redondeados */
+        border: 1px solid #ccc; /* Borde gris claro */
+    }
 
+    /* Cambiar el color y hacer más nítida la letra del placeholder */
+    .dataTables_filter input::placeholder {
+        color: white; /* Cambiar a blanco */
+        opacity: 1; /* Asegura que el color del placeholder no sea opaco */
+        font-weight: bold; /* Hacer el texto más nítido */
+    }
+    </style>
 <div style="width: 100%;">
     <br>
 <h2 class="textoColor" align="center">Listado de Pedidos para Hoy</h2>
@@ -208,52 +225,56 @@ function cerrarConfirmacion() {
           <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
 <!-- Para la tabla de pedido-->
 <script>
-    $(document).ready( function () {
-      $('#users-list').DataTable( {
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página.",
-            "zeroRecords": "Sin Resultados! No hay pedidos agendados para Hoy.",
-            "info": "Mostrando la página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles.",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "search": "Buscar: ",
-            "paginate": {
-              "next": "Siguiente",
-              "previous": "Anterior"
-            }
+  $(document).ready(function () {
+    $('#users-list').DataTable({
+      "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Sin Resultados! No hay pedidos agendados para Hoy.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+          "next": "Siguiente",
+          "previous": "Anterior"
         }
-    } );
+      },
+      initComplete: function () {
+        // Agregar el placeholder personalizado al buscador
+        $('#users-list_filter input').attr('placeholder', 'Nro Pedido,cliente,estado,vendedor');
+      }
     });
+  });
 
-
-    // Crear un objeto Date en UTC
+  // Crear un objeto Date en UTC
   const today = new Date();
 
-// Ajustar la hora a la zona horaria de Argentina (UTC-3)
-const options = { timeZone: 'America/Argentina/Buenos_Aires', hour12: false };
-const formatter = new Intl.DateTimeFormat('es-AR', {
+  // Ajustar la hora a la zona horaria de Argentina (UTC-3)
+  const options = { timeZone: 'America/Argentina/Buenos_Aires', hour12: false };
+  const formatter = new Intl.DateTimeFormat('es-AR', {
     ...options,
     year: 'numeric', month: '2-digit', day: '2-digit'
-});
+  });
 
-const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
+  const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
 
-// Formatear la hora en formato HH:MM
-const formattedTime = new Intl.DateTimeFormat('es-AR', {
+  // Formatear la hora en formato HH:MM
+  const formattedTime = new Intl.DateTimeFormat('es-AR', {
     ...options,
     hour: '2-digit',
     minute: '2-digit'
-}).format(today);
+  }).format(today);
 
-// Establecer la fecha y hora actuales en los campos correspondientes
-// Establecer la fecha mínima y el valor predeterminado
-const fechaInput = document.getElementById('fecha');
-fechaInput.setAttribute('min', formattedDate);
-fechaInput.setAttribute('value', formattedDate);
-//Rescata la hora del input por medio del id y asigna la hora actual (Lo mismo con la fecha)
-document.getElementById('hora').value = formattedTime;
+  // Establecer la fecha y hora actuales en los campos correspondientes
+  // Establecer la fecha mínima y el valor predeterminado
+  const fechaInput = document.getElementById('fecha');
+  fechaInput.setAttribute('min', formattedDate);
+  fechaInput.setAttribute('value', formattedDate);
 
+  // Rescatar la hora del input por medio del id y asignar la hora actual
+  document.getElementById('hora').value = formattedTime;
 </script>
+
 
 
 <!-- Cartel de la funcion que actualiza los campos de Barber Hora y Servicio 

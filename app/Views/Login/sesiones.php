@@ -119,27 +119,27 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            $('#users-list').DataTable({
-                "order": [[0, "desc"]],
-                "language": {
-                    "lengthMenu": "Mostrar _MENU_ registros por página.",
-                    "zeroRecords": "Lo sentimos! No hay resultados.",
-                    "info": "Mostrando la página _PAGE_ de _PAGES_",
-                    "infoEmpty": "No hay registros disponibles.",
-                    "infoFiltered": "(filtrado de MAX registros totales)",
-                    "search": "Buscar: ",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    }
-                },
-                "pagingType": "full_numbers",
-                "responsive": true
-            });
-        });
-    </script>
+  $(document).ready(function () {
+    $('#users-list').DataTable({
+      "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página.",
+        "zeroRecords": "Lo sentimos! No hay resultados.",
+        "info": "Mostrando la página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles.",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)",
+        "search": "Buscar: ",
+        "paginate": {
+          "next": "Siguiente",
+          "previous": "Anterior"
+        }
+      },
+      initComplete: function () {
+        // Agregar el placeholder personalizado al buscador
+        $('#users-list_filter input').attr('placeholder', 'Usuairos,Estado.. ');
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
