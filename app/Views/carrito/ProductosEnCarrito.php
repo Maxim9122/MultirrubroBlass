@@ -157,12 +157,30 @@ if (!empty($session)) {
         <div class="sinProductos" style="color:#ffff; " align="center" >
             <h2>
             <?php  
-            // Si el carrito está vacio, mostrar el siguiente mensaje
-            if (empty($carrito))
-            {
-                echo 'No hay productos agregados Todavia.!';                
-            }
-            ?>
+                if (empty($carrito)) {
+                    echo 'No hay productos agregados todavía.!<br><br>';
+                    
+                    if ($id_pedido > 0 && $tipo_compra == 'Pedido' && $estado == 'Modificando') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionPedido();">
+                            Cancelar Modificación Pedido
+                        </a>
+                        <br><br>
+                    <?php 
+                    } elseif ($perfil == 3 && $tipo_compra == 'Compra_Normal' && $estado == 'Modificando') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion_Venta/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionVenta();">
+                            Cancelar Modificación Venta
+                        </a>
+                        <br><br>
+                    <?php  
+                    } elseif ($perfil == 3 && $estado == 'Modificando_SF') { ?>
+                        <a href="<?php echo base_url('cancelar_edicion_Venta_SF/' . $id_pedido); ?>" class="danger" onclick="return confirmarAccionVenta_SF();">
+                            Cancelar Cambios en Venta
+                        </a>
+                        <br><br>
+                    <?php 
+                    } 
+                } 
+                ?>
             </h2>
         </div>
    
@@ -252,7 +270,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <tr>
                             <td colspan="6" align="right">
                                 <label style="color:orange;" for="motivo_cambio">Motivo de los cambios de la Venta:</label>
-                                <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios" required>
+                                <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios">
                                 <h4 class="total_ant">Total Anterior: $
                                     <?php //Gran Total
                                     echo number_format($total_anterior, 2);
@@ -421,7 +439,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, Cancelar",
-            cancelButtonText: "Cancelar"
+            cancelButtonText: "Volver"
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "<?php echo base_url('cancelar_edicion/'.$id_pedido); ?>";

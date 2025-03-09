@@ -40,7 +40,13 @@
 
         <div id="navBar" class="navBar">
             <ul class="navList flex">
-        <?php if( ($perfil =='1')) { ?>
+
+        <?php if( ($perfil =='1')) { ?>          
+          
+          <li class="nnavItem">
+            <a href="<?= base_url('pedidos')?>" class="btn">PEDIDOS</a>
+          </li>
+       
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
           </li>

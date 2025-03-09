@@ -1,81 +1,49 @@
+<?php 
+$session = session();
+$perfil = $session->get('perfil_id');
+
+$VTO_CAE = '';
+$motivo = '';
+$total_anterior = '';
+?>
 <style>
-  /* Contenedor principal de la vista */
-  .detalle-compra-container {
-    width: 100%;
-    padding: 10px;
-  }
+  /* Estilos para las celdas de la tabla */
+.detalle-compra-tabla td {
+    color: white; /* Letra blanca */
+    font-weight: bold; /* Negrita */
+}
 
-  /* Botón de volver */
-  .detalle-compra-btn-volver {
-    display: inline-block;
-    padding: 8px 15px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    float: right;
-  }
-
-  /* Contenedor para la tabla */
-  .detalle-compra-tabla-container {
-    overflow-x: auto; /* Permite desplazamiento horizontal solo en este contenedor */
-    width: 100%;
-  }
-
-  /* Estilos específicos para la tabla */
-  .detalle-compra-tabla {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-
-  .detalle-compra-tabla th, .detalle-compra-tabla td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    color: #ffff;
-    
-  }
-
-  .detalle-compra-tabla th {
-    background-color: #333;
-    color: white;
-  }
-
-  /* Ajustes para pantallas pequeñas */
-  @media screen and (max-width: 600px) {
-    .detalle-compra-tabla th, .detalle-compra-tabla td {
-      font-size: 18px;
-      padding: 1px;
-    }
-  }
 </style>
+<br><br>
+<a class="detalle-compra-titulo btn" align="center" href="javascript:history.back()">⬅ Volver</a>
 
-<div class="detalle-compra-container" align="center">
-  
-  <?php 
-    $session = session();
-    $perfil = $session->get('perfil_id');
-    $VTO_CAE = '';
-  ?>
+<div style="clear: both;"></div>
+<br>
 
-  <a class="detalle-compra-btn-volver btn" align="center" href="javascript:history.back()">⬅ Volver</a>
+<h2 class="detalle-compra-titulo">Detalle de la Compra</h2>
+<br>
 
-  <div style="clear: both;"></div>
-  <br>
+<?php if (!empty($ventas)): ?>
+  <?php foreach ($ventas as $vta): ?>
+    <?php 
+    if ($vta['vto_cae'] != null) {
+        $VTO_CAE = date('d-m-Y', strtotime($vta['vto_cae']));
+    }
+    if (!empty($vta['motivo'])) {
+        $motivo = $vta['motivo'];
+    }
+    if (!empty($vta['total_anterior'])) {
+        $total_anterior = $vta['total_anterior'];
+    }
+    if (!empty($vta['total_venta'])) {
+      $total_actual = $vta['total_venta'];
+    }
+    ?>
+  <?php endforeach; ?>
+<?php endif; ?>
 
-  <h2 class="detalle-compra-titulo">Detalle de la Compra</h2>
-  <br>
-  <?php if (!empty($ventas)): ?>
-    <?php foreach ($ventas as $vta): ?>
-      <?php if($vta['vto_cae'] != null){ ?>
-        <?php $VTO_CAE = date('d-m-Y', strtotime($vta['vto_cae'])); ?> 
-        <?php break; // Salir del bucle después del primer elemento ?>
-        <?php  } ?>
-      <?php endforeach; ?>
-      <?php endif; ?>
-
-<?php if($VTO_CAE != null){ ?>
+<!-- Mostrar solo si existe un CAE -->
+<?php if ($VTO_CAE != ''): ?>
   <table class="comprados detalle-compra-tabla">
     <thead>
       <tr>
@@ -85,55 +53,76 @@
       </tr>
     </thead>
     <tbody>
-    <?php if (!empty($ventas)): ?>
-      <?php foreach ($ventas as $vta): ?>
       <tr>
-         
           <td><?php echo $vta['id_cae']; ?></td>
           <td><?php echo $vta['cae']; ?></td>                   
           <td><?php echo $VTO_CAE; ?></td>
-        
       </tr>
-      <?php break; // Salir del bucle después del primer elemento ?>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <tr>
-          <td colspan="3">No hay datos disponibles</td>
-      </tr>
-    <?php endif; ?>
     </tbody>
   </table>
-  <?php  } ?>
+<?php endif; ?>
 
+<!-- Mostrar motivo si existe -->
+<?php if ($motivo != ''): ?>
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Venta Modificada sin Facturar (Modificada_SF) Motivo:</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+          <td class="color"><?php echo $motivo; ?></td>
+      </tr>
+    </tbody>
+  </table>
+<?php endif; ?>
 
-  <br>
-  <div class="detalle-compra-tabla-container">
-    <table class="detalle-compra-tabla comprados">
-      <thead>
-        <tr>
-          <th>ID Producto</th>
-          <th>Nombre</th>
-          <th>Cantidad Comprada</th>
-          <th>Precio Unitario</th>
-          <th>Total x Producto</th>          
-        </tr>
-      </thead>
-      <tbody>
-        <?php if ($ventas): ?>
-          <?php foreach ($ventas as $vta): ?>
-            <tr>
-              <td><?php echo $vta['id']; ?></td>
-              <td><?php echo $vta['nombre']; ?></td>
-              <td><?php echo $vta['cantidad']; ?></td>
-              <td><?php echo $vta['precio']; ?></td>
-              <td><?php echo $vta['total']; ?></td>
-              
-            </tr>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </tbody>
-    </table>
-  </div>
+<!-- Mostrar total anterior si existe -->
+<?php if ($total_anterior != ''): ?>
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Total Anterior</th>
+          <th>Total Actual</th>
+      </tr>
+      <br>
+    </thead>
+    <tbody>
+      <tr>
+          <td>$ <?php echo $total_anterior; ?></td>
+          <td>$ <?php echo $total_actual; ?></td>
+      </tr>
+    </tbody>
+  </table>
+<?php endif; ?>
 
-  <br>
+<br>
+<div class="detalle-compra-tabla-container">
+  <table class="detalle-compra-tabla comprados">
+    <thead>
+      <tr>
+        <th>ID Producto</th>
+        <th>Nombre</th>
+        <th>Cantidad Comprada</th>
+        <th>Precio Unitario</th>
+        <th>Total x Producto</th>          
+      </tr>
+    </thead>
+    <tbody>
+      <?php if ($ventas): ?>
+        <?php foreach ($ventas as $vta): ?>
+          <tr>
+            <td><?php echo $vta['id']; ?></td>
+            <td><?php echo $vta['nombre']; ?></td>
+            <td><?php echo $vta['cantidad']; ?></td>
+            <td>$ <?php echo $vta['precio']; ?></td>
+            <td>$ <?php echo $vta['total']; ?></td>
+          </tr>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </tbody>
+  </table>
 </div>
+
+<br>
