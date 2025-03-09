@@ -267,7 +267,7 @@ public function ListCompraDetalle($id)
 			$cart->destroy();
 		}
 		else //Sino destruye sola fila seleccionada
-		{
+		{               
 			session()->setFlashdata('msg','Producto Eliminado');
             // Actualiza los datos
 			$cart->remove($rowid);
@@ -283,55 +283,56 @@ public function ListCompraDetalle($id)
      //Actualizamos los importes del carrito y cantidades   
         if ($accion == 'actualizar') {
             
-        $session = session();
-        $id_pedido = $session->get('id_pedido');
-            //print_r($id_pedido);
-            //exit;
-        $cart = \Config\Services::cart();
-        $cart_info = $this->request->getPost('cart');
-
-        $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model = new Productos_model();
-
-        foreach ($cart_info as $id => $carrito) {   
-        $id_producto = $carrito['id'];
-
-        // Obtener el stock actual desde la base de datos
-        $producto = $Producto_model->find($id_producto);
-        $stock_actual = $producto['stock'];
-
-        // Obtener la cantidad que ya estaba reservada en la venta anterior
-        $cantidad_reservada = $VentaDetalle_model
-            ->where('venta_id', $id_pedido)
-            ->where('producto_id', $id_producto)
-            ->select('cantidad')
-            ->get()
-            ->getRowArray()['cantidad'] ?? 0;
-
-        // Calcular el stock disponible para esta modificación
-        $stock_disponible = $stock_actual + $cantidad_reservada;
-
-        $rowid = $carrito['rowid'];
-        $price = $carrito['price'];
-        $amount = $price * $carrito['qty'];
-        $qty = $carrito['qty'];
-
-        // Validar contra el stock disponible, considerando lo ya reservado
-        if ($qty <= $stock_disponible && $qty >= 1) { 
-            $cart->update([
-                'rowid'   => $rowid,
-                'price'   => $price,
-                'amount'  => $amount,
-                'qty'     => $qty
-            ]);	    	
-        } else {
-            session()->setFlashdata('msgEr', 'La cantidad solicitada de algunos productos no está disponible o seleccionaste 0.');
-        }
-        }
-
+            $session = session();
+            $id_pedido = $session->get('id_pedido');
+            
+            $cart = \Config\Services::cart();
+            $cart_info = $this->request->getPost('cart');
+            
+            $VentaDetalle_model = new VentaDetalle_model();
+            $Producto_model = new Productos_model();
+        
+                foreach ($cart_info as $id => $carrito) {   
+                    $id_producto = $carrito['id'];
+            
+                    // Obtener el stock actual desde la base de datos
+                    $producto = $Producto_model->find($id_producto);
+                    $stock_actual = $producto['stock'];
+            
+                    // Obtener la cantidad reservada en la venta anterior
+                    $cantidad_reservada = $VentaDetalle_model
+                        ->where('venta_id', $id_pedido)
+                        ->where('producto_id', $id_producto)
+                        ->select('cantidad')
+                        ->get()
+                        ->getRowArray()['cantidad'] ?? 0;
+            
+                    // Calcular el stock disponible
+                    $stock_disponible = $stock_actual + $cantidad_reservada;
+            
+                    $rowid = $carrito['rowid'];
+                    $price = $carrito['price'];
+                    $amount = $price * $carrito['qty'];
+                    $qty = $carrito['qty'];
+            
+                    // Validar contra el stock disponible
+                    if ($qty <= $stock_disponible && $qty >= 1) { 
+                        $cart->update([
+                            'rowid'   => $rowid,
+                            'price'   => $price,
+                            'amount'  => $amount,
+                            'qty'     => $qty
+                        ]);    	
+                    } else {
+                        session()->setFlashdata('msgEr', 'La cantidad solicitada de algunos productos no está disponible o seleccionaste 0.');
+                    }
+                }
+             
+            
         session()->setFlashdata('msg', 'Carrito Actualizado!');
-        // Redirige a la misma página que se encuentra
+            // Redirige a la misma página que se encuentra
         return redirect()->to(base_url('CarritoList'));
+            
 
 
 //Esta parte es para avanzar a CasiListo primero vuelve a validar el $cart

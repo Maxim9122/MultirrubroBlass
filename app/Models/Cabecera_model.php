@@ -151,7 +151,7 @@ class Cabecera_model extends Model
     }
  
     public function getDetallesVenta($idVenta)
-{
+    {
     $db = db_connect();
     $builder = $db->table('ventas_detalle u');
     
@@ -160,11 +160,14 @@ class Cabecera_model extends Model
         d.nombre, 
         u.cantidad, 
         u.precio, 
-        u.total, 
+        u.total,
+        v.total_venta, 
+        v.motivo,
+        v.total_anterior,
         c.id_cae, 
         c.cae, 
         c.vto_cae
-    ');
+                  ');
     
     $builder->where('u.venta_id', $idVenta);
     
