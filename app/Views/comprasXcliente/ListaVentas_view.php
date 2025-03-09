@@ -201,10 +201,13 @@
 
 /* Botón de Cierre */
 .cerrar {
+    margin-top:-17px;
+    margin-right:-10px;
     float: right;
     font-size: 30px;
     cursor: pointer;
-    color: white;
+    color: red;
+    font-weight: bold;
 }
 
 /* Estilo del Input */
@@ -226,15 +229,16 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 15px;
     cursor: pointer;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Efecto 3D */
     transition: all 0.2s ease-in-out;
+    font-weight: bold;
 }
 
 .btn-confirmar:hover {
     background: linear-gradient(to bottom, #909090 0%, #606060 100%);
-    transform: translateY(2px); /* Efecto de presión */
+    transform: translateY(3px); /* Efecto de presión */
 }
 </style>
 
