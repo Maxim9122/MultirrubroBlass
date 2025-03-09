@@ -68,7 +68,7 @@ class Login_controller extends Controller
                 }else if($ses_data['perfil_id'] == 3){
                 return redirect()->to('caja');
                 }else{
-                return redirect()->to('/Lista_Productos');   
+                return redirect()->to('compras');   
                 }
             }}else{
                 $session->setFlashdata('msg', 'Password Incorrecta');
@@ -93,20 +93,7 @@ class Login_controller extends Controller
         if($estado == 'Modificando' && $tipo_compra == 'Pedido'){
         $cart = \Config\Services::cart();
         $Cabecera_model = new Cabecera_model();
-        $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model = new Productos_model();
-
-        // Obtener detalles de los productos de la venta anterior
-        $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-        
-        foreach ($detalles_venta_anterior as $detalle) {
-            // Restaurar el stock de los productos
-            $producto = $Producto_model->find($detalle['producto_id']);
-            if ($producto) {
-                $stock_edit = $producto['stock'] - $detalle['cantidad'];
-                $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
-            }
-        }        
+             
         // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
         $session = session();
         $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
@@ -119,20 +106,7 @@ class Login_controller extends Controller
         if($estado == 'Modificando' && $tipo_compra == 'Compra_Normal'){
             $cart = \Config\Services::cart();
             $Cabecera_model = new Cabecera_model();
-            $VentaDetalle_model = new VentaDetalle_model();
-            $Producto_model = new Productos_model();
-
-            // Obtener detalles de los productos de la venta anterior
-            $detalles_venta_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-            
-            foreach ($detalles_venta_anterior as $detalle) {
-                // Restaurar el stock de los productos
-                $producto = $Producto_model->find($detalle['producto_id']);
-                if ($producto) {
-                    $stock_edit = $producto['stock'] - $detalle['cantidad'];
-                    $Producto_model->update($detalle['producto_id'], ['stock' => $stock_edit]);
-                }
-            }  
+           
             $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
             $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         }

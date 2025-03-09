@@ -111,9 +111,9 @@ endif;
             <tr>
             <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
             <td style="color: #ffff;">
-                <strong id="totalCompra">
-                    $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2); ?>
-                </strong>
+            <strong id="totalCompra">
+                $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, ',', '.'); ?>
+            </strong>
             </td>
             </tr>
             <tr>
@@ -141,7 +141,7 @@ endif;
                 </td>
                  </tr>
                      
-                 <?php if ($perfil == 3): ?>
+                 <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
                  <tr>
                 <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
                 <td>
@@ -160,7 +160,12 @@ endif;
                 <td style="color: rgb(192, 250, 214);"><strong>Tipo de Compra o Pedido:</strong></td>
                 <td>
                 <select name="tipo_compra" id="tipoCompra" class="selector">
-                    <?php if ($tipo_compra == 'Compra_Normal' || $estado == 'Cobrando') {  ?>
+                <?php if ($estado == 'Cobrando') {  ?>
+                    <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>
+                    <?php echo $estado; ?> -> <?php echo $tipo_compra; ?>
+                    </option>
+
+                    <?php } else if ($tipo_compra == 'Compra_Normal') {  ?>
                         <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>Compra Normal</option>  
             
                     <?php } else if ($tipo_compra == 'Pedido') {  ?>
@@ -426,13 +431,20 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         const montoEfectivoConDescuento = faltaPagar / 1.1; // Aplica el 10% de descuento
 
         // Muestra el monto en efectivo con descuento
-        document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { minimumFractionDigits: 2 });
+        document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
 
         // Si no se ingresa monto en transferencia, el monto en efectivo es el total con descuento
         if (pagoTransferencia === 0) {
             const totalConDescuento = totalVenta / 1.1;
-            document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { minimumFractionDigits: 2 });
+            document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
         }
+
     }
 </script>
 

@@ -126,12 +126,14 @@
                         Imp.Ticket
                     </a>
                 </li>
-                <?php if($estado == '') {?>
-            <li>                
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px;  padding:8px;" href="<?php echo base_url('modificarVenta_SF/'.$vta['id']); ?>">
+                <?php if($estado == '' && $perfil == 3) {?>
+                    <li>                
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" 
+                    href="#" onclick="abrirModal('<?php echo base_url('modificarVenta_SF/'.$vta['id']); ?>'); return false;">
                         Modificar
                     </a>                
-            </li>
+                    </li>
+
                 <?php  } ?>
             <li>      
                 <?php } if($vta['estado'] == 'Error_factura') { ?>
@@ -158,6 +160,129 @@
   </div>
 </div>
 </section>
+
+
+<!-- Modal -->
+<div id="modalCodigo" class="modal">
+    <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal()">&times;</span>
+        <h2 style="color: white;">Ingrese Código de Autorización</h2>
+        <input type="password" id="codigoInput" placeholder="Ingrese el código">
+        <button class="btn-confirmar" onclick="verificarCodigo()">Confirmar</button>
+    </div>
+</div>
+
+<style>
+/* Estilos del Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(53, 51, 51, 0.5);
+}
+
+/* Contenedor del Modal */
+.modal-contenido {
+    background-color: rgba(63, 117, 86, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid white; /* Borde blanco */
+}
+
+/* Botón de Cierre */
+.cerrar {
+    float: right;
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Estilo del Input */
+#codigoInput {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 2px solid white;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Botón Confirmar con efecto 3D */
+.btn-confirmar {
+    background: linear-gradient(to bottom, #808080 0%, #505050 100%);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Efecto 3D */
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-confirmar:hover {
+    background: linear-gradient(to bottom, #909090 0%, #606060 100%);
+    transform: translateY(2px); /* Efecto de presión */
+}
+</style>
+
+
+<script>
+let urlRedireccion = ""; // Para almacenar la URL de redirección
+
+function abrirModal(url) {
+    urlRedireccion = url; // Guarda la URL a la que se redirigirá después
+    document.getElementById("modalCodigo").style.display = "block";
+    document.getElementById("codigoInput").value = ""; // Limpia el input
+    document.getElementById("codigoInput").focus(); // Enfoca el campo de entrada
+}
+
+function cerrarModal() {
+    document.getElementById("modalCodigo").style.display = "none";
+}
+
+function verificarCodigo() {
+    const codigoCorrecto = "7791293043746"; // Código correcto (puedes hacerlo dinámico desde el backend)
+    const codigoIngresado = document.getElementById("codigoInput").value.trim();
+
+    if (codigoIngresado === codigoCorrecto) {
+        window.location.href = urlRedireccion; // Redirige si el código es correcto
+    } else {
+        alert("Código incorrecto. Intente de nuevo.");
+    }
+}
+
+// Permitir que presionar "Enter" envíe el código automáticamente
+document.getElementById("codigoInput").addEventListener("keyup", function(event) {
+    if (event.key === "Enter") { // Detecta la tecla "Enter"
+        verificarCodigo();
+    }
+});
+
+// Cerrar modal al hacer clic fuera del contenido
+window.onclick = function(event) {
+    const modal = document.getElementById("modalCodigo");
+    if (event.target === modal) {
+        cerrarModal();
+    }
+};//FIN DEL CARTEL DE AUTORIZACION POR CODIGO
+</script>
+
+
+
+
 
 <style>
   @media (max-width: 768px) { /* Aplica cambios en pantallas pequeñas */
@@ -215,10 +340,6 @@
 
   const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
 </script>
-
-
-
-
 
 
 <br><br>
