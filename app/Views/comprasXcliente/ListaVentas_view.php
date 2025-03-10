@@ -65,6 +65,7 @@
             <option value="">Todos</option>
             <option value="Facturada" <?= ($filtros['estado'] ?? '') == 'Facturada' ? 'selected' : '' ?>>Facturada</option>
             <option value="Sin_Facturar" <?= ($filtros['estado'] ?? '') == 'Sin_Facturar' ? 'selected' : '' ?>>Sin_Facturar</option>
+            <option value="Modificada_SF" <?= ($filtros['estado'] ?? '') == 'Modificada_SF' ? 'selected' : '' ?>>Modificada_SF</option>
             <option value="Error_factura" <?= ($filtros['estado'] ?? '') == 'Error_factura' ? 'selected' : '' ?>>Error_factura</option>
             <option value="Cancelado" <?= ($filtros['estado'] ?? '') == 'Cancelado' ? 'selected' : '' ?>>Cancelada</option>
         </select>
