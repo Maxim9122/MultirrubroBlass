@@ -118,7 +118,7 @@
                 </a>
             </li>
              <li>
-                <?php if($p['estado'] == 'Pendiente' && $estado == ''){?>
+                <?php if(($perfil == 3 || $perfil == 2) && $estado == ''){?>
                 <a href="<?php echo base_url('cargar_pedido/'.$p['id']); ?>">
                     ✏️ Modificar
                 </a>

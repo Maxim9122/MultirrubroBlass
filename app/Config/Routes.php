@@ -45,6 +45,8 @@ $routes->get('cobrarPedido/(:num)', 'Caja_controller::CargarVenta/$1');
 //Venta Sin Facturar
 $routes->get('modificarVenta_SF/(:num)', 'Caja_controller::cargar_Venta_Sin_Facturar/$1');
 $routes->get('cancelar_edicion_Venta_SF/(:num)', 'Caja_controller::cancelar_edicion_Venta_SF/$1');
+//Verificacion de codigo de acceso
+$routes->post('verificar-codigo', 'Caja_controller::verificarCodigo');
 
 //Todo sobre Pedidos
 $routes->get('cancelar_edicion/(:num)', 'Pedidos_controller::cancelar_edicion/$1');

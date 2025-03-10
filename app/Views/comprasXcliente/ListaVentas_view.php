@@ -8,12 +8,24 @@
         <div id="flash-message" class="flash-message success">
             <?= session()->getFlashdata('msg') ?>
         </div>
-    <?php endif; ?>   
+    <?php endif; ?> 
+
+    <?php if (session("msgEr")): ?>
+    <div id="flash-message-Error" class="flash-message danger">
+        <?php echo session("msgEr"); ?>
+        <button class="close-btn" onclick="cerrarMensaje()">×</button>
+    </div>
+    <?php endif; ?>  
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
+
+        function cerrarMensaje() {
+        document.getElementById("flash-message-Error").style.display = "none";
+        }
     </script>
+    
     <style>
          /* Hacer el campo de búsqueda más largo y ancho */
     .dataTables_filter input {
@@ -258,19 +270,27 @@ function cerrarModal() {
 }
 
 function verificarCodigo() {
-    const codigoCorrecto = "7791293043746"; // Código correcto (puedes hacerlo dinámico desde el backend)
     const codigoIngresado = document.getElementById("codigoInput").value.trim();
 
-    if (codigoIngresado === codigoCorrecto) {
-        window.location.href = urlRedireccion; // Redirige si el código es correcto
-    } else {
-        alert("Código incorrecto. Intente de nuevo.");
-    }
+    fetch("<?= base_url('verificar-codigo') ?>", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `codigo=${codigoIngresado}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = urlRedireccion; // Redirige si el código es correcto
+        } else {
+            alert(data.message); // Mensaje desde el backend
+        }
+    })
+    .catch(error => console.error("Error en la verificación:", error));
 }
 
 // Permitir que presionar "Enter" envíe el código automáticamente
 document.getElementById("codigoInput").addEventListener("keyup", function(event) {
-    if (event.key === "Enter") { // Detecta la tecla "Enter"
+    if (event.key === "Enter") { 
         verificarCodigo();
     }
 });
@@ -281,9 +301,8 @@ window.onclick = function(event) {
     if (event.target === modal) {
         cerrarModal();
     }
-};//FIN DEL CARTEL DE AUTORIZACION POR CODIGO
+};
 </script>
-
 
 
 
