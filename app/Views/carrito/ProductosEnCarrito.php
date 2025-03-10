@@ -6,13 +6,18 @@
         <?= session()->getFlashdata('msg') ?>
     </div>
 <?php endif; ?>
+
 <?php if (session("msgEr")): ?>
-    <div id="flash-message-danger" class="flash-message danger">
-        <?= session("msgEr"); ?>
+    <div id="flash-message-Error" class="flash-message danger">
+        <?php echo nl2br(session("msgEr")); ?>
+        <button class="close-btn" onclick="cerrarMensaje()">×</button>
     </div>
-<?php endif; ?>
+<?php endif; ?> 
 
 <script>
+    function cerrarMensaje() {
+        document.getElementById("flash-message-Error").style.display = "none";
+    }
     // Ocultar mensaje de éxito después de 3 segundos
     setTimeout(function() {
         const successMessage = document.getElementById('flash-message-success');
@@ -34,6 +39,11 @@
 <br>
 
 <style>
+@media (max-width: 768px) { /* Para dispositivos con ancho menor o igual a 768px (tablets y teléfonos) */
+    .ocultar-en-movil {
+        display: none;
+    }
+}
 
     /* Estilos generales de la tabla del carrito */
 .tabla-carrito {
@@ -196,7 +206,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             if ($carrito):
             ?>
                 <tr class=" colorTexto2"  >
-                    <td>ID</td>
+                    <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
                     <td>Precio</td>
                     <td>Cantidad</td>
@@ -218,14 +228,14 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
             ?>
                     <tr style="color: black;" >
                         
-                        <td  class="separador" style="color: #ffff;">
+                        <td  class="separador ocultar-en-movil" style="color: #ffff;">
                             <?php echo $i++; ?>
                         </td>
                         <td class="separador" style="color: #ffff;">
                             <?php echo $item['name']; ?>
                         </td>
                         <td class="separador"  style="color: #ffff;">
-                        $ARS <?php  echo number_format($item['price'], 2);?>
+                        $ <?php  echo number_format($item['price'], 2);?>
                         </td>
                         
                         <td class="separador" style="color: #ffff;">
@@ -250,7 +260,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
                         <td class="separador" style="color: #ffff;">
-                        $ARS <?php echo number_format($item['subtotal'], 2) ?>
+                        $ <?php echo number_format($item['subtotal'], 2) ?>
                         </td>
                         <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
@@ -283,6 +293,8 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                     <option value="Efectivo">Efectivo</option>
                                 </select>                                
                                 <h4 class="total_ant" id="diferencia">Diferencia: $<?php echo number_format($gran_total - $total_anterior, 2); ?></h4>
+                                <br>
+                                <h4 style="color:orange;">Si el Resto es Negativo, significa que es dinero a favor del Cliente.</h4>
                             </td>       
                         </tr>
                     <?php endif; ?>

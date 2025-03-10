@@ -14,6 +14,18 @@ class Caja_controller extends Controller{
 	public function __construct(){
            helper(['form', 'url']);
 	}
+//verificacion de codigo de acceso
+    public function verificarCodigo()
+    {
+        $codigoCorrecto = "7791293043746"; // Código estático en el backend
+        $codigoIngresado = $this->request->getPost('codigo');
+
+        if ($codigoIngresado === $codigoCorrecto) {
+            return $this->response->setJSON(['success' => true]);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Código incorrecto. Intente de nuevo.']);
+        }
+    }
 
     //Vista para el cajero
     public function Caja(){
@@ -334,7 +346,7 @@ public function cancelar_edicion_Venta_SF($id_pedido){
     //print_r($estado);
     //exit;   
     
-    if($tiene_saldo_anterior != 0){ 
+    if($tiene_saldo_anterior != 0 || $tiene_saldo_anterior != null){ 
         $Cabecera_model->update($id_pedido, ['estado' => 'Modificada_SF']);
     }else {
         $Cabecera_model->update($id_pedido, ['estado' => 'Sin_Facturar']);

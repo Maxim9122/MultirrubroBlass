@@ -292,42 +292,53 @@ public function ListCompraDetalle($id)
             $VentaDetalle_model = new VentaDetalle_model();
             $Producto_model = new Productos_model();
         
-                foreach ($cart_info as $id => $carrito) {   
-                    $id_producto = $carrito['id'];
-            
-                    // Obtener el stock actual desde la base de datos
-                    $producto = $Producto_model->find($id_producto);
-                    $stock_actual = $producto['stock'];
-            
-                    // Obtener la cantidad reservada en la venta anterior
-                    $cantidad_reservada = $VentaDetalle_model
-                        ->where('venta_id', $id_pedido)
-                        ->where('producto_id', $id_producto)
-                        ->select('cantidad')
-                        ->get()
-                        ->getRowArray()['cantidad'] ?? 0;
-            
-                    // Calcular el stock disponible
-                    $stock_disponible = $stock_actual + $cantidad_reservada;
-            
-                    $rowid = $carrito['rowid'];
-                    $price = $carrito['price'];
-                    $amount = $price * $carrito['qty'];
-                    $qty = $carrito['qty'];
-            
-                    // Validar contra el stock disponible
-                    if ($qty <= $stock_disponible && $qty >= 1) { 
-                        $cart->update([
-                            'rowid'   => $rowid,
-                            'price'   => $price,
-                            'amount'  => $amount,
-                            'qty'     => $qty
-                        ]);    	
-                    } else {
-                        session()->setFlashdata('msgEr', 'La cantidad solicitada de algunos productos no está disponible o seleccionaste 0.');
-                    }
-                }
-             
+                //Array para guardar todos los productos que tengan stock no disponible
+            $errores_stock = [];
+            foreach ($cart_info as $id => $carrito) {   
+            $id_producto = $carrito['id'];
+
+            // Obtener el stock actual desde la base de datos
+            $producto = $Producto_model->find($id_producto);
+            $stock_actual = $producto['stock'];
+            $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+
+            // Obtener la cantidad que ya estaba reservada en la venta anterior
+            $cantidad_reservada = $VentaDetalle_model
+                ->where('venta_id', $id_pedido)
+                ->where('producto_id', $id_producto)
+                ->select('cantidad')
+                ->get()
+                ->getRowArray()['cantidad'] ?? 0;
+
+            // Calcular el stock disponible para esta modificación
+            $stock_disponible = $stock_actual + $cantidad_reservada;
+
+            $rowid = $carrito['rowid'];
+            $price = $carrito['price'];
+            $amount = $price * $carrito['qty'];
+            $qty = $carrito['qty'];
+
+            // Validar contra el stock disponible, considerando lo ya reservado
+            if ($qty <= $stock_disponible && $qty >= 1) { 
+                $cart->update([
+                    'rowid'   => $rowid,
+                    'price'   => $price,
+                    'amount'  => $amount,
+                    'qty'     => $qty
+                ]);	    	
+            } else {
+                // Agregar el producto a la lista de errores
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+            }                
+            }
+
+            // Si hay errores de stock, mostrar mensaje y redirigir
+            if (!empty($errores_stock)) {
+                $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
+                session()->setFlashdata('msgEr', $mensaje_error);
+                return redirect()->to('CarritoList');
+            }
+        
             
         session()->setFlashdata('msg', 'Carrito Actualizado!');
             // Redirige a la misma página que se encuentra
@@ -347,92 +358,121 @@ public function ListCompraDetalle($id)
             $VentaDetalle_model = new VentaDetalle_model();
             $Producto_model = new Productos_model();
 
-            foreach( $cart_info as $id => $carrito)
-            {   
-                $id_producto = $carrito['id'];
+            //Array para guardar todos los productos que tengan stock no disponible
+            $errores_stock = [];
+            foreach ($cart_info as $id => $carrito) {   
+            $id_producto = $carrito['id'];
 
-                // Obtener el stock actual desde la base de datos
-                $producto = $Producto_model->find($id_producto);
-                $stock_actual = $producto['stock'];
+            // Obtener el stock actual desde la base de datos
+            $producto = $Producto_model->find($id_producto);
+            $stock_actual = $producto['stock'];
+            $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
 
-                // Obtener la cantidad que ya estaba reservada en la venta anterior
-                $cantidad_reservada = $VentaDetalle_model
-                    ->where('venta_id', $id_pedido)
-                    ->where('producto_id', $id_producto)
-                    ->select('cantidad')
-                    ->get()
-                    ->getRowArray()['cantidad'] ?? 0;
+            // Obtener la cantidad que ya estaba reservada en la venta anterior
+            $cantidad_reservada = $VentaDetalle_model
+                ->where('venta_id', $id_pedido)
+                ->where('producto_id', $id_producto)
+                ->select('cantidad')
+                ->get()
+                ->getRowArray()['cantidad'] ?? 0;
 
-                // Calcular el stock disponible para esta modificación
-                $stock_disponible = $stock_actual + $cantidad_reservada;
+            // Calcular el stock disponible para esta modificación
+            $stock_disponible = $stock_actual + $cantidad_reservada;
 
-                $rowid = $carrito['rowid'];
-                $price = $carrito['price'];
-                $amount = $price * $carrito['qty'];
-                $qty = $carrito['qty'];
+            $rowid = $carrito['rowid'];
+            $price = $carrito['price'];
+            $amount = $price * $carrito['qty'];
+            $qty = $carrito['qty'];
 
-                // Validar contra el stock disponible, considerando lo ya reservado
-                if ($qty <= $stock_disponible && $qty >= 1) { 
-                    $cart->update([
-                        'rowid'   => $rowid,
-                        'price'   => $price,
-                        'amount'  => $amount,
-                        'qty'     => $qty
-                    ]);	    	
-                } else {
-                    // Si hay un error de stock, marca la variable de error y guarda el mensaje
-                    $errores_stock = true;
-                    session()->setFlashdata('msgEr','La Cantidad Solicitada de algunos productos no estan disponibles o SELECCIONASTE 0!');
-                }                
-                
+            // Validar contra el stock disponible, considerando lo ya reservado
+            if ($qty <= $stock_disponible && $qty >= 1) { 
+                $cart->update([
+                    'rowid'   => $rowid,
+                    'price'   => $price,
+                    'amount'  => $amount,
+                    'qty'     => $qty
+                ]);	    	
+            } else {
+                // Agregar el producto a la lista de errores
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+            }                
             }
-            
-            // Si hubo errores de stock, redirige a la página de carrito
-            if ($errores_stock) {
-            return redirect()->to(base_url('CarritoList'));
+
+            // Si hay errores de stock, mostrar mensaje y redirigir
+            if (!empty($errores_stock)) {
+                $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
+                session()->setFlashdata('msgEr', $mensaje_error);
+                return redirect()->to('CarritoList');
             }
+        
             // Redirige a la página de confirmacion de compra si los calculos de stock estan bien.
             return redirect()->to(base_url('casiListo'));
 
 //Si el proceso es de una Venta que se esta modificando entra aqui.
         } elseif ($accion == 'modificar') {
-            
+        $Producto_model = new Productos_model();
+        $VentaDetalle_model = new VentaDetalle_model();
         $session = session();
         $cart = \Config\Services::cart();
-
-    // Inicializar la variable para la suma total de la venta
-        $total_venta = 0;
-
-        // Recorrer el carrito y calcular el total
-        foreach ($cart->contents() as $item) {
-            $total_venta += $item['subtotal']; // Sumar cada subtotal (precio * cantidad)
-        }
+    
     // Recibe los datos del carrito, calcula y actualiza
         $cart_info = $this->request->getPost('cart');
         $id_pedido = $session->get('id_pedido');
-    // **CONTROL DE STOCK ANTES DE PROCESAR LA COMPRA MODIFICADA**
-        foreach ($cart->contents() as $item) {
-            $Producto_model = new Productos_model();
-            $producto = $Producto_model->find($item['id']); 
-            $VentaDetalle_model = new VentaDetalle_model();
-            // Obtener la cantidad reservada en el pedido anterior
-            $cantidad_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)
-                                                    ->where('producto_id', $item['id'])
-                                                    ->select('cantidad')
-                                                    ->first();
-            $cantidad_anterior = $cantidad_anterior ? $cantidad_anterior['cantidad'] : 0;
         
-            // Calcular el stock disponible real
-            $stock_disponible = $producto['stock'] + $cantidad_anterior;
-        
-            // Validar que la cantidad nueva no exceda el stock disponible
-            if (!$producto || $stock_disponible < $item['qty']) {
-                session()->setFlashdata('msgEr', "Stock insuficiente para {$item['name']} (Stock disponible: {$stock_disponible}).");
-                return redirect()->to('CarritoList');
-            }
-        }
+    //Array para guardar todos los productos que tengan stock no disponible
+    $errores_stock = [];
+    foreach ($cart_info as $id => $carrito) {   
+       $id_producto = $carrito['id'];
 
+       // Obtener el stock actual desde la base de datos
+       $producto = $Producto_model->find($id_producto);
+       $stock_actual = $producto['stock'];
+       $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+
+       // Obtener la cantidad que ya estaba reservada en la venta anterior
+       $cantidad_reservada = $VentaDetalle_model
+           ->where('venta_id', $id_pedido)
+           ->where('producto_id', $id_producto)
+           ->select('cantidad')
+           ->get()
+           ->getRowArray()['cantidad'] ?? 0;
+
+       // Calcular el stock disponible para esta modificación
+       $stock_disponible = $stock_actual + $cantidad_reservada;
+
+       $rowid = $carrito['rowid'];
+       $price = $carrito['price'];
+       $amount = $price * $carrito['qty'];
+       $qty = $carrito['qty'];
+
+       // Validar contra el stock disponible, considerando lo ya reservado
+       if ($qty <= $stock_disponible && $qty >= 1) { 
+           $cart->update([
+               'rowid'   => $rowid,
+               'price'   => $price,
+               'amount'  => $amount,
+               'qty'     => $qty
+           ]);	    	
+       } else {
+           // Agregar el producto a la lista de errores
+           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+       }                
+       }
+
+       // Si hay errores de stock, mostrar mensaje y redirigir
+       if (!empty($errores_stock)) {
+           $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
+           session()->setFlashdata('msgEr', $mensaje_error);
+           return redirect()->to('CarritoList');
+       }
         
+       // Inicializar la variable para la suma total de la venta
+       $total_venta = 0;
+
+       // Recorrer el carrito y calcular el total
+       foreach ($cart->contents() as $item) {
+           $total_venta += $item['subtotal']; // Sumar cada subtotal (precio * cantidad)
+       }
 
         $id_vendedor = $session->get('id_vendedor');
         $id_cliente = $session->get('id_cliente');        
@@ -516,6 +556,7 @@ public function ListCompraDetalle($id)
             $VentaDetalle_model = new VentaDetalle_model();
             $cart = \Config\Services::cart();           
             $session = session();
+           
             // Recibe los datos del carrito, calcula y actualiza
             $cart_info = $this->request->getPost('cart');
             $motivo = $this->request->getPost('motivo_modif');            
@@ -524,42 +565,52 @@ public function ListCompraDetalle($id)
             $id_pedido = $session->get('id_pedido');
             $tipo_pago_Modif = '';
 
+            //Array para guardar todos los productos que tengan stock no disponible
+            $errores_stock = [];
+         foreach ($cart_info as $id => $carrito) {   
+            $id_producto = $carrito['id'];
 
-            foreach ($cart_info as $id => $carrito) {   
-                $id_producto = $carrito['id'];
-        
-                // Obtener el stock actual desde la base de datos
-                $producto = $Producto_model->find($id_producto);
-                $stock_actual = $producto['stock'];
-        
-                // Obtener la cantidad que ya estaba reservada en la venta anterior
-                $cantidad_reservada = $VentaDetalle_model
-                    ->where('venta_id', $id_pedido)
-                    ->where('producto_id', $id_producto)
-                    ->select('cantidad')
-                    ->get()
-                    ->getRowArray()['cantidad'] ?? 0;
-        
-                // Calcular el stock disponible para esta modificación
-                $stock_disponible = $stock_actual + $cantidad_reservada;
-        
-                $rowid = $carrito['rowid'];
-                $price = $carrito['price'];
-                $amount = $price * $carrito['qty'];
-                $qty = $carrito['qty'];
-        
-                // Validar contra el stock disponible, considerando lo ya reservado
-                if ($qty <= $stock_disponible && $qty >= 1) { 
-                    $cart->update([
-                        'rowid'   => $rowid,
-                        'price'   => $price,
-                        'amount'  => $amount,
-                        'qty'     => $qty
-                    ]);	    	
-                } else {
-                    session()->setFlashdata('msgEr', 'La cantidad solicitada de algunos productos no está disponible o seleccionaste 0.');
-                }
-                }
+            // Obtener el stock actual desde la base de datos
+            $producto = $Producto_model->find($id_producto);
+            $stock_actual = $producto['stock'];
+            $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+
+            // Obtener la cantidad que ya estaba reservada en la venta anterior
+            $cantidad_reservada = $VentaDetalle_model
+                ->where('venta_id', $id_pedido)
+                ->where('producto_id', $id_producto)
+                ->select('cantidad')
+                ->get()
+                ->getRowArray()['cantidad'] ?? 0;
+
+            // Calcular el stock disponible para esta modificación
+            $stock_disponible = $stock_actual + $cantidad_reservada;
+
+            $rowid = $carrito['rowid'];
+            $price = $carrito['price'];
+            $amount = $price * $carrito['qty'];
+            $qty = $carrito['qty'];
+
+            // Validar contra el stock disponible, considerando lo ya reservado
+            if ($qty <= $stock_disponible && $qty >= 1) { 
+                $cart->update([
+                    'rowid'   => $rowid,
+                    'price'   => $price,
+                    'amount'  => $amount,
+                    'qty'     => $qty
+                ]);	    	
+            } else {
+                // Agregar el producto a la lista de errores
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+            }                
+            }
+
+            // Si hay errores de stock, mostrar mensaje y redirigir
+            if (!empty($errores_stock)) {
+                $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
+                session()->setFlashdata('msgEr', $mensaje_error);
+                return redirect()->to('CarritoList');
+            }
 
                 //Si el campo del motivo viene vacio lo devuelve a la vista.
                 if(!$motivo){
@@ -597,29 +648,8 @@ public function ListCompraDetalle($id)
             // Recorrer el carrito y calcular el total
             foreach ($cart->contents() as $item) {
                 $total_venta += $item['subtotal']; // Sumar cada subtotal (precio * cantidad)
-            }        
-            
-            // **CONTROL DE STOCK ANTES DE PROCESAR LA COMPRA MODIFICADA**
-        foreach ($cart->contents() as $item) {
-            $Producto_model = new Productos_model();
-            $producto = $Producto_model->find($item['id']); 
-            $VentaDetalle_model = new VentaDetalle_model();
-            // Obtener la cantidad reservada en el pedido anterior
-            $cantidad_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)
-                                                    ->where('producto_id', $item['id'])
-                                                    ->select('cantidad')
-                                                    ->first();
-            $cantidad_anterior = $cantidad_anterior ? $cantidad_anterior['cantidad'] : 0;
+            }                
         
-            // Calcular el stock disponible real
-            $stock_disponible = $producto['stock'] + $cantidad_anterior;
-        
-            // Validar que la cantidad nueva no exceda el stock disponible
-            if (!$producto || $stock_disponible < $item['qty']) {
-                session()->setFlashdata('msgEr', "Stock insuficiente para {$item['name']} (Stock disponible: {$stock_disponible}).");
-                return redirect()->to('CarritoList');
-            }
-        }
     
             $id_vendedor = $session->get('id_vendedor');
             $id_cliente = $session->get('id_cliente');            

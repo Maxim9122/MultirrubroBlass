@@ -89,6 +89,16 @@ class Login_controller extends Controller
         $id_pedido = $session->get('id_pedido');
         $tipo_compra = $session->get('tipo_compra');
         $estado = $session->get('estado');
+        $tiene_saldo_anterior = $session->get('total_anterior'); 
+
+        if($estado == 'Modificando_SF'){                   
+        $Cabecera_model = new Cabecera_model();
+        if($tiene_saldo_anterior != 0 || $tiene_saldo_anterior != null){ 
+            $Cabecera_model->update($id_pedido, ['estado' => 'Modificada_SF']);
+        }else {
+            $Cabecera_model->update($id_pedido, ['estado' => 'Sin_Facturar']);
+            }
+        }
 
         if($estado == 'Modificando' && $tipo_compra == 'Pedido'){
         $cart = \Config\Services::cart();
