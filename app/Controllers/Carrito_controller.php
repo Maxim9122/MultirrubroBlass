@@ -687,10 +687,8 @@ public function ListCompraDetalle($id)
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
             //print_r($total_bonificado_OK);
             //exit;
-            //Establecer zona horaria y obtener fecha/hora en formato correcto
-            date_default_timezone_set('America/Argentina/Buenos_Aires');
-            $hora = date('H:i:s'); // Formato TIME
-            $fecha = date('d-m-Y'); // Formato DATE
+            
+           
     
             // Actualizar el pedido o Venta existente con los nuevos datos
             if ($estado == 'Modificando_SF') {
@@ -776,11 +774,7 @@ public function ListCompraDetalle($id)
                 
                 // Actualizar la cabecera de la venta con los nuevos datos
                 $cabecera_model = new Cabecera_model();
-                $cabecera_model->update($id_pedido, [
-                    'fecha' => $fecha,
-                    'fecha_pedido' => $fecha,
-                    'hora' => $hora,
-                    'hora_entrega' => $hora,
+                $cabecera_model->update($id_pedido, [                    
                     'id_cliente' => $session->get('id_cliente'),
                     'id_usuario' => $session->get('id_vendedor'),
                     'tipo_pago' => $tipo_pago_Modif,
@@ -1130,6 +1124,11 @@ public function generarTicket($id_cabecera)
         $productos[$detalle['producto_id']] = $productoModel->find($detalle['producto_id']);
     }
 
+    // Establecer zona horaria y obtener fecha/hora en formato correcto
+    date_default_timezone_set('America/Argentina/Buenos_Aires');
+    $hora = date('H:i:s'); // Formato TIME
+    $fecha = date('d-m-Y'); // Formato DATE
+
     // Obtener la información del cliente
     $cliente = $clienteModel->find($cabecera['id_cliente']);
 
@@ -1257,14 +1256,12 @@ public function generarTicket($id_cabecera)
             <p><strong>Motivo de los Cambios:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
             <p><strong>Cajero:</strong> <?= nl2br(htmlspecialchars($cajero_nombre)) ?></p>
             <p><strong>Vendedor:</strong> <?= nl2br(htmlspecialchars($nombreVendedor)) ?></p>
-            <p><strong>Fecha y Hora:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
+            <p><strong>Fecha:</strong> <?= $fecha . '  Hora: ' . $hora ?></p>
             <p><strong>Total Anterior: $ </strong> <?= number_format($cabecera['total_anterior'], 2) ?></p>
             <p><strong>Total Actual: $ </strong> <?= number_format($cabecera['total_bonificado'], 2) ?></p>
             <p><strong>Diferencia: $ </strong> <?= number_format($cabecera['total_bonificado'] - $cabecera['total_anterior'], 2) ?></p>
             <p>Si la Diferencia es negativa, eso es saldo a favor para el Cliente.</p>
             <?php endif; ?>
-
-
             
         </div>
     </body>
