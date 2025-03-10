@@ -140,9 +140,10 @@ function cerrarMensaje() {
         <input type="hidden" name="stock" id="producto_stock">
     </div>
 </form>
-
     </section>
-   
+
+    <a class="btn" align="end" href="<?php echo base_url('descontar');?>">Descontar Defectuosos</a>
+
   <table class="" id="users-list">
    <thead>
       <tr class="colorTexto2">
