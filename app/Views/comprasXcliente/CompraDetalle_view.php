@@ -85,6 +85,7 @@ $total_anterior = '';
       <tr>
           <th>Total Anterior</th>
           <th>Total Actual</th>
+          <th style="color:orange;">Diferencia</th>
       </tr>
       <br>
     </thead>
@@ -92,6 +93,7 @@ $total_anterior = '';
       <tr>
           <td>$ <?php echo $total_anterior; ?></td>
           <td>$ <?php echo $total_actual; ?></td>
+          <td style="color:orange;">$ <?php echo $total_actual - $total_anterior; ?></td>
       </tr>
     </tbody>
   </table>

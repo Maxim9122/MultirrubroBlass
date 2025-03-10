@@ -328,7 +328,7 @@ public function ListCompraDetalle($id)
                 ]);	    	
             } else {
                 // Agregar el producto a la lista de errores
-                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
             }                
             }
 
@@ -394,7 +394,7 @@ public function ListCompraDetalle($id)
                 ]);	    	
             } else {
                 // Agregar el producto a la lista de errores
-                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
             }                
             }
 
@@ -455,7 +455,7 @@ public function ListCompraDetalle($id)
            ]);	    	
        } else {
            // Agregar el producto a la lista de errores
-           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
        }                
        }
 
@@ -494,7 +494,7 @@ public function ListCompraDetalle($id)
             // Actualizar la cabecera de la venta con los nuevos datos
             $cabecera_model = new Cabecera_model();
             $cabecera_model->update($id_pedido, [
-        'fecha' => $fecha, // Actualizamos la fecha del pedido
+        'fecha' => $fecha, // Actualizamos la fecha
         'hora' => $hora, // Actualizamos la hora
         'id_cliente' => $id_cliente, // Actualizamos el id del cliente
         'id_usuario' => $id_vendedor, // Actualizamos el id del usuario (vendedor)
@@ -601,7 +601,7 @@ public function ListCompraDetalle($id)
                 ]);	    	
             } else {
                 // Agregar el producto a la lista de errores
-                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: <strong>$stock_disponible</strong>";
+                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
             }                
             }
 
@@ -687,8 +687,10 @@ public function ListCompraDetalle($id)
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
             //print_r($total_bonificado_OK);
             //exit;
-            
-           
+            //Establecer zona horaria y obtener fecha/hora en formato correcto
+            date_default_timezone_set('America/Argentina/Buenos_Aires');
+            $hora = date('H:i:s'); // Formato TIME
+            $fecha = date('d-m-Y'); // Formato DATE
     
             // Actualizar el pedido o Venta existente con los nuevos datos
             if ($estado == 'Modificando_SF') {
@@ -775,6 +777,8 @@ public function ListCompraDetalle($id)
                 // Actualizar la cabecera de la venta con los nuevos datos
                 $cabecera_model = new Cabecera_model();
                 $cabecera_model->update($id_pedido, [                    
+                    'fecha_pedido' => $fecha,                    
+                    'hora_entrega' => $hora,
                     'id_cliente' => $session->get('id_cliente'),
                     'id_usuario' => $session->get('id_vendedor'),
                     'tipo_pago' => $tipo_pago_Modif,
@@ -836,8 +840,18 @@ public function ListCompraDetalle($id)
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
-    $monto_transferencia = number_format(floatval($this->request->getPost('pagoTransferencia')), 2, '.', '');
-    $monto_en_Efectivo = number_format(floatval($this->request->getPost('pagoEfectivo')), 2, '.', '');
+    function convertirAFloat($numero) {
+        if (empty($numero)) {
+            return 0.0; // Si el valor es vacío, devuelve 0.0
+        }
+        // Remueve los puntos (miles) y reemplaza la coma por punto (decimal)
+        $numero = str_replace('.', '', $numero);
+        $numero = str_replace(',', '.', $numero);
+        return floatval($numero);
+    }
+    
+    $monto_transferencia = convertirAFloat($this->request->getPost('pagoTransferencia'));
+    $monto_en_Efectivo = convertirAFloat($this->request->getPost('pagoEfectivo'));
     //print_r($monto_en_Efectivo);
     //exit; 
     $tipo_pago_cobro = '';
@@ -856,7 +870,7 @@ public function ListCompraDetalle($id)
     //Total de la venta
     $total = $this->request->getPost('total_venta');
     //Total menos el descuento si se pago en efectivo.
-    $total_conDescuento = number_format($monto_transferencia + $monto_en_Efectivo, 2, '.', '');
+    $total_conDescuento = $monto_transferencia + $monto_en_Efectivo;
 
     //print_r($total_conDescuento);
     //exit;
@@ -887,28 +901,57 @@ public function ListCompraDetalle($id)
     
     $id_pedido = $this->request->getPost('id_pedido');
     
-    $Producto_model = new Productos_model();
+    $Producto_model = new Productos_model();    
+    $VentaDetalle_model = new VentaDetalle_model();
+    //Array para guardar todos los productos que tengan stock no disponible
+    $cart = \Config\Services::cart();
+    $cart_info = $cart->contents(); // Obtiene los productos del carrito almacenados en la sesión
 
-    // **CONTROL DE STOCK ANTES DE PROCESAR LA COMPRA**
-    foreach ($cart->contents() as $item) {
-        $producto = $Producto_model->find($item['id']); 
-        $VentaDetalle_model = new VentaDetalle_model();
-        // Obtener la cantidad reservada en el pedido anterior
-        $cantidad_anterior = $VentaDetalle_model->where('venta_id', $id_pedido)
-                                                ->where('producto_id', $item['id'])
-                                                ->select('cantidad')
-                                                ->first();
-        $cantidad_anterior = $cantidad_anterior ? $cantidad_anterior['cantidad'] : 0;
-    
-        // Calcular el stock disponible real
-        $stock_disponible = $producto['stock'] + $cantidad_anterior;
-    
-        // Validar que la cantidad nueva no exceda el stock disponible
-        if (!$producto || $stock_disponible < $item['qty']) {
-            session()->setFlashdata('msgEr', "Stock insuficiente para {$item['name']} (Stock disponible: {$stock_disponible}).");
-            return redirect()->to('CarritoList');
-        }
-    }
+    $errores_stock = [];
+    foreach ($cart_info as $id => $carrito) {   
+       $id_producto = $carrito['id'];
+
+       // Obtener el stock actual desde la base de datos
+       $producto = $Producto_model->find($id_producto);
+       $stock_actual = $producto['stock'];
+       $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+
+       // Obtener la cantidad que ya estaba reservada en la venta anterior
+       $cantidad_reservada = $VentaDetalle_model
+           ->where('venta_id', $id_pedido)
+           ->where('producto_id', $id_producto)
+           ->select('cantidad')
+           ->get()
+           ->getRowArray()['cantidad'] ?? 0;
+
+       // Calcular el stock disponible para esta modificación
+       $stock_disponible = $stock_actual + $cantidad_reservada;
+
+       $rowid = $carrito['rowid'];
+       $price = $carrito['price'];
+       $amount = $price * $carrito['qty'];
+       $qty = $carrito['qty'];
+
+       // Validar contra el stock disponible, considerando lo ya reservado
+       if ($qty <= $stock_disponible && $qty >= 1) { 
+           $cart->update([
+               'rowid'   => $rowid,
+               'price'   => $price,
+               'amount'  => $amount,
+               'qty'     => $qty
+           ]);	    	
+       } else {
+           // Agregar el producto a la lista de errores
+           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
+       }                
+       }
+
+       // Si hay errores de stock, mostrar mensaje y redirigir
+       if (!empty($errores_stock)) {
+           $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
+           session()->setFlashdata('msgEr', $mensaje_error);
+           return redirect()->to('CarritoList');
+       }
     
     
     // Si se encontró un id de pedido y estado modificando, actualizar el pedido existente con los nuevos datos
@@ -987,10 +1030,11 @@ public function ListCompraDetalle($id)
                 'estado'            => 'Facturada',
                 'total_venta'       => $total,
                 'tipo_pago'         => $tipo_pago_cobro,
-                'total_bonificado'  => $total_conDescuento,                
-                'fecha_pedido'      => $fecha_pedido_formateada,
+                'total_bonificado'  => $total_conDescuento,               
                 'fecha'        => $fecha,
                 'hora'         => $hora,
+                'fecha_pedido'      => $fecha_pedido_formateada,
+                'hora_entrega' => $hora,
                 'id_cliente'   => $id_cliente,
             ]);           
             $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
@@ -1044,7 +1088,7 @@ public function ListCompraDetalle($id)
                     'tipo_pago'         => $tipo_pago_cobro,
                     'total_bonificado'  => $total_conDescuento,                 
                     'fecha_pedido'      => $fecha_pedido_formateada,
-                    'fecha'        => $fecha,                    
+                    'fecha'        => $fecha,                                      
                     'hora'         => $hora,
                     'hora_entrega' => $hora,
                     'id_cliente'   => $id_cliente,
@@ -1123,11 +1167,6 @@ public function generarTicket($id_cabecera)
     foreach ($detalles as $detalle) {
         $productos[$detalle['producto_id']] = $productoModel->find($detalle['producto_id']);
     }
-
-    // Establecer zona horaria y obtener fecha/hora en formato correcto
-    date_default_timezone_set('America/Argentina/Buenos_Aires');
-    $hora = date('H:i:s'); // Formato TIME
-    $fecha = date('d-m-Y'); // Formato DATE
 
     // Obtener la información del cliente
     $cliente = $clienteModel->find($cabecera['id_cliente']);
@@ -1256,12 +1295,14 @@ public function generarTicket($id_cabecera)
             <p><strong>Motivo de los Cambios:</strong> <?= nl2br(htmlspecialchars($cabecera['motivo'])) ?></p>
             <p><strong>Cajero:</strong> <?= nl2br(htmlspecialchars($cajero_nombre)) ?></p>
             <p><strong>Vendedor:</strong> <?= nl2br(htmlspecialchars($nombreVendedor)) ?></p>
-            <p><strong>Fecha:</strong> <?= $fecha . '  Hora: ' . $hora ?></p>
+            <p><strong>Fecha y Hora:</strong> <?= date('d-m-Y H:i', strtotime($cabecera['fecha'] . ' ' . $cabecera['hora'])) ?></p>
             <p><strong>Total Anterior: $ </strong> <?= number_format($cabecera['total_anterior'], 2) ?></p>
             <p><strong>Total Actual: $ </strong> <?= number_format($cabecera['total_bonificado'], 2) ?></p>
             <p><strong>Diferencia: $ </strong> <?= number_format($cabecera['total_bonificado'] - $cabecera['total_anterior'], 2) ?></p>
             <p>Si la Diferencia es negativa, eso es saldo a favor para el Cliente.</p>
             <?php endif; ?>
+
+
             
         </div>
     </body>

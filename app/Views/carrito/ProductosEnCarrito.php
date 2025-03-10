@@ -251,7 +251,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                     'style' => 'text-align: right; width: 50px;',
                                     'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
                                 ]);?>
-                                <span class="stock-disponible"> (Disponibles: <?php echo  $item['options']['stock']; ?>) </span>
+                                <span class="stock-disponible"> (Mas <?php echo  $item['options']['stock']; ?> Disponibles ) </span>
                             <?php } else {
                                 echo number_format($item['qty']);
                             }
@@ -294,7 +294,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                 </select>                                
                                 <h4 class="total_ant" id="diferencia">Diferencia: $<?php echo number_format($gran_total - $total_anterior, 2); ?></h4>
                                 <br>
-                                <h4 style="color:orange;">Si el Resto es Negativo, significa que es dinero a favor del Cliente.</h4>
+                                <h4 style="color:orange;">Si la Diferencia es Negativa, significa que es dinero a favor del Cliente.</h4>
                             </td>       
                         </tr>
                     <?php endif; ?>

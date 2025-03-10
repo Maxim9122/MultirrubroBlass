@@ -191,15 +191,6 @@ class Pedidos_controller extends Controller{
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
 
-    // Restaurar el stock de cada producto
-    //foreach ($detalles as $detalle) {
-     //   $producto = $producto_model->find($detalle['producto_id']);
-    //    if ($producto) {
-    //        $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-    //        $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
-    //    }
-    //}
-
     // Actualizar el estado del pedido a "Modificando"
     $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
 

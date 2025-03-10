@@ -43,6 +43,11 @@
         opacity: 1; /* Asegura que el color del placeholder no sea opaco */
         font-weight: bold; /* Hacer el texto más nítido */
     }
+
+    .espaciado {
+    padding: 0 7px;
+    }
+
     </style>
 <section class="Fondo">
 <div class="" style="width: 100%;" align="center">
@@ -95,10 +100,12 @@
              <th>Cliente</th>
              <th>Vendedor</th>
              <th>Tipo Compra</th>
-             <th>ESTADO</th>
-             <th>Total Venta</th>
-             <th>Fecha</th>
-             <th>Hora</th>
+             <th style="color:orange;">ESTADO</th>             
+             <th class="espaciado">Fecha Cobro/Original</th>
+            <th class="espaciado">Hora Cobro/Original</th>
+            <th class="espaciado" style="color:orange;">Fecha Cobro/Modif</th>
+            <th class="espaciado" style="color:orange;">Hora Cobro/Modif</th>
+            <th>Total Venta</th>
              <th>Tipo Pago</th>
              <th>Acciones</th>
           </tr>
@@ -111,10 +118,12 @@
              <td><?php echo $vta['nombre_cliente']; ?></td>
              <td><?php echo $vta['nombre_vendedor']; ?></td>
              <td><?php echo $vta['tipo_compra']; ?></td>
-             <td><?php echo $vta['estado']; ?></td>
+             <td style="color:orange;"><?php echo $vta['estado']; ?></td>             
+             <td><?php echo $vta['fecha_original'];?></td>
+             <td><?php echo $vta['hora_original']; ?></td>
+             <td style="color:orange;"><?php echo $vta['fecha_actual'];?></td>
+             <td style="color:orange;"><?php echo $vta['hora_actual']; ?></td>
              <td>$<?php echo $vta['total_bonificado']; ?></td>
-             <td><?php echo $vta['fecha'];?></td>
-             <td><?php echo $vta['hora']; ?></td>
              <td><?php echo $vta['tipo_pago']; ?></td>
              
              <td class="row">               
@@ -159,16 +168,33 @@
                 </div>
 
               </td>
-              <?php if($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Cancelado'){?>
-              <?php $TotalRecaudado = $TotalRecaudado + $vta['total_bonificado']; ?>
-              <?php } ?> 
+              <?php 
+                if ($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Cancelado' && $vta['estado'] != 'Modificada_SF') { 
+                    $TotalRecaudado += $vta['total_bonificado']; 
+                } 
+
+                if ($vta['estado'] == 'Modificada_SF') { 
+                    if ($vta['fecha_original'] == $vta['fecha_actual']) { 
+                        // Si las fechas coinciden, sumar todo el total bonificado
+                        $TotalRecaudado += $vta['total_bonificado']; 
+                    } else { 
+                        // Si las fechas no coinciden, sumar solo la diferencia
+                        $TotalRecaudado += ($vta['total_bonificado'] - $vta['total_anterior']); 
+                    } 
+                } 
+                ?>
+
             </tr>
          <?php endforeach; ?>
          <?php endif; ?>
        
      </table>
-     <!-- Recaudacion de Ventas (Todas o por filtro)-->
-     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?> (No suman las Canceladas ni las que dieron Error_Factura)</h2>
+     <!-- Recaudacion de Ventas (Todas o por filtro)-->      
+     <h2 class="estiloTurno textColor">Total Recaudado: $ <?php echo $TotalRecaudado ?></h2>
+     <section class="estiloTurno textColor">
+     <h2>(No suman las Canceladas ni las que dieron Error_Factura)</h2>
+     <h2>Importante.! Si el estado es Modificada_SF y la venta original fue una fecha pasada, solo se suma la Diferencia entre Total Original menos el Total Modificado (Ver Detalles)</h2>
+     </section>
      <br>
   </div>
 </div>
