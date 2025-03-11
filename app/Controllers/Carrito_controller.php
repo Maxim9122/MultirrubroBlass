@@ -1342,13 +1342,9 @@ public function generarTicket($id_cabecera)
             
             // Redirigir a la página deseada después de la descarga dependiendo del perfil usuario
             window.setTimeout(function() {
-                if (perfil == 1) {
-                    window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
-                } else if (perfil == 2) {
-                    window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
-                } else if (perfil == 3){
-                    window.location.href = '" . base_url('caja') . "'; // Redirigir a la caja si es perfil 3
-                }
+                if (perfil == 3) {
+                    window.location.href = '" . base_url('caja') . "'; // Redirigir al perfil 3
+                }                
             }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
           </script>";
     exit;

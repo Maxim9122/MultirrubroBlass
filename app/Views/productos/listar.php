@@ -67,6 +67,7 @@ function cerrarMensaje() {
   <div class="">
   <h2 class="textoColor" text-align: center !important; >Listado de Productos</h2>
   <br>
+  
   <style>
     /* Mover el buscador a la derecha */
     .dataTables_filter {
