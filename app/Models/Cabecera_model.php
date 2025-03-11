@@ -150,7 +150,7 @@ class Cabecera_model extends Model
         u.cantidad, 
         u.precio, 
         u.total,
-        v.total_venta, 
+        v.total_bonificado, 
         v.motivo,
         v.total_anterior,
         c.id_cae, 

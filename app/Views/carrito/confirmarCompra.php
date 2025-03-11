@@ -418,11 +418,37 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     document.addEventListener("DOMContentLoaded", function () {
         // Calcula el monto en efectivo con descuento al cargar la página
         calcularMontoEfectivo();
+
+        // Agrega un evento para validar el monto en transferencia
+        const pagoTransferenciaInput = document.getElementById('pagoTransferencia');
+        pagoTransferenciaInput.addEventListener('input', function () {
+            validarMontoTransferencia();
+        });
     });
 
+    // Función para validar que el monto en transferencia no sea mayor que el total general
+    function validarMontoTransferencia() {
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
+        const totalVenta = granTotal;
+
+        if (pagoTransferencia > totalVenta) {
+            alert('El monto en transferencia no puede ser mayor al total general de la venta.');
+            document.getElementById('pagoTransferencia').value = ''; // Limpia el campo
+            calcularMontoEfectivo(); // Recalcula el monto en efectivo
+        } else {
+            calcularMontoEfectivo(); // Recalcula el monto en efectivo
+        }
+    }
+
+    // Función para calcular el monto en efectivo con descuento
     function calcularMontoEfectivo() {
         const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
         const totalVenta = granTotal;
+
+        // Si el monto en transferencia es mayor que el total, no se calcula el efectivo
+        if (pagoTransferencia > totalVenta) {
+            return;
+        }
 
         // Calcula cuánto falta pagar después del pago en transferencia
         const faltaPagar = totalVenta - pagoTransferencia;
@@ -444,7 +470,6 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
                 maximumFractionDigits: 2 
             });
         }
-
     }
 </script>
 

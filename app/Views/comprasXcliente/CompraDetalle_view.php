@@ -35,8 +35,8 @@ $total_anterior = '';
     if (!empty($vta['total_anterior'])) {
         $total_anterior = $vta['total_anterior'];
     }
-    if (!empty($vta['total_venta'])) {
-      $total_actual = $vta['total_venta'];
+    if (!empty($vta['total_bonificado'])) {
+      $total_actual = $vta['total_bonificado'];
     }
     ?>
   <?php endforeach; ?>
