@@ -146,7 +146,7 @@ function cerrarMensaje() {
     <!-- Tu contenido actual aquí -->
      <br><br><br>                   
     <!-- Botón Descontar Defectuosos -->
-    <a class="btn" href="<?php echo base_url('descontarDefectuosos');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px;">
+    <a class="btn" href="<?php echo base_url('descontarDefectuosos');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px; color:red; font-weight: 900;">
         Descontar Defectuosos
     </a>
 </div>

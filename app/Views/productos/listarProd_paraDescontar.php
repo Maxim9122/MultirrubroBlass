@@ -84,9 +84,10 @@ function cerrarMensaje() {
 <!-- Fin de los mensajes temporales -->
 <br>
 <div class="" style="width: 100%;">
-  <div class="">
+  <div style="text-align:center;">
   <h2 class="textoColor" text-align: center !important; >Lista de Porductos (Para restar Defectuosos)</h2>
-  <br>
+  <h3 style="color:orange; margin-top:7px;">Esta Sección es para cuando se hacen cambios de productos defectuosos por otro del mismo pero funcional.</h3>
+  
   <style>
     /* Mover el buscador a la derecha */
     .dataTables_filter {
@@ -190,7 +191,7 @@ function cerrarMensaje() {
                 </div>
 
                 <!-- Botón para descontar -->
-                <?php if($perfil == 3 || $estado == 'Modificando' || $estado == 'Modificando_SF') { ?>
+                <?php if($perfil == 3 || $perfil == 2 || $perfil == 1) { ?>
                 <button type="button" class="btn" style="margin-top:7px; cursor:pointer;" onclick="abrirModal(<?php echo $prod['id']; ?>)">
                     Descontar Defectuoso
                 </button>
