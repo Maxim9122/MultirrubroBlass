@@ -205,15 +205,15 @@ public function DescontarStock() {
         </head>
         <body>
             <div class="comprobante">
-                <h3>Comprobante de Descuento Nro: <?= $defectuoso['id']; ?></h3>      
-    
+                <h3>Comprobante de Descuento</h3>      
+                <h3>Nro: <?= $defectuoso['id']; ?></h3>
                 <!-- Información del descuento -->
                 <p>Fecha y Hora: <?= date('d-m-Y H:i', strtotime($defectuoso['fecha_desc'])); ?></p>
                 <p>Producto: <?= $defectuoso['nombre_def']; ?></p>
                 <p>Cantidad Descontada: <?= $defectuoso['cantidad_desc']; ?></p>
                 <p>Nuevo Stock: <?= $defectuoso['nuevo_stock']; ?></p>
                 <p>Precio Unitario: $<?= number_format($defectuoso['precio_def'], 2); ?></p>              
-                <p>Registrado por: <?= $defectuoso['nombre_us']; ?></p>
+                <p>Stock Descontado por: <?= $defectuoso['nombre_us']; ?></p>
                 <p>Motivo: <?= $defectuoso['motivo_desc']; ?></p>
                 <hr>    
             
