@@ -48,6 +48,13 @@ $routes->get('cancelar_edicion_Venta_SF/(:num)', 'Caja_controller::cancelar_edic
 //Verificacion de codigo de acceso
 $routes->post('verificar-codigo', 'Caja_controller::verificarCodigo');
 
+//Productos Defectuosos
+$routes->get('descontarDefectuosos', 'Prod_Defectuosos_controller::MostrarLista_Prod');
+$routes->get('historial_Descuentos', 'Prod_Defectuosos_controller::MostrarHistorial_Descuentos');
+$routes->post('descontarDelStock', 'Prod_Defectuosos_controller::DescontarStock');
+$routes->get('descargar_comprobante_descuento', 'Prod_Defectuosos_controller::descargar_comprobante_descuento');
+$routes->post('Verif_Codigo_Descuento', 'Prod_Defectuosos_controller::Verif_Codigo_Descuento');
+
 //Todo sobre Pedidos
 $routes->get('cancelar_edicion/(:num)', 'Pedidos_controller::cancelar_edicion/$1');
 $routes->get('/pedidosCompletados', 'Pedidos_controller::PedidosCompletados');
