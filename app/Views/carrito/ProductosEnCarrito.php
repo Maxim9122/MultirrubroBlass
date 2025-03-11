@@ -162,6 +162,11 @@ if (!empty($session)) {
                 Modificando Venta/Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
             </h3>
         <?php endif; ?>
+        <?php if ($estado == 'Modificando_SF'): ?>
+            <h4 class="resaltado">
+                "Importante!" Si se cambia un producto defectuosos por otro del mismo, ir al "Panel de descuento de Stock."
+            </h4>
+        <?php endif; ?>
         </div>
         <br>
         <div class="sinProductos" style="color:#ffff; " align="center" >
