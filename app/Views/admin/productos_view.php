@@ -88,9 +88,19 @@
 <section class="contenedor-titulo">
   <strong class="titulo-vidrio">ABM de Productos</strong>
   </section>
-<div style="width: 100%; text-align: end;">
   
-<br>
+<div style="width: 100%; text-align: end;">
+<div style="position: relative; width: 100%;">
+    <!-- Tu contenido actual aquí -->
+     <?php if($perfil == 1 || $perfil == 3){?>
+     <br><br><br><br>                   
+    <!-- Botón Descontar Defectuosos -->
+    <a class="btn" href="<?php echo base_url('descontarDefectuosos');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px; color:red; font-weight: 900;">
+        Descontar Defectuosos
+    </a>
+    <?php  } ?>
+</div>
+
   <div class="dropdown2" style="margin-right: 45px;">
         <span class="dropdown-toggle2 btn">Mas Opciones▼</span>
         <ul class="dropdown-menu2">
@@ -126,7 +136,7 @@
        <thead>
           <tr class="colorTexto2">
              <th>Nombre</th>
-             <th>Precio</th>
+             <th>Precio Costo</th>
              <th>Precio Venta</th>
              <th>Categoría</th>
              <th>Imagen</th>

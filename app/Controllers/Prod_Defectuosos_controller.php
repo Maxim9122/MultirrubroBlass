@@ -25,7 +25,11 @@ class Prod_Defectuosos_controller extends Controller{
         
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login'));
-        }        
+        }
+        $perfil = $session->has('perfil_id');
+        if ($perfil == 2) { 
+            return redirect()->to(base_url('catalogo'));
+        }          
         
         $historial_Def = new Defectuosos_model();   
         $dato['productos'] = $historial_Def->Traer_Historial();
@@ -45,6 +49,10 @@ class Prod_Defectuosos_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login'));
         }
+        $perfil = $session->get('perfil_id');        
+        if ($perfil == 2) { 
+            return redirect()->to(base_url('catalogo'));
+        }  
         $Model = new categoria_model();
     	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $ProductosModel = new Productos_model();
@@ -72,6 +80,11 @@ class Prod_Defectuosos_controller extends Controller{
 
 //funcion para verificar y descontar el stock del producto defectuoso
 public function DescontarStock() {
+    $session = session();
+    $perfil = $session->get('perfil_id');        
+        if ($perfil == 2) { 
+            return redirect()->to(base_url('catalogo'));
+        }   
     $session = session();
     $Producto_model = new Productos_model();
     $Defectuosos_model = new Defectuosos_model();
