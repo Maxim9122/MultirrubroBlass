@@ -5,7 +5,7 @@ class Cabecera_model extends Model
 {
 	protected $table = 'ventas_cabecera';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_cae','id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado', 'total_anterior', 'motivo'];
+    protected $allowedFields = ['id_cae', 'costo_envio' ,'id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'nombre_prov_client' , 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado', 'total_anterior', 'motivo'];
 
     public function getVentasCabecera(){
       $db = db_connect();
@@ -24,7 +24,7 @@ class Cabecera_model extends Model
         $builder = $db->table($this->table . ' u');
         $builder->select("
             u.id, 
-            c.nombre AS nombre_cliente, 
+            u.nombre_prov_client AS nombre_cliente, 
             v.nombre AS nombre_vendedor, 
             u.estado, 
             u.total_venta,
@@ -182,7 +182,18 @@ class Cabecera_model extends Model
      
          // Construir la consulta con los joins necesarios
          $builder = $db->table($this->table . ' u');
-         $builder->select('u.id, c.nombre AS nombre_cliente, c.telefono, u.total_venta, u.fecha, u.hora, u.tipo_pago, u.total_bonificado, u.estado, u.fecha_pedido, u.hora_entrega, usuarios.nombre AS nombre_usuario');
+         $builder->select('u.id, 
+         u.nombre_prov_client AS nombre_cliente, 
+         c.telefono, 
+         u.total_venta, 
+         u.fecha, 
+         u.hora, 
+         u.tipo_pago, 
+         u.total_bonificado,
+         u.estado,
+         u.fecha_pedido, 
+         u.hora_entrega, 
+         usuarios.nombre AS nombre_usuario');
          $builder->join('cliente c', 'u.id_cliente = c.id_cliente'); // Relación con cliente
          $builder->join('usuarios usuarios', 'u.id_usuario = usuarios.id'); // Relación con usuario
          $builder->where('u.tipo_compra', 'Pedido');

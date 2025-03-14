@@ -121,6 +121,7 @@ endif;
             <td style="color: #ffff;">
                 <?php echo (!empty($nombre_vendedor) ? $nombre_vendedor : $nombre); ?>
             </td>
+            <?php if ($perfil == 3): ?><!-- Filtro cajero-->
             </tr>
                 <tr>
                 <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
@@ -140,7 +141,20 @@ endif;
                     <?php endif; ?>
                 </td>
                  </tr>
-                     
+                 <?php endif; ?><!-- Fin del if filtro cajero-->
+
+                 <?php if ($perfil == 2 && $estado == ''): ?><!-- Filtro Vendedor-->
+            </tr>
+                <tr>
+                <td style="color:rgb(192, 250, 214);"><strong>Nombre Identificador del Cliente:</strong></td>
+                <td>
+                    
+                <input class="selector" type="text" name="nombre_prov" placeholder="Ingrese nombre cliente" maxlength="20" required>
+                    
+                </td>
+                 </tr>
+                 <?php endif; ?><!-- Fin del if filtro vendedor-->
+
                  <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
                  <tr>
                 <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
@@ -161,6 +175,8 @@ endif;
                 <td>
                 <select name="tipo_compra" id="tipoCompra" class="selector">
                 <?php if ($estado == 'Cobrando') {  ?>
+
+                    
                     <option value="Compra_Normal" <?php echo $tipo_compra == 'Compra_Normal' ? 'selected' : ''; ?>>
                     <?php echo $estado; ?> -> <?php echo $tipo_compra; ?>
                     </option>
@@ -189,7 +205,26 @@ endif;
                            min="<?php echo date('Y-m-d'); ?>">
                     <?php echo form_hidden('fecha_pedido_input', ''); ?>
                 </td>
+                </tr>   
+                
+                <?php if ($estado == 'Cobrando') {  ?>
+                <tr>
+                <td style="color: rgb(192, 250, 214);"><strong>Con Envío:</strong></td>
+                <td>
+                    <select name="con_envio" id="conEnvio" class="selector">
+                        <option value="No">No</option>
+                        <option value="Si">Sí</option>
+                    </select>
+                </td>
                 </tr>
+                <tr id="costoEnvioFila" style="display: none;">
+                <td style="color: rgb(192, 250, 214);"><strong>Costo de Envío:</strong></td>
+                <td>
+                    <input class="selector" type="text" id="costoEnvio" name="costoEnvio" placeholder="Costo de envío en $" maxlength="15" oninput="formatearCostoEnvio(this);">
+                </td>
+                </tr>
+                <?php  } ?>
+
                 <?php echo form_hidden('total_venta', ($gran_total > 0 ? $gran_total : $total_venta)); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
                 
@@ -224,6 +259,43 @@ endif;
     </div>
     <?php echo form_close(); ?>
 </div>
+
+            <!-- Estilos para el input de costo de envio-->
+    <!-- Script único con toda la lógica -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Mostrar u ocultar el campo de costo de envío
+        const conEnvioSelect = document.getElementById("conEnvio");
+        const costoEnvioFila = document.getElementById("costoEnvioFila");
+
+        conEnvioSelect.addEventListener("change", function () {
+            if (conEnvioSelect.value === "Si") {
+                costoEnvioFila.style.display = "table-row"; // Mostrar el campo
+            } else {
+                costoEnvioFila.style.display = "none"; // Ocultar el campo
+                document.getElementById("costoEnvio").value = ""; // Limpiar el valor
+            }
+        });
+    });
+
+    // Función para formatear el costo de envío
+    function formatearCostoEnvio(input) {
+        // Eliminar todos los caracteres que no sean números o puntos
+        let value = input.value.replace(/[^0-9.]/g, '');
+
+        // Separar la parte entera de los decimales
+        let parts = value.split('.');
+        let entera = parts[0];
+        let decimal = parts.length > 1 ? ',' + parts[1].substring(0, 2) : '';
+
+        // Formatear la parte entera con separadores de miles
+        entera = entera.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        // Unir la parte entera y los decimales
+        input.value = entera + decimal;
+    }
+</script>
+
             <!-- Esto es para cancelar todo, edicion de pedido o compra normal-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -262,21 +334,6 @@ endif;
 
 </script>
 
-<!-- Modal (Cartel de confirmacion y opciones de tipo de compra)-->
-<div id="confirmationModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <?php if($perfil == 3):?>
-        <p>Desea Facturar (Factura tipo C) o solo imprimir ticket.?</p>
-        <button id="invoiceArca" class="btn">Factura C (Arca)</button>
-        <button id="printTicket" class="btn">Imprimir Ticket</button> 
-        <?php endif; if($perfil == 2):?>
-            <p>Registrar Compra?</p>
-            <button id="printTicket" class="btn">Si, Registrar</button>
-        <?php endif; ?>       
-    </div>
-</div>
-
 <style>
 .tableResponsive{
     width: 50%;
@@ -286,57 +343,6 @@ endif;
 .tableResponsive{
     width: 100%;
 }
-}
-    /* Estilos para el modal */
-.modal {
-    display: none; /* Oculto por defecto */
-    position: fixed; /* Posición fija */
-    z-index: 1; /* Encima de todo */
-    left: 0;
-    top: 0;
-    width: 100%; /* Ancho completo */
-    height: 100%; /* Alto completo */
-    overflow: auto; /* Habilitar scroll si es necesario */
-    background-color: rgb(0,0,0); /* Color de fondo */
-    background-color: rgba(0,0,0,0.4); /* Negro con opacidad */
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; /* 5% desde la parte superior y centrado */
-    padding: 20px;
-    border: 7px solid #888;
-    width: 70%; /* Ancho del contenido */
-    max-width: 400px; /* Ancho máximo */
-    text-align: center;
-}
-
-.modal-content p{
-    font-weight: 750;
-    background-color: #fefefe;
-    margin: 5% auto; /* 5% desde la parte superior y centrado */
-    padding: 20px;
-    border: 7px solid #888;
-    width: 70%; /* Ancho del contenido */
-    max-width: 400px; /* Ancho máximo */
-    text-align: center;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    font-weight: 700;
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 
 /*Estilos para los selectores de fecha, cliente y tipo compra*/
@@ -476,61 +482,6 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("confirmationModal");
-    const btnConfirmar = document.querySelector("input[name='confirmar']");
-    const spanClose = document.getElementsByClassName("close")[0];
-    const btnPrintTicket = document.getElementById("printTicket");
-    const btnInvoiceArca = document.getElementById("invoiceArca");
-    const tipoProcesoInput = document.querySelector("input[name='tipo_proceso']");
-
-    btnConfirmar.addEventListener("click", function (event) {
-    event.preventDefault(); // Evita el envío inmediato del formulario
-    
-    const tipoCompra = document.getElementById("tipoCompra").value;
-
-    if (tipoCompra === "Pedido") {
-        // Si es "Reservar Pedido", enviar directamente el formulario sin abrir el modal
-        document.querySelector("form").submit();
-    } else {
-        // Si es una compra normal, abrir el modal
-        modal.style.display = "block";
-    }
-    });
-
-    // Cuando el usuario hace clic en <span> (x), cierra el modal
-    spanClose.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    // Cuando el usuario hace clic en "Imprimir Ticket", envía el formulario
-    btnPrintTicket.addEventListener("click", function () {
-        document.querySelector("form").submit();
-    });
-
-    // Cuando el usuario hace clic en "Facturar Arca", puedes agregar la lógica necesaria
-    btnInvoiceArca.addEventListener("click", function () {
-        tipoProcesoInput.value = "factura"; // Establece que es una factura tipo C
-        document.querySelector("form").submit();
-    });
-
-    // Cuando el usuario hace clic fuera del modal, ciérralo
-    window.addEventListener("click", function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    });
-
-    // Cuando el usuario presiona la tecla Escape, ciérralo
-    window.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            modal.style.display = "none";
-        }
-    });
-});
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
         const tipoCompra = document.getElementById("tipoCompra");
         const fechaPedidoFila = document.getElementById("fechaPedidoFila");
 
@@ -551,4 +502,174 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
             actualizarFechaPedido();
         });
     });
+</script>
+
+<!-- Primer modal (Confirmación de compra) -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <?php if ($perfil == 3): ?>
+            <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
+            <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
+            <br><br>
+            <button id="printTicket" class="btn">Imprimir Presupuesto</button>
+        <?php endif; ?>
+        <?php if ($perfil == 2): ?>
+            <p>¿Registrar compra?</p>
+            <button id="printTicket" class="btn">Sí, Registrar</button>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Segundo modal (Confirmación de facturación) -->
+<div id="confirmationFacturaModal" class="modal">
+    <div class="modal-content">
+        <span class="closeFactura">&times;</span>
+        <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo C)</p>
+        <button id="confirmFactura" class="btn">Sí, Facturar</button>
+        <button id="cancelFactura" class="btn danger">Cancelar</button>
+    </div>
+</div>
+
+<style>
+    /* Estilos para el modales*/
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+/* Agregamos animación de zoom */
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 7px solid #888;
+    width: 70%;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.5); /* Estado inicial pequeño */
+    transition: transform 0.3s ease-in-out;
+}
+
+.modal-content p {
+    font-weight: 750;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 7px solid #888;
+    width: 70%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Cuando el modal se muestra, aplicamos el efecto de zoom */
+.modal.show .modal-content {
+    transform: scale(1); /* Escala normal al abrir */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    font-weight: 700;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+}
+</style>
+
+<!-- Script pata menejo de los modales -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const modalConfirmacion = document.getElementById("confirmationModal");
+    const modalFactura = document.getElementById("confirmationFacturaModal");
+    const btnConfirmar = document.querySelector("input[name='confirmar']");
+    const btnInvoiceArca = document.getElementById("invoiceArca");
+    const btnPrintTicket = document.getElementById("printTicket");
+    const spanClose = document.getElementsByClassName("close")[0];
+    const spanCloseFactura = document.getElementsByClassName("closeFactura")[0];
+    const btnConfirmFactura = document.getElementById("confirmFactura");
+    const btnCancelFactura = document.getElementById("cancelFactura");
+    const tipoProcesoInput = document.querySelector("input[name='tipo_proceso']");
+
+    function abrirModal(modal) {
+        modal.style.display = "block";
+        setTimeout(() => modal.classList.add("show"), 10);
+    }
+
+    function cerrarModal(modal) {
+        modal.classList.remove("show");
+        setTimeout(() => modal.style.display = "none", 300); // Espera a la animación
+    }
+
+    btnConfirmar.addEventListener("click", function (event) {
+        event.preventDefault();
+        const tipoCompra = document.getElementById("tipoCompra").value;
+        if (tipoCompra === "Pedido") {
+            document.querySelector("form").submit();
+        } else {
+            abrirModal(modalConfirmacion);
+        }
+    });
+
+    btnInvoiceArca.addEventListener("click", function (event) {
+        event.preventDefault();
+        cerrarModal(modalConfirmacion);
+        setTimeout(() => abrirModal(modalFactura), 300);
+    });
+
+    btnPrintTicket.addEventListener("click", function () {
+        tipoProcesoInput.value = "ticket";
+        document.querySelector("form").submit();
+    });
+
+    btnConfirmFactura.addEventListener("click", function () {
+        tipoProcesoInput.value = "factura";
+        document.querySelector("form").submit();
+    });
+
+    btnCancelFactura.addEventListener("click", function () {
+        cerrarModal(modalFactura);
+        setTimeout(() => abrirModal(modalConfirmacion), 300);
+    });
+
+    spanClose.addEventListener("click", function () {
+        cerrarModal(modalConfirmacion);
+    });
+
+    spanCloseFactura.addEventListener("click", function () {
+        cerrarModal(modalFactura);
+    });
+
+    window.addEventListener("click", function (event) {
+        if (event.target == modalConfirmacion) {
+            cerrarModal(modalConfirmacion);
+        }
+        if (event.target == modalFactura) {
+            cerrarModal(modalFactura);
+        }
+    });
+
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            cerrarModal(modalConfirmacion);
+            cerrarModal(modalFactura);
+        }
+    });
+});
+
 </script>
