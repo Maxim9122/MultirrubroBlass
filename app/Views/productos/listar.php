@@ -145,11 +145,13 @@ function cerrarMensaje() {
 
     <div style="position: relative; width: 100%;">
     <!-- Tu contenido actual aquí -->
+     <?php if($perfil == 1 || $perfil == 3){?>
      <br><br><br>                   
     <!-- Botón Descontar Defectuosos -->
     <a class="btn" href="<?php echo base_url('descontarDefectuosos');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px; color:red; font-weight: 900;">
         Descontar Defectuosos
     </a>
+    <?php  } ?>
 </div>
 
   <table class="" id="users-list">
@@ -157,6 +159,7 @@ function cerrarMensaje() {
       <tr class="colorTexto2">
          <th>Nombre</th>
          <th>Precio Venta</th>
+         <th>Precio Efectivo(-10%)</th>
          <th class="ocultar-en-movil">Categoría</th>
          <th>Imagen</th>
          <th>Stock</th>
@@ -169,7 +172,8 @@ function cerrarMensaje() {
       <?php foreach($productos as $prod): ?>
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
-         <td>$<?php echo $prod['precio_vta']; ?></td>
+         <td>$ <?php echo $prod['precio_vta']; ?></td>
+         <td>$ <?php echo number_format($prod['precio_vta'] / 1.1, 2, ',', '.'); ?></td>
          <?php 
          $categoria_nombre = 'Desconocida';
          foreach ($categorias as $categoria) {

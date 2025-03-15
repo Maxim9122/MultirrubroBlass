@@ -824,7 +824,8 @@ public function ListCompraDetalle($id)
     $cart = \Config\Services::cart();
     $session = session();
     $perfil = $session->get('perfil_id');
-    $estado = $session->get('estado');
+    $estado = $session->get('estado');    
+    $id_pedido = $this->request->getPost('id_pedido');
     //print_r($estado);
     //exit;
     
@@ -834,9 +835,19 @@ public function ListCompraDetalle($id)
     //id del vendedor
     $id_usuario = $session->get('id');
 
+    if(!$id_pedido){    
+    //Nombre provisorio del cliente para identificar venta
+    $bombre_provisorios_cliente = $this->request->getPost('nombre_prov');    
+    if (!$bombre_provisorios_cliente) {
+        session()->setFlashdata('msgEr', 'El Campo nombre cliente es Obligatorio!');
+        return redirect()->to('casiListo');
+    }
+    }
+
+    
     //id del cliente seleccionado o se selecciona Consumidor final por defecto.
     $id_cliente = $this->request->getPost('cliente_id');
-    if ($id_cliente == "Anonimo") {
+    if (!$id_cliente) {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
@@ -852,8 +863,13 @@ public function ListCompraDetalle($id)
     
     $monto_transferencia = convertirAFloat($this->request->getPost('pagoTransferencia'));
     $monto_en_Efectivo = convertirAFloat($this->request->getPost('pagoEfectivo'));
-    //print_r($monto_en_Efectivo);
-    //exit; 
+
+    //Verificamos si se envio el costo de envio
+    $costo_envio =  convertirAFloat($this->request->getPost('costoEnvio'));    
+    if(!$costo_envio){
+        $costo_envio = 0;
+    }
+    
     $tipo_pago_cobro = '';
     switch (true) {
         case ($monto_en_Efectivo > 0 && $monto_transferencia == 0):
@@ -1022,6 +1038,7 @@ public function ListCompraDetalle($id)
 
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
     $facturacion = $this->request->getPost('tipo_proceso');
+    
     //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
     if($estado == 'Cobrando' && $facturacion == "factura"){
                 
@@ -1035,7 +1052,8 @@ public function ListCompraDetalle($id)
                 'hora'         => $hora,
                 'fecha_pedido'      => $fecha_pedido_formateada,
                 'hora_entrega' => $hora,
-                'id_cliente'   => $id_cliente,
+                'id_cliente'   => $id_cliente, 
+                'costo_envio' => $costo_envio               
             ]);           
             $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         
@@ -1053,6 +1071,7 @@ public function ListCompraDetalle($id)
             'fecha'        => $fecha,
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
+            'nombre_prov_client' => $bombre_provisorios_cliente,
             'id_usuario'   => $id_usuario,
             'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
@@ -1071,6 +1090,7 @@ public function ListCompraDetalle($id)
             'fecha'        => $fecha,
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
+            'nombre_prov_client' => $bombre_provisorios_cliente,
             'id_usuario'   => $id_usuario,
             'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
@@ -1092,6 +1112,7 @@ public function ListCompraDetalle($id)
                     'hora'         => $hora,
                     'hora_entrega' => $hora,
                     'id_cliente'   => $id_cliente,
+                    'costo_envio' => $costo_envio 
                 ]);           
                 $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
@@ -1159,6 +1180,11 @@ public function generarTicket($id_cabecera)
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
     
+    $CostoEnvio = $cabecera['costo_envio'];
+   
+    // Actualizar el campo costo_envio a 0 porque se muestra una sola vez.
+    $ventaModel->update($id_cabecera, ['costo_envio' => 0]);
+    
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
     //print_r($detalles);
     //exit;
@@ -1208,6 +1234,16 @@ public function generarTicket($id_cabecera)
                 margin: 3px 0;
                 font-weight: bold;
             }
+            h4 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h5 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
             .ticket p {
                 margin: 2px 0;
                 font-size: 10px;
@@ -1239,7 +1275,7 @@ public function generarTicket($id_cabecera)
     <body>
         <div class="ticket">
             <h3>Remito</h3>
-            <p align="center">no valido como factura</p>
+            <h5>no valido como factura</5>
             <!-- Cabecera del ticket -->
             <h1>MULTIRRUBRO BLASS</h1>
             <p>GONZALEZ EMMANUEL ALEJANDRO</p>
@@ -1256,11 +1292,13 @@ public function generarTicket($id_cabecera)
         
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
+            <p>Cajero: <?= $cajero_nombre ?></p>
             <hr>
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
                 <h3>Productos Adquiridos</h3>
+                <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
                         <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
@@ -1276,6 +1314,9 @@ public function generarTicket($id_cabecera)
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <?php if ($CostoEnvio > 0): ?>
+            <p>Costo de Envio: $ <?= $CostoEnvio ?></p>
+            <?php endif; ?>
             <hr>
 
             <!-- Footer -->
@@ -1689,6 +1730,14 @@ public function generarTicketFacturaC($id_cabecera)
     $detalle_CAE = $caeModel->find($cabecera['id_cae']);
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
 
+    $session = session();
+    $cajero_nombre = $session->get('nombre');
+
+    $CostoEnvio = $cabecera['costo_envio'];
+   
+    // Actualizar el campo costo_envio a 0 porque se muestra una sola vez.
+    $ventaModel->update($id_cabecera, ['costo_envio' => 0]);
+
     // Obtener los productos relacionados
     $productos = [];
     foreach ($detalles as $detalle) {
@@ -1726,6 +1775,11 @@ public function generarTicketFacturaC($id_cabecera)
                 font-weight: bold;
             }
             h3 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h4 {
                 text-align: center;
                 margin: 3px 0;
                 font-weight: bold;
@@ -1774,14 +1828,17 @@ public function generarTicketFacturaC($id_cabecera)
             <!-- Información de la venta -->
             <p>Fecha y Hora: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
             <p>Factura C (Cod.011) a Consumidor Final</p>
+            <p>P.Venta: 002    NroFactura: <?= $detalle_CAE['id_cae'] ?></p>
             
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : 'Consumidor Final Cuil: 0' ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
+            <p>Cajero: <?= $cajero_nombre ?></p>
             <hr>
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
                 <h3>Detalle de la Compra</h3>
+                <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
                         <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
@@ -1797,15 +1854,18 @@ public function generarTicketFacturaC($id_cabecera)
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <?php if ($CostoEnvio > 0): ?>
+            <p>Costo de Envio: $ <?= $CostoEnvio ?></p>
+            <?php endif; ?>            
             <hr>
             
             <p>Reg. Transparencia fiscal al consumidor</p>
-            <p>IVA CONTENIDO: $0.00</p>
+            <p>IVA CONTENIDO: $ <?= number_format($cabecera['total_bonificado'] * 0.21, 2) ?></p>
             <p>Otros Imp. Nac. Indirectos: $0.00</p>
             <p>Tipo de pago: <?=$cabecera['tipo_pago'];?></p>
             <p>Referencia electronica del Comprobante:</p>
             <p>CAE: <?= $detalle_CAE['cae'] ?>   Vto: <?= date('d-m-Y', strtotime($detalle_CAE['vto_cae'])) ?></p>
-            <p>P.Venta: 002    NroCAE/Factura: <?= $detalle_CAE['id_cae'] ?></p>
+            
             <hr>
             
             <!-- Footer -->
