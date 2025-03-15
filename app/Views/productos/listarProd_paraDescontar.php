@@ -126,8 +126,12 @@ function cerrarMensaje() {
 </style>
 
 <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 20px;">
-    <a class="btn" href="<?php echo base_url('historial_Descuentos');?>">Historia de Descuentos</a>                   
+    <a class="btn" href="<?php echo base_url('historial_Descuentos');?>">Historial de Descuentos</a>                   
+    <?php if($perfil == 3) {?>
     <a class="btn" href="<?php echo base_url('catalogo');?>">Volver</a>
+    <?php } else { ?>
+    <a class="btn" href="<?php echo base_url('Lista_Productos');?>">Volver</a>
+    <?php } ?>
 </div>
 
   <table class="" id="users-list">

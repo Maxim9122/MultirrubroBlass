@@ -124,8 +124,7 @@
           </li>
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
-          </li>
-          <?php } else if($perfil == 2) {?>
+          </li>          
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('clientes');?>">CLIENTES</a>
           </li>

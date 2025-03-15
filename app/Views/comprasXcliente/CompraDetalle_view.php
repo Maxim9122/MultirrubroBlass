@@ -14,9 +14,11 @@ $total_anterior = '';
 }
 
 </style>
+<div style="width: 100%;">
+  <div style="text-align:center;">
 <br><br>
 <a class="detalle-compra-titulo btn" align="center" href="javascript:history.back()">⬅ Volver</a>
-
+</div>
 <div style="clear: both;"></div>
 <br>
 

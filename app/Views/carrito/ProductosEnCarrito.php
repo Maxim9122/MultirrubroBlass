@@ -130,6 +130,25 @@
     border-color: #8be9fd;
     box-shadow: 0 0 5px #8be9fd;
 }
+
+.diferencia_result {
+    width: 100%;
+    max-width: 450px;
+    padding: 8px;
+    border: 2px solid #50fa7b;
+    background-color: #282a36;
+    color: red;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 800px;
+    color:#ffff;
+}
+
+.diferencia_result:focus {
+    outline: none;
+    border-color: #8be9fd;
+    box-shadow: 0 0 5px #8be9fd;
+}
 </style>
 
 
@@ -214,8 +233,10 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                     <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
                     <td>Precio</td>
+                    <td>Precio Efectivo(-10%)</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
+                    <td>Sub.Tot. Efectivo(-10%)</td>
                     <td>Eliminar?</td>
                 </tr>
                 
@@ -239,10 +260,15 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <td class="separador" style="color: #ffff;">
                             <?php echo $item['name']; ?>
                         </td>
+
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'], 2);?>
+                        $ <?php  echo number_format($item['price'], 2, ',', '.');?>
                         </td>
-                        
+
+                        <td class="separador"  style="color: #ffff;">
+                        $ <?php  echo number_format($item['price'] / 1.1, 2, ',', '.');?>
+                        </td>     
+
                         <td class="separador" style="color: #ffff;">
                         <?php 
                             if ($item['id'] < 10000) {
@@ -264,9 +290,15 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         </td>
                         
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
+
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'], 2) ?>
+                        $ <?php echo number_format($item['subtotal'], 2, ',', '.'); ?>
                         </td>
+
+                        <td class="separador" style="color: #ffff;">
+                        $ <?php echo number_format($item['subtotal'] / 1.1, 2, ',', '.'); ?>
+                        </td>
+
                         <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
                                 $path = '<img src= '. base_url('assets/img/icons/basura3.png') . ' width="10px" height="10px">';
@@ -283,6 +315,8 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
 
                     <?php if ($estado == 'Modificando_SF'): ?>
                         <tr>
+                            <td></td>
+                            <td></td>
                             <td colspan="6" align="right">
                                 <label style="color:orange;" for="motivo_cambio">Motivo de los cambios de la Venta:</label>
                                 <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios">
@@ -297,7 +331,11 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                                     <option value="Transferencia">Transferencia</option>
                                     <option value="Efectivo">Efectivo</option>
                                 </select>                                
-                                <h4 class="total_ant" id="diferencia">Diferencia: $<?php echo number_format($gran_total - $total_anterior, 2); ?></h4>
+                                <h4 class="total_ant" id="diferencia">Diferencia: $ <?php echo number_format($gran_total - $total_anterior, 2); ?></h4>
+                                <?php if ($gran_total - $total_anterior < 0): ?>
+                                    <h3 style="color:#f42632;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
+                                <?php endif; ?>
+                                                                
                                 <br>
                                 <h4 style="color:orange;">Si la Diferencia es Negativa, significa que es dinero a favor del Cliente.</h4>
                             </td>       
@@ -305,8 +343,9 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                     <?php endif; ?>
 
                     <tr>
-                        <td>
-                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td colspan="5" align="right">
                         <?php if ($estado != 'Modificando_SF'): ?>                        
                             <br>
