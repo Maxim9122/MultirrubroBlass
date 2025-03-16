@@ -252,7 +252,11 @@ endif;
             
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
-            <?php echo form_submit('confirmar', 'Confirmar', "class='btn'"); ?>
+            <?php if ($perfil == 2): ?>
+                <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn">
+            <?php elseif ($perfil == 3): ?>
+                <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn">
+            <?php endif; ?>
             </section>
 
         </div>
@@ -504,20 +508,14 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 </script>
 
-<!-- Primer modal (Confirmación de compra) -->
-<div id="confirmationModal" class="modal">
+<!-- Modal para Perfil 3 (Imprimir Presupuesto o Facturar) -->
+<div id="confirmationModalPerfil3" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <?php if ($perfil == 3): ?>
-            <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
-            <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
-            <br><br>
-            <button id="printTicket" class="btn">Imprimir Presupuesto</button>
-        <?php endif; ?>
-        <?php if ($perfil == 2): ?>
-            <p>¿Registrar compra?</p>
-            <button id="printTicket" class="btn">Sí, Registrar</button>
-        <?php endif; ?>
+        <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
+        <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
+        <br><br>
+        <button id="printTicket" class="btn">Imprimir Presupuesto</button>
     </div>
 </div>
 
@@ -531,8 +529,68 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     </div>
 </div>
 
+
+
+<!-- Modal para Perfil 2 (Registrar Compra) -->
+<div id="confirmationModalPerfil2" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closePerfil2">&times;</span>
+        <p>¿Registrar compra?</p>
+        <button id="confirmarRegistro" class="btn">Sí, Registrar</button>
+    </div>
+</div>
+        <!-- Script Modal perfil 2 -->
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const modalConfirmacionPerfil2 = document.getElementById("confirmationModalPerfil2");
+    const btnConfirmarPerfil2 = document.querySelector("input[name='confirmarPerfil2']");
+    const spanClosePerfil2 = document.getElementById("closePerfil2"); // Cambiado a ID
+    const btnConfirmarRegistro = document.getElementById("confirmarRegistro");
+
+    function abrirModal(modal) {
+        modal.style.display = "block";
+        setTimeout(() => modal.classList.add("show"), 10);
+    }
+
+    function cerrarModal(modal) {
+        modal.classList.remove("show");
+        setTimeout(() => modal.style.display = "none", 300);
+    }
+
+    // Abrir modal al hacer clic en "Confirmar"
+    btnConfirmarPerfil2.addEventListener("click", function (event) {
+        event.preventDefault();
+        abrirModal(modalConfirmacionPerfil2);
+    });
+
+    // Cerrar modal al hacer clic en "Sí, Registrar"
+    btnConfirmarRegistro.addEventListener("click", function () {
+        document.querySelector("form").submit();
+    });
+
+    // Cerrar modal al hacer clic en la "X"
+    spanClosePerfil2.addEventListener("click", function () {
+        cerrarModal(modalConfirmacionPerfil2);
+    });
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.addEventListener("click", function (event) {
+        if (event.target == modalConfirmacionPerfil2) {
+            cerrarModal(modalConfirmacionPerfil2);
+        }
+    });
+
+    // Cerrar modal al presionar la tecla Escape
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            cerrarModal(modalConfirmacionPerfil2);
+        }
+    });
+});
+</script>
+
 <style>
-    /* Estilos para el modales*/
+   /* Estilos para el modal */
 .modal {
     display: none; /* Oculto por defecto */
     position: fixed;
@@ -542,7 +600,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     padding-top: 60px;
 }
 
@@ -585,22 +643,22 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 .close:hover,
 .close:focus {
     font-weight: 700;
-    color: black;
+    color: red;
     text-decoration: none;
     cursor: pointer;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 </style>
 
-<!-- Script pata menejo de los modales -->
+<!-- Script para el manejo del modal del Cajero (perfil 3)-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const modalConfirmacion = document.getElementById("confirmationModal");
+    const modalConfirmacionPerfil3 = document.getElementById("confirmationModalPerfil3");
     const modalFactura = document.getElementById("confirmationFacturaModal");
-    const btnConfirmar = document.querySelector("input[name='confirmar']");
+    const btnConfirmarPerfil3 = document.querySelector("input[name='confirmarPerfil3']");
     const btnInvoiceArca = document.getElementById("invoiceArca");
     const btnPrintTicket = document.getElementById("printTicket");
-    const spanClose = document.getElementsByClassName("close")[0];
+    const spanClosePerfil3 = document.getElementsByClassName("close")[0];
     const spanCloseFactura = document.getElementsByClassName("closeFactura")[0];
     const btnConfirmFactura = document.getElementById("confirmFactura");
     const btnCancelFactura = document.getElementById("cancelFactura");
@@ -613,22 +671,17 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     function cerrarModal(modal) {
         modal.classList.remove("show");
-        setTimeout(() => modal.style.display = "none", 300); // Espera a la animación
+        setTimeout(() => modal.style.display = "none", 300);
     }
 
-    btnConfirmar.addEventListener("click", function (event) {
+    btnConfirmarPerfil3.addEventListener("click", function (event) {
         event.preventDefault();
-        const tipoCompra = document.getElementById("tipoCompra").value;
-        if (tipoCompra === "Pedido") {
-            document.querySelector("form").submit();
-        } else {
-            abrirModal(modalConfirmacion);
-        }
+        abrirModal(modalConfirmacionPerfil3);
     });
 
     btnInvoiceArca.addEventListener("click", function (event) {
         event.preventDefault();
-        cerrarModal(modalConfirmacion);
+        cerrarModal(modalConfirmacionPerfil3);
         setTimeout(() => abrirModal(modalFactura), 300);
     });
 
@@ -644,11 +697,11 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     btnCancelFactura.addEventListener("click", function () {
         cerrarModal(modalFactura);
-        setTimeout(() => abrirModal(modalConfirmacion), 300);
+        setTimeout(() => abrirModal(modalConfirmacionPerfil3), 300);
     });
 
-    spanClose.addEventListener("click", function () {
-        cerrarModal(modalConfirmacion);
+    spanClosePerfil3.addEventListener("click", function () {
+        cerrarModal(modalConfirmacionPerfil3);
     });
 
     spanCloseFactura.addEventListener("click", function () {
@@ -656,8 +709,8 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 
     window.addEventListener("click", function (event) {
-        if (event.target == modalConfirmacion) {
-            cerrarModal(modalConfirmacion);
+        if (event.target == modalConfirmacionPerfil3) {
+            cerrarModal(modalConfirmacionPerfil3);
         }
         if (event.target == modalFactura) {
             cerrarModal(modalFactura);
@@ -666,10 +719,9 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     window.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
-            cerrarModal(modalConfirmacion);
+            cerrarModal(modalConfirmacionPerfil3);
             cerrarModal(modalFactura);
         }
     });
 });
-
 </script>
