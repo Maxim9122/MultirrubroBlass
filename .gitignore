@@ -2,4 +2,6 @@
 /writable/session
 /writable/logs
 COM3
+app/Libraries/afip/
+
 
