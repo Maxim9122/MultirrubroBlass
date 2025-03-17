@@ -162,6 +162,7 @@ class Pedidos_controller extends Controller{
     $vendedor = $US_model->find($id_vendedor);
     $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
     $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
+    $nombre_cli = $cabecera ? $cabecera['nombre_prov_client'] : null; 
     $id_pedido = $cabecera ? $cabecera['id'] : null;
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
     $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
@@ -172,6 +173,7 @@ class Pedidos_controller extends Controller{
     $session->set([
         'id_pedido' => $id_pedido,
         'id_cliente_pedido' => $id_cliente,
+        'nombre_cli' => $nombre_cli,
         'id_vendedor' => $id_vendedor,
         'nombre_vendedor' => $nombre_vendedor,        
         'fecha_pedido' => $fecha_pedido,
@@ -226,7 +228,7 @@ public function cancelar_edicion($id_pedido){
             
         // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
         $session = session();
-        $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente_pedido' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        $session->remove(['estado','id_vendedor', 'nombre_cli' ,'nombre_vendedor', 'id_cliente_pedido' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         // Actualizar el estado del pedido a "Pendiente"
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
         $cart->destroy();

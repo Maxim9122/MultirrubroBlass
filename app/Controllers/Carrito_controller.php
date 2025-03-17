@@ -1026,7 +1026,7 @@ public function ListCompraDetalle($id)
         }
     
         // Limpiar sesión y carrito
-        $session->remove(['estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
+        $session->remove(['estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente_pedido', 'nombre_cli' , 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
         $cart->destroy();
     
         session()->setFlashdata('msg', 'Pedido actualizado con éxito!');
@@ -1055,7 +1055,7 @@ public function ListCompraDetalle($id)
                 'id_cliente'   => $id_cliente, 
                 'costo_envio' => $costo_envio               
             ]);           
-            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'nombre_cli' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         
         $cart->destroy(); 
         //Una vez guardada la compra manda a verificar la factura en ARCA.
@@ -1114,7 +1114,7 @@ public function ListCompraDetalle($id)
                     'id_cliente'   => $id_cliente,
                     'costo_envio' => $costo_envio 
                 ]);           
-                $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+                $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'nombre_cli' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
             $cart->destroy();            
             return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);

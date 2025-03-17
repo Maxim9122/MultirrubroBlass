@@ -22,6 +22,7 @@ $perfil = $session->get('perfil_id');
 $id_vendedor = '';
 $nombre_vendedor = '';
 $id_cliente = '';
+$nombre_cli = '';
 $fecha_pedido = '';
 $tipo_compra = '';
 $tipo_pago = '';
@@ -39,6 +40,9 @@ if ($session->has('estado')) {
 }
 if ($session->has('id_cliente')) {
     $id_cliente = $session->get('id_cliente');    
+}
+if ($session->has('nombre_cli')) {
+    $nombre_cli = $session->get('nombre_cli');    
 }
 if ($session->has('fecha_pedido')) {
     $fecha_pedido = $session->get('fecha_pedido');
@@ -58,7 +62,7 @@ if ($session->has('id_vendedor')) {
 if ($session->has('nombre_vendedor')) {
     $nombre_vendedor = $session->get('nombre_vendedor');
 }
-//print_r($nombre_vendedor);
+//print_r($nombre_cli);
 //exit;
 if ($session->has('total_venta')) {
     $total_venta = $session->get('total_venta');
@@ -120,11 +124,18 @@ endif;
             <td style="color:rgb(192, 250, 214);"><strong>Vendedor:</strong></td>
             <td style="color: #ffff;">
                 <?php echo (!empty($nombre_vendedor) ? $nombre_vendedor : $nombre); ?>
-            </td>
-            <?php if ($perfil == 3): ?><!-- Filtro cajero-->
+            </td>                      
             </tr>
+            <?php if ($nombre_cli != ''): ?><!-- Filtro cajero-->
+            <tr>
+                <td style="color:rgb(192, 250, 214);"><strong>Nombre Cliente:</strong></td>
+                <td style="color:#ffff;"><strong><?php echo $nombre_cli ?></strong></td>
+            </tr>  
+            <?php endif; ?>
+            <?php if ($perfil == 3): ?><!-- Filtro cajero-->
+
                 <tr>
-                <td style="color:rgb(192, 250, 214);"><strong>Cliente:</strong></td>
+                <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente:</strong></td>
                 <td>
                     <?php if ($clientes): ?>
                         <select name="cliente_id" class="selector">
@@ -252,9 +263,9 @@ endif;
             
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
-            <?php if ($perfil == 2): ?>
+            <?php if ($perfil == 2 || $estado == 'Modificando'): ?>
                 <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn">
-            <?php elseif ($perfil == 3): ?>
+            <?php elseif ($perfil == 3 && $estado == 'Cobrando'): ?>
                 <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn">
             <?php endif; ?>
             </section>
@@ -535,7 +546,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <div id="confirmationModalPerfil2" class="modal">
     <div class="modal-content">
         <span class="close" id="closePerfil2">&times;</span>
-        <p>¿Registrar compra?</p>
+        <p>¿Registrar Compra/Pedido.?</p>
         <button id="confirmarRegistro" class="btn">Sí, Registrar</button>
     </div>
 </div>
