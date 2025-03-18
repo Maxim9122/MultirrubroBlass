@@ -21,11 +21,7 @@ class Producto_controller extends Controller{
         }
         $Model = new categoria_model();
         $eliminado = 'NO';
-<<<<<<< HEAD
         $data['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
-=======
-        $dato['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         
 		$data['titulo']='Nuevo Producto';
                 echo view('navbar/navbar');

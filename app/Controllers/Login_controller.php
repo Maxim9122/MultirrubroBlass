@@ -106,11 +106,7 @@ class Login_controller extends Controller
              
         // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
         $session = session();
-<<<<<<< HEAD
         $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-=======
-        $session->remove(['id_vendedor', 'nombre_vendedor', 'id_cliente', 'nombre_cli' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         // Actualizar el estado del pedido a "Pendiente"
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
         $cart->destroy();        
@@ -129,12 +125,8 @@ class Login_controller extends Controller
         $cart = \Config\Services::cart();
         $cart->destroy();
         $Cabecera_model = new Cabecera_model();
-        $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
-<<<<<<< HEAD
+        $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);
         $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-=======
-        $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'nombre_cli' ,'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         }
          $registro_sesion = new Sesion_model();
          $id_sesion = $session->get('id_sesion'); 
