@@ -114,11 +114,7 @@
 }
 .total_ant {
     width: 100%;
-<<<<<<< HEAD
-    max-width: 300px;
-=======
     max-width: 440px;
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     padding: 8px;
     border: 2px solid #50fa7b;
     background-color: #282a36;
