@@ -21,12 +21,12 @@ class Producto_controller extends Controller{
         }
         $Model = new categoria_model();
         $eliminado = 'NO';
-        $dato['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
+        $data['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
         
 		$data['titulo']='Nuevo Producto';
                 echo view('navbar/navbar');
                 echo view('header/header',$data);
-                echo view('admin/nuevoProducto_view',$dato);
+                echo view('admin/nuevoProducto_view',$data);
                 echo view('footer/footer');
 	}
 
@@ -65,7 +65,11 @@ class Producto_controller extends Controller{
         $ProductoModel = new Productos_model();
         
         if (!$input) {
-               $data['titulo']='Nuevo Producto'; 
+            $Model = new categoria_model();
+            $eliminado = 'NO';
+            $data['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
+            
+            $data['titulo']='Nuevo Producto'; 
                echo view('navbar/navbar');
                echo view('header/header',$data);
                 echo view('admin/nuevoProducto_view',['validation' => $this->validator]);
