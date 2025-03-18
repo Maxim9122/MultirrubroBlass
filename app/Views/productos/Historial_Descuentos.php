@@ -173,10 +173,9 @@ $(document).ready(function () {
     // Inicializar DataTables
     $('#users-list').DataTable({
         "order": [[0, "desc"]],
-<<<<<<< HEAD
-=======
+
         "stateSave": true, // Habilitar el guardado del estado
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
+
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",

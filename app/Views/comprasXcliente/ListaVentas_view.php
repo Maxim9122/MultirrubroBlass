@@ -552,27 +552,6 @@ window.onclick = function(event) {
           <script>
   $(document).ready(function () {
     $('#users-list').DataTable({
-<<<<<<< HEAD
-      "order": [[0, "desc"]],
-      "language": {
-        "lengthMenu": "Mostrar _MENU_ registros por página.",
-        "zeroRecords": "Lo sentimos! No hay resultados.",
-        "info": "Mostrando la página _PAGE_ de _PAGES_",
-        "infoEmpty": "No hay registros disponibles.",
-        "infoFiltered": "(filtrado de _MAX_ registros totales)",
-        "search": "Buscar: ",
-        "paginate": {
-          "next": "Siguiente",
-          "previous": "Anterior"
-        }
-      },
-      initComplete: function () {
-        // Agregar el placeholder personalizado al buscador
-        $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
-      }
-    });
-  });
-=======
         "order": [[0, "desc"]], // Ordenar por la primera columna de forma descendente
         "stateSave": true, // Habilitar el guardado del estado
         "language": {
@@ -593,7 +572,7 @@ window.onclick = function(event) {
         }
     });
 });
->>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
+
 
   // Crear un objeto Date en UTC
   const today = new Date();
