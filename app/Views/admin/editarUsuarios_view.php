@@ -52,8 +52,13 @@ $id=$session->get('id');?>
                         <div style="margin-bottom: 10px;">
                             <label style="display: block;">Teléfono</label>
                             <input name="telefono" type="text" style="width: 95%; padding: 5px; border: 1px solid #ccc;" placeholder="Teléfono"
+<<<<<<< HEAD
                                    value="<?php echo $data['telefono']?>" maxlength="10"
                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+=======
+                            value="<?php echo $data['telefono']?>" maxlength="10"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
                         </div>
                     </div>
 

@@ -86,6 +86,10 @@ class Caja_controller extends Controller{
     $vendedor = $US_model->find($id_vendedor);
     $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
     $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
+<<<<<<< HEAD
+=======
+    $nombre_cli = $cabecera ? $cabecera['nombre_prov_client'] : null;   
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     $id_pedido = $cabecera ? $cabecera['id'] : null;
     $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
     $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
@@ -97,6 +101,10 @@ class Caja_controller extends Controller{
         'id_vendedor' => $id_vendedor,
         'nombre_vendedor' => $nombre_vendedor,
         'id_cliente' => $id_cliente,
+<<<<<<< HEAD
+=======
+        'nombre_cli' => $nombre_cli,
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         'id_pedido' => $id_pedido,
         'fecha_pedido' => $fecha_pedido,
         'tipo_compra' => $tipo_compra,
@@ -122,7 +130,11 @@ class Caja_controller extends Controller{
         $cart->destroy();
         $Cabecera_model = new Cabecera_model();
         $Cabecera_model->update($id_pedido, ['estado' => 'Pendiente']);           
+<<<<<<< HEAD
         $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+=======
+        $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'nombre_cli' , 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         if($tipo_compra == 'Compra_Normal'){ 
             session()->setFlashdata('msg', 'Se Cancelo el cobro de la Venta!');
         return redirect()->to('caja');

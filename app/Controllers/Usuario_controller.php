@@ -111,7 +111,7 @@ class Usuario_controller extends Controller{
             'nombre'    => 'required|min_length[3]',
             'apellido'  => 'required|min_length[3]|max_length[25]',
             'email'     => 'required|min_length[4]|max_length[100]|valid_email',
-            'telefono'  => 'required|exact_length[10]',
+            'telefono'  => 'required|max_length[10]',
             'direccion' => 'required|max_length[100]',
             'pass'      => 'required|min_length[3]',
             'perfil_id' => 'required|is_natural_no_zero|max_length[1]',
@@ -119,7 +119,7 @@ class Usuario_controller extends Controller{
         ]);
         
         $Model = new Usuarios_model();
-        $id = $_POST['id'];
+        $id = $_POST['id'];     
         
         if (!$input) {
             $data = $Model->getUsuario($id);
@@ -148,6 +148,8 @@ class Usuario_controller extends Controller{
                 'perfil_id'  => $_POST['perfil_id'],
                 'baja'  => $_POST['baja'],
             ];
+            //print_r($_POST['telefono']);
+            //exit;
          }else{
             $datos=[
                 'id' => $_POST['id'],
@@ -161,6 +163,7 @@ class Usuario_controller extends Controller{
                 'baja'  => $_POST['baja'],
             ];
          }
+         
          $Model -> update($id,$datos);
 
          session()->setFlashdata('msg','Usuario Editado');

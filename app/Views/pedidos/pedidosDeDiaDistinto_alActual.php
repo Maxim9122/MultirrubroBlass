@@ -225,6 +225,10 @@ function cerrarConfirmacion() {
 <script>
   $(document).ready(function () {
     $('#users-list').DataTable({
+<<<<<<< HEAD
+=======
+        "stateSave": true, // Habilitar el guardado del estado
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
       "language": {
         "lengthMenu": "Mostrar _MENU_ registros por página.",
         "zeroRecords": "Sin Resultados! No hay pedidos agendados.",

@@ -22,6 +22,7 @@ $perfil = $session->get('perfil_id');
 $id_vendedor = '';
 $nombre_vendedor = '';
 $id_cliente = '';
+$nombre_cli = '';
 $fecha_pedido = '';
 $tipo_compra = '';
 $tipo_pago = '';
@@ -40,6 +41,12 @@ if ($session->has('estado')) {
 if ($session->has('id_cliente')) {
     $id_cliente = $session->get('id_cliente');    
 }
+<<<<<<< HEAD
+=======
+if ($session->has('nombre_cli')) {
+    $nombre_cli = $session->get('nombre_cli');    
+}
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
 if ($session->has('fecha_pedido')) {
     $fecha_pedido = $session->get('fecha_pedido');
 }
@@ -58,7 +65,11 @@ if ($session->has('id_vendedor')) {
 if ($session->has('nombre_vendedor')) {
     $nombre_vendedor = $session->get('nombre_vendedor');
 }
+<<<<<<< HEAD
 //print_r($nombre_vendedor);
+=======
+//print_r($nombre_cli);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
 //exit;
 if ($session->has('total_venta')) {
     $total_venta = $session->get('total_venta');
@@ -120,6 +131,7 @@ endif;
             <td style="color:rgb(192, 250, 214);"><strong>Vendedor:</strong></td>
             <td style="color: #ffff;">
                 <?php echo (!empty($nombre_vendedor) ? $nombre_vendedor : $nombre); ?>
+<<<<<<< HEAD
             </td>
             <?php if ($perfil == 3): ?><!-- Filtro cajero-->
             </tr>
@@ -143,6 +155,38 @@ endif;
                  </tr>
                  <?php endif; ?><!-- Fin del if filtro cajero-->
 
+=======
+            </td>                      
+            </tr>
+            <?php if ($nombre_cli != ''): ?><!-- Filtro cajero-->
+            <tr>
+                <td style="color:rgb(192, 250, 214);"><strong>Nombre Cliente:</strong></td>
+                <td style="color:#ffff;"><strong><?php echo $nombre_cli ?></strong></td>
+            </tr>  
+            <?php endif; ?>
+            <?php if ($perfil == 3): ?><!-- Filtro cajero-->
+
+                <tr>
+                <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente:</strong></td>
+                <td>
+                    <?php if ($clientes): ?>
+                        <select name="cliente_id" class="selector">
+                            <option value="Anonimo">Consumidor Final</option>
+                            <?php foreach ($clientes as $cl): ?>
+                                <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
+                                    <?php echo $cl['nombre']; ?>
+                                    <?php echo "Cuil:" . $cl['cuil']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else: ?>
+                        <span>No hay clientes disponibles</span>
+                    <?php endif; ?>
+                </td>
+                 </tr>
+                 <?php endif; ?><!-- Fin del if filtro cajero-->
+
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
                  <?php if ($perfil == 2 && $estado == ''): ?><!-- Filtro Vendedor-->
             </tr>
                 <tr>
@@ -252,7 +296,15 @@ endif;
             
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
+<<<<<<< HEAD
             <?php echo form_submit('confirmar', 'Confirmar', "class='btn'"); ?>
+=======
+            <?php if ($perfil == 2 || $estado == 'Modificando'): ?>
+                <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn">
+            <?php elseif ($perfil == 3 && $estado == 'Cobrando'): ?>
+                <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn">
+            <?php endif; ?>
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
             </section>
 
         </div>
@@ -504,6 +556,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 </script>
 
+<<<<<<< HEAD
 <!-- Primer modal (Confirmación de compra) -->
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
@@ -528,11 +581,95 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo C)</p>
         <button id="confirmFactura" class="btn">Sí, Facturar</button>
         <button id="cancelFactura" class="btn danger">Cancelar</button>
+=======
+<!-- Modal para Perfil 3 (Imprimir Presupuesto o Facturar) -->
+<div id="confirmationModalPerfil3" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
+        <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
+        <br><br>
+        <button id="printTicket" class="btn">Imprimir Presupuesto</button>
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     </div>
 </div>
 
+<!-- Segundo modal (Confirmación de facturación) -->
+<div id="confirmationFacturaModal" class="modal">
+    <div class="modal-content">
+        <span class="closeFactura">&times;</span>
+        <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo C)</p>
+        <button id="confirmFactura" class="btn">Sí, Facturar</button>
+        <button id="cancelFactura" class="btn danger">Cancelar</button>
+    </div>
+</div>
+
+
+
+<!-- Modal para Perfil 2 (Registrar Compra) -->
+<div id="confirmationModalPerfil2" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closePerfil2">&times;</span>
+        <p>¿Registrar Compra/Pedido.?</p>
+        <button id="confirmarRegistro" class="btn">Sí, Registrar</button>
+    </div>
+</div>
+        <!-- Script Modal perfil 2 -->
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const modalConfirmacionPerfil2 = document.getElementById("confirmationModalPerfil2");
+    const btnConfirmarPerfil2 = document.querySelector("input[name='confirmarPerfil2']");
+    const spanClosePerfil2 = document.getElementById("closePerfil2"); // Cambiado a ID
+    const btnConfirmarRegistro = document.getElementById("confirmarRegistro");
+
+    function abrirModal(modal) {
+        modal.style.display = "block";
+        setTimeout(() => modal.classList.add("show"), 10);
+    }
+
+    function cerrarModal(modal) {
+        modal.classList.remove("show");
+        setTimeout(() => modal.style.display = "none", 300);
+    }
+
+    // Abrir modal al hacer clic en "Confirmar"
+    btnConfirmarPerfil2.addEventListener("click", function (event) {
+        event.preventDefault();
+        abrirModal(modalConfirmacionPerfil2);
+    });
+
+    // Cerrar modal al hacer clic en "Sí, Registrar"
+    btnConfirmarRegistro.addEventListener("click", function () {
+        document.querySelector("form").submit();
+    });
+
+    // Cerrar modal al hacer clic en la "X"
+    spanClosePerfil2.addEventListener("click", function () {
+        cerrarModal(modalConfirmacionPerfil2);
+    });
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.addEventListener("click", function (event) {
+        if (event.target == modalConfirmacionPerfil2) {
+            cerrarModal(modalConfirmacionPerfil2);
+        }
+    });
+
+    // Cerrar modal al presionar la tecla Escape
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            cerrarModal(modalConfirmacionPerfil2);
+        }
+    });
+});
+</script>
+
 <style>
+<<<<<<< HEAD
     /* Estilos para el modales*/
+=======
+   /* Estilos para el modal */
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
 .modal {
     display: none; /* Oculto por defecto */
     position: fixed;
@@ -542,7 +679,11 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     width: 100%;
     height: 100%;
     overflow: auto;
+<<<<<<< HEAD
     background-color: rgba(0,0,0,0.4);
+=======
+    background-color: rgba(0, 0, 0, 0.4);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     padding-top: 60px;
 }
 
@@ -585,13 +726,14 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 .close:hover,
 .close:focus {
     font-weight: 700;
-    color: black;
+    color: red;
     text-decoration: none;
     cursor: pointer;
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 </style>
 
+<<<<<<< HEAD
 <!-- Script pata menejo de los modales -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -601,10 +743,22 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     const btnInvoiceArca = document.getElementById("invoiceArca");
     const btnPrintTicket = document.getElementById("printTicket");
     const spanClose = document.getElementsByClassName("close")[0];
+=======
+<!-- Script para el manejo del modal del Cajero (perfil 3)-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const modalConfirmacionPerfil3 = document.getElementById("confirmationModalPerfil3");
+    const modalFactura = document.getElementById("confirmationFacturaModal");
+    const btnConfirmarPerfil3 = document.querySelector("input[name='confirmarPerfil3']");
+    const btnInvoiceArca = document.getElementById("invoiceArca");
+    const btnPrintTicket = document.getElementById("printTicket");
+    const spanClosePerfil3 = document.getElementsByClassName("close")[0];
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     const spanCloseFactura = document.getElementsByClassName("closeFactura")[0];
     const btnConfirmFactura = document.getElementById("confirmFactura");
     const btnCancelFactura = document.getElementById("cancelFactura");
     const tipoProcesoInput = document.querySelector("input[name='tipo_proceso']");
+<<<<<<< HEAD
 
     function abrirModal(modal) {
         modal.style.display = "block";
@@ -624,11 +778,31 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         } else {
             abrirModal(modalConfirmacion);
         }
+=======
+
+    function abrirModal(modal) {
+        modal.style.display = "block";
+        setTimeout(() => modal.classList.add("show"), 10);
+    }
+
+    function cerrarModal(modal) {
+        modal.classList.remove("show");
+        setTimeout(() => modal.style.display = "none", 300);
+    }
+
+    btnConfirmarPerfil3.addEventListener("click", function (event) {
+        event.preventDefault();
+        abrirModal(modalConfirmacionPerfil3);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     });
 
     btnInvoiceArca.addEventListener("click", function (event) {
         event.preventDefault();
+<<<<<<< HEAD
         cerrarModal(modalConfirmacion);
+=======
+        cerrarModal(modalConfirmacionPerfil3);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         setTimeout(() => abrirModal(modalFactura), 300);
     });
 
@@ -644,11 +818,19 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     btnCancelFactura.addEventListener("click", function () {
         cerrarModal(modalFactura);
+<<<<<<< HEAD
         setTimeout(() => abrirModal(modalConfirmacion), 300);
     });
 
     spanClose.addEventListener("click", function () {
         cerrarModal(modalConfirmacion);
+=======
+        setTimeout(() => abrirModal(modalConfirmacionPerfil3), 300);
+    });
+
+    spanClosePerfil3.addEventListener("click", function () {
+        cerrarModal(modalConfirmacionPerfil3);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
     });
 
     spanCloseFactura.addEventListener("click", function () {
@@ -656,8 +838,13 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 
     window.addEventListener("click", function (event) {
+<<<<<<< HEAD
         if (event.target == modalConfirmacion) {
             cerrarModal(modalConfirmacion);
+=======
+        if (event.target == modalConfirmacionPerfil3) {
+            cerrarModal(modalConfirmacionPerfil3);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
         }
         if (event.target == modalFactura) {
             cerrarModal(modalFactura);
@@ -666,10 +853,17 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     window.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
+<<<<<<< HEAD
             cerrarModal(modalConfirmacion);
+=======
+            cerrarModal(modalConfirmacionPerfil3);
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
             cerrarModal(modalFactura);
         }
     });
 });
+<<<<<<< HEAD
 
+=======
+>>>>>>> d2a4edb5e07bddd45b952c34457fcb40da00b6ad
 </script>
