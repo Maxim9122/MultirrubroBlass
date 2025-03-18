@@ -114,7 +114,7 @@
 }
 .total_ant {
     width: 100%;
-    max-width: 300px;
+    max-width: 440px;
     padding: 8px;
     border: 2px solid #50fa7b;
     background-color: #282a36;
@@ -164,7 +164,8 @@ if (!empty($session)) {
     $id_pedido = $session->get('id_pedido');
     $tipo_compra = $session->get('tipo_compra');
     $estado = $session->get('estado');
-    $total_anterior = $session->get('total_bonificado');
+    $total_anterior_bonif = $session->get('total_bonificado');
+    $total_anterior_gen = $session->get('total_venta');
 }
 //print_r($perfil);
 //exit;
@@ -320,19 +321,24 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             <td colspan="6" align="right">
                                 <label style="color:orange;" for="motivo_cambio">Motivo de los cambios de la Venta:</label>
                                 <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios">
-                                <h4 class="total_ant">Total Anterior: $
+                                <h4 class="total_ant">Total Anterior C/Descuento: $
                                     <?php //Gran Total
-                                    echo number_format($total_anterior, 2);
+                                    echo number_format($total_anterior_bonif, 2 , ',', '.');
                                     ?>                    
                                 </h4>
-                                <h4 class="total_ant" id="total_actual">Total Actual: $ <?php echo number_format($gran_total, 2); ?></h4>
+                                <h4 class="total_ant">Total General Anterior: $
+                                    <?php //Gran Total
+                                    echo number_format($total_anterior_gen, 2 , ',', '.');
+                                    ?>                    
+                                </h4>
+                                <h4 class="total_ant" id="total_actual">Total Actual: $ <?php echo number_format($gran_total, 2 , ',', '.'); ?></h4>
                                 <label style="color:orange;" for="tipo_pago">Paga la Diferencia Con:</label>
                                 <select class="total_ant" id="tipo_pago" name="tipo_pago_dif" onchange="calcularDiferencia()">
                                     <option value="Transferencia">Transferencia</option>
                                     <option value="Efectivo">Efectivo</option>
                                 </select>                                
-                                <h4 class="total_ant" id="diferencia">Diferencia: $ <?php echo number_format($gran_total - $total_anterior, 2); ?></h4>
-                                <?php if ($gran_total - $total_anterior < 0): ?>
+                                <h4 class="total_ant" id="diferencia">Diferencia: $ <?php echo number_format($gran_total - $total_anterior_gen, 2 , ',', '.'); ?></h4>
+                                <?php if (($gran_total - $total_anterior_gen) < 0): ?>
                                     <h3 style="color:#f42632;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
                                 <?php endif; ?>
                                                                 
@@ -422,7 +428,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
     function calcularDiferencia() {
         const tipoPago = document.getElementById('tipo_pago').value;
         const granTotal = <?php echo $gran_total; ?>;
-        const totalAnterior = <?php echo $total_anterior; ?>;
+        const totalAnterior = <?php echo $total_anterior_gen; ?>;
         let diferencia = granTotal - totalAnterior;
 
         if (tipoPago === 'Efectivo') {

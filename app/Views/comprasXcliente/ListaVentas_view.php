@@ -552,25 +552,26 @@ window.onclick = function(event) {
           <script>
   $(document).ready(function () {
     $('#users-list').DataTable({
-      "order": [[0, "desc"]],
-      "language": {
-        "lengthMenu": "Mostrar _MENU_ registros por página.",
-        "zeroRecords": "Lo sentimos! No hay resultados.",
-        "info": "Mostrando la página _PAGE_ de _PAGES_",
-        "infoEmpty": "No hay registros disponibles.",
-        "infoFiltered": "(filtrado de _MAX_ registros totales)",
-        "search": "Buscar: ",
-        "paginate": {
-          "next": "Siguiente",
-          "previous": "Anterior"
+        "order": [[0, "desc"]], // Ordenar por la primera columna de forma descendente
+        "stateSave": true, // Habilitar el guardado del estado
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página.",
+            "zeroRecords": "Lo sentimos! No hay resultados.",
+            "info": "Mostrando la página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles.",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+            "search": "Buscar: ",
+            "paginate": {
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        },
+        initComplete: function () {
+            // Agregar el placeholder personalizado al buscador
+            $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
         }
-      },
-      initComplete: function () {
-        // Agregar el placeholder personalizado al buscador
-        $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
-      }
     });
-  });
+});
 
   // Crear un objeto Date en UTC
   const today = new Date();

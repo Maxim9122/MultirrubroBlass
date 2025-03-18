@@ -227,6 +227,7 @@ function cerrarConfirmacion() {
 <script>
   $(document).ready(function () {
     $('#users-list').DataTable({
+        "stateSave": true, // Habilitar el guardado del estado
       "language": {
         "lengthMenu": "Mostrar _MENU_ registros por página.",
         "zeroRecords": "Sin Resultados! No hay pedidos agendados para Hoy.",
