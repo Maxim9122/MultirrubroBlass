@@ -205,16 +205,16 @@ function cerrarMensaje() {
             <?php } else if ($session && ($perfil == 2 || $perfil == 1 || $perfil == 3)) { ?>
                
                <!-- Formulario para agregar al carrito -->
-               <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
-               <?php echo form_hidden('id', $prod['id']); ?>
-               <?php echo form_hidden('nombre', $prod['nombre']); ?>
-               <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
-               
-               <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
-               <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
-               <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
-               <?php  } ?>
-               <?php echo form_close(); ?>
+                <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
+                    <?php echo form_hidden('id', $prod['id']); ?>
+                    <?php echo form_hidden('nombre', $prod['nombre']); ?>
+                    <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
+                    <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
+                    <input type="hidden" name="tipo_pago" id="tipo_pago_<?php echo $prod['id']; ?>"> <!-- Campo oculto para el tipo de pago -->
+                    <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') { ?>
+                        <button type="button" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>" onclick="mostrarModalPago(<?php echo $prod['id']; ?>)">Agregar</button>
+                    <?php } ?>
+                <?php echo form_close(); ?>
 
             <?php } else { ?>
                <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
@@ -230,8 +230,81 @@ function cerrarMensaje() {
   </div>
 </div>
 
+<!-- Modal de Selección de Pago -->
+<div id="pagoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div style="color:white; background: black; padding: 20px; border-radius: 10px; text-align: center;">
+        <h2>Como se Abonara este producto.?</h2>
+        <br>
+        <button id="pagoEfectivo" class="btn">Pago en Efectivo</button>
+        <button id="pagoTransferencia" class="btn">Pago por Transferencia</button>
+        <button id="pagoTarjeta" class="btn">Pago con Tarjeta de Crédito</button> <!-- Nuevo botón -->
+        <button id="cancelarPago" class="btn">Cancelar</button>
+    </div>
+</div>
+<!-- Script para manejo del modal que agarra el tipo de pago-->
+<script>
+    // Variables globales
+    let productoIdActual = null; // Almacena el ID del producto que se está agregando
 
-<!-- Modal de Confirmación -->
+    // Función para mostrar el modal de pago
+    function mostrarModalPago(productoId) {
+        productoIdActual = productoId; // Guardar el ID del producto
+
+        // Validar la cantidad antes de mostrar el modal
+        let cantidadInput = document.getElementById("cantidad_" + productoId);
+        let cantidadHidden = document.getElementById("inputCantidad_" + productoId);
+        let stockMax = parseInt(cantidadInput.getAttribute("max"));
+
+        // Verifica que la cantidad no sea mayor al stock
+        if (parseInt(cantidadInput.value) > stockMax) {
+            alert("No puedes agregar más de " + stockMax + " unidades.");
+            cantidadInput.value = stockMax; // Ajusta la cantidad al máximo permitido
+            cantidadHidden.value = stockMax;
+            return; // Detener el proceso si la cantidad no es válida
+        }
+
+        // Actualiza el input hidden con la cantidad válida
+        cantidadHidden.value = cantidadInput.value;
+
+        // Mostrar el modal de pago
+        document.getElementById('pagoModal').style.display = 'flex';
+    }
+
+    // Función para manejar la selección de pago
+    function seleccionarPago(tipoPago) {
+        if (productoIdActual) {
+            // Establecer el valor del campo oculto "tipo_pago"
+            document.getElementById(`tipo_pago_${productoIdActual}`).value = tipoPago;
+
+            // Enviar el formulario correspondiente
+            document.querySelector(`.form-carrito input[name="id"][value="${productoIdActual}"]`).closest('form').submit();
+        }
+
+        // Ocultar el modal
+        document.getElementById('pagoModal').style.display = 'none';
+    }
+
+    // Asignar eventos a los botones del modal
+    document.getElementById('pagoEfectivo').addEventListener('click', function() {
+        seleccionarPago('efectivo');
+    });
+
+    document.getElementById('pagoTransferencia').addEventListener('click', function() {
+        seleccionarPago('transferencia');
+    });
+
+    document.getElementById('pagoTarjeta').addEventListener('click', function() {
+        seleccionarPago('tarjeta'); // Nuevo método de pago
+    });
+
+    document.getElementById('cancelarPago').addEventListener('click', function() {
+        // Ocultar el modal sin hacer nada
+        document.getElementById('pagoModal').style.display = 'none';
+    });
+</script>
+
+
+<!-- Modal de Confirmación Para Buscador por Codigo de Barra-->
 <div id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
     <div style="color:white; background: black; padding: 20px; border-radius: 10px; text-align: center;">
         <h2 id="modal_product_name"></h2>
@@ -246,33 +319,6 @@ function cerrarMensaje() {
     </div>
 </div>
 
-
-<script>
-//Script para manejo de stock en la tabla con boton Agregar
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".form-carrito").forEach(form => {
-        form.addEventListener("submit", function(event) {
-            let productId = form.querySelector(".btn-agregar").getAttribute("data-id");
-            let cantidadInput = document.getElementById("cantidad_" + productId);
-            let cantidadHidden = document.getElementById("inputCantidad_" + productId);
-            let stockMax = parseInt(cantidadInput.getAttribute("max"));
-
-            // Verifica que la cantidad no sea mayor al stock
-            if (parseInt(cantidadInput.value) > stockMax) {
-                alert("No puedes agregar más de " + stockMax + " unidades.");
-                cantidadInput.value = stockMax; // Ajusta la cantidad al máximo permitido
-                cantidadHidden.value = stockMax;
-                event.preventDefault(); // Evita que se envíe el formulario
-                return;
-            }
-
-            // Actualiza el input hidden antes de enviar
-            cantidadHidden.value = cantidadInput.value;
-        });
-    });
-});
-
-</script>
 
 <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
 <script src="<?php echo base_url('./assets/js/jquery-ui.js');?>"></script>

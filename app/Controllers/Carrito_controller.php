@@ -140,22 +140,32 @@ public function ListCompraDetalle($id)
 
     //Agrega elemento al carrito
 	function add()
-    {
+{
     $session = session();
     $estado = $session->get('estado'); // Verificamos el estado de la sesión
     $id_pedido = $session->get('id_pedido');
+    $tipo_pago_prod = $this->request->getPost('tipo_pago'); // Tipo de pago seleccionado
 
     $producto_id = $_POST['id'];
     $nombre = $_POST['nombre'];
     $precio = $_POST['precio_vta'];
     $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1;
 
+    // Ajustar el precio según el tipo de pago
+    if ($tipo_pago_prod == 'efectivo') {
+        $precio_final = $precio / 1.1; // Aplicar descuento del 10% para pago en efectivo
+    } elseif ($tipo_pago_prod == 'tarjeta') {
+        $precio_final = $precio * 1.1; // Aplicar recargo del 10% para pago con tarjeta
+    } else {
+        $precio_final = $precio; // Precio normal para transferencia
+    }
+
     $prodModel = new Productos_model();
     $producto = $prodModel->getProducto($producto_id);
     $stock_actual = $producto['stock'];
 
     $VentaDetalle_model = new VentaDetalle_model();
-    
+
     // Si estamos en modo modificación, obtener la cantidad ya reservada
     $cantidad_reservada = 0;
     if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
@@ -181,8 +191,9 @@ public function ListCompraDetalle($id)
     $producto_encontrado = false;
 
     foreach ($cart_items as $item) {
-        if ($item['id'] == $producto_id) {
-            // Si el producto ya está en el carrito, incrementar la cantidad seleccionada
+        // Verificar si el producto ya está en el carrito y tiene el mismo tipo de pago
+        if ($item['id'] == $producto_id && $item['options']['tipo_pago_prod'] == $tipo_pago_prod) {
+            // Si el producto ya está en el carrito con el mismo tipo de pago, incrementar la cantidad
             $nueva_cantidad = $item['qty'] + $cantidad;
 
             // Verificar si supera el stock disponible
@@ -202,21 +213,30 @@ public function ListCompraDetalle($id)
         }
     }
 
-    // Si el producto no está en el carrito, agregarlo con la cantidad seleccionada
+    // Si el producto no está en el carrito o tiene un tipo de pago diferente, agregarlo como nuevo ítem
     if (!$producto_encontrado) {
+        // Verificar si supera el stock disponible
+        if ($cantidad > $stock_disponible) {
+            session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
+            return redirect()->to(base_url('catalogo'));
+        }
+
+        // Agregar el producto al carrito con el precio ajustado y el tipo de pago en options
         $cart->insert([
             'id'      => $producto_id,
             'qty'     => $cantidad,
-            'price'   => $precio,
+            'price'   => $precio_final,
             'name'    => $nombre,
-            'options' => ['stock' => $stock_disponible] // Guardamos el stock disponible como referencia
+            'options' => [
+                'stock' => $stock_disponible, // Guardamos el stock disponible como referencia
+                'tipo_pago_prod' => $tipo_pago_prod // Guardamos el tipo de pago
+            ]
         ]);
     }
 
     session()->setFlashdata('msg', 'Producto Agregado!');
     return redirect()->to(base_url('catalogo'));
-    }
-
+}
 
 
 	//Agrega elemento al carrito desde confirmar
