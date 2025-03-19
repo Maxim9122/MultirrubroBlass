@@ -139,6 +139,7 @@ class Cabecera_model extends Model
         return $ventas->getResultArray();
     }
  
+//Detalle de las ventas
     public function getDetallesVenta($idVenta)
     {
     $db = db_connect();
@@ -150,6 +151,7 @@ class Cabecera_model extends Model
         u.cantidad, 
         u.precio, 
         u.total,
+        u.tipo_pago_prod,
         v.total_bonificado, 
         v.motivo,
         v.total_anterior,

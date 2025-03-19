@@ -110,6 +110,7 @@ $total_anterior = '';
         <th>Nombre</th>
         <th>Cantidad Comprada</th>
         <th>Precio Unitario</th>
+        <th>Tipo Pago Prod</th>
         <th>Total x Producto</th>          
       </tr>
     </thead>
@@ -121,6 +122,7 @@ $total_anterior = '';
             <td><?php echo $vta['nombre']; ?></td>
             <td><?php echo $vta['cantidad']; ?></td>
             <td>$ <?php echo $vta['precio']; ?></td>
+            <td><?php echo $vta['tipo_pago_prod']; ?></td>
             <td>$ <?php echo $vta['total']; ?></td>
           </tr>
         <?php endforeach; ?>

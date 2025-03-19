@@ -235,11 +235,9 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                 <tr class=" colorTexto2"  >
                     <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
-                    <td>Precio</td>
-                    <td>Precio Efectivo(-10%)</td>
+                    <td>Precio</td>                   
                     <td>Cantidad</td>
-                    <td>Subtotal</td>
-                    <td>Sub.Tot. Efectivo(-10%)</td>
+                    <td>Subtotal</td>                    
                     <td>Eliminar?</td>
                 </tr>
                 
@@ -266,11 +264,8 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
 
                         <td class="separador"  style="color: #ffff;">
                         $ <?php  echo number_format($item['price'], 2, ',', '.');?>
-                        </td>
-
-                        <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'] / 1.1, 2, ',', '.');?>
-                        </td>     
+                        <span class="stock-disponible"> ( Precio abonando con <?php echo  $item['options']['tipo_pago_prod']; ?> ) </span>
+                        </td>                           
 
                         <td class="separador" style="color: #ffff;">
                         <?php 
@@ -297,11 +292,7 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         <td class="separador" style="color: #ffff;">
                         $ <?php echo number_format($item['subtotal'], 2, ',', '.'); ?>
                         </td>
-
-                        <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'] / 1.1, 2, ',', '.'); ?>
-                        </td>
-
+                        
                         <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
                                 $path = '<img src= '. base_url('assets/img/icons/basura3.png') . ' width="10px" height="10px">';

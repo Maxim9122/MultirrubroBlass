@@ -159,7 +159,7 @@ function cerrarMensaje() {
       <tr class="colorTexto2">
          <th>Nombre</th>
          <th>Precio Venta</th>
-         <th>Precio Efectivo(-10%)</th>
+         <th>Precio C/Efectivo</th>
          <th class="ocultar-en-movil">Categoría</th>
          <th>Imagen</th>
          <th>Stock</th>
