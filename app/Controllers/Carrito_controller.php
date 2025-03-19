@@ -138,106 +138,115 @@ public function ListCompraDetalle($id)
         echo view('footer/footer');
     }
 
-    //Agrega elemento al carrito
+     //Agrega elemento al carrito
 	function add()
-{
-    $session = session();
-    $estado = $session->get('estado'); // Verificamos el estado de la sesión
-    $id_pedido = $session->get('id_pedido');
-    $tipo_pago_prod = $this->request->getPost('tipo_pago'); // Tipo de pago seleccionado
-
-    $producto_id = $_POST['id'];
-    $nombre = $_POST['nombre'];
-    $precio = $_POST['precio_vta'];
-    $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1;
-
-    // Ajustar el precio según el tipo de pago
-    if ($tipo_pago_prod == 'efectivo') {
-        $precio_final = $precio / 1.1; // Aplicar descuento del 10% para pago en efectivo
-    } elseif ($tipo_pago_prod == 'tarjeta') {
-        $precio_final = $precio * 1.1; // Aplicar recargo del 10% para pago con tarjeta
-    } else {
-        $precio_final = $precio; // Precio normal para transferencia
-    }
-
-    $prodModel = new Productos_model();
-    $producto = $prodModel->getProducto($producto_id);
-    $stock_actual = $producto['stock'];
-
-    $VentaDetalle_model = new VentaDetalle_model();
-
-    // Si estamos en modo modificación, obtener la cantidad ya reservada
-    $cantidad_reservada = 0;
-    if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
-        $cantidad_reservada = $VentaDetalle_model
-            ->where('venta_id', $id_pedido)
-            ->where('producto_id', $producto_id)
-            ->select('cantidad')
-            ->get()
-            ->getRowArray()['cantidad'] ?? 0;
-    }
-
-    // Calcular el stock disponible real
-    $stock_disponible = $stock_actual + $cantidad_reservada;
-
-    // Verificar si hay suficiente stock
-    if ($stock_disponible <= 0) {
-        session()->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
-        return redirect()->to(base_url('catalogo'));
-    }
-
-    $cart = \Config\Services::cart();
-    $cart_items = $cart->contents();
-    $producto_encontrado = false;
-
-    foreach ($cart_items as $item) {
-        // Verificar si el producto ya está en el carrito y tiene el mismo tipo de pago
-        if ($item['id'] == $producto_id && $item['options']['tipo_pago_prod'] == $tipo_pago_prod) {
-            // Si el producto ya está en el carrito con el mismo tipo de pago, incrementar la cantidad
-            $nueva_cantidad = $item['qty'] + $cantidad;
-
-            // Verificar si supera el stock disponible
-            if ($nueva_cantidad > $stock_disponible) {
-                session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
-                return redirect()->to(base_url('catalogo'));
-            }
-
-            // Actualizar cantidad en el carrito
-            $cart->update([
-                'rowid' => $item['rowid'],
-                'qty'   => $nueva_cantidad
-            ]);
-
-            $producto_encontrado = true;
-            break;
+    {
+        $session = session();
+        $estado = $session->get('estado'); // Verificamos el estado de la sesión
+        $id_pedido = $session->get('id_pedido');
+        $tipo_pago_prod = $this->request->getPost('tipo_pago'); // Tipo de pago seleccionado
+    
+        $producto_id = $_POST['id'];
+        $nombre = $_POST['nombre'];
+        $precio = $_POST['precio_vta'];
+        $cantidad = isset($_POST['cantidad']) ? (int)$_POST['cantidad'] : 1;
+    
+        // Ajustar el precio según el tipo de pago
+        if ($tipo_pago_prod == 'efectivo') {
+            $precio_final = $precio / 1.1; // Aplicar descuento del 10% para pago en efectivo
+        } elseif ($tipo_pago_prod == 'tarjeta') {
+            $precio_final = $precio * 1.1; // Aplicar recargo del 10% para pago con tarjeta
+        } else {
+            $precio_final = $precio; // Precio normal para transferencia
         }
-    }
-
-    // Si el producto no está en el carrito o tiene un tipo de pago diferente, agregarlo como nuevo ítem
-    if (!$producto_encontrado) {
-        // Verificar si supera el stock disponible
-        if ($cantidad > $stock_disponible) {
+    
+        $prodModel = new Productos_model();
+        $producto = $prodModel->getProducto($producto_id);
+        $stock_actual = $producto['stock'];
+    
+        $VentaDetalle_model = new VentaDetalle_model();
+    
+        // Si estamos en modo modificación, obtener la cantidad ya reservada
+        $cantidad_reservada = 0;
+        if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
+            $cantidad_reservada = $VentaDetalle_model
+                ->where('venta_id', $id_pedido)
+                ->where('producto_id', $producto_id)
+                ->select('cantidad')
+                ->get()
+                ->getRowArray()['cantidad'] ?? 0;
+        }
+    
+        // Calcular el stock disponible real
+        $stock_disponible = $stock_actual + $cantidad_reservada;
+    
+        // Obtener el carrito actual
+        $cart = \Config\Services::cart();
+        $cart_items = $cart->contents();
+    
+        // Sumar las cantidades ya cargadas en el carrito para este producto
+        $cantidad_en_carrito = 0;
+        foreach ($cart_items as $item) {
+            if ($item['id'] == $producto_id) {
+                $cantidad_en_carrito += $item['qty'];
+            }
+        }
+    
+        // Verificar si la cantidad total (cantidad en carrito + cantidad a agregar) supera el stock disponible
+        if (($cantidad_en_carrito + $cantidad) > $stock_disponible) {
             session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
             return redirect()->to(base_url('catalogo'));
         }
-
-        // Agregar el producto al carrito con el precio ajustado y el tipo de pago en options
-        $cart->insert([
-            'id'      => $producto_id,
-            'qty'     => $cantidad,
-            'price'   => $precio_final,
-            'name'    => $nombre,
-            'options' => [
-                'stock' => $stock_disponible, // Guardamos el stock disponible como referencia
-                'tipo_pago_prod' => $tipo_pago_prod // Guardamos el tipo de pago
-            ]
-        ]);
+    
+        $producto_encontrado = false;
+    
+        foreach ($cart_items as $item) {
+            // Verificar si el producto ya está en el carrito y tiene el mismo tipo de pago
+            if ($item['id'] == $producto_id && $item['options']['tipo_pago_prod'] == $tipo_pago_prod) {
+                // Si el producto ya está en el carrito con el mismo tipo de pago, incrementar la cantidad
+                $nueva_cantidad = $item['qty'] + $cantidad;
+    
+                // Verificar si supera el stock disponible
+                if ($nueva_cantidad > $stock_disponible) {
+                    session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
+                    return redirect()->to(base_url('catalogo'));
+                }
+    
+                // Actualizar cantidad en el carrito
+                $cart->update([
+                    'rowid' => $item['rowid'],
+                    'qty'   => $nueva_cantidad
+                ]);
+    
+                $producto_encontrado = true;
+                break;
+            }
+        }
+    
+        // Si el producto no está en el carrito o tiene un tipo de pago diferente, agregarlo como nuevo ítem
+        if (!$producto_encontrado) {
+            // Verificar si supera el stock disponible
+            if ($cantidad > $stock_disponible) {
+                session()->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
+                return redirect()->to(base_url('catalogo'));
+            }
+    
+            // Agregar el producto al carrito con el precio ajustado y el tipo de pago en options
+            $cart->insert([
+                'id'      => $producto_id,
+                'qty'     => $cantidad,
+                'price'   => $precio_final,
+                'name'    => $nombre,
+                'options' => [
+                    'stock' => $stock_disponible, // Guardamos el stock disponible como referencia
+                    'tipo_pago_prod' => $tipo_pago_prod // Guardamos el tipo de pago
+                ]
+            ]);
+        }
+    
+        session()->setFlashdata('msg', 'Producto Agregado!');
+        return redirect()->to(base_url('catalogo'));
     }
-
-    session()->setFlashdata('msg', 'Producto Agregado!');
-    return redirect()->to(base_url('catalogo'));
-}
-
 
 	//Agrega elemento al carrito desde confirmar
 	function agregar()
