@@ -8,6 +8,24 @@
             document.getElementById('flash-message').style.display = 'none';
         }, 3000); // 3000 milisegundos = 3 segundos
     </script>
+   <style>
+    input[type="text"] {    
+        padding: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    label {
+       color:white;
+        margin: 1px 0;
+    }
+
+    input[type="radio"] {
+        margin-right: 5px;
+    }
+</style>
 <!-- Fin de los mensajes temporales -->
 
 <?php
@@ -138,8 +156,48 @@ endif;
             </tr>  
             <?php endif; ?>
             <?php if ($perfil == 3): ?><!-- Filtro cajero-->
-
+                <!-- Agregar los checkboxes para los tipos de pago -->
                 <tr>
+              <tr>
+                <td style="color: rgb(192, 250, 214);"><strong>Tipo de Pago:</strong></td>
+                <td>
+                    <select name="tipo_pago" id="tipo_pago" onchange="actualizarTotal()">
+                        <option value="">Seleccione un tipo de pago</option>
+                        <option value="efectivo">Efectivo (10% de descuento)</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="mixto">Mixto (Efectivo/Transferencia)</option>
+                        <option value="tarjeta">Tarjeta (10% de recargo)</option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Campos para el pago mixto -->
+            <tr id="campoMixto" style="display: none;">
+                <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo:</strong></td>
+                <td>
+                    <input type="text" id="montoEfectivo" name="montoEfectivo" placeholder="Monto en $" oninput="calcularMixto()">
+                </td>
+            </tr>
+            <tr id="campoTransferencia" style="display: none;">
+                <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
+                <td>
+                    <input type="text" id="montoTransferencia" name="montoTransferencia" placeholder="Monto en $" oninput="calcularMixto()">
+                </td>
+            </tr>
+
+            <!-- Mostrar el total actualizado -->
+            <tr>
+                <td style="color: rgb(192, 250, 214);"><strong>Total con Descuento/Recargo:</strong></td>
+                <td style="color: #ffff;">
+                    <strong id="totalConDescuento">
+                        $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, ',', '.'); ?>
+                    </strong>
+                </td>
+            </tr>
+
+            <!-- Campo oculto para enviar el total con descuento/recargo -->
+            <?php echo form_hidden('total_con_descuento', ''); ?>
+                            <tr>
                 <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente:</strong></td>
                 <td>
                     <?php if ($clientes): ?>
@@ -173,17 +231,7 @@ endif;
                  <?php endif; ?><!-- Fin del if filtro vendedor-->
 
                  <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
-                 <tr>
-                <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
-                <td>
-                    <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularMontoEfectivo()">
-                </td>
-                </tr>
-                <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-10%):</strong></td>
-                    <td>
-                        <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
-                    </td>
+                 
                 </tr>
                 <?php endif; ?>
 
@@ -761,4 +809,64 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 });
 
+</script>
+<script>
+    function actualizarTotal() {
+        const granTotal = <?php echo json_encode($totalVenta); ?>;
+        const tipoPago = document.getElementById('tipo_pago').value;
+        let totalConDescuento = granTotal;
+
+        // Ocultar o mostrar campos según el tipo de pago
+        const campoMixto = document.getElementById('campoMixto');
+        const campoTransferencia = document.getElementById('campoTransferencia');
+
+        if (tipoPago === "mixto") {
+            // Mostrar campos para pago mixto
+            campoMixto.style.display = "table-row";
+            campoTransferencia.style.display = "table-row";
+        } else {
+            // Ocultar campos para pago mixto
+            campoMixto.style.display = "none";
+            campoTransferencia.style.display = "none";
+        }
+
+        // Calcular el total según el tipo de pago
+        if (tipoPago === "efectivo") {
+            // Aplica 10% de descuento (dividiendo por 1.1)
+            totalConDescuento = granTotal / 1.1;
+        } else if (tipoPago === "tarjeta") {
+            // Aplica 10% de recargo (multiplicando por 1.1)
+            totalConDescuento = granTotal * 1.1;
+        } else if (tipoPago === "mixto") {
+            // Calcular el total para pago mixto
+            const montoEfectivo = parseFloat(document.getElementById('montoEfectivo').value) || 0;
+            const montoTransferencia = parseFloat(document.getElementById('montoTransferencia').value) || 0;
+            totalConDescuento = montoEfectivo + montoTransferencia;
+        }
+
+        // Actualiza el total en la vista
+        document.getElementById('totalConDescuento').innerText = `$${totalConDescuento.toLocaleString('de-DE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+
+        // Actualiza el valor oculto para el formulario
+        document.querySelector('input[name="total_con_descuento"]').value = totalConDescuento;
+    }
+
+    // Función para calcular el total en pago mixto
+    function calcularMixto() {
+        const montoEfectivo = parseFloat(document.getElementById('montoEfectivo').value) || 0;
+        const montoTransferencia = parseFloat(document.getElementById('montoTransferencia').value) || 0;
+        const totalMixto = montoEfectivo + montoTransferencia;
+
+        // Actualiza el total en la vista
+        document.getElementById('totalConDescuento').innerText = `$${totalMixto.toLocaleString('de-DE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+
+        // Actualiza el valor oculto para el formulario
+        document.querySelector('input[name="total_con_descuento"]').value = totalMixto;
+    }
 </script>
