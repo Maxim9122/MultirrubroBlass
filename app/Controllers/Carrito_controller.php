@@ -560,10 +560,10 @@ public function ListCompraDetalle($id)
             // Recibe los datos del carrito, calcula y actualiza
             $cart_info = $this->request->getPost('cart');
             $motivo = $this->request->getPost('motivo_modif');            
-            $tipo_pago_dif = $this->request->getPost('tipo_pago_dif'); // Puede ser 'Efectivo' o 'Transferencia'
+            $tipo_pago_dif = $this->request->getPost('tipo_pago_dif'); // Puede ser 'Efectivo' o 'Transferencia o Tarjeta'
             $tipo_pago_anterior = $session->get('tipo_pago'); // Puede ser 'Mixto', 'Transferencia' o 'Efectivo'
             $id_pedido = $session->get('id_pedido');
-            $tipo_pago_Modif = '';
+            $tipo_pago_Modif = '';            
 
             //Array para guardar todos los productos que tengan stock no disponible
             $errores_stock = [];
@@ -617,7 +617,7 @@ public function ListCompraDetalle($id)
                     session()->setFlashdata('msgEr', 'El Motivo es Obligatorio.!!');
                     return redirect()->to('CarritoList');
                 }
-
+           
             // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
             switch ($tipo_pago_dif) {
                 case 'Efectivo':
@@ -635,9 +635,17 @@ public function ListCompraDetalle($id)
                         $tipo_pago_Modif = 'Mixto'; // No coinciden
                     }
                     break;
+
+                case 'Tarjeta':
+                        if ($tipo_pago_anterior == 'Tarjeta') {
+                            $tipo_pago_Modif = 'Tarjeta'; // Coinciden
+                        } else {
+                            $tipo_pago_Modif = 'Mixto'; // No coinciden
+                        }
+                        break;
             
                 default:
-                    // Si $tipo_pago_dif no es 'Efectivo' ni 'Transferencia', se asigna el valor anterior
+                    // Si $tipo_pago_dif no es 'Efectivo' ni 'Transferencia' ni 'Tarjeta', se asigna el valor anterior
                     $tipo_pago_Modif = $tipo_pago_anterior;
                     break;
             }            
@@ -655,14 +663,25 @@ public function ListCompraDetalle($id)
             $id_cliente = $session->get('id_cliente');            
             $fecha_pedido = $session->get('fecha_pedido');
             $tipo_compra = $session->get('tipo_compra');            
-            $total_anterior = $session->get('total_bonificado');
-            $estado = $session->get('estado');   
-            //print_r($estado);
-            //exit;         
+            $total_anterior = $session->get('total_venta');
+            $total_anterior_bonif = $session->get('total_bonificado');
+            $estado = $session->get('estado'); 
+
+            $pago_efec = $session->get('pago_efec');
+            $nuevoPago_Efec = $pago_efec;
+            $pago_transfer = $session->get('pago_transfer');
+            $nuevoPago_Transfer = $pago_transfer;
+            $pago_tarjeta = $session->get('pago_tarjeta'); 
+            $nuevoPago_Tarjeta = $pago_tarjeta; 
+            $dif_pago_efec = 0;
+                  
             //El resto entre el total actual de la venta menos el total anterior que usamos el total bonificado
-            $resul_descuento = 0;           
+            $resul_descuento = 0;
+            $resul_adicional = 0;           
             $total_bonificado_OK = 0;
+            //$total_venta = 200;
             $resto_ActualMenosAnterior = $total_venta - $total_anterior;
+             
             //Si el resultado de la resta de los totales actual y anterior da mayor a 0, significa que tiene 
             //que pagar una diferencia, en efectivo o transferencia.
             if($resto_ActualMenosAnterior > 0){ 
@@ -670,23 +689,89 @@ public function ListCompraDetalle($id)
             if($tipo_pago_dif == 'Efectivo'){
                 //Calculo cuanto tengo que restar al total general de la venta nueva modificada (Bonificacion)
                 $resul_descuento = $resto_ActualMenosAnterior / 1.1;
-                $total_bonificado_OK = $total_anterior + $resul_descuento;
 
+                $total_bonificado_OK = $total_anterior_bonif + $resul_descuento;
+                //Sumo el pago de la nueva diferencia pagada en efectivo al monto anterior de efectivo.
+                $nuevoPago_Efec = $nuevoPago_Efec + $resul_descuento;
+                
              //Si el pago es con transferencia el total con bonificacion es igual al total general.   
             }elseif ($tipo_pago_dif == 'Transferencia'){
-                $total_bonificado_OK = $total_venta;
+                $total_bonificado_OK = $total_anterior_bonif + $resto_ActualMenosAnterior;
+                //Sumamos el resto de la venta nueva menos la anterior al monto transferencia
+                $nuevoPago_Transfer = $nuevoPago_Transfer + $resto_ActualMenosAnterior; 
+                
+            //Si el pago es con tarjeta el total con bonificacion es el total de la venta nueva
+            //mas la diferencia con adicional.  
+            }elseif ($tipo_pago_dif == 'Tarjeta'){
+                $resul_adicional = $resto_ActualMenosAnterior * 1.1;
+                $total_bonificado_OK = $total_anterior_bonif + $resul_adicional;
+
+                $nuevoPago_Tarjeta = $nuevoPago_Tarjeta + $resul_adicional;
+                
             }
             //Si el resto del total actual menos el total anterior(Bonif) es negativo o igual a 0
             //significa que tiene que devolver parte de la plata del gasto en la venta anterior
             //por eso se le asigna el mismo valor de la venta actual al total bonificado
-            }elseif ($resto_ActualMenosAnterior <= 0){
+            }elseif ($resto_ActualMenosAnterior == 0){
 
-                $total_bonificado_OK = $total_venta;
+                $total_bonificado_OK = $total_anterior_bonif;
+                
+
+            }elseif ($resto_ActualMenosAnterior < 0){  
+                  
+                //Si el nuevo total es menor al disponible en efectivo que ya tenia, el nuevo monto en efectivo
+                //es el valor de la nueva venta en precio descuento (/ 1.1), se devolvio parte del efectivo
+                //mas todo de la tarjeta y todo de la transferencia
+                
+                if($total_venta <= ($pago_efec * 1.1)){ 
+                    $nuevoPago_Efec = $total_venta / 1.1;                    
+                    //Los otros pagos fueron devueltos al cubrir la nueva venta solo con el efectivo
+                    //Entonces quedarian en 0 la tarjeta y la transfer
+                    $nuevoPago_Transfer = 0;
+                    $nuevoPago_Tarjeta = 0;
+                    
+                    // El nuevo total bonificado seria el total de la venta pagada solo con saldo del efectivo
+                    $total_bonificado_OK = $nuevoPago_Efec;
+                    
+                 }else if($total_venta > ($pago_efec * 1.1)){
+                    //Al usar todo el efectivo para pagar la nueva venta guardo todo ese efectivo en
+                    //nuevo_Pago_EfecT Y QUEDA UN RESTO PARA SEGUIR DESCONTANDO A LOS DEMAS MONTOS
+                    $nuevoPago_Efec = $pago_efec;
+                    //Calculo cuanto queda de restar el monto en transfer.
+                    $nuevoPago_Transfer = $pago_transfer - ($total_venta - ($pago_efec * 1.1));
+                    
+                        if($nuevoPago_Transfer <= 0){
+                            //Si el resto de restar lo que quedo a pagar despues de usar todo el efectivo
+                            //es negativo o 0 significa que tambien se uso todo lo de transferencia.
+                            //Solo se asigna lo que se ocupo del salgo de tarjeta para pagar lo que faltó, el resto ya se devolvio                                    
+                            $nuevoPago_Tarjeta = abs($nuevoPago_Transfer);
+                            //Al resto de lo que quedo del saldo de tarjeta lo multiplicamos por 1.1 para guardar el adicional
+                            //que tambien cuenta para guardar.
+                            $nuevoPago_Tarjeta = ($nuevoPago_Tarjeta * 1.1);
+                            //Al ocuparse todo el saldo de transferencia esta se re asigna el monto total original
+                            $nuevoPago_Transfer = $pago_transfer;
+                            //Sumo los nuevos pagos, en este caso se uso todo de efectivo y transfer 
+                            //y se suma lo que se ocupo del saldo en tarjeta porque lo que sobra se develve
+                            $total_bonificado_OK = $nuevoPago_Efec + $nuevoPago_Transfer + $nuevoPago_Tarjeta;
+                            
+                        //Si queda saldo de transferencia luego de restar significa que alcanzo y es mayor a 0
+                        } else if($nuevoPago_Transfer > 0){
+                        //Guardamos en nuevo pago tarjeta 0 porque no se uso ese saldo y se devolvio
+                            $nuevoPago_Tarjeta = 0;
+                        //A la variable $nuevoPago_transfer le quedó saldo y hay que restar el saldo original
+                        //menos el resto para guardar el resultado como lo que se uso para pagar.
+                            $nuevoPago_Transfer = ($total_venta - ($pago_efec * 1.1));
+                        //Asignamos la suma del saldo efectivo mas lo que se ocupdo del saldo de transferencia
+                            $total_bonificado_OK = $nuevoPago_Efec + $nuevoPago_Transfer;
+                            
+                        }
+                 }
+
             }
+
             //Formateo para que solo guarde 2 decimales.
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
-            //print_r($total_bonificado_OK);
-            //exit;
+            
             //Establecer zona horaria y obtener fecha/hora en formato correcto
             date_default_timezone_set('America/Argentina/Buenos_Aires');
             $hora = date('H:i:s'); // Formato TIME
@@ -695,6 +780,7 @@ public function ListCompraDetalle($id)
             // Actualizar el pedido o Venta existente con los nuevos datos
             if ($estado == 'Modificando_SF') {
 
+            
                 $Producto_model = new Productos_model();
                 $VentaDetalle_model = new VentaDetalle_model();
                 $cart = \Config\Services::cart();
@@ -773,7 +859,8 @@ public function ListCompraDetalle($id)
                         'total' => $item['subtotal'],
                     ]);
                 }
-                
+                //print_r($nuevoPago_Tarjeta);
+                //exit;
                 // Actualizar la cabecera de la venta con los nuevos datos
                 $cabecera_model = new Cabecera_model();
                 $cabecera_model->update($id_pedido, [                    
@@ -785,12 +872,15 @@ public function ListCompraDetalle($id)
                     'total_venta' => $total_venta,
                     'total_bonificado' => $total_bonificado_OK,
                     'motivo' => $motivo,
-                    'total_anterior' => $total_anterior,
+                    'total_anterior' => $total_anterior_bonif,
+                    'monto_efectivo' => $nuevoPago_Efec,
+                    'monto_transferencia' => $nuevoPago_Transfer,
+                    'monto_tarjetaC' => $nuevoPago_Tarjeta,
                     'estado' => 'Modificada_SF',
                 ]);
                 
                 // Limpiar la sesión y el carrito
-                $session->remove(['estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago', 'total_venta', 'total_bonificado', 'total_anterior']);
+                $session->remove(['pago_efec','pago_transfer','pago_tarjeta','estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago', 'total_venta', 'total_bonificado', 'total_anterior']);
                 $cart->destroy();
                 
                 // Redirigir al usuario con un mensaje de éxito
@@ -863,6 +953,11 @@ public function ListCompraDetalle($id)
     
     $monto_transferencia = convertirAFloat($this->request->getPost('pagoTransferencia'));
     $monto_en_Efectivo = convertirAFloat($this->request->getPost('pagoEfectivo'));
+    $monto_tarjetaC = convertirAFloat($this->request->getPost('pagoTarjetaCredito'));
+    if($monto_tarjetaC){
+        $monto_tarjetaC = $monto_tarjetaC * 1.1;
+    }
+    
 
     //Verificamos si se envio el costo de envio
     $costo_envio =  convertirAFloat($this->request->getPost('costoEnvio'));    
@@ -870,23 +965,31 @@ public function ListCompraDetalle($id)
         $costo_envio = 0;
     }
     
-    $tipo_pago_cobro = '';
-    switch (true) {
-        case ($monto_en_Efectivo > 0 && $monto_transferencia == 0):
-            $tipo_pago_cobro = 'Efectivo';
+    // Contar cuántos tipos de pago tienen un monto mayor a 0
+    $metodos_pago = 0;
+    if ($monto_en_Efectivo > 0) $metodos_pago++;
+    if ($monto_transferencia > 0) $metodos_pago++;
+    if ($monto_tarjetaC > 0) $metodos_pago++;
+
+    switch ($metodos_pago) {
+        case 1:
+            if ($monto_en_Efectivo > 0) {
+                $tipo_pago_cobro = 'Efectivo';
+            } elseif ($monto_transferencia > 0) {
+                $tipo_pago_cobro = 'Transferencia';
+            } elseif ($monto_tarjetaC > 0) {
+                $tipo_pago_cobro = 'Tarjeta de Crédito';
+            }
             break;
-        case ($monto_transferencia > 0 && $monto_en_Efectivo == 0):
-            $tipo_pago_cobro = 'Transferencia';
-            break;
-        case ($monto_transferencia > 0 && $monto_en_Efectivo > 0):
+        default:
             $tipo_pago_cobro = 'Mixto';
-            break;        
+            break;
     }
        
     //Total de la venta
     $total = $this->request->getPost('total_venta');
     //Total menos el descuento si se pago en efectivo.
-    $total_conDescuento = $monto_transferencia + $monto_en_Efectivo;
+    $total_conDescuento = $monto_transferencia + $monto_en_Efectivo + $monto_tarjetaC;
 
     //print_r($total_conDescuento);
     //exit;
@@ -1098,27 +1201,37 @@ public function ListCompraDetalle($id)
             'estado' => 'Pendiente'
         ]);
         }
+        
         if($perfil == 3){ 
-            //se esta cobrando una venta
+            // Se está cobrando una venta
             if($estado == 'Cobrando'){
-                $Cabecera_model = new Cabecera_model();
+                $Cabecera_model = new Cabecera_model();                
+        
+                // Actualizar la cabecera de la venta
                 $Cabecera_model->update($id_pedido, [
                     'estado'            => 'Sin_Facturar',
                     'total_venta'       => $total,
                     'tipo_pago'         => $tipo_pago_cobro,
-                    'total_bonificado'  => $total_conDescuento,                 
+                    'total_bonificado'  => $total_conDescuento,                  
                     'fecha_pedido'      => $fecha_pedido_formateada,
-                    'fecha'        => $fecha,                                      
-                    'hora'         => $hora,
-                    'hora_entrega' => $hora,
-                    'id_cliente'   => $id_cliente,
-                    'costo_envio' => $costo_envio 
+                    'fecha'             => $fecha,                                      
+                    'hora'              => $hora,
+                    'hora_entrega'      => $hora,
+                    'id_cliente'        => $id_cliente,
+                    'costo_envio'       => $costo_envio,
+                    'monto_efectivo'    => $monto_en_Efectivo,
+                    'monto_transferencia' => $monto_transferencia,
+                    'monto_tarjetaC' => $monto_tarjetaC
                 ]);           
+                
                 $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
+            
             $cart->destroy();            
             return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
-            }
+        }
+        
+
     }
 
     // Obtener ID de la nueva cabecera guardada
@@ -1310,7 +1423,12 @@ public function generarTicket($id_cabecera)
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_bonificado']), 2) 
+                ? '$' . number_format(($cabecera['monto_efectivo'] * 1.1) - $cabecera['monto_efectivo'], 2) 
+                : '$0.00' ?>
+            </p>
+            <p>Adicional por Tarjeta: 
+            <?= ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto') 
+                ? '$' . number_format($cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1), 2) 
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
@@ -1850,7 +1968,12 @@ public function generarTicketFacturaC($id_cabecera)
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format($cabecera['total_venta'] - ($cabecera['total_bonificado']), 2) 
+                ? '$' . number_format(($cabecera['monto_efectivo'] * 1.1) - $cabecera['monto_efectivo'], 2) 
+                : '$0.00' ?>
+            </p>
+            <p>Adicional por Tarjeta: 
+            <?= ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto') 
+                ? '$' . number_format($cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1), 2) 
                 : '$0.00' ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>

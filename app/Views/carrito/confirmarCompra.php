@@ -173,12 +173,27 @@ endif;
                  <?php endif; ?><!-- Fin del if filtro vendedor-->
 
                  <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
-                 <tr>
-                <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
-                <td>
-                    <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularMontoEfectivo()">
-                </td>
+                          
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Tarjeta de Crédito</strong></td>
+                    <td>
+                        <input class="selector" type="text" id="pagoTarjetaCredito" name="pagoTarjetaCredito" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                    </td>
                 </tr>
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto a Cobrar con Tarjeta de Crédito (+10%)</strong></td>
+                    <td>
+                    <span id="montoTarjetaCreditoAdvertencia" style="color: yellow; font-weight: bold;">$0.00</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
+                    <td>
+                        <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                    </td>
+                </tr>
+                
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-10%):</strong></td>
                     <td>
@@ -448,51 +463,81 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         // Calcula el monto en efectivo con descuento al cargar la página
         calcularMontoEfectivo();
 
-        // Agrega un evento para validar el monto en transferencia
+        // Agrega eventos para validar los montos en tiempo real
         const pagoTransferenciaInput = document.getElementById('pagoTransferencia');
+        const pagoTarjetaCreditoInput = document.getElementById('pagoTarjetaCredito');
+
         pagoTransferenciaInput.addEventListener('input', function () {
-            validarMontoTransferencia();
+            validarMontos();
+        });
+
+        pagoTarjetaCreditoInput.addEventListener('input', function () {
+            validarMontos();
         });
     });
 
-    // Función para validar que el monto en transferencia no sea mayor que el total general
-    function validarMontoTransferencia() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
+    // Función para validar los montos ingresados
+    function validarMontos() {
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace(',', '.')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace(',', '.')) || 0;
         const totalVenta = granTotal;
 
+        // Validar que el monto en transferencia no sea mayor que el total general
         if (pagoTransferencia > totalVenta) {
             alert('El monto en transferencia no puede ser mayor al total general de la venta.');
             document.getElementById('pagoTransferencia').value = ''; // Limpia el campo
-            calcularMontoEfectivo(); // Recalcula el monto en efectivo
-        } else {
-            calcularMontoEfectivo(); // Recalcula el monto en efectivo
+            validarMontos(); // Revalida los montos
+            return;
         }
+
+        // Validar que el monto en tarjeta de crédito no sea mayor que el total general
+        if (pagoTarjetaCredito > totalVenta) {
+            alert('El monto en tarjeta de crédito no puede ser mayor al total general de la venta.');
+            document.getElementById('pagoTarjetaCredito').value = ''; // Limpia el campo
+            validarMontos(); // Revalida los montos
+            return;
+        }
+
+        // Validar que la suma de transferencia y tarjeta de crédito no sea mayor que el total general
+        if (pagoTransferencia + pagoTarjetaCredito > totalVenta) {
+            alert('La suma de los montos en transferencia y tarjeta de crédito no puede ser mayor al total general de la venta.');
+            document.getElementById('pagoTransferencia').value = ''; // Limpia el campo de transferencia
+            document.getElementById('pagoTarjetaCredito').value = ''; // Limpia el campo de tarjeta de crédito
+            validarMontos(); // Revalida los montos
+            return;
+        }
+
+        // Si todo está correcto, calcular el monto en efectivo
+        calcularMontoEfectivo();
     }
 
     // Función para calcular el monto en efectivo con descuento
     function calcularMontoEfectivo() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace(',', '.')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace(',', '.')) || 0;
         const totalVenta = granTotal;
 
-        // Si el monto en transferencia es mayor que el total, no se calcula el efectivo
-        if (pagoTransferencia > totalVenta) {
-            return;
-        }
+        // Calcular el monto a cobrar con tarjeta de crédito (monto ingresado + 10%)
+        const montoTarjetaCreditoAdvertencia = pagoTarjetaCredito * 1.1;
+        document.getElementById('montoTarjetaCreditoAdvertencia').textContent = `$${montoTarjetaCreditoAdvertencia.toLocaleString('de-DE', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        })}`;
 
-        // Calcula cuánto falta pagar después del pago en transferencia
-        const faltaPagar = totalVenta - pagoTransferencia;
+        // Calcular cuánto falta pagar después del pago en transferencia y tarjeta de crédito
+        const faltaPagar = totalVenta - pagoTransferencia - pagoTarjetaCredito;
 
-        // Aplica el descuento del 10% al monto en efectivo
+        // Aplicar el descuento del 10% al monto en efectivo
         const montoEfectivoConDescuento = faltaPagar / 1.1; // Aplica el 10% de descuento
 
-        // Muestra el monto en efectivo con descuento
+        // Mostrar el monto en efectivo con descuento
         document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         });
 
-        // Si no se ingresa monto en transferencia, el monto en efectivo es el total con descuento
-        if (pagoTransferencia === 0) {
+        // Si no se ingresan montos en transferencia o tarjeta de crédito, el monto en efectivo es el total con descuento
+        if (pagoTransferencia === 0 && pagoTarjetaCredito === 0) {
             const totalConDescuento = totalVenta / 1.1;
             document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { 
                 minimumFractionDigits: 2, 
