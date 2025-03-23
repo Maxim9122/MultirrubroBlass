@@ -612,44 +612,21 @@ public function ListCompraDetalle($id)
                 return redirect()->to('CarritoList');
             }
 
-                //Si el campo del motivo viene vacio lo devuelve a la vista.
+            //Si el campo del motivo viene vacio lo devuelve a la vista.
                 if(!$motivo){
                     session()->setFlashdata('msgEr', 'El Motivo es Obligatorio.!!');
                     return redirect()->to('CarritoList');
                 }
+
+                // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
+                if ($tipo_pago_dif === $tipo_pago_anterior) {
+                    $tipo_pago_Modif = $tipo_pago_dif; // Coinciden
+                } elseif (in_array($tipo_pago_dif, ['Efectivo', 'Transferencia', 'Tarjeta'])) {
+                    $tipo_pago_Modif = 'Mixto'; // No coinciden
+                } else {
+                    $tipo_pago_Modif = $tipo_pago_anterior; // Si el valor no es válido, mantener el anterior
+                }           
            
-            // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
-            switch ($tipo_pago_dif) {
-                case 'Efectivo':
-                    if ($tipo_pago_anterior == 'Efectivo') {
-                        $tipo_pago_Modif = 'Efectivo'; // Coinciden
-                    } else {
-                        $tipo_pago_Modif = 'Mixto'; // No coinciden
-                    }
-                    break;
-            
-                case 'Transferencia':
-                    if ($tipo_pago_anterior == 'Transferencia') {
-                        $tipo_pago_Modif = 'Transferencia'; // Coinciden
-                    } else {
-                        $tipo_pago_Modif = 'Mixto'; // No coinciden
-                    }
-                    break;
-
-                case 'Tarjeta':
-                        if ($tipo_pago_anterior == 'Tarjeta') {
-                            $tipo_pago_Modif = 'Tarjeta'; // Coinciden
-                        } else {
-                            $tipo_pago_Modif = 'Mixto'; // No coinciden
-                        }
-                        break;
-            
-                default:
-                    // Si $tipo_pago_dif no es 'Efectivo' ni 'Transferencia' ni 'Tarjeta', se asigna el valor anterior
-                    $tipo_pago_Modif = $tipo_pago_anterior;
-                    break;
-            }            
-
             // Inicializar la variable para la suma total de la venta
             $total_venta = 0;
 
@@ -771,7 +748,20 @@ public function ListCompraDetalle($id)
 
             //Formateo para que solo guarde 2 decimales.
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
-            
+
+           /* 
+            print_r($nuevoPago_Efec);
+            echo PHP_EOL;
+            print_r($nuevoPago_Transfer);
+            echo PHP_EOL;
+            print_r($nuevoPago_Tarjeta);
+            echo PHP_EOL;
+            print_r($total_anterior_bonif);
+            echo PHP_EOL;
+            print_r($total_bonificado_OK);
+            exit; 
+                */
+
             //Establecer zona horaria y obtener fecha/hora en formato correcto
             date_default_timezone_set('America/Argentina/Buenos_Aires');
             $hora = date('H:i:s'); // Formato TIME
@@ -978,7 +968,7 @@ public function ListCompraDetalle($id)
             } elseif ($monto_transferencia > 0) {
                 $tipo_pago_cobro = 'Transferencia';
             } elseif ($monto_tarjetaC > 0) {
-                $tipo_pago_cobro = 'Tarjeta de Crédito';
+                $tipo_pago_cobro = 'Tarjeta';
             }
             break;
         default:
