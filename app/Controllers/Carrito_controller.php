@@ -618,7 +618,7 @@ public function ListCompraDetalle($id)
                     return redirect()->to('CarritoList');
                 }
 
-                // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
+            // Comparar ambas variables y asignar el valor a $tipo_pago_Modif
                 if ($tipo_pago_dif === $tipo_pago_anterior) {
                     $tipo_pago_Modif = $tipo_pago_dif; // Coinciden
                 } elseif (in_array($tipo_pago_dif, ['Efectivo', 'Transferencia', 'Tarjeta'])) {
@@ -1476,31 +1476,30 @@ public function generarTicket($id_cabecera)
     
     // Guardar el archivo PDF en la carpeta temporal
     file_put_contents($tempFile, $output);
-    session()->setFlashdata('msg', 'Compra realizada con Exito!');
+    session()->setFlashdata('msg', 'Imprimiendo Ticket.!');
 
      // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
     
     // Redirigir a una página de confirmación con JavaScript
-    echo "<script type='text/javascript'>
-            // Descargar el archivo PDF
-            window.location.href = '" . base_url('descargar_ticket') . "';
-            
-            // Pasar el valor de perfil desde PHP a JavaScript
-            var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
-            
-            // Redirigir a la página deseada después de la descarga dependiendo del perfil usuario
-            window.setTimeout(function() {
-                if (perfil == 3) {
-                    window.location.href = '" . base_url('caja') . "'; // Redirigir al perfil 3
-                }                
-            }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
-          </script>";
-    exit;
+        echo "<script type='text/javascript'>
+        // Descargar el archivo PDF
+        window.location.href = '" . base_url('descargar_ticket') . "';
 
-    // Forzar la descarga del PDF
-    //$dompdf->stream("ticket.pdf", array("Attachment" => true));
-   
+        // Pasar el valor de perfil desde PHP a JavaScript
+        var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+
+        // Redirigir a la página de referencia después de la descarga o a otra según perfil
+        window.setTimeout(function() {
+            if (perfil == 3) {
+                window.location.href = document.referrer; // Volver a la página anterior
+            } else if (document.referrer) {
+                window.location.href = document.referrer; // Volver a la página anterior
+            }
+        }, 500);  // 0.5 segundos de espera para asegurar que la descarga termine
+        </script>";
+        exit;
+
 }
 
 // En tu ruta 'descargar_ticket', puedes usar:
@@ -2013,31 +2012,29 @@ public function generarTicketFacturaC($id_cabecera)
     
     // Guardar el archivo PDF en la carpeta temporal
     file_put_contents($tempFile, $output);
-    session()->setFlashdata('msg', 'Compra Facturada con Exito!');
+    session()->setFlashdata('msg', 'Imprimiendo Ticket.!');
 
-    // Obtener el perfil del usuario desde la sesión
+     // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
     
     // Redirigir a una página de confirmación con JavaScript
-    echo "<script type='text/javascript'>
-            // Descargar el archivo PDF
-            window.location.href = '" . base_url('descargar_ticket') . "';
-            
-            // Pasar el valor de perfil desde PHP a JavaScript
-            var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
-            
-            // Redirigir a la página deseada después de la descarga dependiendo del perfil usuario
-            window.setTimeout(function() {
-                if (perfil == 1) {
-                    window.location.href = '" . base_url('compras') . "'; // Redirigir al perfil 1
-                } else if (perfil == 2) {
-                    window.location.href = '" . base_url('catalogo') . "'; // Redirigir al perfil 2
-                } else if (perfil == 3){
-                    window.location.href = '" . base_url('caja') . "'; // Redirigir a la caja si es perfil 3
-                }
-            }, 500);  // 0.5 segundo de espera para asegurar que la descarga termine
-          </script>";
-    exit;
+        echo "<script type='text/javascript'>
+        // Descargar el archivo PDF
+        window.location.href = '" . base_url('descargar_ticket') . "';
+
+        // Pasar el valor de perfil desde PHP a JavaScript
+        var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+
+        // Redirigir a la página de referencia después de la descarga o a otra según perfil
+        window.setTimeout(function() {
+            if (perfil == 3) {
+                 window.location.href = '" . base_url('caja') . "'; // Redirigir al perfil 3
+            } else if (document.referrer) {
+                window.location.href = document.referrer; // Volver a la página anterior
+            }
+        }, 500);  // 0.5 segundos de espera para asegurar que la descarga termine
+        </script>";
+        exit;
 
 }
 

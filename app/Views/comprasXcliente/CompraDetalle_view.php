@@ -131,14 +131,14 @@ $vta_num = 0;
   <table class="comprados detalle-compra-tabla">
     <thead>
       <tr>
-          <th>Nro Venta</th>
+          <th>Nro COD</th>
          
       </tr>
       <br>
     </thead>
     <tbody>
       <tr>
-          <td>$ <?php echo $vta_num; ?></td>
+          <td><?php echo $vta_num; ?></td>
           
       </tr>
     </tbody>
