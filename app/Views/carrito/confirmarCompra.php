@@ -269,7 +269,7 @@ endif;
             <?php } ?>
 
             <?php if ($total_venta != '') { ?>
-                <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger">
+                <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
                     Cancelar Cobro
                 </a>
             <?php } else if ($id_cliente) { ?>
@@ -337,6 +337,23 @@ endif;
             <!-- Esto es para cancelar todo, edicion de pedido o compra normal-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+function confirmarAccionC_Cobro() {
+        Swal.fire({
+            title: "¿Cancelar Cobro?",
+            text: "Se cancelara el Cobro de la Venta y esta volvera a la lista de Pendientes.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Cancelar Cobro",
+            cancelButtonText: "No, Seguir Cobrando"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('cancelarCobro/'.$id_pedido); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+
     function confirmarAccionCompra() {
         Swal.fire({
             title: "¿Estás seguro?",

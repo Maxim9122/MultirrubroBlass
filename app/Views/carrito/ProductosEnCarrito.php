@@ -416,9 +416,9 @@ $resto_desc_pago_efec = 0;
                                     
 
                                     <br>
-                                    <h4 class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
+                                    <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
                                     
-                                    <h3 style="color:#f42632;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
+                                    <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
                              <!-- Ahora si el nuevo total es mayor que el pago en efectivo anterior se convierte el total nuevo 
                               en precio de descuento para descontar el pago en efectivo que tambien esta en formato precio descuento -->    
                         <?php } else if($gran_total > ($pago_efec * 1.1)){  ?> 
@@ -466,15 +466,15 @@ $resto_desc_pago_efec = 0;
                                             
 
                                             <br>
-                                            <h4 class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
+                                            <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
 
-                                            <h3 style="color:#f42632;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
+                                            <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
                         <?php  } ?>
 
                         <!-- Si el nuevo total es mayor al anterior muestra la diferencia a pagar -->
                             <?php } else {  ?>
 
-                                <h4 class="total_ant" id="diferencia">Diferencia a Cobrar: $  <?php echo number_format($gran_total - $total_anterior_gen, 2 , ',', '.'); ?></h4>
+                                <h4 style="background-color:green;" class="total_ant" id="diferencia">Diferencia a Cobrar: $  <?php echo number_format($gran_total - $total_anterior_gen, 2 , ',', '.'); ?></h4>
                             
                             <?php } ?>
                         </td>       
@@ -535,8 +535,8 @@ $resto_desc_pago_efec = 0;
 
                         <?php } else if($perfil == 3 && $estado == 'Modificando_SF') {?>
                         <!-- Envia los cambios y Modifica e impacta los cambios de la venta modificada -->
-                        <a href="javascript:void(0);" class="success" onclick="setAccion('GuardarCambios')">Guardar Cambios</a>      
-                            <?php } ?>
+                        <a href="javascript:void(0);" class="success" onclick="confirmarGuardarCambios()">Guardar Cambios</a>    
+                        <?php } ?>
                     </td>
                 </tr>
                 <?php echo form_close();
@@ -544,6 +544,28 @@ $resto_desc_pago_efec = 0;
         </table>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarGuardarCambios() {
+    Swal.fire({
+        title: "¿Confirmar Cambios?",
+        text: "Asegurate de haber presionado en 'Actualizar Importes' antes de Continuar!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Guardar Cambios",
+        cancelButtonText: "Volver",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Establece la acción y envía el formulario
+            document.getElementById('accion').value = 'GuardarCambios';
+            document.getElementById('carrito_form').submit();
+        }
+    });
+}
+</script>
 
 <script>
     function setAccion(accion) {

@@ -749,7 +749,7 @@ public function ListCompraDetalle($id)
             //Formateo para que solo guarde 2 decimales.
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
 
-           /* 
+           /*
             print_r($nuevoPago_Efec);
             echo PHP_EOL;
             print_r($nuevoPago_Transfer);
