@@ -493,6 +493,16 @@ $resto_desc_pago_efec = 0;
                                 echo number_format($gran_total, 2);
                                 ?>
                             </h4>
+                            <h4 class="totalVenta" style="margin-top:3px;">Total Con Descuento Efectivo: $
+                                <?php //Gran Total
+                                echo number_format($gran_total / 1.1, 2);
+                                ?>
+                            </h4>
+                            <h4 class="totalVenta" style="margin-top:3px;">Total En Tarjeta: $
+                                <?php //Gran Total
+                                echo number_format($gran_total * 1.1, 2);
+                                ?>
+                            </h4>
                         <?php endif; ?>
 
                         <h4></h4>
