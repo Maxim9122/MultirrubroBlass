@@ -882,20 +882,28 @@ public function ListCompraDetalle($id)
 
     //Muestra los detalles de la venta y confirma(función guarda_compra())
 	function muestra_compra()
-	{
-        $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
-		$ClientesModel = new Clientes_model();
-        $datos['clientes'] = $ClientesModel->getClientes();
-		$data['titulo'] = 'Confirmar compra';
-		echo view('navbar/navbar');
-		echo view('header/header',$data);		
-		echo view('carrito/confirmarCompra',$datos);
-		echo view('footer/footer');
+{
+    $session = session();
+    // Verifica si el usuario está logueado
+    if (!$session->has('id')) { 
+        return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
     }
+    
+    $id_pedido = $session->get('id_pedido');
+    $cabeceraModel = new Cabecera_model();
+
+    // Obtener los detalles de la venta
+    $data['ventas'] = $cabeceraModel->getDetallesVenta($id_pedido);
+
+    $ClientesModel = new Clientes_model();
+    $data['clientes'] = $ClientesModel->getClientes();
+    $data['titulo'] = 'Confirmar compra';
+    
+    echo view('navbar/navbar');
+    echo view('header/header', $data);        
+    echo view('carrito/confirmarCompra', $data);
+    echo view('footer/footer');
+}
 
 
 //GUARDA LA COMPRA

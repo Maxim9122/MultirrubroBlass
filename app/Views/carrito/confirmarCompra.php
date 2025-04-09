@@ -108,6 +108,46 @@ endif;
         <br>
         <div align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
+
+            <?php if($estado == 'Cobrando'){ ?>
+                <!-- Botón para abrir el modal -->
+                <button type="button" class="btn-ver-detalles" onclick="abrirModal()">
+                    Ver Productos Adquiridos
+                </button>
+
+                <!-- Modal personalizado con animación de zoom -->
+                <div id="miModal" class="modal-personalizado">
+                    <div class="modal-contenido zoom-in">
+                        <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+                        <h2 style="color:black;">Detalles de la Compra</h2>
+                        <?php if (!empty($ventas)): ?>
+                            <table class="tabla-detalles" style="color:black;">
+                                <thead>
+                                    <tr>
+                                        <th style="color:black;">Producto</th>
+                                        <th style="color:black;">Cantidad</th>
+                                        <th style="color:black;">Precio Unitario</th>
+                                        <th style="color:black;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($ventas as $venta): ?>
+                                        <tr>
+                                            <td><?= $venta['nombre'] ?></td>
+                                            <td><?= $venta['cantidad'] ?></td>
+                                            <td><?= number_format($venta['precio'], 2) ?></td>
+                                            <td><?= number_format($venta['precio'] * $venta['cantidad'], 2) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p>No hay detalles de venta disponibles.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php } ?>
+
                 <br>
         <?php if (!empty($id_pedido) && $total_venta == ''): ?>
             <h3 class="resaltado">
@@ -823,4 +863,124 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 });
 
+</script>
+
+
+<style>
+    .modal-personalizado {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    }
+
+    .modal-contenido {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 800px;
+        transform: scale(0); /* Inicia invisible (zoom out) */
+        transition: transform 0.3s ease; /* Duración de la animación */
+        border-color: #8be9fd;
+        box-shadow: 0 0 15px #8be9fd;
+    }
+
+    /* Zoom al abrir */
+    .modal-contenido.zoom-in {
+        transform: scale(1); /* Escala normal */
+    }
+
+    /* Zoom al cerrar */
+    .modal-contenido.zoom-out {
+        transform: scale(0); /* Vuelve a escala 0 */
+    }
+
+    .cerrar-modal {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 30px;
+        color: #888;
+        cursor: pointer;
+    }
+
+    .cerrar-modal:hover {
+        color: red;
+    }
+
+    .tabla-detalles {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;        
+    }
+
+    .tabla-detalles th, .tabla-detalles td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .tabla-detalles th {
+        background-color: #f5f5f5;
+    }
+
+    .btn-ver-detalles {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn-ver-detalles:hover {
+        background-color: #45a149;
+    }
+</style>
+
+<script>
+   function abrirModal() {
+    const modal = document.getElementById('miModal');
+    const modalContent = modal.querySelector('.modal-contenido');
+    
+    // Resetear estilos antes de abrir
+    modal.style.display = 'flex';
+    modalContent.classList.remove('zoom-out');
+    
+    // Forzar un "reflow" para que la animación funcione
+    void modalContent.offsetWidth; // Truco para reiniciar la animación
+    
+    // Aplicar zoom-in
+    modalContent.classList.add('zoom-in');
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('miModal');
+    const modalContent = modal.querySelector('.modal-contenido');
+    
+    // Quitar zoom-in y aplicar zoom-out
+    modalContent.classList.remove('zoom-in');
+    modalContent.classList.add('zoom-out');
+    
+    // Esperar a que termine la animación antes de ocultar
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // 300ms = duración de la animación (debe coincidir con CSS)
+}
+
+// Cerrar al hacer clic fuera del modal
+window.onclick = function(event) {
+    const modal = document.getElementById('miModal');
+    if (event.target === modal) {
+        cerrarModal();
+    }
+};
 </script>
