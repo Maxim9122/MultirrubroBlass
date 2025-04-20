@@ -642,7 +642,8 @@ public function ListCompraDetalle($id)
             $tipo_compra = $session->get('tipo_compra');            
             $total_anterior = $session->get('total_venta');
             $total_anterior_bonif = $session->get('total_bonificado');
-            $estado = $session->get('estado'); 
+            $estado = $session->get('estado');
+            $cd_efectivo =$session->get('cd_efectivo'); 
 
             $pago_efec = $session->get('pago_efec');
             $nuevoPago_Efec = $pago_efec;
@@ -665,7 +666,7 @@ public function ListCompraDetalle($id)
 
             if($tipo_pago_dif == 'Efectivo'){
                 //Calculo cuanto tengo que restar al total general de la venta nueva modificada (Bonificacion)
-                $resul_descuento = $resto_ActualMenosAnterior / 1.1;
+                $resul_descuento = $resto_ActualMenosAnterior / $cd_efectivo;
 
                 $total_bonificado_OK = $total_anterior_bonif + $resul_descuento;
                 //Sumo el pago de la nueva diferencia pagada en efectivo al monto anterior de efectivo.
@@ -697,11 +698,11 @@ public function ListCompraDetalle($id)
             }elseif ($resto_ActualMenosAnterior < 0){  
                   
                 //Si el nuevo total es menor al disponible en efectivo que ya tenia, el nuevo monto en efectivo
-                //es el valor de la nueva venta en precio descuento (/ 1.1), se devolvio parte del efectivo
+                //es el valor de la nueva venta en precio descuento, se devolvio parte del efectivo
                 //mas todo de la tarjeta y todo de la transferencia
                 
-                if($total_venta <= ($pago_efec * 1.1)){ 
-                    $nuevoPago_Efec = $total_venta / 1.1;                    
+                if($total_venta <= ($pago_efec * $cd_efectivo)){ 
+                    $nuevoPago_Efec = $total_venta / $cd_efectivo;                    
                     //Los otros pagos fueron devueltos al cubrir la nueva venta solo con el efectivo
                     //Entonces quedarian en 0 la tarjeta y la transfer
                     $nuevoPago_Transfer = 0;
@@ -710,12 +711,12 @@ public function ListCompraDetalle($id)
                     // El nuevo total bonificado seria el total de la venta pagada solo con saldo del efectivo
                     $total_bonificado_OK = $nuevoPago_Efec;
                     
-                 }else if($total_venta > ($pago_efec * 1.1)){
+                 }else if($total_venta > ($pago_efec * $cd_efectivo)){
                     //Al usar todo el efectivo para pagar la nueva venta guardo todo ese efectivo en
                     //nuevo_Pago_EfecT Y QUEDA UN RESTO PARA SEGUIR DESCONTANDO A LOS DEMAS MONTOS
                     $nuevoPago_Efec = $pago_efec;
                     //Calculo cuanto queda de restar el monto en transfer.
-                    $nuevoPago_Transfer = $pago_transfer - ($total_venta - ($pago_efec * 1.1));
+                    $nuevoPago_Transfer = $pago_transfer - ($total_venta - ($pago_efec * $cd_efectivo));
                     
                         if($nuevoPago_Transfer <= 0){
                             //Si el resto de restar lo que quedo a pagar despues de usar todo el efectivo
@@ -737,7 +738,7 @@ public function ListCompraDetalle($id)
                             $nuevoPago_Tarjeta = 0;
                         //A la variable $nuevoPago_transfer le quedó saldo y hay que restar el saldo original
                         //menos el resto para guardar el resultado como lo que se uso para pagar.
-                            $nuevoPago_Transfer = ($total_venta - ($pago_efec * 1.1));
+                            $nuevoPago_Transfer = ($total_venta - ($pago_efec * $cd_efectivo));
                         //Asignamos la suma del saldo efectivo mas lo que se ocupdo del saldo de transferencia
                             $total_bonificado_OK = $nuevoPago_Efec + $nuevoPago_Transfer;
                             
@@ -749,18 +750,6 @@ public function ListCompraDetalle($id)
             //Formateo para que solo guarde 2 decimales.
             $total_bonificado_OK = number_format($total_bonificado_OK, 2, '.', '');
 
-           /*
-            print_r($nuevoPago_Efec);
-            echo PHP_EOL;
-            print_r($nuevoPago_Transfer);
-            echo PHP_EOL;
-            print_r($nuevoPago_Tarjeta);
-            echo PHP_EOL;
-            print_r($total_anterior_bonif);
-            echo PHP_EOL;
-            print_r($total_bonificado_OK);
-            exit; 
-                */
 
             //Establecer zona horaria y obtener fecha/hora en formato correcto
             date_default_timezone_set('America/Argentina/Buenos_Aires');
@@ -1288,6 +1277,7 @@ public function generarTicket($id_cabecera)
     
     $session = session();
     $cajero_nombre = $session->get('nombre');
+    $cd_efectivo =$session->get('cd_efectivo');
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
     
@@ -1421,7 +1411,7 @@ public function generarTicket($id_cabecera)
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format(($cabecera['monto_efectivo'] * 1.1) - $cabecera['monto_efectivo'], 2) 
+                ? '$' . number_format(($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'], 2) 
                 : '$0.00' ?>
             </p>
             <p>Adicional por Tarjeta: 
@@ -1846,6 +1836,7 @@ public function generarTicketFacturaC($id_cabecera)
     $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
 
     $session = session();
+    $cd_efectivo =$session->get('cd_efectivo');
     $cajero_nombre = $session->get('nombre');
 
     $CostoEnvio = $cabecera['costo_envio'];
@@ -1965,7 +1956,7 @@ public function generarTicketFacturaC($id_cabecera)
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format(($cabecera['monto_efectivo'] * 1.1) - $cabecera['monto_efectivo'], 2) 
+                ? '$' . number_format(($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'], 2) 
                 : '$0.00' ?>
             </p>
             <p>Adicional por Tarjeta: 

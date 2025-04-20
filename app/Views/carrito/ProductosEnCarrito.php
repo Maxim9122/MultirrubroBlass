@@ -191,9 +191,10 @@ if (!empty($session)) {
     $pago_transfer = $session->get('pago_transfer');
     $pago_tarjeta = $session->get('pago_tarjeta');
 
+    $cd_efectivo =$session->get('cd_efectivo');
+
 }
-//print_r($perfil);
-//exit;
+
 ?>
 
 <div class="compados" style="width:100%;">
@@ -262,10 +263,10 @@ $resto_desc_pago_efec = 0;
                     <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
                     <td>Precio</td>
-                    <td>Precio Efectivo(-10%)</td>
+                    <td>Precio Efectivo(-5%)</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
-                    <td>Sub.Tot. Efectivo(-10%)</td>
+                    <td>Sub.Tot. Efectivo(-5%)</td>
                     <td>Eliminar?</td>
                 </tr>
                 
@@ -295,7 +296,7 @@ $resto_desc_pago_efec = 0;
                         </td>
 
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'] / 1.1, 2, ',', '.');?>
+                        $ <?php  echo number_format($item['price'] / $cd_efectivo, 2, ',', '.');?>
                         </td>     
 
                         <td class="separador" style="color: #ffff;">
@@ -325,7 +326,7 @@ $resto_desc_pago_efec = 0;
                         </td>
 
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'] / 1.1, 2, ',', '.'); ?>
+                        $ <?php echo number_format($item['subtotal'] / $cd_efectivo, 2, ',', '.'); ?>
                         </td>
 
                         <td class="imagenCarrito separador" style="color: #ffff;">
@@ -356,7 +357,7 @@ $resto_desc_pago_efec = 0;
                                     echo number_format($pago_efec, 2 , ',', '.');
                                     ?>
                                     (Equivale a $ <?php //Gran Total
-                                    echo number_format(($pago_efec * 1.1), 2 , ',', '.');
+                                    echo number_format(($pago_efec * $cd_efectivo), 2 , ',', '.');
                                     ?>)                    
                                 </h4>
                                 <h4 class="total_ant_pagos"> Pago Transferencia: $
@@ -401,10 +402,10 @@ $resto_desc_pago_efec = 0;
                             <?php if($gran_total < $total_anterior_gen){  ?>                                
                             <!-- Si el total nuevo es menor o igual que el pago anterior 
                              en efectivo (transformado a formato normal no en descuento) significa que se puede pagar solo con ese monto -->
-                             <?php if($gran_total <= ($pago_efec * 1.1)){  ?>                                
+                             <?php if($gran_total <= ($pago_efec * $cd_efectivo)){  ?>                                
                              <!-- Si el resto es positivo se calcula cuanto le devolvemos en 
                               efectivo mas todos los demas montos-->
-                                <?php $dif_pago_efec = $pago_efec - ($gran_total / 1.1); ?>                                
+                                <?php $dif_pago_efec = $pago_efec - ($gran_total / $cd_efectivo); ?>                                
                              <!-- Si es menor a 0 Significa que sobró efectivo de la venta anterior
                                por eso se suma eso como esta en formato descuento mas los demas montos para devolver -->                                
                                     <?php $dif_devolver = $dif_pago_efec + $pago_tarjeta + $pago_transfer; ?>
@@ -421,16 +422,16 @@ $resto_desc_pago_efec = 0;
                                     <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
                              <!-- Ahora si el nuevo total es mayor que el pago en efectivo anterior se convierte el total nuevo 
                               en precio de descuento para descontar el pago en efectivo que tambien esta en formato precio descuento -->    
-                        <?php } else if($gran_total > ($pago_efec * 1.1)){  ?> 
+                        <?php } else if($gran_total > ($pago_efec * $cd_efectivo)){  ?> 
 
-                                        <?php $resto_desc_pago_efec = ($gran_total / 1.1) - $pago_efec; ?>                                
+                                        <?php $resto_desc_pago_efec = ($gran_total / $cd_efectivo) - $pago_efec; ?>                                
                                     <!-- Aqui la diferencia entre lo anterior, ya restamos el pago efectivo anterior al nuevo total 
                                     ambos en formato descuento, ahora el resto hay que volver a formato normal antes de restar los demas montos -->
                                             
                                             <br>
                                     <!-- Calculo el resto de restar el saldo disponible menos el total que falta cubrir despues de usar todo
                                     el saldo efectivo -->                                     
-                                            <?php $resto_transfer = $pago_transfer - ($resto_desc_pago_efec * 1.1); ?>
+                                            <?php $resto_transfer = $pago_transfer - ($resto_desc_pago_efec * $cd_efectivo); ?>
                                         <!-- Si el resto es menor o igual a 0 significa que se uso todo el saldo de transfer --> 
                                             <?php if($resto_transfer <= 0){ ?>
                                                     <!-- Pasamos a restar el saldo de tarjeta menos lo que queda pagar despues de usar todo
@@ -462,7 +463,7 @@ $resto_desc_pago_efec = 0;
                                         <?php } ?>
 
                                     <!-- Mostramos el resto que quedo de (TARJETA)-->                                    
-                                            <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_tarjeta, 2 , ',', '.'); ?> en Tarjeta (+Adicion)</h4>
+                                            <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_tarjeta, 2 , ',', '.'); ?> en Tarjeta (AdicionOK)</h4>
                                             
 
                                             <br>
@@ -495,7 +496,7 @@ $resto_desc_pago_efec = 0;
                             </h4>
                             <h4 class="totalVenta" style="margin-top:3px;">Total Con Descuento Efectivo: $
                                 <?php //Gran Total
-                                echo number_format($gran_total / 1.1, 2);
+                                echo number_format($gran_total / $cd_efectivo, 2);
                                 ?>
                             </h4>
                             <h4 class="totalVenta" style="margin-top:3px;">Total En Tarjeta: $
@@ -594,12 +595,13 @@ $resto_desc_pago_efec = 0;
         const tipoPago = document.getElementById('tipo_pago').value;
         const granTotal = <?php echo $gran_total; ?>;
         const totalAnterior = <?php echo $total_anterior_gen; ?>;
+        const cd_efectivo = <?php echo $cd_efectivo; ?>;
 
         let diferencia = granTotal - totalAnterior;
 
         if (tipoPago === 'Efectivo') {
-            // Aplicar descuento del 10% solo a la diferencia
-            diferencia = diferencia / 1.1;
+            // Aplicar descuento del 5% solo a la diferencia
+            diferencia = diferencia / cd_efectivo;
         } else if (tipoPago === 'Tarjeta') {
             // Aplicar un adicional del 10% solo a la diferencia
             diferencia = diferencia * 1.1;

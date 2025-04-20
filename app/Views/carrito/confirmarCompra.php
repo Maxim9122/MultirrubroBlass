@@ -15,6 +15,7 @@ $cart = \Config\Services::cart();
 $session = session();
 $nombre = $session->get('nombre');
 $perfil = $session->get('perfil_id');
+$cd_efectivo =$session->get('cd_efectivo');
 
 //print_r($session->get());
 //exit;
@@ -27,7 +28,7 @@ $fecha_pedido = '';
 $tipo_compra = '';
 $tipo_pago = '';
 $id_pedido = '';
-$total_venta = '';
+$total_venta = 0;
 $estado = '';
 
 $id_cliente_cobro = '';
@@ -235,7 +236,7 @@ endif;
                 </tr>
                 
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-10%):</strong></td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-5%):</strong></td>
                     <td>
                         <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
                     </td>
@@ -515,6 +516,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <script>
     // Pasa el valor de PHP a JavaScript
     const granTotal = <?php echo json_encode($totalVenta); ?>;
+    const cd_efectivo = <?php echo json_encode($cd_efectivo); ?>;
 
     document.addEventListener("DOMContentLoaded", function () {
         // Calcula el monto en efectivo con descuento al cargar la página
@@ -585,7 +587,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         const faltaPagar = totalVenta - pagoTransferencia - pagoTarjetaCredito;
 
         // Aplicar el descuento del 10% al monto en efectivo
-        const montoEfectivoConDescuento = faltaPagar / 1.1; // Aplica el 10% de descuento
+        const montoEfectivoConDescuento = faltaPagar / cd_efectivo; // Aplica el descuento
 
         // Mostrar el monto en efectivo con descuento
         document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { 
@@ -595,7 +597,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
         // Si no se ingresan montos en transferencia o tarjeta de crédito, el monto en efectivo es el total con descuento
         if (pagoTransferencia === 0 && pagoTarjetaCredito === 0) {
-            const totalConDescuento = totalVenta / 1.1;
+            const totalConDescuento = totalVenta / cd_efectivo;
             document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { 
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 2 
