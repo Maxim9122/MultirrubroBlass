@@ -173,8 +173,8 @@ function cerrarMensaje() {
       <?php foreach($productos as $prod): ?>
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
-         <td>$ <?php echo $prod['precio_vta']; ?></td>
-         <td>$ <?php echo number_format($prod['precio_vta'] / $cd_efectivo, 2, ',', '.'); ?></td>
+         <td>$ <?php echo number_format($prod['precio_vta'], 2, '.', ','); ?></td>
+         <td>$ <?php echo number_format($prod['precio_vta'] / $cd_efectivo, 2, '.', ','); ?></td>
          <?php 
          $categoria_nombre = 'Desconocida';
          foreach ($categorias as $categoria) {

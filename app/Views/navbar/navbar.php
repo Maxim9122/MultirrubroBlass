@@ -13,6 +13,42 @@
   
 </head>
 
+<style>
+.cart-container {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    border: 3px solid #00f0ff; /* azul marino fluor */
+    padding: 10px;
+    min-width: 200px;
+    box-shadow: 0 2px 17px rgba(57, 120, 139, 0.7);
+    z-index: 1000;
+    border-radius: 8px; /* opcional, para suavizar el borde */
+}
+
+.cart-container:hover .cart-dropdown {
+    display: block;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+</style>
+
 <body>
 
 <?php $session = session();
@@ -132,9 +168,31 @@
           <li class="nnavItem">
             <a href="<?= base_url('/catalogo')?>" class="btn">Productos</a>
           </li>
-          <li class="navItem">
-          <a href="<?php echo base_url('CarritoList') ?>"> <img class="navImg"  src=" <?php echo base_url('assets/img/icons/iconMB2.png')?>"> </a>
+
+          <li class="navItem cart-container">
+              <a href="<?= base_url('CarritoList') ?>">
+                  <img class="navImg" src="<?= base_url('assets/img/icons/iconMB2.png') ?>">
+              </a>
+              <div class="cart-dropdown">
+                  <?php 
+                  $cart = \Config\Services::cart();
+                  $items = $cart->contents(); // Obtiene los items del carrito
+                  ?>
+                  
+                  <?php if (empty($items)): ?>
+                      <p>El carrito está vacío</p>
+                  <?php else: ?>
+                      <?php foreach ($items as $item): ?>
+                          <div class="cart-item">
+                              <span class="item-name"><?= esc($item['name']) ?></span>
+                              <span class="item-quantity"><?= esc($item['qty']) ?></span>
+                          </div>
+                          <hr>
+                      <?php endforeach; ?>
+                  <?php endif; ?>
+              </div>
           </li>
+
           <li class="nnavItem">
             <a class="btn" href="<?php echo base_url('pedidos');?>">Pedidos</a>
             <li class="navItem">            

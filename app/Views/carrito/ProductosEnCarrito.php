@@ -292,11 +292,11 @@ $resto_desc_pago_efec = 0;
                         </td>
 
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'], 2, ',', '.');?>
+                        $ <?php  echo number_format($item['price'], 2, '.', ',');?>
                         </td>
 
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'] / $cd_efectivo, 2, ',', '.');?>
+                        $ <?php  echo number_format($item['price'] / $cd_efectivo, 2, '.', ',');?>
                         </td>     
 
                         <td class="separador" style="color: #ffff;">
@@ -322,11 +322,11 @@ $resto_desc_pago_efec = 0;
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
 
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'], 2, ',', '.'); ?>
+                        $ <?php echo number_format($item['subtotal'], 2, '.', ','); ?>
                         </td>
 
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'] / $cd_efectivo, 2, ',', '.'); ?>
+                        $ <?php echo number_format($item['subtotal'] / $cd_efectivo, 2, '.', ','); ?>
                         </td>
 
                         <td class="imagenCarrito separador" style="color: #ffff;">
@@ -354,23 +354,23 @@ $resto_desc_pago_efec = 0;
                         <h4 style="color:orange;">Montos a Favor de la Venta Anterior:</h4>
                                 <h4 class="total_ant_pagos"> Pago Efectivo: $
                                     <?php
-                                    echo number_format($pago_efec, 2 , ',', '.');
+                                    echo number_format($pago_efec, 2 , '.', ',');
                                     ?>
                                     (Equivale a $ <?php //Gran Total
-                                    echo number_format(($pago_efec * $cd_efectivo), 2 , ',', '.');
+                                    echo number_format(($pago_efec * $cd_efectivo), 2 , '.', ',');
                                     ?>)                    
                                 </h4>
                                 <h4 class="total_ant_pagos"> Pago Transferencia: $
                                     <?php
-                                    echo number_format($pago_transfer, 2 , ',', '.');
+                                    echo number_format($pago_transfer, 2 , '.', ',');
                                     ?>                    
                                 </h4>
                                 <h4 class="total_ant_pagos"> Pago Tarjeta: $
                                     <?php 
-                                    echo number_format($pago_tarjeta, 2 , ',', '.');
+                                    echo number_format($pago_tarjeta, 2 , '.', ',');
                                     ?>
                                     (Equivale a $ <?php //Gran Total
-                                    echo number_format(($pago_tarjeta / 1.1), 2 , ',', '.');
+                                    echo number_format(($pago_tarjeta / 1.1), 2 , '.', ',');
                                     ?>)                     
                                 </h4>
 
@@ -378,16 +378,16 @@ $resto_desc_pago_efec = 0;
                         <h4 style="color:orange;">TOTALES:</h4>
                                 <h4 class="total_ant">Total Anterior C/Desc. y Adici.: $
                                     <?php //Gran Total Bonificado Anterior
-                                    echo number_format($total_anterior_bonif, 2 , ',', '.');
+                                    echo number_format($total_anterior_bonif, 2 , '.', ',');
                                     ?>                    
                                 </h4>
                                 <h4 class="total_ant">Total General Anterior: $
                                     <?php //Gran Total Anterior
-                                    echo number_format($total_anterior_gen, 2 , ',', '.');
+                                    echo number_format($total_anterior_gen, 2 , '.', ',');
                                     ?>                    
                                 </h4>
                                 <!-- Nuevo Total de la venta -->
-                                <h4 class="total_ant" id="total_actual">Nuevo Total Actual: $ <?php echo number_format($gran_total, 2 , ',', '.'); ?></h4>
+                                <h4 class="total_ant" id="total_actual">Nuevo Total Actual: $ <?php echo number_format($gran_total, 2 , '.', ','); ?></h4>
                         <!-- Mostrar la opcion de tipo de pago solo si el nuevo total es mayor al anterior -->
                          <?php if($gran_total > $total_anterior_gen){ ?>
                                 <label style="color:orange;" for="tipo_pago">Paga la Diferencia Con:</label>
@@ -411,9 +411,9 @@ $resto_desc_pago_efec = 0;
                                     <?php $dif_devolver = $dif_pago_efec + $pago_tarjeta + $pago_transfer; ?>
                                 <br>
                                 <h4 style="color:orange;">Montos a Devolver</h4> 
-                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($dif_pago_efec, 2 , ',', '.'); ?> en Efectivo</h4> 
-                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_transfer, 2 , ',', '.'); ?> en Transferencia</h4>                                  
-                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_tarjeta, 2 , ',', '.'); ?> en Tarjeta</h4>                           
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($dif_pago_efec, 2 , '.', ','); ?> en Efectivo</h4> 
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_transfer, 2 , '.', ','); ?> en Transferencia</h4>                                  
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_tarjeta, 2 , '.', ','); ?> en Tarjeta</h4>                           
                                     
 
                                     <br>
@@ -452,22 +452,22 @@ $resto_desc_pago_efec = 0;
                                         
                                         <h4 style="color:orange;">Montos a Devolver</h4>
                                     <!-- Monto a devolver en efectivo --> 
-                                        <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , ',', '.'); ?> en Efectivo</h4>
+                                        <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , '.', ','); ?> en Efectivo</h4>
 
                                     <!-- Si es resto es igual o menor a 0 muestra 0 (TRANSFERENCIA)-->
                                         <?php if($resto_transfer <= 0){  ?>                               
-                                            <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , ',', '.'); ?> en Transferencia</h4>
+                                            <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , '.', ','); ?> en Transferencia</h4>
                                         <!-- Si el resto es mayor a 0 osea sobro plata en transferencia y hay que mostrar -->
                                             <?php }else if($resto_transfer > 0) { ?>
-                                                <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_transfer , 2 , ',', '.'); ?> en Transferencia</h4>
+                                                <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_transfer , 2 , '.', ','); ?> en Transferencia</h4>
                                         <?php } ?>
 
                                     <!-- Mostramos el resto que quedo de (TARJETA)-->                                    
-                                            <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_tarjeta, 2 , ',', '.'); ?> en Tarjeta (AdicionOK)</h4>
+                                            <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_tarjeta, 2 , '.', ','); ?> en Tarjeta (AdicionOK)</h4>
                                             
 
                                             <br>
-                                            <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
+                                            <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , '.', ','); ?></h4>
 
                                             <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
                         <?php  } ?>
@@ -475,7 +475,7 @@ $resto_desc_pago_efec = 0;
                         <!-- Si el nuevo total es mayor al anterior muestra la diferencia a pagar -->
                             <?php } else {  ?>
 
-                                <h4 style="background-color:green;" class="total_ant" id="diferencia">Diferencia a Cobrar: $  <?php echo number_format($gran_total - $total_anterior_gen, 2 , ',', '.'); ?></h4>
+                                <h4 style="background-color:green;" class="total_ant" id="diferencia">Diferencia a Cobrar: $  <?php echo number_format($gran_total - $total_anterior_gen, 2 , '.', ','); ?></h4>
                             
                             <?php } ?>
                         </td>       

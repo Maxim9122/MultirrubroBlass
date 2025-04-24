@@ -161,7 +161,7 @@ endif;
             <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
             <td style="color: #ffff;">
             <strong id="totalCompra">
-                $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, ',', '.'); ?>
+                $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, '.', ','); ?>
             </strong>
             </td>
             </tr>
@@ -537,8 +537,8 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     // Función para validar los montos ingresados
     function validarMontos() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace(',', '.')) || 0;
-        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace(',', '.')) || 0;
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace('.', ',')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace('.', ',')) || 0;
         const totalVenta = granTotal;
 
         // Validar que el monto en transferencia no sea mayor que el total general
@@ -572,8 +572,8 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
     // Función para calcular el monto en efectivo con descuento
     function calcularMontoEfectivo() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace(',', '.')) || 0;
-        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace(',', '.')) || 0;
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace('.', ',')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace('.', ',')) || 0;
         const totalVenta = granTotal;
 
         // Calcular el monto a cobrar con tarjeta de crédito (monto ingresado + 10%)
