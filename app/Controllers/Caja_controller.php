@@ -225,14 +225,17 @@ public function cancelar_edicion_Venta($id_pedido){
 public function Venta_cancelar($id_pedido)
 {
     $session = session();
-        $perfil=$session->get('perfil_id');
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
-        if($perfil == 2){
-            return redirect()->to(base_url('catalogo'));
-        }
+    $perfil = $session->get('perfil_id');
+
+    // Verifica si el usuario está logueado
+    if (!$session->has('id')) {
+        return redirect()->to(base_url('login'));
+    }
+
+    if ($perfil == 2) {
+        return redirect()->to(base_url('catalogo'));
+    }
+
     $cabecera_model = new Cabecera_model();
     $detalle_model = new VentaDetalle_model();
     $producto_model = new Productos_model();
@@ -241,7 +244,10 @@ public function Venta_cancelar($id_pedido)
     $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
 
     if (!$detalles) {
-        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+        // Eliminar físicamente la cabecera si no hay detalles
+        $cabecera_model->delete($id_pedido);
+
+        session()->setFlashdata('msg', 'Se Elimino Error de Venta Duplicada.');
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
 
@@ -261,6 +267,7 @@ public function Venta_cancelar($id_pedido)
 
     return redirect()->to($this->request->getHeader('referer')->getValue());
 }
+
 
 
 //Modificar Venta Sin_Facturar
