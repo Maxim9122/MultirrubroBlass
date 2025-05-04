@@ -1143,7 +1143,10 @@ public function ListCompraDetalle($id)
                 'fecha_pedido'      => $fecha_pedido_formateada,
                 'hora_entrega' => $hora,
                 'id_cliente'   => $id_cliente, 
-                'costo_envio' => $costo_envio               
+                'costo_envio' => $costo_envio,
+                'monto_efectivo'    => $monto_en_Efectivo,
+                'monto_transferencia' => $monto_transferencia,
+                'monto_tarjetaC' => $monto_tarjetaC              
             ]);           
             $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
         
