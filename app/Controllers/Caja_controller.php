@@ -287,6 +287,11 @@ public function cargar_Venta_Sin_Facturar($id_pedido)
     $total_venta = $cabecera ? $cabecera['total_venta'] : null;
     $total_bonificado = $cabecera ? $cabecera['total_bonificado'] : null;
     $total_anterior = $cabecera ? $cabecera['total_anterior'] : null;
+
+    $pago_efec = $cabecera ? $cabecera['monto_efectivo'] : null;
+    $pago_transfer = $cabecera ? $cabecera['monto_transferencia'] : null;
+    $pago_tarjeta = $cabecera ? $cabecera['monto_tarjetaC'] : null;
+
     $session->set([
         'id_vendedor' => $id_vendedor,
         'nombre_vendedor' => $nombre_vendedor,
@@ -298,6 +303,9 @@ public function cargar_Venta_Sin_Facturar($id_pedido)
         'total_venta' => $total_venta,
         'total_bonificado' => $total_bonificado,
         'total_anterior' => $total_anterior,
+        'pago_efec' => $pago_efec,
+        'pago_transfer' => $pago_transfer,
+        'pago_tarjeta' => $pago_tarjeta,
         'estado' => 'Modificando_SF'
     ]);
     // Obtener los productos del pedido
@@ -354,7 +362,7 @@ public function cancelar_edicion_Venta_SF($id_pedido){
         $Cabecera_model->update($id_pedido, ['estado' => 'Sin_Facturar']);
         }       
     // Después de guardar el pedido (cuando ya no se necesiten los datos de la sesión)
-    $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta','total_bonificado','total_anterior']);
+    $session->remove(['pago_efec','pago_transfer','pago_tarjeta','estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta','total_bonificado','total_anterior']);
 
     
     $cart->destroy();

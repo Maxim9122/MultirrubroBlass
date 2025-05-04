@@ -15,6 +15,7 @@ $cart = \Config\Services::cart();
 $session = session();
 $nombre = $session->get('nombre');
 $perfil = $session->get('perfil_id');
+$cd_efectivo =$session->get('cd_efectivo');
 
 //print_r($session->get());
 //exit;
@@ -27,7 +28,7 @@ $fecha_pedido = '';
 $tipo_compra = '';
 $tipo_pago = '';
 $id_pedido = '';
-$total_venta = '';
+$total_venta = 0;
 $estado = '';
 
 $id_cliente_cobro = '';
@@ -108,6 +109,46 @@ endif;
         <br>
         <div align="center">
             <u><i><h2 align="center">Resumen de la Compra</h2></i></u>
+
+            <?php if($estado == 'Cobrando'){ ?>
+                <!-- Botón para abrir el modal -->
+                <button type="button" class="btn-ver-detalles" onclick="abrirModal()">
+                    Ver Productos Adquiridos
+                </button>
+
+                <!-- Modal personalizado con animación de zoom -->
+                <div id="miModal" class="modal-personalizado">
+                    <div class="modal-contenido zoom-in">
+                        <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+                        <h2 style="color:black;">Detalles de la Compra</h2>
+                        <?php if (!empty($ventas)): ?>
+                            <table class="tabla-detalles" style="color:black;">
+                                <thead>
+                                    <tr>
+                                        <th style="color:black;">Producto</th>
+                                        <th style="color:black;">Cantidad</th>
+                                        <th style="color:black;">Precio Unitario</th>
+                                        <th style="color:black;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($ventas as $venta): ?>
+                                        <tr>
+                                            <td><?= $venta['nombre'] ?></td>
+                                            <td><?= $venta['cantidad'] ?></td>
+                                            <td><?= number_format($venta['precio'], 2) ?></td>
+                                            <td><?= number_format($venta['precio'] * $venta['cantidad'], 2) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p>No hay detalles de venta disponibles.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php } ?>
+
                 <br>
         <?php if (!empty($id_pedido) && $total_venta == ''): ?>
             <h3 class="resaltado">
@@ -120,7 +161,7 @@ endif;
             <td style="color:rgb(192, 250, 214);"><strong>Total General:</strong></td>
             <td style="color: #ffff;">
             <strong id="totalCompra">
-                $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, ',', '.'); ?>
+                $<?php echo number_format(($gran_total > 0 ? $gran_total : $total_venta), 2, '.', ','); ?>
             </strong>
             </td>
             </tr>
@@ -173,14 +214,29 @@ endif;
                  <?php endif; ?><!-- Fin del if filtro vendedor-->
 
                  <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
-                 <tr>
-                <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
-                <td>
-                    <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles();" onkeyup="calcularMontoEfectivo()">
-                </td>
+                          
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Tarjeta de Crédito</strong></td>
+                    <td>
+                        <input class="selector" type="text" id="pagoTarjetaCredito" name="pagoTarjetaCredito" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                    </td>
                 </tr>
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-10%):</strong></td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto a Cobrar con Tarjeta de Crédito (+10%)</strong></td>
+                    <td>
+                    <span id="montoTarjetaCreditoAdvertencia" style="color: yellow; font-weight: bold;">$0.00</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
+                    <td>
+                        <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-5%):</strong></td>
                     <td>
                         <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
                     </td>
@@ -254,7 +310,7 @@ endif;
             <?php } ?>
 
             <?php if ($total_venta != '') { ?>
-                <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger">
+                <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
                     Cancelar Cobro
                 </a>
             <?php } else if ($id_cliente) { ?>
@@ -322,6 +378,23 @@ endif;
             <!-- Esto es para cancelar todo, edicion de pedido o compra normal-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+function confirmarAccionC_Cobro() {
+        Swal.fire({
+            title: "¿Cancelar Cobro?",
+            text: "Se cancelara el Cobro de la Venta y esta volvera a la lista de Pendientes.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Cancelar Cobro",
+            cancelButtonText: "No, Seguir Cobrando"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?php echo base_url('cancelarCobro/'.$id_pedido); ?>";
+            }
+        });
+        return false; // Evita que el enlace siga su curso normal
+    }
+
     function confirmarAccionCompra() {
         Swal.fire({
             title: "¿Estás seguro?",
@@ -443,57 +516,88 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <script>
     // Pasa el valor de PHP a JavaScript
     const granTotal = <?php echo json_encode($totalVenta); ?>;
+    const cd_efectivo = <?php echo json_encode($cd_efectivo); ?>;
 
     document.addEventListener("DOMContentLoaded", function () {
         // Calcula el monto en efectivo con descuento al cargar la página
         calcularMontoEfectivo();
 
-        // Agrega un evento para validar el monto en transferencia
+        // Agrega eventos para validar los montos en tiempo real
         const pagoTransferenciaInput = document.getElementById('pagoTransferencia');
+        const pagoTarjetaCreditoInput = document.getElementById('pagoTarjetaCredito');
+
         pagoTransferenciaInput.addEventListener('input', function () {
-            validarMontoTransferencia();
+            validarMontos();
+        });
+
+        pagoTarjetaCreditoInput.addEventListener('input', function () {
+            validarMontos();
         });
     });
 
-    // Función para validar que el monto en transferencia no sea mayor que el total general
-    function validarMontoTransferencia() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
+    // Función para validar los montos ingresados
+    function validarMontos() {
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace('.', ',')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace('.', ',')) || 0;
         const totalVenta = granTotal;
 
+        // Validar que el monto en transferencia no sea mayor que el total general
         if (pagoTransferencia > totalVenta) {
             alert('El monto en transferencia no puede ser mayor al total general de la venta.');
             document.getElementById('pagoTransferencia').value = ''; // Limpia el campo
-            calcularMontoEfectivo(); // Recalcula el monto en efectivo
-        } else {
-            calcularMontoEfectivo(); // Recalcula el monto en efectivo
+            validarMontos(); // Revalida los montos
+            return;
         }
+
+        // Validar que el monto en tarjeta de crédito no sea mayor que el total general
+        if (pagoTarjetaCredito > totalVenta) {
+            alert('El monto en tarjeta de crédito no puede ser mayor al total general de la venta.');
+            document.getElementById('pagoTarjetaCredito').value = ''; // Limpia el campo
+            validarMontos(); // Revalida los montos
+            return;
+        }
+
+        // Validar que la suma de transferencia y tarjeta de crédito no sea mayor que el total general
+        if (pagoTransferencia + pagoTarjetaCredito > totalVenta) {
+            alert('La suma de los montos en transferencia y tarjeta de crédito no puede ser mayor al total general de la venta.');
+            document.getElementById('pagoTransferencia').value = ''; // Limpia el campo de transferencia
+            document.getElementById('pagoTarjetaCredito').value = ''; // Limpia el campo de tarjeta de crédito
+            validarMontos(); // Revalida los montos
+            return;
+        }
+
+        // Si todo está correcto, calcular el monto en efectivo
+        calcularMontoEfectivo();
     }
 
     // Función para calcular el monto en efectivo con descuento
     function calcularMontoEfectivo() {
-        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '')) || 0;
+        const pagoTransferencia = parseFloat(document.getElementById('pagoTransferencia').value.replace(/\./g, '').replace('.', ',')) || 0;
+        const pagoTarjetaCredito = parseFloat(document.getElementById('pagoTarjetaCredito').value.replace(/\./g, '').replace('.', ',')) || 0;
         const totalVenta = granTotal;
 
-        // Si el monto en transferencia es mayor que el total, no se calcula el efectivo
-        if (pagoTransferencia > totalVenta) {
-            return;
-        }
+        // Calcular el monto a cobrar con tarjeta de crédito (monto ingresado + 10%)
+        const montoTarjetaCreditoAdvertencia = pagoTarjetaCredito * 1.1;
+        document.getElementById('montoTarjetaCreditoAdvertencia').textContent = `$${montoTarjetaCreditoAdvertencia.toLocaleString('de-DE', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        })}`;
 
-        // Calcula cuánto falta pagar después del pago en transferencia
-        const faltaPagar = totalVenta - pagoTransferencia;
+        // Calcular cuánto falta pagar después del pago en transferencia y tarjeta de crédito
+        const faltaPagar = totalVenta - pagoTransferencia - pagoTarjetaCredito;
 
-        // Aplica el descuento del 10% al monto en efectivo
-        const montoEfectivoConDescuento = faltaPagar / 1.1; // Aplica el 10% de descuento
+        // Aplicar el descuento del 10% al monto en efectivo
+        const montoEfectivoConDescuento = faltaPagar / cd_efectivo; // Aplica el descuento
 
-        // Muestra el monto en efectivo con descuento
+        // Mostrar el monto en efectivo con descuento
         document.getElementById('pagoEfectivo').value = montoEfectivoConDescuento.toLocaleString('de-DE', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         });
 
-        // Si no se ingresa monto en transferencia, el monto en efectivo es el total con descuento
-        if (pagoTransferencia === 0) {
-            const totalConDescuento = totalVenta / 1.1;
+        // Si no se ingresan montos en transferencia o tarjeta de crédito, el monto en efectivo es el total con descuento
+        if (pagoTransferencia === 0 && pagoTarjetaCredito === 0) {
+            const totalConDescuento = totalVenta / cd_efectivo;
             document.getElementById('pagoEfectivo').value = totalConDescuento.toLocaleString('de-DE', { 
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 2 
@@ -761,4 +865,124 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
     });
 });
 
+</script>
+
+
+<style>
+    .modal-personalizado {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    }
+
+    .modal-contenido {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 800px;
+        transform: scale(0); /* Inicia invisible (zoom out) */
+        transition: transform 0.3s ease; /* Duración de la animación */
+        border-color: #8be9fd;
+        box-shadow: 0 0 15px #8be9fd;
+    }
+
+    /* Zoom al abrir */
+    .modal-contenido.zoom-in {
+        transform: scale(1); /* Escala normal */
+    }
+
+    /* Zoom al cerrar */
+    .modal-contenido.zoom-out {
+        transform: scale(0); /* Vuelve a escala 0 */
+    }
+
+    .cerrar-modal {
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 30px;
+        color: #888;
+        cursor: pointer;
+    }
+
+    .cerrar-modal:hover {
+        color: red;
+    }
+
+    .tabla-detalles {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;        
+    }
+
+    .tabla-detalles th, .tabla-detalles td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .tabla-detalles th {
+        background-color: #f5f5f5;
+    }
+
+    .btn-ver-detalles {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn-ver-detalles:hover {
+        background-color: #45a149;
+    }
+</style>
+
+<script>
+   function abrirModal() {
+    const modal = document.getElementById('miModal');
+    const modalContent = modal.querySelector('.modal-contenido');
+    
+    // Resetear estilos antes de abrir
+    modal.style.display = 'flex';
+    modalContent.classList.remove('zoom-out');
+    
+    // Forzar un "reflow" para que la animación funcione
+    void modalContent.offsetWidth; // Truco para reiniciar la animación
+    
+    // Aplicar zoom-in
+    modalContent.classList.add('zoom-in');
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('miModal');
+    const modalContent = modal.querySelector('.modal-contenido');
+    
+    // Quitar zoom-in y aplicar zoom-out
+    modalContent.classList.remove('zoom-in');
+    modalContent.classList.add('zoom-out');
+    
+    // Esperar a que termine la animación antes de ocultar
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // 300ms = duración de la animación (debe coincidir con CSS)
+}
+
+// Cerrar al hacer clic fuera del modal
+window.onclick = function(event) {
+    const modal = document.getElementById('miModal');
+    if (event.target === modal) {
+        cerrarModal();
+    }
+};
 </script>

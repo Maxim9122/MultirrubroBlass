@@ -2,7 +2,8 @@
           $nombre= $session->get('nombre');
           $perfil=$session->get('perfil_id');
           $id=$session->get('id');
-          $estado =$session->get('estado');          
+          $estado =$session->get('estado');
+          $cd_efectivo =$session->get('cd_efectivo');                  
           ?>
           
 <!-- Mensajes temporales -->
@@ -159,7 +160,7 @@ function cerrarMensaje() {
       <tr class="colorTexto2">
          <th>Nombre</th>
          <th>Precio Venta</th>
-         <th>Precio Efectivo(-10%)</th>
+         <th>Precio Efectivo(-5%)</th>
          <th class="ocultar-en-movil">Categoría</th>
          <th>Imagen</th>
          <th>Stock</th>
@@ -172,8 +173,8 @@ function cerrarMensaje() {
       <?php foreach($productos as $prod): ?>
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
-         <td>$ <?php echo $prod['precio_vta']; ?></td>
-         <td>$ <?php echo number_format($prod['precio_vta'] / 1.1, 2, ',', '.'); ?></td>
+         <td>$ <?php echo number_format($prod['precio_vta'], 2, '.', ','); ?></td>
+         <td>$ <?php echo number_format($prod['precio_vta'] / $cd_efectivo, 2, '.', ','); ?></td>
          <?php 
          $categoria_nombre = 'Desconocida';
          foreach ($categorias as $categoria) {

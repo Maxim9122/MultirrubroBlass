@@ -32,7 +32,7 @@ $id = $session->get('id'); ?>
                 </div>
                 <div class="form-group">
                     <label>Nombre</label>
-                    <input name="nombre" type="text" class="form-control" placeholder="nombre" value="<?php echo $data['nombre'] ?>" required minlength="5" maxlength="20">
+                    <input name="nombre" type="text" class="form-control" placeholder="nombre" value="<?php echo $data['nombre'] ?>" required minlength="5" maxlength="50">
                     <?php if ($validation->getError('nombre')) { ?>
                         <div class='alert alert-danger mt-2'><?= $validation->getError('nombre'); ?></div>
                     <?php } ?>
@@ -46,18 +46,24 @@ $id = $session->get('id'); ?>
                 </div>
                 <div class="form-group">
                     <label>Precio Costo</label>
-                    <input required type="text" name="precio" class="form-control" value="<?php echo $data['precio'] ?>" step="0.01" min="0" maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input required type="text" name="precio" class="form-control"
+                        value="<?php echo $data['precio'] ?>" step="0.01" min="0" maxlength="20"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                     <?php if ($validation->getError('precio')) { ?>
                         <div class='alert alert-danger mt-2'><?= $validation->getError('precio'); ?></div>
                     <?php } ?>
                 </div>
+
                 <div class="form-group">
                     <label>Precio Venta</label>
-                    <input required name="precio_vta" type="text" class="form-control" value="<?php echo $data['precio_vta'] ?>" step="0.01" min="0" maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input required name="precio_vta" type="text" class="form-control"
+                        value="<?php echo $data['precio_vta'] ?>" step="0.01" min="0" maxlength="20"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                     <?php if ($validation->getError('precio_vta')) { ?>
                         <div class='alert alert-danger mt-2'><?= $validation->getError('precio_vta'); ?></div>
                     <?php } ?>
                 </div>
+
                 <div class="form-group">
                     <label>Stock</label>
                     <input required name="stock" type="text" class="form-control" value="<?php echo $data['stock'] ?>" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">

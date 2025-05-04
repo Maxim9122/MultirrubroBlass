@@ -131,6 +131,25 @@
     box-shadow: 0 0 5px #8be9fd;
 }
 
+.total_ant_pagos {
+    width: 100%;
+    max-width: 520px;
+    padding: 8px;
+    border: 2px solid #50fa7b;
+    background-color: #282a36;
+    color: #f8f8f2;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 800px;
+    color:#ffff;
+}
+
+.total_ant_pagos:focus {
+    outline: none;
+    border-color: #8be9fd;
+    box-shadow: 0 0 5px #8be9fd;
+}
+
 .diferencia_result {
     width: 100%;
     max-width: 450px;
@@ -168,9 +187,14 @@ if (!empty($session)) {
     $total_anterior_bonif = $session->get('total_bonificado');
     $total_anterior_gen = $session->get('total_venta');
 
+    $pago_efec = $session->get('pago_efec');
+    $pago_transfer = $session->get('pago_transfer');
+    $pago_tarjeta = $session->get('pago_tarjeta');
+
+    $cd_efectivo =$session->get('cd_efectivo');
+
 }
-//print_r($perfil);
-//exit;
+
 ?>
 
 <div class="compados" style="width:100%;">
@@ -225,6 +249,9 @@ if (!empty($session)) {
 <?php
 // Asegúrate de definir $gran_total antes de este script
 $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está definido, usa 0 como valor
+$dif_pago_efec = 0;
+$dif_devolver = 0;
+$resto_desc_pago_efec = 0;
 ?>
 
         <table class="texto-negrita">
@@ -236,10 +263,10 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                     <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
                     <td>Precio</td>
-                    <td>Precio Efectivo(-10%)</td>
+                    <td>Precio Efectivo(-5%)</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
-                    <td>Sub.Tot. Efectivo(-10%)</td>
+                    <td>Sub.Tot. Efectivo(-5%)</td>
                     <td>Eliminar?</td>
                 </tr>
                 
@@ -265,11 +292,11 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                         </td>
 
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'], 2, ',', '.');?>
+                        $ <?php  echo number_format($item['price'], 2, '.', ',');?>
                         </td>
 
                         <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'] / 1.1, 2, ',', '.');?>
+                        $ <?php  echo number_format($item['price'] / $cd_efectivo, 2, '.', ',');?>
                         </td>     
 
                         <td class="separador" style="color: #ffff;">
@@ -295,11 +322,11 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             <?php $gran_total = $gran_total + $item['subtotal']; ?>
 
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'], 2, ',', '.'); ?>
+                        $ <?php echo number_format($item['subtotal'], 2, '.', ','); ?>
                         </td>
 
                         <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'] / 1.1, 2, ',', '.'); ?>
+                        $ <?php echo number_format($item['subtotal'] / $cd_efectivo, 2, '.', ','); ?>
                         </td>
 
                         <td class="imagenCarrito separador" style="color: #ffff;">
@@ -323,34 +350,135 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             <td colspan="6" align="right">
                                 <label style="color:orange;" for="motivo_cambio">Motivo de los cambios de la Venta:</label>
                                 <input class="motivo" type="text" id="motivo_cambio" name="motivo_modif" placeholder="Ingrese el motivo de los cambios">
+                        
+                        <h4 style="color:orange;">Montos a Favor de la Venta Anterior:</h4>
+                                <h4 class="total_ant_pagos"> Pago Efectivo: $
+                                    <?php
+                                    echo number_format($pago_efec, 2 , '.', ',');
+                                    ?>
+                                    (Equivale a $ <?php //Gran Total
+                                    echo number_format(($pago_efec * $cd_efectivo), 2 , '.', ',');
+                                    ?>)                    
+                                </h4>
+                                <h4 class="total_ant_pagos"> Pago Transferencia: $
+                                    <?php
+                                    echo number_format($pago_transfer, 2 , '.', ',');
+                                    ?>                    
+                                </h4>
+                                <h4 class="total_ant_pagos"> Pago Tarjeta: $
+                                    <?php 
+                                    echo number_format($pago_tarjeta, 2 , '.', ',');
+                                    ?>
+                                    (Equivale a $ <?php //Gran Total
+                                    echo number_format(($pago_tarjeta / 1.1), 2 , '.', ',');
+                                    ?>)                     
+                                </h4>
 
-                                <h4 class="total_ant">Total Anterior C/Descuento: $
-                                    <?php //Gran Total
-                                    echo number_format($total_anterior_bonif, 2 , ',', '.');
+                        <br>
+                        <h4 style="color:orange;">TOTALES:</h4>
+                                <h4 class="total_ant">Total Anterior C/Desc. y Adici.: $
+                                    <?php //Gran Total Bonificado Anterior
+                                    echo number_format($total_anterior_bonif, 2 , '.', ',');
                                     ?>                    
                                 </h4>
                                 <h4 class="total_ant">Total General Anterior: $
-                                    <?php //Gran Total
-                                    echo number_format($total_anterior_gen, 2 , ',', '.');
+                                    <?php //Gran Total Anterior
+                                    echo number_format($total_anterior_gen, 2 , '.', ',');
                                     ?>                    
                                 </h4>
-                                <h4 class="total_ant" id="total_actual">Total Actual: $ <?php echo number_format($gran_total, 2 , ',', '.'); ?></h4>
-
+                                <!-- Nuevo Total de la venta -->
+                                <h4 class="total_ant" id="total_actual">Nuevo Total Actual: $ <?php echo number_format($gran_total, 2 , '.', ','); ?></h4>
+                        <!-- Mostrar la opcion de tipo de pago solo si el nuevo total es mayor al anterior -->
+                         <?php if($gran_total > $total_anterior_gen){ ?>
                                 <label style="color:orange;" for="tipo_pago">Paga la Diferencia Con:</label>
                                 <select class="total_ant" id="tipo_pago" name="tipo_pago_dif" onchange="calcularDiferencia()">
                                     <option value="Transferencia">Transferencia</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                </select>                                
-
-                                <h4 class="total_ant" id="diferencia">Diferencia: $ <?php echo number_format($gran_total - $total_anterior_gen, 2 , ',', '.'); ?></h4>
-                                <?php if (($gran_total - $total_anterior_gen) < 0): ?>
-
-                                    <h3 style="color:#f42632;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
-                                <?php endif; ?>
-                                                                
+                                    <option value="Efectivo">Efectivo (Descuento)</option>
+                                    <option value="Tarjeta">Tarjeta (+10% Adicional)</option>
+                                </select> 
+                          <?php  } ?>         
+                         <!-- Si el nuevo total es menor al anterior hay que 
+                          hace calculos para la devolucion correcta de dinero -->                            
+                            <?php if($gran_total < $total_anterior_gen){  ?>                                
+                            <!-- Si el total nuevo es menor o igual que el pago anterior 
+                             en efectivo (transformado a formato normal no en descuento) significa que se puede pagar solo con ese monto -->
+                             <?php if($gran_total <= ($pago_efec * $cd_efectivo)){  ?>                                
+                             <!-- Si el resto es positivo se calcula cuanto le devolvemos en 
+                              efectivo mas todos los demas montos-->
+                                <?php $dif_pago_efec = $pago_efec - ($gran_total / $cd_efectivo); ?>                                
+                             <!-- Si es menor a 0 Significa que sobró efectivo de la venta anterior
+                               por eso se suma eso como esta en formato descuento mas los demas montos para devolver -->                                
+                                    <?php $dif_devolver = $dif_pago_efec + $pago_tarjeta + $pago_transfer; ?>
                                 <br>
-                                <h4 style="color:orange;">Si la Diferencia es Negativa, significa que es dinero a favor del Cliente.</h4>
-                            </td>       
+                                <h4 style="color:orange;">Montos a Devolver</h4> 
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($dif_pago_efec, 2 , '.', ','); ?> en Efectivo</h4> 
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_transfer, 2 , '.', ','); ?> en Transferencia</h4>                                  
+                                    <h4 class="total_ant" >Devolver $  <?php echo number_format($pago_tarjeta, 2 , '.', ','); ?> en Tarjeta</h4>                           
+                                    
+
+                                    <br>
+                                    <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , ',', '.'); ?></h4>
+                                    
+                                    <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
+                             <!-- Ahora si el nuevo total es mayor que el pago en efectivo anterior se convierte el total nuevo 
+                              en precio de descuento para descontar el pago en efectivo que tambien esta en formato precio descuento -->    
+                        <?php } else if($gran_total > ($pago_efec * $cd_efectivo)){  ?> 
+
+                                        <?php $resto_desc_pago_efec = ($gran_total / $cd_efectivo) - $pago_efec; ?>                                
+                                    <!-- Aqui la diferencia entre lo anterior, ya restamos el pago efectivo anterior al nuevo total 
+                                    ambos en formato descuento, ahora el resto hay que volver a formato normal antes de restar los demas montos -->
+                                            
+                                            <br>
+                                    <!-- Calculo el resto de restar el saldo disponible menos el total que falta cubrir despues de usar todo
+                                    el saldo efectivo -->                                     
+                                            <?php $resto_transfer = $pago_transfer - ($resto_desc_pago_efec * $cd_efectivo); ?>
+                                        <!-- Si el resto es menor o igual a 0 significa que se uso todo el saldo de transfer --> 
+                                            <?php if($resto_transfer <= 0){ ?>
+                                                    <!-- Pasamos a restar el saldo de tarjeta menos lo que queda pagar despues de usar todo
+                                                    el saldo efectivo y todo el saldo transfer --> 
+                                                <?php $resto_tarjeta = ($pago_tarjeta / 1.1) - abs($resto_transfer); ?>
+                                                        <!-- El resto que quedo del saldo de tarjeta lo transformamos a monto con adicional --> 
+                                                        <?php $dif_devolver = abs($resto_tarjeta * 1.1); ?>
+                                                        <!-- En este caso coincidiran los mintos al mostra cuanto se devuelve por separado y total 
+                                                        Tambien multiplicamos por 1.1 para tener el valor con adicional a devolver --> 
+                                                        <?php $resto_tarjeta = $resto_tarjeta * 1.1; ?>
+                                                <!-- Si el resto da positivo significa que sobro saldo de transferencia --> 
+                                                <?php } else if($resto_transfer > 0){ ?>
+                                                        <!-- Se le asigna a la variable resto para mostrar lo que sobro para devolver por separado -->                                         
+                                                        <?php $resto_tarjeta = $pago_tarjeta; ?>
+                                                        <!-- Sumamos el resto que quedo del saldo transfer mas el total sin uso de la tarjeta para devolver --> 
+                                                        <?php $dif_devolver = $resto_tarjeta + $resto_transfer; ?>
+                                                <?php } ?>
+                                        
+                                        <h4 style="color:orange;">Montos a Devolver</h4>
+                                    <!-- Monto a devolver en efectivo --> 
+                                        <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , '.', ','); ?> en Efectivo</h4>
+
+                                    <!-- Si es resto es igual o menor a 0 muestra 0 (TRANSFERENCIA)-->
+                                        <?php if($resto_transfer <= 0){  ?>                               
+                                            <h4 class="total_ant" >Devolver $  <?php echo number_format(0, 2 , '.', ','); ?> en Transferencia</h4>
+                                        <!-- Si el resto es mayor a 0 osea sobro plata en transferencia y hay que mostrar -->
+                                            <?php }else if($resto_transfer > 0) { ?>
+                                                <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_transfer , 2 , '.', ','); ?> en Transferencia</h4>
+                                        <?php } ?>
+
+                                    <!-- Mostramos el resto que quedo de (TARJETA)-->                                    
+                                            <h4 class="total_ant" >Devolver $  <?php echo number_format($resto_tarjeta, 2 , '.', ','); ?> en Tarjeta (AdicionOK)</h4>
+                                            
+
+                                            <br>
+                                            <h4 style="background-color:red;" class="total_ant" >Diferencia Total a Devolver: $  <?php echo number_format($dif_devolver, 2 , '.', ','); ?></h4>
+
+                                            <h3 style="background-color:red; color:#ffff;" class="diferencia_result">Atencion! La diferencia Resultó Plata a favor del Cliente.</h3>
+                        <?php  } ?>
+
+                        <!-- Si el nuevo total es mayor al anterior muestra la diferencia a pagar -->
+                            <?php } else {  ?>
+
+                                <h4 style="background-color:green;" class="total_ant" id="diferencia">Diferencia a Cobrar: $  <?php echo number_format($gran_total - $total_anterior_gen, 2 , '.', ','); ?></h4>
+                            
+                            <?php } ?>
+                        </td>       
                         </tr>
                     <?php endif; ?>
 
@@ -364,6 +492,16 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
                             <h4 class="totalVenta">Total Actual: $
                                 <?php //Gran Total
                                 echo number_format($gran_total, 2);
+                                ?>
+                            </h4>
+                            <h4 class="totalVenta" style="margin-top:3px;">Total Con Descuento Efectivo: $
+                                <?php //Gran Total
+                                echo number_format($gran_total / $cd_efectivo, 2);
+                                ?>
+                            </h4>
+                            <h4 class="totalVenta" style="margin-top:3px;">Total En Tarjeta: $
+                                <?php //Gran Total
+                                echo number_format($gran_total * 1.1, 2);
                                 ?>
                             </h4>
                         <?php endif; ?>
@@ -408,8 +546,8 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
 
                         <?php } else if($perfil == 3 && $estado == 'Modificando_SF') {?>
                         <!-- Envia los cambios y Modifica e impacta los cambios de la venta modificada -->
-                        <a href="javascript:void(0);" class="success" onclick="setAccion('GuardarCambios')">Guardar Cambios</a>      
-                            <?php } ?>
+                        <a href="javascript:void(0);" class="success" onclick="confirmarGuardarCambios()">Guardar Cambios</a>    
+                        <?php } ?>
                     </td>
                 </tr>
                 <?php echo form_close();
@@ -417,6 +555,28 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
         </table>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarGuardarCambios() {
+    Swal.fire({
+        title: "¿Confirmar Cambios?",
+        text: "Asegurate de haber presionado en 'Actualizar Importes' antes de Continuar!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Guardar Cambios",
+        cancelButtonText: "Volver",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Establece la acción y envía el formulario
+            document.getElementById('accion').value = 'GuardarCambios';
+            document.getElementById('carrito_form').submit();
+        }
+    });
+}
+</script>
 
 <script>
     function setAccion(accion) {
@@ -435,21 +595,26 @@ $gran_total = isset($gran_total) ? $gran_total : 0; // Si $gran_total no está d
         const tipoPago = document.getElementById('tipo_pago').value;
         const granTotal = <?php echo $gran_total; ?>;
         const totalAnterior = <?php echo $total_anterior_gen; ?>;
+        const cd_efectivo = <?php echo $cd_efectivo; ?>;
 
         let diferencia = granTotal - totalAnterior;
 
         if (tipoPago === 'Efectivo') {
-            diferencia = diferencia / 1.1; // Aplicar descuento del 10% solo a la diferencia
+            // Aplicar descuento del 5% solo a la diferencia
+            diferencia = diferencia / cd_efectivo;
+        } else if (tipoPago === 'Tarjeta') {
+            // Aplicar un adicional del 10% solo a la diferencia
+            diferencia = diferencia * 1.1;
         }
 
-        // Mostrar la diferencia con el descuento aplicado (si corresponde)
+        // Mostrar la diferencia con el descuento o adicional aplicado (si corresponde)
         document.getElementById('diferencia').innerText = `Diferencia: $${diferencia.toFixed(2)}`;
     }
 </script>
 
 
 
-
+<!-- SWEET ALERTS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmarAccionCompra() {

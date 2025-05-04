@@ -58,6 +58,7 @@ class Login_controller extends Controller
                     'direccion' => $data['direccion'],
                     'perfil_id'=> $data['perfil_id'],
                     'id_sesion'=> $id_regSesion,
+                    'cd_efectivo' => 1.05,
                     'logged_in'     => TRUE
                 ];
                 

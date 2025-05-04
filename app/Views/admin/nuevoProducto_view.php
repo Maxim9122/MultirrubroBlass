@@ -102,18 +102,21 @@ $id = $session->get('id');
 
                 <div class="mb-2">
                     <label>Precio de Costo</label>
-                    <input name="precio" type="text" required maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input name="precio" type="text" required maxlength="20" 
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
                     <?= $validation->getError('precio') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio')}</div>" : "" ?>
                 </div>
-            </div>
 
-            <!-- Cuarta fila -->
-            <div class="form-row">
-                <div class="mb-2">
-                    <label>Precio de Venta</label>
-                    <input name="precio_vta" type="text" required maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                    <?= $validation->getError('precio_vta') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_vta')}</div>" : "" ?>
+                <!-- Cuarta fila -->
+                <div class="form-row">
+                    <div class="mb-2">
+                        <label>Precio de Venta</label>
+                        <input name="precio_vta" type="text" required maxlength="20" 
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                        <?= $validation->getError('precio_vta') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_vta')}</div>" : "" ?>
+                    </div>
                 </div>
+
 
                 <div class="mb-2">
                     <label>Stock</label>

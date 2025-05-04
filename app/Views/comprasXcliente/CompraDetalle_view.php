@@ -5,6 +5,12 @@ $perfil = $session->get('perfil_id');
 $VTO_CAE = '';
 $motivo = '';
 $total_anterior = '';
+$monto_efectivo = 0;
+$monto_transferencia = 0;
+$monto_tarjetaC = 0;
+$total_sin_desc = 0;
+$estado = '';
+$vta_num = 0;
 ?>
 <style>
   /* Estilos para las celdas de la tabla */
@@ -39,6 +45,24 @@ $total_anterior = '';
     }
     if (!empty($vta['total_bonificado'])) {
       $total_actual = $vta['total_bonificado'];
+    }
+    if (!empty($vta['monto_efectivo'])) {
+      $monto_efectivo = $vta['monto_efectivo'];
+    }
+    if (!empty($vta['monto_transferencia'])) {
+      $monto_transferencia = $vta['monto_transferencia'];
+    }
+    if (!empty($vta['monto_tarjetaC'])) {
+      $monto_tarjetaC = $vta['monto_tarjetaC'];
+    }
+    if (!empty($vta['total_venta'])) {
+      $total_sin_desc = $vta['total_venta'];
+    }
+    if (!empty($vta['estado'])) {
+      $estado = $vta['estado'];
+    }
+    if (!empty($vta['venta_numero'])) {
+      $vta_num = $vta['venta_numero'];
     }
     ?>
   <?php endforeach; ?>
@@ -103,6 +127,24 @@ $total_anterior = '';
 
 <br>
 <div class="detalle-compra-tabla-container">
+        <!-- Numero de Venta -->
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Nro COD</th>
+         
+      </tr>
+      <br>
+    </thead>
+    <tbody>
+      <tr>
+          <td><?php echo $vta_num; ?></td>
+          
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <!-- Detalle de la venta -->
   <table class="detalle-compra-tabla comprados">
     <thead>
       <tr>
@@ -125,6 +167,63 @@ $total_anterior = '';
           </tr>
         <?php endforeach; ?>
       <?php endif; ?>
+    </tbody>
+  </table>
+  <?php if($estado != 'Pendiente') {  ?>
+  <!-- Total venta con descuento-->
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Pago Efectivo</th>
+          <th>Pago Transferencia</th>
+          <th>Pago Tarteja C.Adi.</th>
+          <th>Total</th>
+      </tr>
+      <br>
+    </thead>
+    <tbody>
+      <tr>
+          <td>$ <?php echo $monto_efectivo; ?></td>
+          <td>$ <?php echo $monto_transferencia; ?></td>
+          <td>$ <?php echo $monto_tarjetaC; ?></td>
+          <td style="background-color:green;">$ <?php echo $monto_transferencia + $monto_efectivo + $monto_tarjetaC; ?></td>
+      </tr>
+    </tbody>
+  </table>
+        <!-- Totales con desc y sin y adicionaes o no-->
+        </table>
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Total Con Descuento Pago Efectivo y Pago Tarjeta Sin Adicional</th>
+         
+      </tr>
+      <br>
+    </thead>
+    <tbody>
+      <tr>
+
+      <td>$ <?php echo $monto_transferencia + $monto_efectivo + ($monto_tarjetaC / 1.1); ?></td>
+          
+      </tr>
+    </tbody>
+  </table>
+  <?php } ?>
+        <!-- Total venta sin descuento-->
+  </table>
+  <table class="comprados detalle-compra-tabla">
+    <thead>
+      <tr>
+          <th>Total Sin Descuentos Ni Adicionales</th>
+         
+      </tr>
+      <br>
+    </thead>
+    <tbody>
+      <tr>
+          <td>$ <?php echo $total_sin_desc; ?></td>
+          
+      </tr>
     </tbody>
   </table>
 </div>
