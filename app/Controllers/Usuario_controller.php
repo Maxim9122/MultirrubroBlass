@@ -171,22 +171,38 @@ class Usuario_controller extends Controller{
          return redirect()->to(base_url('usuarios-list'));
         }
     }
-
+// utilizamos cache para reducir sobre carga de procesos en la db
     public function usuariosEliminados(){
         $session = session();
-        // Verifica si el usuario está logueado
+    
         if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+            return redirect()->to(base_url('login'));
         }
-        $userModel = new Usuarios_model();
-        $baja='SI';
-        $data['usuarios'] = $userModel->getUsBaja($baja);
-        $dato['titulo']='Usuarios Eliminados';
+    
+        $cache = \Config\Services::cache();
+        $baja = 'SI';
+    
+        // Generamos clave de caché (puede incluir el estado "baja" por claridad)
+        $cacheKey = 'usuarios_eliminados_' . $baja;
+    
+        // Intentamos obtener el resultado desde el caché
+        if (!$usuarios = $cache->get($cacheKey)) {
+            // Si no hay caché, hacemos la consulta
+            $userModel = new Usuarios_model();
+            $usuarios = $userModel->getUsBaja($baja);
+            // Guardamos en caché por 5 minutos (ajustable)
+            $cache->save($cacheKey, $usuarios, 300); // 300 seg = 5 min
+        }
+    
+        $data['usuarios'] = $usuarios;
+        $dato['titulo'] = 'Usuarios Eliminados';
+    
         echo view('navbar/navbar'); 
-        echo view('header/header',$dato);
-         echo view('admin/listUs_Eliminados_view.php',$data);
-          echo view('footer/footer');
+        echo view('header/header', $dato);
+        echo view('admin/listUs_Eliminados_view.php', $data);
+        echo view('footer/footer');
     }
+    
 
     public function usuarioEdit() {
         

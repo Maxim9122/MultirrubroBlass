@@ -5,18 +5,28 @@ use CodeIgniter\Controller;
 
 class Datatable_controller extends Controller
 {
-    // Show users list
+        //cacheamo la funcion para no ejecutar la db  todo el tiempo
     public function index(){
-        $userModel = new Usuarios_model();
-        $baja='NO';
-        $data['usuarios'] = $userModel->getUsBaja($baja);
-        $dato['titulo']='Lista de Usuarios'; 
+        $cache = \Config\Services::cache();
+        $baja = 'NO';
+        $cacheKey = 'usuarios_activos_' . $baja;
+    
+        if (!$usuarios = $cache->get($cacheKey)) {
+            $userModel = new Usuarios_model();
+            $usuarios = $userModel->getUsBaja($baja);
+            // Guardamos en caché por 5 minutos (300 segundos)
+            $cache->save($cacheKey, $usuarios, 300);
+        }
+    
+        $data['usuarios'] = $usuarios;
+        $dato['titulo'] = 'Lista de Usuarios';
+    
         echo view('navbar/navbar');
-        echo view('header/header',$dato);        
-         echo view('usuarios/usuarios_view', $data);
-          echo view('footer/footer');
-       
-    } 
+        echo view('header/header', $dato);
+        echo view('usuarios/usuarios_view', $data);
+        echo view('footer/footer');
+    }
+    
 
     public function editar($id){
 

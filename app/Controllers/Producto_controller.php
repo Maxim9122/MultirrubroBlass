@@ -167,7 +167,7 @@ class Producto_controller extends Controller{
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login'));
         }
-    
+        // utilizamo cache para no realizar consulta a cada rato en la DB
         $cache = \Config\Services::cache();
         $eliminado = 'NO';
     
@@ -238,29 +238,6 @@ class Producto_controller extends Controller{
        
     }
 
-    public function Calzado(){
-        $ProductosModel = new Productos_model();
-        $tipo='2';
-        $data['productos'] = $ProductosModel->getTipo($tipo);
-        $dato['titulo']='Productos Disponibles';
-        echo view('navbar/navbar');
-        echo view('header/header',$dato);        
-         echo view('productos/listar', $data);
-          echo view('footer/footer');
-       
-    }
-
-    public function Accesorios(){
-        $ProductosModel = new Productos_model();
-        $tipo='3';
-        $data['productos'] = $ProductosModel->getTipo($tipo);
-        $dato['titulo']='Productos Disponibles';
-        echo view('navbar/navbar');
-        echo view('header/header',$dato);        
-         echo view('productos/listar', $data);
-          echo view('footer/footer');
-       
-    }
 
     public function getProductoEdit($id){
         $session = session();

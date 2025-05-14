@@ -77,50 +77,52 @@ class Cabecera_model extends Model
 
     
     public function getVentasConClientes($filtros = [])
-    {
-        // Conectarse a la base de datos
-        $db = db_connect();
-        
-        // Construir la consulta con el join
-        $builder = $db->table($this->table . ' u');
-        $builder->select("
-            u.id, 
-            c.nombre AS nombre_cliente, 
-            v.nombre AS nombre_vendedor, 
-            u.estado, 
-            u.total_venta,
-            u.tipo_compra,
-            u.fecha AS fecha_original,
-            u.hora AS hora_original,
-            u.fecha_pedido AS fecha_actual,
-            u.hora_entrega AS hora_actual, 
-            u.tipo_pago, 
-            u.total_bonificado,
-            u.total_anterior           
-        ");
-        $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
-        $builder->join('usuarios v', 'u.id_usuario = v.id');
-        $builder->whereNotIn('u.estado', ['Pendiente']);
+{
+    $db = db_connect();
     
-        // Aplicar filtros opcionales
-        if (!empty($filtros['estado'])) {
-            $builder->where('u.estado', $filtros['estado']);
-        }
-    
-        if (!empty($filtros['fecha_desde'])) {
-            $fechaDesde = date('Y-m-d', strtotime($filtros['fecha_desde']));
-            $builder->where("STR_TO_DATE(u.fecha_pedido, '%d-%m-%Y') >= ", $fechaDesde);
-        }
-        
-        if (!empty($filtros['fecha_hasta'])) {
-            $fechaHasta = date('Y-m-d', strtotime($filtros['fecha_hasta']));
-            $builder->where("STR_TO_DATE(u.fecha_pedido, '%d-%m-%Y') <= ", $fechaHasta);
-        }
-            
-        // Ejecutar la consulta y retornar el resultado como array
-        $ventas = $builder->get();
-        return $ventas->getResultArray();
+    $builder = $db->table($this->table . ' u');
+    $builder->select("
+        u.id, 
+        c.nombre AS nombre_cliente, 
+        v.nombre AS nombre_vendedor, 
+        u.estado, 
+        u.total_venta,
+        u.tipo_compra,
+        u.fecha AS fecha_original,
+        u.hora AS hora_original,
+        u.fecha_pedido AS fecha_actual,
+        u.hora_entrega AS hora_actual, 
+        u.tipo_pago, 
+        u.total_bonificado,
+        u.total_anterior           
+    ");
+    $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
+    $builder->join('usuarios v', 'u.id_usuario = v.id');
+    $builder->whereNotIn('u.estado', ['Pendiente']);
+
+    // Aplicar filtros opcionales
+    if (!empty($filtros['estado'])) {
+        $builder->where('u.estado', $filtros['estado']);
     }
+
+    if (!empty($filtros['fecha_desde'])) {
+        $fechaDesde = date('Y-m-d', strtotime($filtros['fecha_desde']));
+        $builder->where("STR_TO_DATE(u.fecha_pedido, '%d-%m-%Y') >= ", $fechaDesde);
+    }
+    
+    if (!empty($filtros['fecha_hasta'])) {
+        $fechaHasta = date('Y-m-d', strtotime($filtros['fecha_hasta']));
+        $builder->where("STR_TO_DATE(u.fecha_pedido, '%d-%m-%Y') <= ", $fechaHasta);
+    }
+
+    // 🔽 Ordenar y limitar a los últimos 100
+    $builder->orderBy('u.id', 'DESC');
+    $builder->limit(200);
+
+    $ventas = $builder->get();
+    return $ventas->getResultArray();
+}
+
     
 
     public function getVentasPorClienteYFecha($idCliente, $fechaHoy)

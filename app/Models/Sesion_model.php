@@ -20,6 +20,7 @@ class Sesion_model extends Model
                   usuarios.apellido')
         ->join('usuarios', 'usuarios.id = sesiones.id_usuario')
         ->orderBy('sesiones.id_sesion', 'DESC') // Ordena por id_sesion de mayor a menor
+        ->limit(100) // 🔥 Trae solo los últimos 100 registros
         ->get();
     
     //echo $this->db->getLastQuery(); exit; // Esto imprimirá la consulta SQL
