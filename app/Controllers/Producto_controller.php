@@ -162,23 +162,36 @@ class Producto_controller extends Controller{
     // muestra las categorias 
     public function ListaCategorias(){
         $session = session();
+        
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+            return redirect()->to(base_url('login'));
         }
-        $Model = new categoria_model();
+    
+        $cache = \Config\Services::cache();
         $eliminado = 'NO';
-        $productos = $Model->getProdBaja($eliminado);
-        //print_r($dato);
-        //exit;
-        $dato1['titulo']='Lista de Categorias'; 
+    
+        // Intentamos obtener el cache de productos (categorías no eliminadas)
+        $cacheKey = 'categorias_lista_' . $eliminado;
+    
+        if (!$productos = $cache->get($cacheKey)) {
+            // No está en caché, lo traemos del modelo
+            $Model = new categoria_model();
+            $productos = $Model->getProdBaja($eliminado);
+            
+            // Guardamos en caché por 10 minutos (600 segundos)
+            $cache->save($cacheKey, $productos, 600);
+        }
+    
+        $dato1['titulo'] = 'Lista de Categorias'; 
         $data['productos'] = $productos;
+    
         echo view('navbar/navbar');
-        echo view('header/header',$dato1);
-         echo view('admin/categorias_view.php', $data);
-          echo view('footer/footer');
-       
+        echo view('header/header', $dato1);
+        echo view('admin/categorias_view.php', $data);
+        echo view('footer/footer');
     }
+    
 
 	public function ProductosDisp(){
         $session = session();
