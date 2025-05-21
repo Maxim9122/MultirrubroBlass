@@ -218,7 +218,7 @@ endif;
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Monto en Tarjeta de Crédito</strong></td>
                     <td>
-                        <input class="selector" type="text" id="pagoTarjetaCredito" name="pagoTarjetaCredito" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                        <input class="selector" type="text" id="pagoTarjetaCredito" name="pagoTarjetaCredito" placeholder="Monto en $" maxlength="15" oninput="this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); formatearMiles(); calcularMontoEfectivo();">
                     </td>
                 </tr>
                 <tr>
@@ -231,7 +231,7 @@ endif;
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Monto en Transferencia:</strong></td>
                     <td>
-                        <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); formatearMiles(); calcularMontoEfectivo();">
+                        <input class="selector" type="text" id="pagoTransferencia" name="pagoTransferencia" placeholder="Monto en $" maxlength="15" oninput="this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); formatearMiles(); calcularMontoEfectivo();">
                     </td>
                 </tr>
                 
