@@ -58,6 +58,19 @@
         opacity: 1; /* Asegura que el color del placeholder no sea opaco */
         font-weight: bold; /* Hacer el texto más nítido */
     }
+
+
+    .botones-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: center;
+}
+
+.botones-acciones .btn {
+    flex-shrink: 0;
+}
+
 </style>
 
 <script>
@@ -147,10 +160,18 @@
        <tbody>
           <?php if($productos): ?>
           <?php foreach($productos as $prod): ?>
-          <tr>
+            <tr>
              <td><?php echo $prod['nombre']; ?></td>
-             <td>$<?php echo $prod['precio']; ?></td>
-             <td>$<?php echo $prod['precio_vta']; ?></td>
+             <td>
+                    <form method="post" action="<?php echo base_url('/EdicionRapidaProd') ?>">
+                    <input type="number" step="0.01" name="precio" value="<?php echo $prod['precio']; ?>" 
+                    class="form-control form-control-sm d-inline" style="width: 110px; text-align:center;">
+             </td>
+             <td>
+                    <input type="number" step="0.01" name="precio_vta" value="<?php echo $prod['precio_vta']; ?>" 
+                        class="form-control form-control-sm d-inline" style="width: 110px; text-align:center;">
+                    <input type="hidden" name="id_prod" value="<?php echo $prod['id']; ?>">
+            </td>
              <?php 
              $categoria_nombre = 'Desconocida';
              foreach ($categorias as $categoria) {
@@ -164,22 +185,39 @@
              
              <td><img class="frmImg" src="<?php echo base_url('assets/uploads/'.$prod['imagen']);?>"></td>
              
-             <?php if($prod['stock'] <= $prod['stock_min']){ ?>
-                <td class="text-center">
-                    <span class="low-stock-ring"><?php echo $prod['stock']; ?></span>
-                </td>
-            <?php } else { ?>
-                    <td class="text-center"><?php echo $prod['stock']; ?></td>
-            <?php } ?>
+             <td class="text-center">
+                <?php if($prod['stock'] <= $prod['stock_min']){ ?>
+                    <span class="low-stock-ring">
+                        <input type="number" name="stock" value="<?php echo $prod['stock']; ?>" 
+                            class="form-control form-control-sm d-inline" style="width: 60px;">
+                    </span>
+                <?php } else { ?>
+                    <input type="number" name="stock" value="<?php echo $prod['stock']; ?>" 
+                        class="form-control form-control-sm d-inline" style="width: 60px;">
+                <?php } ?>
+                
+            </td>
              
             <td>
-               <a class="btn btn-outline-warning" href="<?php echo base_url('ProductoEdit/'.$prod['id']);?>">
-               ✏️ Editar</a>&nbsp;&nbsp;
-                <a class="btn btn-outline-danger" href="<?php echo base_url('deleteProd/'.$prod['id']);?>">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                </svg> Eliminar</a>
-             </td>
+            <div class="botones-acciones">
+                <form action="" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Edit Rápido
+                    </button>
+                </form>
+
+                <a class="btn btn-outline-warning" href="<?php echo base_url('ProductoEdit/'.$prod['id']); ?>">
+                    ✏️ Editar
+                </a>
+
+                <a class="btn btn-outline-danger" href="<?php echo base_url('deleteProd/'.$prod['id']); ?>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                    </svg> Eliminar
+                </a>
+            </div>
+        </td>
+
              <?php $totalCU = $prod['precio_vta'] * $prod['stock']; ?>
              <?php $TotalArticulos = $TotalArticulos + $totalCU; ?>
             </tr>
