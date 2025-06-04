@@ -1554,9 +1554,10 @@ public function verificarTA($id_cabecera = null) {
    // Verificar si el archivo TA.xml existe
    if (!file_exists($taPath)) {
 
-    $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
-    session()->setFlashdata('msgEr', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
-    return redirect()->to(base_url('catalogo'));
+    return redirect()->to('Carrito_controller/generarTA/'. $id_cabecera);
+    //$ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
+    //session()->setFlashdata('msgEr', 'Problemas con el servidor ARCA, se guardo la compra sin Facturar, intente mas tarde');
+    //return redirect()->to(base_url('catalogo'));
     } 
     // Cargar el XML    
     $xml = simplexml_load_file($taPath);
@@ -1630,7 +1631,7 @@ public function generarTA($id_cabecera = null) {
 
     // Ejecutar el script PHP con proc_open
     $process = proc_open("php " . escapeshellarg($path) . " wsfe", $descriptorspec, $pipes);
-
+    //print_r($process);exit;
     if (is_resource($process)) {
         $output = stream_get_contents($pipes[1]); // Captura la salida
         fclose($pipes[1]);
@@ -1673,14 +1674,73 @@ public function facturar($TA = null,$id_cabecera = null) {
 
     // Cargar los modelos necesarios 
     $clienteModel = new \App\Models\Clientes_model();
-    //Obtengo el ultimo id del cae
-    $caeModel = new \App\Models\Cae_model();    
-    $ultimoRegistro = $caeModel->orderBy('id_cae', 'DESC')->first(); // Trae el último registro de la tabla cae
-    $ultimo_id_cae = $ultimoRegistro ? $ultimoRegistro['id_cae'] : 0;
-    //echo "Último ID registrado: " . $ultimo_id_cae;
-    //exit;
+    //Obtengo el ultimo id del cae    
+    $caeModel = new \App\Models\Cae_model();  
+    
+    $token = $TA['token'];
+    //print_r($token);
+
+    //print_r($TA['sign']);
+    $sign = $TA['sign'];
+    //print_r($sign); 
+
+    $curl2 = curl_init();
+
+    curl_setopt_array($curl2, array(
+    CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?op=FECompUltimoAutorizado',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ar:FECompUltimoAutorizado>
+            <ar:Auth>
+                <ar:Token>' . $token . '</ar:Token>
+                <ar:Sign>' . $sign . '</ar:Sign>
+                <ar:Cuit>20369557263</ar:Cuit>
+            </ar:Auth>
+            <ar:PtoVta>2</ar:PtoVta>
+            <ar:CbteTipo>11</ar:CbteTipo>
+        </ar:FECompUltimoAutorizado>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+        CURLOPT_HTTPHEADER => array(
+        'Content-Type: text/xml; charset=utf-8',
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECompUltimoAutorizado',
+        'Cookie: f5avraaaaaaaaaaaaaaaa_session_=BEOJDNNOHIPLFGLHAMDOKCCGDEPCHDODGPFBGCEIHDPKBJFLFFNCGAGGPBMNCOHIINGDGDMMKAFOHCKFPPNAJGJNHGLDBPGNAPHONLHOAPLIMDHCHACMKOKHNOBHOHPL; TS0122d503=01229bd671776c2a22dc12ec69133d3eae55024cb502ad60642444ed6bdc8e2e89e58867b55e3cf976f4460faa4d14afa060e5516a'
+        ),
+        CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
+    ));
+
+    $response2 = curl_exec($curl2);
+    curl_close($curl2);
+
+    // Cargar el XML
+    $xml = simplexml_load_string($response2);
+
+    // Registrar los namespaces
+    $namespaces = $xml->getNamespaces(true);
+
+    // Acceder al Body usando el namespace 'soap'
+    $body = $xml->children($namespaces['soap'])->Body;
+
+    // El contenido de 'FECompUltimoAutorizadoResponse' está en el default namespace (sin prefijo), se accede con ''
+    $response = $body->children($namespaces[''])->FECompUltimoAutorizadoResponse;
+
+    // Acceder al resultado
+    $result = $response->FECompUltimoAutorizadoResult;
+
+    // Obtener el número de comprobante
+    $ultimoNumero = (int)$result->CbteNro;
+
     //sumamos uno al ultimo id_cae para que ARCA lo acepte porque tiene que ser de 1 en 1.
-    $id_cae_siguiente = $ultimo_id_cae + 1;
+    $id_cae_siguiente = $ultimoNumero + 1;
     //print_r($id_cae_siguiente);
     //exit;
     // Obtener los detalles de la venta
@@ -1709,13 +1769,7 @@ public function facturar($TA = null,$id_cabecera = null) {
 
     $new_cae = null;
     //echo "Token para crear la factura xml para ARCA.\n";
-    //print_r($TA['token']);
-    $token = $TA['token'];
-    //print_r($token);
-    //echo "\nSign para crear la factura xml para ARCA.\n";
-    //print_r($TA['sign']);
-    $sign = $TA['sign'];
-    //print_r($sign);
+    //print_r($TA['token']);    
 
     $curl = curl_init();
     
@@ -1770,6 +1824,7 @@ public function facturar($TA = null,$id_cabecera = null) {
         'SOAPAction: http://ar.gov.afip.dif.FEV1/FECAESolicitar',
         'Content-Type: text/xml; charset=utf-8',        
       ),
+       CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
     ));
     
     $response = curl_exec($curl);
