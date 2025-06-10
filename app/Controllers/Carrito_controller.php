@@ -1392,7 +1392,7 @@ public function generarTicket($id_cabecera)
             <hr>
 
             <!-- Información de la venta -->
-            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Fecha: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i') : $cabecera['fecha_pedido'] . ' ' . $cabecera['hora_entrega']; ?></p>
         
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : $cliente['nombre'] ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
