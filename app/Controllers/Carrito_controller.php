@@ -1721,10 +1721,13 @@ public function facturar($TA = null,$id_cabecera = null) {
 
     $response2 = curl_exec($curl2);
     curl_close($curl2);
-
     // Cargar el XML
     $xml = simplexml_load_string($response2);
-
+    if ($xml === false) {
+        echo "Error al cargar el XML desde la respuesta de AFIP.<br>";
+        echo "Contenido de respuesta:<br><pre>" . htmlspecialchars($response2) . "</pre>";
+        exit;
+    }
     // Registrar los namespaces
     $namespaces = $xml->getNamespaces(true);
 
