@@ -236,35 +236,49 @@ class Producto_controller extends Controller{
        
     }
 
-	public function ProductosDisp(){
-        $session = session();
-        
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login'));
-        }
-        $Model = new categoria_model();
-    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
-        $ProductosModel = new Productos_model();
-        $eliminado = 'NO';
-        $productos = $ProductosModel->getProdBaja($eliminado);
-    
-        // Verificar si algún producto tiene stock bajo
-        $productos_bajo_stock = array_filter($productos, function($producto) {
-            return $producto['stock'] <= $producto['stock_min'];
-        });
-    
-        // Si hay productos con stock bajo, guardamos un mensaje en sesión
-        if (!empty($productos_bajo_stock)) {
-            $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
-        }
-    
-        $dato1['titulo'] = 'Productos Disponibles'; 
-        $data['productos'] = $productos;
-    
-        echo view('navbar/navbar');
-        echo view('header/header', $dato1);        
-        echo view('productos/listar', $data + $dato);
-        echo view('footer/footer');
+	public function ProductosDisp() {
+    $session = session();
+    $cart = \Config\Services::cart();
+		$carrito['carrito']=$cart->contents();
+
+    if (!$session->has('id')) {
+        return redirect()->to(base_url('login'));
+    }
+
+    $Model = new categoria_model();
+    $dato['categorias'] = $Model->getCategoria();
+
+    $ProductosModel = new Productos_model();
+    $eliminado = 'NO';
+
+    // Capturamos la página actual de paginación (por defecto 1 si no existe)
+    $page = $this->request->getGet('page') ?? 1;
+
+    $busqueda = $this->request->getGet('search');
+    // Pasamos la página actual para que paginate sepa cuál devolver
+    $productos = $ProductosModel->getProductosPaginados($eliminado, $busqueda, $page);
+
+    $pager = $ProductosModel->getPager();
+
+    // Productos con stock bajo (igual que antes)
+    $productos_bajo_stock = array_filter($productos, function($producto) {
+        return $producto['stock'] <= $producto['stock_min'];
+    });
+
+    if (!empty($productos_bajo_stock)) {
+        $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
+    }
+
+    $dato1['titulo'] = 'Productos Disponibles';
+    $data['productos'] = $productos;
+    $data['pager'] = $pager;
+    $data['page'] = $page;  // <-- enviar la página actual a la vista
+
+    echo view('navbar/navbar');
+    echo view('header/header', $dato1);        
+    echo view('productos/listar', $data + $dato);
+    echo view('carrito/ProductosEnCarrito',$carrito);
+    echo view('footer/footer');
     }
     
 
