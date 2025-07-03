@@ -274,7 +274,7 @@ public function ListCompraDetalle($id)
 		}
 		
         // Redirige a la misma página que se encuentra
-		return redirect()->to(base_url('CarritoList'));
+		return redirect()->to(base_url('catalogo'));
 	}
 
     public function procesarCarrito()
@@ -336,13 +336,13 @@ public function ListCompraDetalle($id)
             if (!empty($errores_stock)) {
                 $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
                 session()->setFlashdata('msgEr', $mensaje_error);
-                return redirect()->to('CarritoList');
+                return redirect()->to('catalogo');
             }
         
             
         session()->setFlashdata('msg', 'Carrito Actualizado!');
             // Redirige a la misma página que se encuentra
-        return redirect()->to(base_url('CarritoList'));
+        return redirect()->to(base_url('catalogo'));
             
 
 
@@ -402,7 +402,7 @@ public function ListCompraDetalle($id)
             if (!empty($errores_stock)) {
                 $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
                 session()->setFlashdata('msgEr', $mensaje_error);
-                return redirect()->to('CarritoList');
+                return redirect()->to('catalogo');
             }
         
             // Redirige a la página de confirmacion de compra si los calculos de stock estan bien.
@@ -463,7 +463,7 @@ public function ListCompraDetalle($id)
        if (!empty($errores_stock)) {
            $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
            session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('CarritoList');
+           return redirect()->to('catalogo');
        }
         
        // Inicializar la variable para la suma total de la venta
@@ -1056,7 +1056,7 @@ public function ListCompraDetalle($id)
        if (!empty($errores_stock)) {
            $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
            session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('CarritoList');
+           return redirect()->to('catalogo');
        }
     
     
