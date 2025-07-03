@@ -305,11 +305,11 @@ endif;
             </table>
             <section class="botones-container" style="width:65%;">
 
-            <?php if ($total_venta == '') { ?>               
+            <?php if ($total_venta == 0) { ?>               
             <a class="btn" href="<?php echo base_url('CarritoList') ?>">Volver</a>
             <?php } ?>
 
-            <?php if ($total_venta != '') { ?>
+            <?php if ($total_venta > 0) { ?>
                 <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
                     Cancelar Cobro
                 </a>
