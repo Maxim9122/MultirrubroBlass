@@ -1134,7 +1134,7 @@ public function ListCompraDetalle($id)
                 
             $Cabecera_model = new Cabecera_model();
             $Cabecera_model->update($id_pedido, [
-                'estado'            => 'Facturada',
+                'estado'            => 'Error_factura',
                 'total_venta'       => $total,
                 'tipo_pago'         => $tipo_pago_cobro,
                 'total_bonificado'  => $total_conDescuento,               
