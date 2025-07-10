@@ -11,63 +11,120 @@ class Producto_controller extends Controller{
 
 	}
 
+    public function verHistorialProductos() {
+    $historialModel = new \App\Models\modif_productos();
+
+    // Obtener fechas desde GET o POST
+    $desde = $this->request->getVar('desde');
+    $hasta = $this->request->getVar('hasta');
+
+    // Convertir a d-m-Y solo si no están vacías
+    $filtros = [
+        'desde' => !empty($desde) ? date('d-m-Y', strtotime($desde)) : null,
+        'hasta' => !empty($hasta) ? date('d-m-Y', strtotime($hasta)) : null,
+    ];
+
+    // Obtener historial desde el modelo
+    $historial = $historialModel->obtenerHistorialPorFechas($filtros);
+
+    // Preparar datos para inputs (en formato Y-m-d para el value del input)
+    $fechaDesde = $desde ?: '';
+    $fechaHasta = $hasta ?: '';
+
+    $data = [
+        'titulo' => 'Historial Modificaciones',
+        'historial' => $historial,
+        'fechaDesde' => $fechaDesde,
+        'fechaHasta' => $fechaHasta
+    ];
+
+    echo view('navbar/navbar');
+    echo view('header/header', $data);
+    echo view('admin/historial_prods_view', $data);
+    echo view('footer/footer');
+    }
+
+
     public function EdicionRapidaProd() {
-        $model = new Productos_model();
-        $id = $this->request->getPost('id_prod');
-        
-        // Obtener el producto actual primero
-        $productoActual = $model->find($id);
-        
-        if (!$productoActual) {
-            session()->setFlashdata('msgEr', 'Producto no encontrado');
-            return redirect()->to(base_url('Lista_Productos'));
-        }
-        
-        // Preparar datos para actualización
-        $data = [];
-        $hayCambios = false;
-        
-        // Validar y actualizar precio
-        if ($this->request->getPost('precio') !== null && $this->request->getPost('precio') !== '') {
-            $nuevoPrecio = (float)$this->request->getPost('precio');
-            if ($nuevoPrecio != $productoActual['precio']) {
-                $data['precio'] = $nuevoPrecio;
-                $hayCambios = true;
-            }
-        }
-        
-        // Validar y actualizar precio_vta
-        if ($this->request->getPost('precio_vta') !== null && $this->request->getPost('precio_vta') !== '') {
-            $nuevoPrecioVta = (float)$this->request->getPost('precio_vta');
-            if ($nuevoPrecioVta != $productoActual['precio_vta']) {
-                $data['precio_vta'] = $nuevoPrecioVta;
-                $hayCambios = true;
-            }
-        }
-        
-        // Validar y actualizar stock
-        if ($this->request->getPost('stock') !== null && $this->request->getPost('stock') !== '') {
-            $nuevoStock = (int)$this->request->getPost('stock');
-            if ($nuevoStock != $productoActual['stock']) {
-                $data['stock'] = $nuevoStock;
-                $hayCambios = true;
-            }
-        }
-        
-        // Actualizar solo si hay cambios
-        if ($hayCambios) {
-            try {
-                $model->updateDatosProd($id, $data);
-                session()->setFlashdata('msg', 'Producto actualizado correctamente');
-            } catch (\Exception $e) {
-                session()->setFlashdata('msgEr', 'Error al actualizar: ' . $e->getMessage());
-            }
-        } else {
-            session()->setFlashdata('msg', 'No se realizaron cambios');
-        }
-        
+    $model = new Productos_model();
+    $historialModel = new \App\Models\modif_productos(); // Modelo del historial
+
+    $id = $this->request->getPost('id_prod');
+    
+    // Obtener el producto actual
+    $productoActual = $model->find($id);
+    
+    if (!$productoActual) {
+        session()->setFlashdata('msgEr', 'Producto no encontrado');
         return redirect()->to(base_url('Lista_Productos'));
     }
+
+    $data = [];
+    $hayCambios = false;
+
+    // Variables para historial
+    $nuevoPrecioVta = $productoActual['precio_vta'];
+    $nuevoStock = $productoActual['stock'];
+
+    // Validar y actualizar precio
+    if ($this->request->getPost('precio') !== null && $this->request->getPost('precio') !== '') {
+        $nuevoPrecio = (float)$this->request->getPost('precio');
+        if ($nuevoPrecio != $productoActual['precio']) {
+            $data['precio'] = $nuevoPrecio;
+            $hayCambios = true;
+        }
+    }
+
+    // Validar y actualizar precio_vta
+    if ($this->request->getPost('precio_vta') !== null && $this->request->getPost('precio_vta') !== '') {
+        $nuevoPrecioVtaPost = (float)$this->request->getPost('precio_vta');
+        if ($nuevoPrecioVtaPost != $productoActual['precio_vta']) {
+            $data['precio_vta'] = $nuevoPrecioVtaPost;
+            $nuevoPrecioVta = $nuevoPrecioVtaPost;
+            $hayCambios = true;
+        }
+    }
+
+    // Validar y actualizar stock
+    if ($this->request->getPost('stock') !== null && $this->request->getPost('stock') !== '') {
+        $nuevoStockPost = (int)$this->request->getPost('stock');
+        if ($nuevoStockPost != $productoActual['stock']) {
+            $data['stock'] = $nuevoStockPost;
+            $nuevoStock = $nuevoStockPost;
+            $hayCambios = true;
+        }
+    }
+
+    if ($hayCambios) {
+        try {
+            // Guardar cambios en producto
+            $model->updateDatosProd($id, $data);
+
+            // Preparar y guardar historial incluyendo valores nuevos
+            $registroHistorial = [
+                'id_prod' => $id,
+                'dia_modif' => date('d-m-Y'),
+                'hora_modif' => date('H:i:s'),
+                'usuario_id' => session()->get('id'), // ID del usuario actual
+                'stock_anterior' => $productoActual['stock'],
+                'precio_vta' => $productoActual['precio_vta'],
+                'nvo_stock' => $nuevoStock,
+                'nvo_precio_vta' => $nuevoPrecioVta
+            ];
+
+            $historialModel->insert($registroHistorial);
+
+            session()->setFlashdata('msg', 'Producto actualizado correctamente');
+        } catch (\Exception $e) {
+            session()->setFlashdata('msgEr', 'Error al actualizar: ' . $e->getMessage());
+        }
+    } else {
+        session()->setFlashdata('msg', 'No se realizaron cambios');
+    }
+
+    return redirect()->to(base_url('Lista_Productos'));
+    }
+
 
 	public function nuevoProducto(){
         $session = session();

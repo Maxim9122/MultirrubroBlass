@@ -113,6 +113,8 @@ $routes->get('/eliminados', 'Usuario_controller::usuariosEliminados');
 
 
 //Rutas del ADMIN (Productos)
+$routes->get('/filtrarHistorial', 'Producto_controller::verHistorialProductos');
+$routes->get('/verHistorialProductos', 'Producto_controller::verHistorialProductos');
 $routes->post('/EdicionRapidaProd', 'Producto_controller::EdicionRapidaProd');
 $routes->get('/nuevoProducto', 'Producto_controller::nuevoProducto');
 $routes->post('/ProductoValidation', 'Producto_controller::ProductoValidation');

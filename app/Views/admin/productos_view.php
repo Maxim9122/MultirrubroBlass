@@ -110,10 +110,19 @@
     <!-- Botón Descontar Defectuosos -->
     <a class="btn" href="<?php echo base_url('descontarDefectuosos');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px; color:red; font-weight: 900;">
         Descontar Defectuosos
-    </a>
+    </a>    
     <?php  } ?>
 </div>
-
+<div style="position: relative; width: 100%;">
+    <!-- Tu contenido actual aquí -->
+     <?php if($perfil == 1 || $perfil == 3){?>
+     <br><br>                  
+    <!-- Botón Descontar Defectuosos -->
+    <a class="btn" href="<?php echo base_url('filtrarHistorial');?>" style="position: absolute; bottom: 0; right: 0; margin: 20px; color:Green; font-weight: 900;">
+        Historial de Modificaciones
+    </a>   
+    <?php  } ?>
+</div>
   <div class="dropdown2" style="margin-right: 45px;">
         <span class="dropdown-toggle2 btn">Mas Opciones▼</span>
         <ul class="dropdown-menu2">
@@ -163,7 +172,7 @@
             <tr>
              <td><?php echo $prod['nombre']; ?></td>
              <td>
-                    <form method="post" action="<?php echo base_url('/EdicionRapidaProd') ?>">
+    <form method="post" action="<?php echo base_url('/EdicionRapidaProd') ?>">
                     <input type="number" step="0.01" name="precio" value="<?php echo $prod['precio']; ?>" 
                     class="form-control form-control-sm d-inline" style="width: 110px; text-align:center;">
              </td>
@@ -204,7 +213,7 @@
                     <button type="submit" class="btn btn-primary">
                         💾 Edit Rápido
                     </button>
-                </form>
+    </form>
 
                 <a class="btn btn-outline-warning" href="<?php echo base_url('ProductoEdit/'.$prod['id']); ?>">
                     ✏️ Editar
