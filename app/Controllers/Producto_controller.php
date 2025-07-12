@@ -50,10 +50,10 @@ class Producto_controller extends Controller{
     $historialModel = new \App\Models\modif_productos(); // Modelo del historial
 
     $id = $this->request->getPost('id_prod');
-    
+
     // Obtener el producto actual
     $productoActual = $model->find($id);
-    
+
     if (!$productoActual) {
         session()->setFlashdata('msgEr', 'Producto no encontrado');
         return redirect()->to(base_url('Lista_Productos'));
@@ -100,18 +100,17 @@ class Producto_controller extends Controller{
             // Guardar cambios en producto
             $model->updateDatosProd($id, $data);
 
-            // Preparar y guardar historial incluyendo valores nuevos
+            // Guardar historial
             $registroHistorial = [
                 'id_prod' => $id,
                 'dia_modif' => date('d-m-Y'),
                 'hora_modif' => date('H:i:s'),
-                'usuario_id' => session()->get('id'), // ID del usuario actual
+                'usuario_id' => session()->get('id'),
                 'stock_anterior' => $productoActual['stock'],
                 'precio_vta' => $productoActual['precio_vta'],
                 'nvo_stock' => $nuevoStock,
                 'nvo_precio_vta' => $nuevoPrecioVta
             ];
-
             $historialModel->insert($registroHistorial);
 
             session()->setFlashdata('msg', 'Producto actualizado correctamente');
@@ -122,8 +121,13 @@ class Producto_controller extends Controller{
         session()->setFlashdata('msg', 'No se realizaron cambios');
     }
 
-    return redirect()->to(base_url('Lista_Productos'));
+    // ✅ Mantener búsqueda y paginación al volver
+    $search = $this->request->getPost('search') ?? '';
+    $page = (int) $this->request->getPost('page') ?: 1;
+
+    return redirect()->to(base_url('Lista_Productos?page=' . $page . '&search=' . urlencode($search)));
     }
+
 
 
 	public function nuevoProducto(){
@@ -241,7 +245,7 @@ class Producto_controller extends Controller{
         }
     }
 
-    public function ListaProductos(){
+   public function ListaProductos(){
         $session = session();
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
@@ -250,8 +254,16 @@ class Producto_controller extends Controller{
         $Model = new categoria_model();
     	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $ProductosModel = new Productos_model();
-        $eliminado = 'NO';
-        $productos = $ProductosModel->getProdBaja($eliminado);
+        $eliminado = 'NO';       
+
+        // Capturamos la página actual de paginación (por defecto 1 si no existe)
+        $page = $this->request->getGet('page') ?? 1;
+
+        $busqueda = $this->request->getGet('search');
+        // Pasamos la página actual para que paginate sepa cuál devolver
+        $productos = $ProductosModel->getProductosPaginadosTodos($eliminado, $busqueda, $page);
+
+        $pager = $ProductosModel->getPager();
     
         // Verificar si algún producto tiene stock bajo
         $productos_bajo_stock = array_filter($productos, function($producto) {
@@ -264,14 +276,18 @@ class Producto_controller extends Controller{
         }
         //print_r($dato);
         //exit;
-        $dato1['titulo']='Lista de Productos'; 
+        $dato1['titulo'] = 'Productos Disponibles';
         $data['productos'] = $productos;
+        $data['pager'] = $pager;
+        $data['page'] = $page;  // <-- enviar la página actual a la vista
+
         echo view('navbar/navbar');
         echo view('header/header',$dato1);
          echo view('admin/productos_view', $data + $dato);
           echo view('footer/footer');
        
     } 
+
     // muestra las categorias 
     public function ListaCategorias(){
         $session = session();

@@ -71,6 +71,96 @@
     flex-shrink: 0;
 }
 
+
+.botones-acciones .btn {
+    flex-shrink: 0;
+}
+
+ .paginacion-productos .pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
+
+.paginacion-productos .pagination li {
+    margin: 10px 5px;
+}
+
+.paginacion-productos .pagination li a,
+.paginacion-productos .pagination li span {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid #ff073a;
+}
+
+/* Página actual seleccionada */
+.paginacion-productos .pagination li.active a,
+.paginacion-productos .pagination li.active span {
+    background-color: #ff073a;
+    color: white;
+    font-weight: bold;
+    border-bottom: 4px solid white;
+}
+
+.busqueda-form-derecha {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    margin-right: 5px;
+    margin-top:10px;
+    flex-wrap: wrap;
+}
+
+.busqueda-input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    flex: 1 1 250px;
+    max-width: 400px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.busqueda-btn {
+    padding: 10px 20px;
+    background-color:rgb(88, 87, 87);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.busqueda-btn:hover {
+    background-color:rgb(78, 117, 83);
+}
+
+@media (max-width: 600px) {
+    .busqueda-form-derecha {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .busqueda-input {
+        width: auto;
+        min-width: 200px;
+        max-width: 100%;
+        flex: none;
+    }
+
+    .busqueda-btn {
+        width: auto;
+    }
+}
+
 </style>
 
 <script>
@@ -102,6 +192,10 @@
   <strong class="titulo-vidrio">ABM de Productos</strong>
   </section>
   
+  <section style="width: 100%; text-align: center; margin-top:50px; font-weigth:900;">
+    <a href="<?= base_url('Lista_Productos')?>" class="btn">MOSTRAR TODOS</a>
+  </section>
+
 <div style="width: 100%; text-align: end;">
 <div style="position: relative; width: 100%;">
     <!-- Tu contenido actual aquí -->
@@ -144,6 +238,20 @@
                 </ul>
     </div>
 
+        <form method="get" action="<?= base_url('Lista_Productos') ?>" class="busqueda-form-derecha">
+        <?php $request = \Config\Services::request(); ?>
+        <input type="text" name="search" value="<?= esc($request->getGet('search')) ?>" placeholder="Buscar productos..." class="busqueda-input" autofocus>
+        <button type="submit" class="busqueda-btn">Buscar</button>
+        </form>
+        <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('.busqueda-input');
+            if (input) {
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length); // Opcional: pone el cursor al final
+            }
+        });
+        </script>
 
 
 
@@ -152,6 +260,9 @@
   <?php $TotalArticulos= 0; 
         $totalCU = 0;
   ?>
+
+  <!-- Si no se busco nada aun no muestra nada -->
+        <?php if (isset($pager)): ?>
 
   <br>
   <table class="table table-responsive table-hover" id="users-list">
@@ -166,13 +277,15 @@
              <th>Acciones</th>
           </tr>
        </thead>
-       <tbody>
+       <tbody style="color:white;">
           <?php if($productos): ?>
           <?php foreach($productos as $prod): ?>
             <tr>
              <td><?php echo $prod['nombre']; ?></td>
              <td>
-    <form method="post" action="<?php echo base_url('/EdicionRapidaProd') ?>">
+                    <form method="post" action="<?php echo base_url('/EdicionRapidaProd') ?>">
+                    <input type="hidden" name="search" value="<?= esc($request->getGet('search')) ?>">
+                    <?php echo form_hidden('page', $page ?? 1); ?>  <!-- Página actual enviada aquí -->
                     <input type="number" step="0.01" name="precio" value="<?php echo $prod['precio']; ?>" 
                     class="form-control form-control-sm d-inline" style="width: 110px; text-align:center;">
              </td>
@@ -213,7 +326,7 @@
                     <button type="submit" class="btn btn-primary">
                         💾 Edit Rápido
                     </button>
-    </form>
+                </form>
 
                 <a class="btn btn-outline-warning" href="<?php echo base_url('ProductoEdit/'.$prod['id']); ?>">
                     ✏️ Editar
@@ -231,12 +344,24 @@
              <?php $TotalArticulos = $TotalArticulos + $totalCU; ?>
             </tr>
          <?php endforeach; ?>
-         <?php endif; ?>
-       
+         <?php endif; ?>       
+         
+        <div class="paginacion-productos" style="text-align: end; margin-top: 20px;">
+            
+         <?= $pager->links() ?>
+
+        <?php endif; ?>
+
+        </div>
+
      </table>
      <h2 class="estiloTurno textColor day">Total en articulos: $ <?php echo $TotalArticulos ?></h2>
      <br>
   </div>
+</div>
+
+<div class="paginacion-productos">
+    <?= $pager->links() ?>
 </div>
 
 <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
@@ -244,30 +369,7 @@
 <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
 
 <script>
-  $(document).ready(function () {
-    $('#users-list').DataTable({
-
-        "stateSave": true, // Habilitar el guardado del estado
-
-      "language": {
-        "lengthMenu": "Mostrar _MENU_ registros por página.",
-        "zeroRecords": "Lo sentimos! No hay resultados.",
-        "info": "Mostrando la página _PAGE_ de _PAGES_",
-        "infoEmpty": "No hay registros disponibles.",
-        "infoFiltered": "(filtrado de _MAX_ registros totales)",
-        "search": "Buscar: ",
-        "paginate": {
-          "next": "Siguiente",
-          "previous": "Anterior"
-        }
-      },
-      initComplete: function () {
-        // Agregar el placeholder personalizado al buscador
-        $('#users-list_filter input').attr('placeholder', 'Nombre,categoría,stock etc...');
-      }
-    });
-  });
-
+  
   function formatearMiles() {
     const input = document.getElementById('pago');
     let valor = input.value.replace(/\./g, ''); // Quita los puntos
