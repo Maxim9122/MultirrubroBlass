@@ -77,10 +77,11 @@
                 border: 3px solid green;
             }
         </style>
-
+      <?php if($nombre){?>
       <div class="btn">
         <p style="color:;">User: <?php echo $nombre; ?> </p>
       </div>
+      <?php } ?>
         <!-- Botón de hamburguesa -->
         <button class="toggleNavBar" id="toggleNavBar">
             &#9776; <!-- Icono de hamburguesa -->

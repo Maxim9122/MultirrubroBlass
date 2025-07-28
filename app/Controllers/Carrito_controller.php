@@ -20,7 +20,7 @@ class Carrito_controller extends Controller{
 	public function __construct(){
            helper(['form', 'url']);
 	}
-
+    
 	public function ListVentasCabecera()
 {
     $session = session();
@@ -1405,7 +1405,7 @@ public function generarTicket($id_cabecera)
                 <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
-                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
                     </div>
                 <?php endforeach; ?>            
             </div>
@@ -2009,7 +2009,7 @@ public function generarTicketFacturaC($id_cabecera)
                 <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
-                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
                     </div>
                 <?php endforeach; ?>            
             </div>
