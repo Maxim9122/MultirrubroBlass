@@ -296,7 +296,7 @@ endif;
                     <input class="selector" type="text" id="costoEnvio" name="costoEnvio" placeholder="Costo de envío en $" maxlength="15" oninput="formatearCostoEnvio(this);">
                 </td>
                 </tr>
-                <?php  } ?>
+                <?php  } ?> 
 
                 <?php echo form_hidden('total_venta', ($gran_total > 0 ? $gran_total : $total_venta)); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
