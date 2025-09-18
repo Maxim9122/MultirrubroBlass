@@ -28,6 +28,146 @@
         z-index: 1000;
         box-shadow: 0px 0px 10px #ff073a; /* Efecto neón */
     }
+    
+    table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: bold;
+  color: #333;
+  padding:125px;
+  text-align:center;
+}
+
+/* Encabezado */
+thead {
+  background-color: #f0f0f0;
+}
+
+tbody tr:hover {
+  background-color:rgb(132, 160, 192) !important; /* Color de hover */
+  cursor: pointer;
+}
+
+thead th {
+  padding: 3px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+/* Filas y celdas */
+tbody tr {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody td {
+  padding: 3px;
+  border: 1px solid #ccc;
+}
+
+/* RESPONSIVE: formato tipo lista en pantallas pequeñas */
+@media (max-width: 768px) {
+  table.responsive-card,
+  table.responsive-card thead,
+  table.responsive-card tbody,
+  table.responsive-card th,
+  table.responsive-card td,
+  table.responsive-card tr {
+    display: block;
+  }
+
+  table.responsive-card thead {
+    display: none;
+  }
+
+  table.responsive-card tbody tr {
+    margin-bottom: 3px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1px;
+    background-color: #000;
+  }
+
+  table.responsive-card tbody td {
+    border: none;
+    padding: 1px 3px;
+    position: relative;
+    font-weight: 900;
+  }
+
+  table.responsive-card tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    font-weight: 900;
+    color: #666;
+    font-size: 0.9em;
+  }
+}
+
+
+.busqueda-form-derecha {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    margin-right: 5px;
+    margin-top:10px;
+    flex-wrap: wrap;
+}
+
+.busqueda-input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    flex: 1 1 250px;
+    max-width: 400px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.busqueda-btn {
+    padding: 10px 20px;
+    background-color:rgb(88, 87, 87);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.busqueda-btn:hover {
+    background-color:rgb(100, 172, 100);
+}
+
+@media (max-width: 600px) {
+    .busqueda-form-derecha {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .busqueda-input {
+        width: auto;
+        min-width: 200px;
+        max-width: 100%;
+        flex: none;
+    }
+
+    .busqueda-btn {
+        width: auto;
+    }
+}
+
+
+
 </style>
 <script>
     setTimeout(function() {
@@ -35,7 +175,7 @@
         if (msg) {
             msg.style.display = 'none';
         }
-    }, 1500); // Se oculta después de 1.5 segundos
+    }, 1000); // Se oculta después de 1.5 segundos
 </script>
 
 <?php if (session()->getFlashdata('msg')): ?>
@@ -46,7 +186,7 @@
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
-        }, 3000); // 3000 milisegundos = 3 segundos
+        }, 1000); // 1000 milisegundos = 1 segundos
     </script>
 
 <?php if (session("msgEr")): ?>
@@ -66,46 +206,43 @@ function cerrarMensaje() {
 <br>
 <div class="" style="width: 100%;">
   <div class="">
-  <h2 class="textoColor" text-align: center !important; >Listado de Productos</h2>
+  <h2 class="textoColor" text-align: center !important;>Carrito de Productos</h2>
   <br>
   
   <style>
-    /* Mover el buscador a la derecha */
-    .dataTables_filter {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-    }
+   .paginacion-productos .pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
 
-    /* Mover el selector de "registros por página" a la derecha */
-    .dataTables_length {
-        text-align: right;
-        width: 100%;
-    }
+.paginacion-productos .pagination li {
+    margin: 10px 5px;
+}
 
-    .dataTables_length select {
-        display: inline-block;
-        margin: 0 auto;
-    }
+.paginacion-productos .pagination li a,
+.paginacion-productos .pagination li span {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid #ff073a;
+}
 
-    /* Hacer el campo de búsqueda más largo y ancho */
-    .dataTables_filter input {
-        width: 300px; /* Ajusta el tamaño según sea necesario */
-        height: 55px; /* Ajusta la altura si lo deseas */
-        font-size: 24px; /* Tamaño de la fuente */
-        padding: 5px 10px; /* Añadir espacio dentro del campo */
-        border-radius: 5px; /* Bordes redondeados */
-        border: 1px solid #ccc; /* Borde gris claro */
-    }
+/* Página actual seleccionada */
+.paginacion-productos .pagination li.active a,
+.paginacion-productos .pagination li.active span {
+    background-color: #ff073a;
+    color: white;
+    font-weight: bold;
+    border-bottom: 4px solid white;
+}
 
-    /* Cambiar el color y hacer más nítida la letra del placeholder */
-    .dataTables_filter input::placeholder {
-        color: white; /* Cambiar a blanco */
-        opacity: 1; /* Asegura que el color del placeholder no sea opaco */
-        font-weight: bold; /* Hacer el texto más nítido */
-    }
+    
 </style>
-
 
   <section class="buscador">
   
@@ -145,6 +282,22 @@ function cerrarMensaje() {
     </section>
 
     <div style="position: relative; width: 100%;">
+        <div style="position: relative; width: 100%;">
+
+    <form method="get" action="<?= base_url('catalogo') ?>" class="busqueda-form-derecha">
+    <?php $request = \Config\Services::request(); ?>
+    <input type="text" name="search" value="<?= esc($request->getGet('search')) ?>" placeholder="Buscar productos..." class="busqueda-input" autofocus>
+    <button type="submit" class="busqueda-btn">Buscar</button>
+    </form>
+    <script>
+    window.addEventListener('DOMContentLoaded', function() {
+        const input = document.querySelector('.busqueda-input');
+        if (input) {
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length); // Opcional: pone el cursor al final
+        }
+    });
+    </script>
     <!-- Tu contenido actual aquí -->
      <?php if($perfil == 1 || $perfil == 3){?>
      <br><br><br>                   
@@ -154,8 +307,8 @@ function cerrarMensaje() {
     </a>
     <?php  } ?>
 </div>
-
-  <table class="" id="users-list">
+<?php if (isset($pager)): ?>
+  <table class="" id="">
    <thead>
       <tr class="colorTexto2">
          <th>Nombre</th>
@@ -226,6 +379,10 @@ function cerrarMensaje() {
       <?php endforeach; ?>
       <?php endif; ?>
    </tbody>
+   <div class="paginacion-productos" style="text-align: end; margin-top: 20px;">
+    
+        <?= $pager->links() ?>
+        <?php endif; ?>
 </table>
      <br>
   </div>

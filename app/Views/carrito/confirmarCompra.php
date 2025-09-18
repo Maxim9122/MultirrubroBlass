@@ -309,7 +309,12 @@ endif;
             <a class="btn" href="<?php echo base_url('CarritoList') ?>">Volver</a>
             <?php } ?>
 
-            <?php if ($total_venta > 0) { ?>
+            <?php if ($id_pedido == '' && $gran_total == 0) { ?>
+                <a href="<?php echo base_url('caja');?>" class="btn">
+                    Volver a Caja
+                </a>
+            <?php } if ($total_venta > 0) { ?>
+
                 <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
                     Cancelar Cobro
                 </a>

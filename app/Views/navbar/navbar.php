@@ -68,7 +68,20 @@
                 <div id="minutes"></div>
             </div>
         </div>
-
+        <style>
+            .recuadro {
+                font-weight:900;
+                border-radius:10px;
+                margin: 20px;
+                padding: 10px;
+                border: 3px solid green;
+            }
+        </style>
+      <?php if($nombre){?>
+      <div class="btn">
+        <p style="color:;">User: <?php echo $nombre; ?> </p>
+      </div>
+      <?php } ?>
         <!-- Botón de hamburguesa -->
         <button class="toggleNavBar" id="toggleNavBar">
             &#9776; <!-- Icono de hamburguesa -->

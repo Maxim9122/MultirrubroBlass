@@ -11,63 +11,124 @@ class Producto_controller extends Controller{
 
 	}
 
+    public function verHistorialProductos() {
+    $historialModel = new \App\Models\modif_productos();
+
+    // Obtener fechas desde GET o POST
+    $desde = $this->request->getVar('desde');
+    $hasta = $this->request->getVar('hasta');
+
+    // Convertir a d-m-Y solo si no están vacías
+    $filtros = [
+        'desde' => !empty($desde) ? date('d-m-Y', strtotime($desde)) : null,
+        'hasta' => !empty($hasta) ? date('d-m-Y', strtotime($hasta)) : null,
+    ];
+
+    // Obtener historial desde el modelo
+    $historial = $historialModel->obtenerHistorialPorFechas($filtros);
+
+    // Preparar datos para inputs (en formato Y-m-d para el value del input)
+    $fechaDesde = $desde ?: '';
+    $fechaHasta = $hasta ?: '';
+
+    $data = [
+        'titulo' => 'Historial Modificaciones',
+        'historial' => $historial,
+        'fechaDesde' => $fechaDesde,
+        'fechaHasta' => $fechaHasta
+    ];
+
+    echo view('navbar/navbar');
+    echo view('header/header', $data);
+    echo view('admin/historial_prods_view', $data);
+    echo view('footer/footer');
+    }
+
+
     public function EdicionRapidaProd() {
-        $model = new Productos_model();
-        $id = $this->request->getPost('id_prod');
-        
-        // Obtener el producto actual primero
-        $productoActual = $model->find($id);
-        
-        if (!$productoActual) {
-            session()->setFlashdata('msgEr', 'Producto no encontrado');
-            return redirect()->to(base_url('Lista_Productos'));
-        }
-        
-        // Preparar datos para actualización
-        $data = [];
-        $hayCambios = false;
-        
-        // Validar y actualizar precio
-        if ($this->request->getPost('precio') !== null && $this->request->getPost('precio') !== '') {
-            $nuevoPrecio = (float)$this->request->getPost('precio');
-            if ($nuevoPrecio != $productoActual['precio']) {
-                $data['precio'] = $nuevoPrecio;
-                $hayCambios = true;
-            }
-        }
-        
-        // Validar y actualizar precio_vta
-        if ($this->request->getPost('precio_vta') !== null && $this->request->getPost('precio_vta') !== '') {
-            $nuevoPrecioVta = (float)$this->request->getPost('precio_vta');
-            if ($nuevoPrecioVta != $productoActual['precio_vta']) {
-                $data['precio_vta'] = $nuevoPrecioVta;
-                $hayCambios = true;
-            }
-        }
-        
-        // Validar y actualizar stock
-        if ($this->request->getPost('stock') !== null && $this->request->getPost('stock') !== '') {
-            $nuevoStock = (int)$this->request->getPost('stock');
-            if ($nuevoStock != $productoActual['stock']) {
-                $data['stock'] = $nuevoStock;
-                $hayCambios = true;
-            }
-        }
-        
-        // Actualizar solo si hay cambios
-        if ($hayCambios) {
-            try {
-                $model->updateDatosProd($id, $data);
-                session()->setFlashdata('msg', 'Producto actualizado correctamente');
-            } catch (\Exception $e) {
-                session()->setFlashdata('msgEr', 'Error al actualizar: ' . $e->getMessage());
-            }
-        } else {
-            session()->setFlashdata('msg', 'No se realizaron cambios');
-        }
-        
+    $model = new Productos_model();
+    $historialModel = new \App\Models\modif_productos(); // Modelo del historial
+
+    $id = $this->request->getPost('id_prod');
+
+    // Obtener el producto actual
+    $productoActual = $model->find($id);
+
+    if (!$productoActual) {
+        session()->setFlashdata('msgEr', 'Producto no encontrado');
         return redirect()->to(base_url('Lista_Productos'));
     }
+
+    $data = [];
+    $hayCambios = false;
+
+    // Variables para historial
+    $nuevoPrecioVta = $productoActual['precio_vta'];
+    $nuevoStock = $productoActual['stock'];
+
+    // Validar y actualizar precio
+    if ($this->request->getPost('precio') !== null && $this->request->getPost('precio') !== '') {
+        $nuevoPrecio = (float)$this->request->getPost('precio');
+        if ($nuevoPrecio != $productoActual['precio']) {
+            $data['precio'] = $nuevoPrecio;
+            $hayCambios = true;
+        }
+    }
+
+    // Validar y actualizar precio_vta
+    if ($this->request->getPost('precio_vta') !== null && $this->request->getPost('precio_vta') !== '') {
+        $nuevoPrecioVtaPost = (float)$this->request->getPost('precio_vta');
+        if ($nuevoPrecioVtaPost != $productoActual['precio_vta']) {
+            $data['precio_vta'] = $nuevoPrecioVtaPost;
+            $nuevoPrecioVta = $nuevoPrecioVtaPost;
+            $hayCambios = true;
+        }
+    }
+
+    // Validar y actualizar stock
+    if ($this->request->getPost('stock') !== null && $this->request->getPost('stock') !== '') {
+        $nuevoStockPost = (int)$this->request->getPost('stock');
+        if ($nuevoStockPost != $productoActual['stock']) {
+            $data['stock'] = $nuevoStockPost;
+            $nuevoStock = $nuevoStockPost;
+            $hayCambios = true;
+        }
+    }
+
+    if ($hayCambios) {
+        try {
+            // Guardar cambios en producto
+            $model->updateDatosProd($id, $data);
+
+            // Guardar historial
+            $registroHistorial = [
+                'id_prod' => $id,
+                'dia_modif' => date('d-m-Y'),
+                'hora_modif' => date('H:i:s'),
+                'usuario_id' => session()->get('id'),
+                'stock_anterior' => $productoActual['stock'],
+                'precio_vta' => $productoActual['precio_vta'],
+                'nvo_stock' => $nuevoStock,
+                'nvo_precio_vta' => $nuevoPrecioVta
+            ];
+            $historialModel->insert($registroHistorial);
+
+            session()->setFlashdata('msg', 'Producto actualizado correctamente');
+        } catch (\Exception $e) {
+            session()->setFlashdata('msgEr', 'Error al actualizar: ' . $e->getMessage());
+        }
+    } else {
+        session()->setFlashdata('msg', 'No se realizaron cambios');
+    }
+
+    // ✅ Mantener búsqueda y paginación al volver
+    $search = $this->request->getPost('search') ?? '';
+    $page = (int) $this->request->getPost('page') ?: 1;
+
+    return redirect()->to(base_url('Lista_Productos?page=' . $page . '&search=' . urlencode($search)));
+    }
+
+
 
 	public function nuevoProducto(){
         $session = session();
@@ -184,7 +245,7 @@ class Producto_controller extends Controller{
         }
     }
 
-    public function ListaProductos(){
+   public function ListaProductos(){
         $session = session();
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
@@ -193,8 +254,16 @@ class Producto_controller extends Controller{
         $Model = new categoria_model();
     	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
         $ProductosModel = new Productos_model();
-        $eliminado = 'NO';
-        $productos = $ProductosModel->getProdBaja($eliminado);
+        $eliminado = 'NO';       
+
+        // Capturamos la página actual de paginación (por defecto 1 si no existe)
+        $page = $this->request->getGet('page') ?? 1;
+
+        $busqueda = $this->request->getGet('search');
+        // Pasamos la página actual para que paginate sepa cuál devolver
+        $productos = $ProductosModel->getProductosPaginadosTodos($eliminado, $busqueda, $page);
+
+        $pager = $ProductosModel->getPager();
     
         // Verificar si algún producto tiene stock bajo
         $productos_bajo_stock = array_filter($productos, function($producto) {
@@ -207,14 +276,18 @@ class Producto_controller extends Controller{
         }
         //print_r($dato);
         //exit;
-        $dato1['titulo']='Lista de Productos'; 
+        $dato1['titulo'] = 'Productos Disponibles';
         $data['productos'] = $productos;
+        $data['pager'] = $pager;
+        $data['page'] = $page;  // <-- enviar la página actual a la vista
+
         echo view('navbar/navbar');
         echo view('header/header',$dato1);
          echo view('admin/productos_view', $data + $dato);
           echo view('footer/footer');
        
     } 
+
     // muestra las categorias 
     public function ListaCategorias(){
         $session = session();
@@ -236,35 +309,49 @@ class Producto_controller extends Controller{
        
     }
 
-	public function ProductosDisp(){
-        $session = session();
-        
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login'));
-        }
-        $Model = new categoria_model();
-    	$dato['categorias']=$Model->getCategoria();//trae la categoria del db
-        $ProductosModel = new Productos_model();
-        $eliminado = 'NO';
-        $productos = $ProductosModel->getProdBaja($eliminado);
-    
-        // Verificar si algún producto tiene stock bajo
-        $productos_bajo_stock = array_filter($productos, function($producto) {
-            return $producto['stock'] <= $producto['stock_min'];
-        });
-    
-        // Si hay productos con stock bajo, guardamos un mensaje en sesión
-        if (!empty($productos_bajo_stock)) {
-            $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
-        }
-    
-        $dato1['titulo'] = 'Productos Disponibles'; 
-        $data['productos'] = $productos;
-    
-        echo view('navbar/navbar');
-        echo view('header/header', $dato1);        
-        echo view('productos/listar', $data + $dato);
-        echo view('footer/footer');
+	public function ProductosDisp() {
+    $session = session();
+    $cart = \Config\Services::cart();
+		$carrito['carrito']=$cart->contents();
+
+    if (!$session->has('id')) {
+        return redirect()->to(base_url('login'));
+    }
+
+    $Model = new categoria_model();
+    $dato['categorias'] = $Model->getCategoria();
+
+    $ProductosModel = new Productos_model();
+    $eliminado = 'NO';
+
+    // Capturamos la página actual de paginación (por defecto 1 si no existe)
+    $page = $this->request->getGet('page') ?? 1;
+
+    $busqueda = $this->request->getGet('search');
+    // Pasamos la página actual para que paginate sepa cuál devolver
+    $productos = $ProductosModel->getProductosPaginados($eliminado, $busqueda, $page);
+
+    $pager = $ProductosModel->getPager();
+
+    // Productos con stock bajo (igual que antes)
+    $productos_bajo_stock = array_filter($productos, function($producto) {
+        return $producto['stock'] <= $producto['stock_min'];
+    });
+
+    if (!empty($productos_bajo_stock)) {
+        $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
+    }
+
+    $dato1['titulo'] = 'Productos Disponibles';
+    $data['productos'] = $productos;
+    $data['pager'] = $pager;
+    $data['page'] = $page;  // <-- enviar la página actual a la vista
+
+    echo view('navbar/navbar');
+    echo view('header/header', $dato1);        
+    echo view('productos/listar', $data + $dato);
+    echo view('carrito/ProductosEnCarrito',$carrito);
+    echo view('footer/footer');
     }
     
 

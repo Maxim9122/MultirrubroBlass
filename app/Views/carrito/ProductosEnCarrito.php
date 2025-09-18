@@ -282,7 +282,7 @@ $resto_desc_pago_efec = 0;
                     echo form_hidden('cart[' . $item['id'] . '][price]', $item['price']);
                     echo form_hidden('cart[' . $item['id'] . '][qty]', $item['qty']);
             ?>
-                    <tr style="color: black;" >
+                    <tr style="color: black;  background-color:#4f4e4e;" >
                         
                         <td  class="separador ocultar-en-movil" style="color: #ffff;">
                             <?php echo $i++; ?>

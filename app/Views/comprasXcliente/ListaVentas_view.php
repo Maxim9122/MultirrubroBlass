@@ -84,10 +84,6 @@
         </svg>TODAS</a>
         </div>
 
-
-
-
-
   <div style="text-align: end;">
 <!-- Recaudacion de Ventas (Todas o por filtro)-->
   
@@ -550,10 +546,32 @@ window.onclick = function(event) {
           <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">
           <script type="text/javascript" src="<?php echo base_url('./assets/js/jquery.dataTables.min.js');?>"></script>
           <script>
-  $(document).ready(function () {
-    $('#users-list').DataTable({
-        "order": [[0, "desc"]], // Ordenar por la primera columna de forma descendente
-        "stateSave": true, // Habilitar el guardado del estado
+ // $(document).ready(function () {
+   // $('#users-list').DataTable({
+///"order": [[0, "desc"]], // Ordenar por la primera columna de forma descendente
+    //    "stateSave": true, // Habilitar el guardado del estado
+//"language": {
+   //         "lengthMenu": "Mostrar _MENU_ registros por página.",
+   //         "zeroRecords": "Lo sentimos! No hay resultados.",
+   //         "info": "Mostrando la página _PAGE_ de _PAGES_",
+   //         "infoEmpty": "No hay registros disponibles.",
+   //         "infoFiltered": "(filtrado de _MAX_ registros totales)",
+   //         "search": "Buscar: ",
+    //        "paginate": {
+    //            "next": "Siguiente",
+    //            "previous": "Anterior"
+    //        }
+    //    },
+    //    initComplete: function () {
+            // Agregar el placeholder personalizado al buscador
+    //        $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
+   //     }
+   // });
+//});
+ $(document).ready(function () {
+    var table = $('#users-list').DataTable({
+        "order": [[0, "desc"]],
+        "stateSave": true,
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por página.",
             "zeroRecords": "Lo sentimos! No hay resultados.",
@@ -567,9 +585,33 @@ window.onclick = function(event) {
             }
         },
         initComplete: function () {
-            // Agregar el placeholder personalizado al buscador
-            $('#users-list_filter input').attr('placeholder', 'Nro Venta,cliente,estado,vendedor..');
-        }
+    const $input = $('#users-list_filter input');
+    
+    $input
+        .attr('placeholder', 'Nro Venta, cliente, estado, vendedor...')
+        .off() // Quitamos el evento original
+        .on('keyup', function () {
+            var input = this.value.trim();
+            var horaRegex = /^\d{1,2}:\d{2}$/;  // ej: 15:40
+            var nroRegex = /^\d+$/;             // solo números enteros
+
+            if (horaRegex.test(input)) {
+                // Buscar solo en la columna "Hora Cobro/Modif" (índice 7)
+                table.columns().search('');
+                table.column(7).search(input).draw();
+            } else if (nroRegex.test(input)) {
+                // Buscar solo en la columna "Nro Venta" (índice 0)
+                table.columns().search('');
+                table.column(0).search('^' + input + '$', true, false).draw();
+            } else {
+                // Búsqueda general
+                table.columns().search('');
+                table.search(input).draw();
+            }
+        });
+
+    $input.focus(); // ← Esta línea hace el autofocus
+    }
     });
 });
 

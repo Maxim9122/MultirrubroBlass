@@ -20,7 +20,7 @@ class Carrito_controller extends Controller{
 	public function __construct(){
            helper(['form', 'url']);
 	}
-
+    
 	public function ListVentasCabecera()
 {
     $session = session();
@@ -274,7 +274,7 @@ public function ListCompraDetalle($id)
 		}
 		
         // Redirige a la misma página que se encuentra
-		return redirect()->to(base_url('CarritoList'));
+		return redirect()->to(base_url('catalogo'));
 	}
 
     public function procesarCarrito()
@@ -336,13 +336,13 @@ public function ListCompraDetalle($id)
             if (!empty($errores_stock)) {
                 $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
                 session()->setFlashdata('msgEr', $mensaje_error);
-                return redirect()->to('CarritoList');
+                return redirect()->to('catalogo');
             }
         
             
         session()->setFlashdata('msg', 'Carrito Actualizado!');
             // Redirige a la misma página que se encuentra
-        return redirect()->to(base_url('CarritoList'));
+        return redirect()->to(base_url('catalogo'));
             
 
 
@@ -402,7 +402,7 @@ public function ListCompraDetalle($id)
             if (!empty($errores_stock)) {
                 $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
                 session()->setFlashdata('msgEr', $mensaje_error);
-                return redirect()->to('CarritoList');
+                return redirect()->to('catalogo');
             }
         
             // Redirige a la página de confirmacion de compra si los calculos de stock estan bien.
@@ -463,7 +463,7 @@ public function ListCompraDetalle($id)
        if (!empty($errores_stock)) {
            $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
            session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('CarritoList');
+           return redirect()->to('catalogo');
        }
         
        // Inicializar la variable para la suma total de la venta
@@ -1056,7 +1056,7 @@ public function ListCompraDetalle($id)
        if (!empty($errores_stock)) {
            $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
            session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('CarritoList');
+           return redirect()->to('catalogo');
        }
     
     
@@ -1405,7 +1405,7 @@ public function generarTicket($id_cabecera)
                 <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
-                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
                     </div>
                 <?php endforeach; ?>            
             </div>
@@ -2009,7 +2009,7 @@ public function generarTicketFacturaC($id_cabecera)
                 <h4>COD: <?= $cabecera['id'] ?></h4>
                 <?php foreach ($detalles as $detalle): ?>
                     <div>
-                        <p><?= $productos[$detalle['producto_id']]['nombre'] ?> Cant:<?= $detalle['cantidad'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
                     </div>
                 <?php endforeach; ?>            
             </div>
