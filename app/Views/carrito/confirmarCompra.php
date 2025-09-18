@@ -149,7 +149,49 @@ endif;
                 </div>
             <?php } ?>
 
-                <br>
+               <?php if($estado == ''){ ?>
+                <!-- Botón para abrir el modal -->
+                <button type="button" class="btn-ver-detalles" onclick="abrirModal()">
+                    Ver Productos Adquiridos
+                </button>
+
+                <!-- Modal personalizado con animación de zoom -->
+                <div id="miModal" class="modal-personalizado">
+                    <div class="modal-contenido zoom-in">
+                        <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+                        <h2 style="color:black;">Detalles de la Compra</h2>
+                        <?php if (!empty($cart)): ?>
+                            <table class="tabla-detalles" style="color:black;">
+                                <thead>
+                                    <tr>
+                                        <th style="color:black;">Producto</th>
+                                        <th style="color:black;">Cantidad</th>
+                                        <th style="color:black;">Precio Unitario</th>
+                                        <th style="color:black;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   <?php $cart = \Config\Services::cart();
+                                    $cart_items = $cart->contents();?>
+                                    <?php foreach ($cart_items as $venta): ?>
+                                        <tr>
+                                            <td><?= $venta['name'] ?></td>
+                                            <td><?= $venta['qty'] ?></td>
+                                            <td><?= number_format($venta['price'], 2) ?></td>
+                                            <td><?= number_format($venta['price'] * $venta['qty'], 2) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p>No hay detalles de venta disponibles.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php } ?>
+                            
+               <br>
+               
         <?php if (!empty($id_pedido) && $total_venta == ''): ?>
             <h3 class="resaltado">
                 Modificando Pedido Numero: <?php echo htmlspecialchars($id_pedido, ENT_QUOTES, 'UTF-8'); ?>
@@ -201,7 +243,7 @@ endif;
                  <?php endif; ?><!-- Fin del if filtro cajero-->
 
 
-                 <?php if ($perfil == 2 && $estado == ''): ?><!-- Filtro Vendedor-->
+                 <?php if ($perfil == 3 && $estado == ''): ?><!-- Filtro Vendedor-->
             </tr>
                 <tr>
                 <td style="color:rgb(192, 250, 214);"><strong>Nombre Identificador del Cliente:</strong></td>
@@ -213,7 +255,7 @@ endif;
                  </tr>
                  <?php endif; ?><!-- Fin del if filtro vendedor-->
 
-                 <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
+                 <?php if ($perfil == 3 && ($estado == '' || $estado == 'Cobrando')): ?>
                           
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Monto en Tarjeta de Crédito</strong></td>
@@ -280,7 +322,7 @@ endif;
                 </td>
                 </tr>   
                 
-                <?php if ($estado == 'Cobrando') {  ?>
+                <?php if ($estado == '' || $estado == 'Cobrando') {  ?>
                 <tr>
                 <td style="color: rgb(192, 250, 214);"><strong>Con Envío:</strong></td>
                 <td>
@@ -310,9 +352,9 @@ endif;
             <?php } ?>
 
             <?php if ($id_pedido == '' && $gran_total == 0) { ?>
-                <a href="<?php echo base_url('caja');?>" class="btn">
+               <!-- <a href="<?php echo base_url('caja');?>" class="btn">
                     Volver a Caja
-                </a>
+                </a> -->
             <?php } if ($total_venta > 0) { ?>
 
                 <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
@@ -323,18 +365,22 @@ endif;
                     Cancelar Modificación Pedido
                 </a>
             <?php } else { ?>
+                  <?php if($total_venta > 0 || $gran_total > 0): ?>
                 <a href="<?php echo base_url('carrito_elimina/all');?>" class="btn danger" onclick="return confirmarAccionCompra();">
                     Cancelar Todo
                 </a>
+                 <?php endif;?> 
             <?php } ?>
             
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
 
-            <?php if ($perfil == 2 || $estado == 'Modificando'): ?>
+            <?php if ($perfil == 3 && $estado == 'Modificando'): ?>
                 <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn">
-            <?php elseif ($perfil == 3 && $estado == 'Cobrando'): ?>
+            <?php elseif ($perfil == 3 && ($estado == '' || $estado == 'Cobrando')): ?>
+               <?php if($total_venta > 0 || $gran_total > 0): ?>
                 <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn">
+                <?php endif; ?>
             <?php endif; ?>
 
             </section>

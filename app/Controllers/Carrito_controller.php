@@ -914,8 +914,8 @@ public function ListCompraDetalle($id)
 
     if(!$id_pedido){    
     //Nombre provisorio del cliente para identificar venta
-    $bombre_provisorios_cliente = $this->request->getPost('nombre_prov');    
-    if (!$bombre_provisorios_cliente) {
+    $nombre_provisorios_cliente = $this->request->getPost('nombre_prov');    
+    if (!$nombre_provisorios_cliente) {
         session()->setFlashdata('msgEr', 'El Campo nombre cliente es Obligatorio!');
         return redirect()->to('casiListo');
     }
@@ -923,8 +923,8 @@ public function ListCompraDetalle($id)
 
     
     //id del cliente seleccionado o se selecciona Consumidor final por defecto.
-    $id_cliente = $this->request->getPost('cliente_id');
-    if (!$id_cliente) {
+    $id_cliente = $this->request->getPost('cliente_id');    
+    if ($id_cliente == 'Anonimo') {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
 
@@ -1122,38 +1122,6 @@ public function ListCompraDetalle($id)
         session()->setFlashdata('msg', 'Pedido actualizado con éxito!');
         return redirect()->to('pedidos');
     }
-    
-
-    
-
-    //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
-    $facturacion = $this->request->getPost('tipo_proceso');
-    
-    //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
-    if($estado == 'Cobrando' && $facturacion == "factura"){
-                
-            $Cabecera_model = new Cabecera_model();
-            $Cabecera_model->update($id_pedido, [
-                'estado'            => 'Error_factura',
-                'total_venta'       => $total,
-                'tipo_pago'         => $tipo_pago_cobro,
-                'total_bonificado'  => $total_conDescuento,               
-                'fecha'        => $fecha,
-                'hora'         => $hora,
-                'fecha_pedido'      => $fecha_pedido_formateada,
-                'hora_entrega' => $hora,
-                'id_cliente'   => $id_cliente, 
-                'costo_envio' => $costo_envio,
-                'monto_efectivo'    => $monto_en_Efectivo,
-                'monto_transferencia' => $monto_transferencia,
-                'monto_tarjetaC' => $monto_tarjetaC              
-            ]);           
-            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-        
-        $cart->destroy(); 
-        //Una vez guardada la compra manda a verificar la factura en ARCA.
-        return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
-    }
 
 
     // Guardar la nueva cabecera del Pedido (Nuevo) utiliza el mismo carrito.
@@ -1164,7 +1132,7 @@ public function ListCompraDetalle($id)
             'fecha'        => $fecha,
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
-            'nombre_prov_client' => $bombre_provisorios_cliente,
+            'nombre_prov_client' => $nombre_provisorios_cliente,
             'id_usuario'   => $id_usuario,
             'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
@@ -1176,56 +1144,27 @@ public function ListCompraDetalle($id)
     } else {
         //Si el perfil es vendedor guarda la compra con el estado Pendiente
         
-        if($perfil == 2){ 
+        if($perfil == 3 && empty($id_pedido)){
+
         // Guardar cabecera de la venta tipo compra normal
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
             'fecha'        => $fecha,
             'hora'         => $hora,
             'id_cliente'   => $id_cliente,
-            'nombre_prov_client' => $bombre_provisorios_cliente,
+            'nombre_prov_client' => $nombre_provisorios_cliente,
             'id_usuario'   => $id_usuario,
             'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
             'estado' => 'Pendiente'
         ]);
-        }
-        
-        if($perfil == 3){ 
-            // Se está cobrando una venta
-            if($estado == 'Cobrando'){
-                $Cabecera_model = new Cabecera_model();                
-        
-                // Actualizar la cabecera de la venta
-                $Cabecera_model->update($id_pedido, [
-                    'estado'            => 'Sin_Facturar',
-                    'total_venta'       => $total,
-                    'tipo_pago'         => $tipo_pago_cobro,
-                    'total_bonificado'  => $total_conDescuento,                  
-                    'fecha_pedido'      => $fecha_pedido_formateada,
-                    'fecha'             => $fecha,                                      
-                    'hora'              => $hora,
-                    'hora_entrega'      => $hora,
-                    'id_cliente'        => $id_cliente,
-                    'costo_envio'       => $costo_envio,
-                    'monto_efectivo'    => $monto_en_Efectivo,
-                    'monto_transferencia' => $monto_transferencia,
-                    'monto_tarjetaC' => $monto_tarjetaC
-                ]);           
-                
-                $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-            }
-            
-            $cart->destroy();            
-            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
-        }
-        
-
+        // Obtener ID de la nueva cabecera guardada
+         $id_cabecera = $cabecera_model->getInsertID();
+        }       
     }
 
-    // Obtener ID de la nueva cabecera guardada
-    $id_cabecera = $cabecera_model->getInsertID();
+    
 
     // Guardar detalles de la venta si el carrito no está vacío
     if ($cart):
@@ -1256,14 +1195,74 @@ public function ListCompraDetalle($id)
         session()->setFlashdata('msg', 'Pedido Guardado con Éxito!');
         return redirect()->to('catalogo');
     }
-    if($perfil == 2){
+
+    //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
+    $facturacion = $this->request->getPost('tipo_proceso');
+    if(empty($id_pedido)){
+        $id_venta = $id_cabecera;
+    } else  {
+        $id_venta = $id_pedido;
+    }
+    //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
+    if($facturacion == "factura"){
+        
+            $Cabecera_model = new Cabecera_model();
+            $Cabecera_model->update($id_venta, [
+                'estado'            => 'Error_factura',
+                'total_venta'       => $total,
+                'tipo_pago'         => $tipo_pago_cobro,
+                'total_bonificado'  => $total_conDescuento,               
+                'fecha'        => $fecha,
+                'hora'         => $hora,
+                'fecha_pedido'      => $fecha_pedido_formateada,
+                'hora_entrega' => $hora,
+                'id_cliente'   => $id_cliente, 
+                'costo_envio' => $costo_envio,
+                'monto_efectivo'    => $monto_en_Efectivo,
+                'monto_transferencia' => $monto_transferencia,
+                'monto_tarjetaC' => $monto_tarjetaC              
+            ]);           
+            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        
+        $cart->destroy(); 
+        //Una vez guardada la compra manda a verificar la factura en ARCA.
+        return redirect()->to('Carrito_controller/verificarTA/' . $id_venta);
+    }
+     // Se está cobrando una venta
+           
+                $Cabecera_model = new Cabecera_model();                
+        
+                // Actualizar la cabecera de la venta
+                $Cabecera_model->update($id_venta, [
+                    'estado'            => 'Sin_Facturar',
+                    'total_venta'       => $total,
+                    'tipo_pago'         => $tipo_pago_cobro,
+                    'total_bonificado'  => $total_conDescuento,                  
+                    'fecha_pedido'      => $fecha_pedido_formateada,
+                    'fecha'             => $fecha,                                      
+                    'hora'              => $hora,
+                    'hora_entrega'      => $hora,
+                    'id_cliente'        => $id_cliente,
+                    'costo_envio'       => $costo_envio,
+                    'monto_efectivo'    => $monto_en_Efectivo,
+                    'monto_transferencia' => $monto_transferencia,
+                    'monto_tarjetaC' => $monto_tarjetaC
+                ]);           
+                
+                $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+            
+            
+            session()->setFlashdata('msg', 'Compra Guardada con Éxito!'); 
+            return redirect()->to('Carrito_controller/generarTicket/' . $id_venta);
+        
+    /*if($perfil == 2){
         session()->setFlashdata('msg', 'Compra Registrada con Exito!');
         return redirect()->to('catalogo');
-    }
+    }*/
 
-    session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
+    
     // Redirige a la vista de la factura
-    return redirect()->to('Carrito_controller/generarTicket/' . $id_cabecera);
+   // return redirect()->to('Carrito_controller/generarTicket/' . $id_cabecera);
 }
 
 
@@ -1518,8 +1517,8 @@ public function descargar_ticket()
 //Verifica que todo este bien para Facturar
 public function verificarTA($id_cabecera = null) {
     
-    //phpinfo();
-    //exit;
+    print_r($id_cabecera);
+    exit;
     $ventaModel = new \App\Models\Cabecera_model();
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);

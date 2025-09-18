@@ -169,8 +169,8 @@
           </li>
           <?php if($perfil == 3) { ?>
           <li class="nnavItem">
-            <a class="btn" href="<?php echo base_url('caja');?>">CAJA</a>            
-          </li>
+           <!-- <a class="btn" href="<?php echo base_url('caja');?>">CAJA</a>            
+          </li> -->
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
           </li>          
