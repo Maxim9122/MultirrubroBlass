@@ -296,7 +296,7 @@ endif;
                     <input class="selector" type="text" id="costoEnvio" name="costoEnvio" placeholder="Costo de envío en $" maxlength="15" oninput="formatearCostoEnvio(this);">
                 </td>
                 </tr>
-                <?php  } ?>
+                <?php  } ?> 
 
                 <?php echo form_hidden('total_venta', ($gran_total > 0 ? $gran_total : $total_venta)); ?>
                 <?php echo form_hidden('total_con_descuento', ''); // Campo para el descuento ?>
@@ -305,14 +305,16 @@ endif;
             </table>
             <section class="botones-container" style="width:65%;">
 
-            <?php if ($total_venta == '') { ?>               
+            <?php if ($total_venta == 0) { ?>               
             <a class="btn" href="<?php echo base_url('CarritoList') ?>">Volver</a>
             <?php } ?>
+
             <?php if ($id_pedido == '' && $gran_total == 0) { ?>
                 <a href="<?php echo base_url('caja');?>" class="btn">
                     Volver a Caja
                 </a>
             <?php } if ($total_venta > 0) { ?>
+
                 <a href="<?php echo base_url('cancelarCobro/'.$id_pedido);?>" class="btn danger" onclick="return confirmarAccionC_Cobro();">
                     Cancelar Cobro
                 </a>
