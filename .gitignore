@@ -3,6 +3,8 @@
 /writable/logs
 COM3
 app/Libraries/afip/
+/writable/FacturacionARCA
 
 
-
+writable/facturacionARCA/TA.xml
+/writable/facturacionARCA

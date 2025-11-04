@@ -1705,8 +1705,8 @@ public function facturar($TA = null,$id_cabecera = null) {
                 <ar:Sign>' . $sign . '</ar:Sign>
                 <ar:Cuit>20369557263</ar:Cuit>
             </ar:Auth>
-            <ar:PtoVta>2</ar:PtoVta>
-            <ar:CbteTipo>11</ar:CbteTipo>
+            <ar:PtoVta>4</ar:PtoVta>
+            <ar:CbteTipo>6</ar:CbteTipo>
         </ar:FECompUltimoAutorizado>
     </soapenv:Body>
     </soapenv:Envelope>
@@ -1753,6 +1753,9 @@ public function facturar($TA = null,$id_cabecera = null) {
     //exit;
     //Obtengo el total de la venta, con descuento o sin
     $total_venta = $cabecera['total_bonificado'];
+    $IVA = number_format($total_venta * 0.21, 2, '.', '');
+    $totalMasIVA = $total_venta + $IVA;
+    //print_r($IVA); exit;
     //Obtengo la fecha
     $fecha_venta = $cabecera['fecha'];
     $fecha_formateadaF = date('Ymd', strtotime($fecha_venta)); // Ajusta y suma 2 dias porque es el rango permitido por AFIP.
@@ -1799,8 +1802,8 @@ public function facturar($TA = null,$id_cabecera = null) {
                 <ar:FeCAEReq>
         <ar:FeCabReq>
             <ar:CantReg>1</ar:CantReg>
-            <ar:PtoVta>2</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
-            <ar:CbteTipo>11</ar:CbteTipo> <!-- 11 para FACTURA C -->
+            <ar:PtoVta>4</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
+            <ar:CbteTipo>6</ar:CbteTipo> <!-- 1 para FACTURA A, 6 es B y 11 es C -->
         </ar:FeCabReq>
         <ar:FeDetReq>
             <ar:FECAEDetRequest>
@@ -1810,13 +1813,20 @@ public function facturar($TA = null,$id_cabecera = null) {
                 <ar:CbteDesde>' . $id_cae_siguiente . '</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
                 <ar:CbteHasta>' . $id_cae_siguiente . '</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
                 <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
-                <ar:ImpTotal>' . $total_venta . '</ar:ImpTotal> <!-- Suma de ImpNeto + ImpTrib -->
+                <ar:ImpTotal>' . $totalMasIVA . '</ar:ImpTotal> <!-- Suma de ImpNeto + IVA -->
                 <ar:ImpTotConc>0</ar:ImpTotConc>
                 <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
+                <ar:ImpIVA>' .$IVA.  '</ar:ImpIVA> <!-- Total del iba (ImpNeto * 0.21)--> 
                 <ar:MonId>PES</ar:MonId>
                 <ar:MonCotiz>1</ar:MonCotiz>
-                <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> 
-                
+                <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> <!--5 para facturas B y C, el 1 para las Facturas A -->
+                <ar:Iva>
+                    <ar:AlicIva>
+                        <ar:Id>5</ar:Id> <!--Codigo de IVA 21% -->
+                        <ar:BaseImp>' . $total_venta . '</ar:BaseImp> <!-- Importe Neto de la venta-->
+                        <ar:Importe>' .$IVA. '</ar:Importe> <!-- Importe del IVA 21% -->
+                    </ar:AlicIva>                
+            </ar:Iva>
             </ar:FECAEDetRequest>
         </ar:FeDetReq>
     </ar:FeCAEReq>
@@ -1857,13 +1867,14 @@ public function facturar($TA = null,$id_cabecera = null) {
         //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
     if($resultado == 'A'){ 
         $caeModel->save([
+            'nro_factura'=> $id_cae_siguiente, 
             'cae'       => $cae,
             'vto_cae'   => $cae_vencimiento
         ]); // Muestra los errores si la inserción falla
         //Rescato el id del ultimo cae generado y guardado en la DB.
         $new_cae = $caeModel->getInsertID();
         //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
-        $ventaModel->facturado($id_cabecera,$new_cae);
+        $ventaModel->facturado($id_cabecera,$new_cae,$IVA);
 
     }else{ 
         //print_r($response);
@@ -1990,13 +2001,13 @@ public function generarTicketFacturaC($id_cabecera)
             <p>Cel: 3794-095020</p>
             <p>Inicio de actividades: 01/02/2023</p>
             <p>Ingresos Brutos: 20-36955726-3</p>
-            <p>Resp. Monotributo</p>
+            <p>Resp. Inscripto</p>
             <hr>
 
             <!-- Información de la venta -->
             <p>Fecha y Hora: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
-            <p>Factura C (Cod.011) a Consumidor Final</p>
-            <p>P.Venta: 002    NroFactura: <?= $detalle_CAE['id_cae'] ?></p>
+            <p>Factura B (Cod 006)</p>
+            <p>P.Venta: 004    NroFactura: <?= $detalle_CAE['id_cae'] ?></p>
             
             <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : 'Consumidor Final Cuil: 0' ?></p>
             <p>Atendido por: <?= $nombreVendedor ?></p>
@@ -2026,13 +2037,14 @@ public function generarTicketFacturaC($id_cabecera)
                 ? '$' . number_format($cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1), 2) 
                 : '$0.00' ?>
             </p>
-            <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>
+            <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>            
             <?php if ($CostoEnvio > 0): ?>
             <p>Costo de Envio: $ <?= $CostoEnvio ?></p>
             <?php endif; ?>            
             <hr>
             
             <p>Reg. Transparencia fiscal al consumidor</p>
+            <p>Ley 27.743</p>
             <p>IVA CONTENIDO: $ <?= number_format($cabecera['total_bonificado'] * 0.21, 2) ?></p>
             <p>Otros Imp. Nac. Indirectos: $0.00</p>
             <p>Tipo de pago: <?=$cabecera['tipo_pago'];?></p>

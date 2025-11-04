@@ -5,7 +5,7 @@ class Cabecera_model extends Model
 {
 	protected $table = 'ventas_cabecera';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_cae','monto_tarjetaC','monto_transferencia','monto_efectivo', 'costo_envio' ,'id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'nombre_prov_client' , 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado', 'total_anterior', 'motivo'];
+    protected $allowedFields = ['iva_cobrado','id_cae','monto_tarjetaC','monto_transferencia','monto_efectivo', 'costo_envio' ,'id_usuario','fecha', 'hora_registro', 'hora' ,'id_cliente', 'nombre_prov_client' , 'total_venta', 'tipo_pago' , 'total_bonificado', 'tipo_compra', 'fecha_pedido','hora_entrega' , 'estado', 'total_anterior', 'motivo'];
 
     public function getVentasCabecera(){
       $db = db_connect();
@@ -250,7 +250,7 @@ class Cabecera_model extends Model
     }
 
     // Actualizar la cabecera de la venta con el estado "facturado" y el ID del CAE
-    public function facturado($id_cabecera, $new_cae)
+    public function facturado($id_cabecera, $new_cae, $iva)
     {
         // Establecer zona horaria y obtener fecha/hora en formato correcto
         date_default_timezone_set('America/Argentina/Buenos_Aires');
@@ -260,7 +260,8 @@ class Cabecera_model extends Model
             'estado' => 'Facturada', // Asegúrate de que el campo "estado" existe en la base de datos
             'id_cae' => $new_cae, // Guarda el ID del CAE en la cabecera
             'fecha_pedido' => $fechaHoy,
-            'hora_entrega' => $horaEntrega
+            'hora_entrega' => $horaEntrega,
+            'iva_cobrado'  => $iva //monto cobrado del 21% del total de la venta
         ]);
     }
      

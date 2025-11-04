@@ -640,8 +640,8 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <div id="confirmationModalPerfil3" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
-        <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
+        <p>¿Desea facturar (Factura tipo B) o solo imprimir ticket?</p>
+        <button id="invoiceArca" class="btn">Factura B (Arca)</button>
         <br><br>
         <button id="printTicket" class="btn">Imprimir Presupuesto</button>
 
@@ -652,7 +652,7 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <div id="confirmationFacturaModal" class="modal">
     <div class="modal-content">
         <span class="closeFactura">&times;</span>
-        <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo C)</p>
+        <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo B)</p>
         <button id="confirmFactura" class="btn">Sí, Facturar</button>
         <button id="cancelFactura" class="btn danger">Cancelar</button>
     </div>
