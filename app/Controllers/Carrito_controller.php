@@ -2027,15 +2027,26 @@ public function generarTicketFacturaC($id_cabecera)
 
             <!-- Totales -->
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
-            <p>Descuento: 
-            <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format(($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'], 2) 
-                : '$0.00' ?>
+            <p>Descuento:
+            <?php
+            if ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') {
+                $descuento = ($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'];
+                echo '$' . number_format($descuento, 2);
+            } else {
+                echo '$0.00';
+            }
+            ?>
             </p>
-            <p>Adicional por Tarjeta: 
-            <?= ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto') 
-                ? '$' . number_format($cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1), 2) 
-                : '$0.00' ?>
+
+            <p>Adicional por Tarjeta:
+            <?php
+            if (!empty($cabecera['monto_tarjetaC']) && ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto')) {
+                $adicional = $cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1);
+                echo '$' . number_format($adicional, 2);
+            } else {
+                echo '$0.00';
+            }
+            ?>
             </p>
             <p>Total: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>            
             <?php if ($CostoEnvio > 0): ?>
