@@ -1867,7 +1867,8 @@ public function facturar($TA = null,$id_cabecera = null) {
         //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
     if($resultado == 'A'){ 
         $caeModel->save([
-            'nro_factura'=> $id_cae_siguiente, 
+            'nro_factura'=> $id_cae_siguiente,
+            'tipo_factura'=> 'B',
             'cae'       => $cae,
             'vto_cae'   => $cae_vencimiento
         ]); // Muestra los errores si la inserción falla

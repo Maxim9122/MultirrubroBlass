@@ -5,7 +5,7 @@ class Cae_model extends Model
 {
 	protected $table = 'cae';
     protected $primaryKey = 'id_cae';
-    protected $allowedFields = ['id_cae','cae','nro_factura','vto_cae'];
+    protected $allowedFields = ['id_cae','cae','nro_factura','tipo_factura','vto_cae'];
 
 
 function generarQR($id_cabecera) {
