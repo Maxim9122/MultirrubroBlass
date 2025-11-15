@@ -92,10 +92,12 @@ class Cabecera_model extends Model
         u.hora_entrega AS hora_actual, 
         u.tipo_pago, 
         u.total_bonificado,
-        u.total_anterior           
+        u.total_anterior,
+        e.tipo_factura           
     ");
     $builder->join('cliente c', 'u.id_cliente = c.id_cliente');
-    $builder->join('usuarios v', 'u.id_usuario = v.id');
+    $builder->join('usuarios v', 'u.id_usuario = v.id'); 
+    $builder->join('cae e', 'u.id_cae = e.id_cae', 'left'); //Left porque si no no trae nada si no tiene cae la venta.
     $builder->whereNotIn('u.estado', ['Pendiente']);
 
     if (!empty($filtros['estado'])) {
@@ -162,7 +164,8 @@ class Cabecera_model extends Model
         v.total_venta,
         v.id AS venta_numero,
         v.estado,
-        c.id_cae, 
+        c.id_cae,
+        c.tipo_factura, 
         c.cae, 
         c.vto_cae
                   ');
@@ -250,14 +253,16 @@ class Cabecera_model extends Model
     }
 
     // Actualizar la cabecera de la venta con el estado "facturado" y el ID del CAE
-    public function facturado($id_cabecera, $new_cae, $iva)
+    public function facturado($id_cabecera, $new_cae, $iva, $totalMasIVA)
     {
         // Establecer zona horaria y obtener fecha/hora en formato correcto
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $fechaHoy = date('d-m-Y');
         $horaEntrega = date('H:i:s');
+
         return $this->update($id_cabecera, [
             'estado' => 'Facturada', // Asegúrate de que el campo "estado" existe en la base de datos
+            'total_bonificado' => $totalMasIVA,
             'id_cae' => $new_cae, // Guarda el ID del CAE en la cabecera
             'fecha_pedido' => $fechaHoy,
             'hora_entrega' => $horaEntrega,
@@ -265,4 +270,29 @@ class Cabecera_model extends Model
         ]);
     }
      
+    public function getTipoFactura($id_Cabecera)
+    {
+        $db = db_connect();
+        $builder = $db->table('ventas_cabecera u');
+        $builder->select('c.tipo_factura');
+        $builder->join('cae c', 'u.id_cae = c.id_cae', 'left');
+        $builder->where('u.id', $id_Cabecera);
+
+        $result = $builder->get()->getRow();
+
+        return $result ? $result->tipo_factura : null;
+    }
+
+    public function NumFactura($id_Cabecera)
+    {
+        $db = db_connect();
+        $builder = $db->table('ventas_cabecera u');
+        $builder->select('c.nro_factura');
+        $builder->join('cae c', 'u.id_cae = c.id_cae', 'left');
+        $builder->where('u.id', $id_Cabecera);
+
+        $result = $builder->get()->getRow();
+
+        return $result ? $result->nro_factura : null;
+    }
 }

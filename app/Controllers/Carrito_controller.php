@@ -903,7 +903,8 @@ public function ListCompraDetalle($id)
     $perfil = $session->get('perfil_id');
     $estado = $session->get('estado');    
     $id_pedido = $this->request->getPost('id_pedido');
-    //print_r($estado);
+    
+    //print_r($facturacion);
     //exit;
     
     if(!$cart){
@@ -1129,8 +1130,8 @@ public function ListCompraDetalle($id)
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
     $facturacion = $this->request->getPost('tipo_proceso');
     
-    //Si el tipo de proceso es para facturar y el estado es Cobrando se manda a facturar.
-    if($estado == 'Cobrando' && $facturacion == "factura"){
+    //Si el tipo de proceso es para facturar tipo A y el estado es Cobrando se manda a facturar.
+    if($estado == 'Cobrando' && $facturacion == "facturaA"){
                 
             $Cabecera_model = new Cabecera_model();
             $Cabecera_model->update($id_pedido, [
@@ -1149,12 +1150,41 @@ public function ListCompraDetalle($id)
                 'monto_tarjetaC' => $monto_tarjetaC              
             ]);           
             $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-        
+        $session->set([        
+                    'tipo_factura' => 'A'
+                    ]);
         $cart->destroy(); 
         //Una vez guardada la compra manda a verificar la factura en ARCA.
         return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
     }
 
+    //Si el tipo de proceso es para facturar tipo B y el estado es Cobrando se manda a facturar.
+    if($estado == 'Cobrando' && $facturacion == "facturaB"){
+                
+            $Cabecera_model = new Cabecera_model();
+            $Cabecera_model->update($id_pedido, [
+                'estado'            => 'Error_factura',
+                'total_venta'       => $total,
+                'tipo_pago'         => $tipo_pago_cobro,
+                'total_bonificado'  => $total_conDescuento,               
+                'fecha'        => $fecha,
+                'hora'         => $hora,
+                'fecha_pedido'      => $fecha_pedido_formateada,
+                'hora_entrega' => $hora,
+                'id_cliente'   => $id_cliente, 
+                'costo_envio' => $costo_envio,
+                'monto_efectivo'    => $monto_en_Efectivo,
+                'monto_transferencia' => $monto_transferencia,
+                'monto_tarjetaC' => $monto_tarjetaC              
+            ]);           
+            $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
+        $session->set([        
+                    'tipo_factura' => 'B'
+                    ]);
+        $cart->destroy(); 
+        //Una vez guardada la compra manda a verificar la factura en ARCA.
+        return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
+    }
 
     // Guardar la nueva cabecera del Pedido (Nuevo) utiliza el mismo carrito.
     if ($tipo_compra == 'Pedido' && $estado == '') { 
@@ -1517,9 +1547,7 @@ public function descargar_ticket()
 
 //Verifica que todo este bien para Facturar
 public function verificarTA($id_cabecera = null) {
-    
-    //phpinfo();
-    //exit;
+ 
     $ventaModel = new \App\Models\Cabecera_model();
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
@@ -1584,10 +1612,17 @@ public function verificarTA($id_cabecera = null) {
             'token' => (string)$xml->credentials->token,
             'sign'  => (string)$xml->credentials->sign            
         ];
-        //print_r($TA);
-        //exit;
+
+        $tipo_factura=$session->get('tipo_factura');
+       
         //Manda a facturar con el TA y el id de cabecera, y redireccion con msg si es venta o pedido facturado con exito.
-        $this->facturar($TA,$id_cabecera);
+       if ($tipo_factura == 'A'){        
+         $this->facturar_tipo_A($TA,$id_cabecera);
+       }
+       if ($tipo_factura == 'B'){        
+         $this->facturar_tipo_B($TA,$id_cabecera);
+       }
+        
         session()->setFlashdata('msg', 'La Factura se realizo con Exito.!');
         return redirect()->to(base_url('catalogo'));
     } else {
@@ -1650,10 +1685,491 @@ public function generarTA($id_cabecera = null) {
     return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
 }
 
+//Aqui va el xml de factura para enviar a ARCA
+//re copiar abajo $TA,$id_cabecera
+public function facturar_tipo_A($TA = null,$id_cabecera = null) {
+    $session = session();
+    $session->remove(['tipo_factura']);
+    $ventaModel = new \App\Models\Cabecera_model();
+    // Obtener los detalles de la venta
+    $cabecera = $ventaModel->find($id_cabecera);
+    //print_r($cabecera);
+    //exit;
+    if ($cabecera['estado'] == 'Facturado' || $cabecera['id_cae'] > 0 ) {
+        session()->setFlashdata('msgEr', 'No se puede facturar una misma Venta dos Veces, Solo puede volver a imprimir la factura.');
+        return redirect()->to(base_url('catalogo'));
+    }
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    // Cargar los modelos necesarios 
+    $clienteModel = new \App\Models\Clientes_model();
+    //Obtengo el ultimo id del cae    
+    $caeModel = new \App\Models\Cae_model();  
+    
+    $token = $TA['token'];
+    //print_r($token);
+
+    //print_r($TA['sign']);
+    $sign = $TA['sign'];
+    //print_r($sign); 
+
+    $curl2 = curl_init();
+
+    curl_setopt_array($curl2, array(
+    CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?op=FECompUltimoAutorizado',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ar:FECompUltimoAutorizado>
+            <ar:Auth>
+                <ar:Token>' . $token . '</ar:Token>
+                <ar:Sign>' . $sign . '</ar:Sign>
+                <ar:Cuit>20369557263</ar:Cuit>
+            </ar:Auth>
+            <ar:PtoVta>4</ar:PtoVta>
+            <ar:CbteTipo>1</ar:CbteTipo>
+        </ar:FECompUltimoAutorizado>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+        CURLOPT_HTTPHEADER => array(
+        'Content-Type: text/xml; charset=utf-8',
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECompUltimoAutorizado',
+        'Cookie: f5avraaaaaaaaaaaaaaaa_session_=BEOJDNNOHIPLFGLHAMDOKCCGDEPCHDODGPFBGCEIHDPKBJFLFFNCGAGGPBMNCOHIINGDGDMMKAFOHCKFPPNAJGJNHGLDBPGNAPHONLHOAPLIMDHCHACMKOKHNOBHOHPL; TS0122d503=01229bd671776c2a22dc12ec69133d3eae55024cb502ad60642444ed6bdc8e2e89e58867b55e3cf976f4460faa4d14afa060e5516a'
+        ),
+        CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
+    ));
+
+    $response2 = curl_exec($curl2);
+    curl_close($curl2);
+    // Cargar el XML
+    $xml = simplexml_load_string($response2);
+    if ($xml === false) {
+        echo "Error al cargar el XML desde la respuesta de AFIP.<br>";
+        echo "Contenido de respuesta:<br><pre>" . htmlspecialchars($response2) . "</pre>";
+        exit;
+    }
+    // Registrar los namespaces
+    $namespaces = $xml->getNamespaces(true);
+
+    // Acceder al Body usando el namespace 'soap'
+    $body = $xml->children($namespaces['soap'])->Body;
+
+    // El contenido de 'FECompUltimoAutorizadoResponse' está en el default namespace (sin prefijo), se accede con ''
+    $response = $body->children($namespaces[''])->FECompUltimoAutorizadoResponse;
+
+    // Acceder al resultado
+    $result = $response->FECompUltimoAutorizadoResult;
+
+    // Obtener el número de comprobante
+    $ultimoNumero = (int)$result->CbteNro;
+
+    //sumamos uno al ultimo id_cae para que ARCA lo acepte porque tiene que ser de 1 en 1.
+    $id_cae_siguiente = $ultimoNumero + 1;
+    //print_r($id_cae_siguiente);
+    //exit;
+    // Obtener los detalles de la venta
+    
+    //print_r($cabecera);
+    //exit;
+    //Obtengo el total de la venta, con descuento o sin
+    $total_venta = $cabecera['total_bonificado'];
+    $IVA = number_format($total_venta * 0.21, 2, '.', '');
+    $totalMasIVA = $total_venta + $IVA;
+    //print_r($IVA); exit;
+    //Obtengo la fecha
+    $fecha_venta = $cabecera['fecha'];
+    $fecha_formateadaF = date('Ymd', strtotime($fecha_venta)); // Ajusta y suma 2 dias porque es el rango permitido por AFIP.
+    //print_r($fecha_formateadaF);    
+    //exit;
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    //Obtener el cuil del cliente
+    $cuil_cliente = $cliente['cuil'];
+    //print_r($cuil_cliente);
+    //Obtener el tipo de Documento.
+    $tipoDoc = 80; //Si tiene un cuil real
+    if($cuil_cliente == 0){
+        $tipoDoc = 99; //Si no tiene Cuil
+    }
+    //print_r($tipoDoc);
+    //exit;
+
+    $new_cae = null;
+    //echo "Token para crear la factura xml para ARCA.\n";
+    //print_r($TA['token']);    
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                      xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <ar:FECAESolicitar>
+                <ar:Auth>
+                    <ar:Token>' . $token . '</ar:Token>
+                    <ar:Sign>' . $sign . '</ar:Sign>
+                    <ar:Cuit>20369557263</ar:Cuit>
+                </ar:Auth>
+                <ar:FeCAEReq>
+        <ar:FeCabReq>
+            <ar:CantReg>1</ar:CantReg>
+            <ar:PtoVta>4</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
+            <ar:CbteTipo>1</ar:CbteTipo> <!-- 1 para FACTURA A, 6 es B y 11 es C -->
+        </ar:FeCabReq>
+        <ar:FeDetReq>
+            <ar:FECAEDetRequest>
+                <ar:Concepto>1</ar:Concepto> <!-- Productos -->
+                <ar:DocTipo>' . $tipoDoc . '</ar:DocTipo> <!-- 80 CUIT, 99 Consumidor_Final-->
+                <ar:DocNro>' . $cuil_cliente . '</ar:DocNro> <!-- 0 para C_final-->
+                <ar:CbteDesde>' . $id_cae_siguiente . '</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
+                <ar:CbteHasta>' . $id_cae_siguiente . '</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
+                <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
+                <ar:ImpTotal>' . $totalMasIVA . '</ar:ImpTotal> <!-- Suma de ImpNeto + IVA -->
+                <ar:ImpTotConc>0</ar:ImpTotConc>
+                <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
+                <ar:ImpIVA>' .$IVA.  '</ar:ImpIVA> <!-- Total del iba (ImpNeto * 0.21)--> 
+                <ar:MonId>PES</ar:MonId>
+                <ar:MonCotiz>1</ar:MonCotiz>
+                <ar:CondicionIVAReceptorId>1</ar:CondicionIVAReceptorId> <!--5 para facturas B y C, el 1 para las Facturas A -->
+                <ar:Iva>
+                    <ar:AlicIva>
+                        <ar:Id>5</ar:Id> <!--Codigo de IVA 21% -->
+                        <ar:BaseImp>' . $total_venta . '</ar:BaseImp> <!-- Importe Neto de la venta-->
+                        <ar:Importe>' .$IVA. '</ar:Importe> <!-- Importe del IVA 21% -->
+                    </ar:AlicIva>                
+            </ar:Iva>
+            </ar:FECAEDetRequest>
+        </ar:FeDetReq>
+    </ar:FeCAEReq>
+    </ar:FECAESolicitar>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECAESolicitar',
+        'Content-Type: text/xml; charset=utf-8',        
+      ),
+       CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    
+    
+    // **Extraer los datos del XML**
+    
+        // Cargar el XML y registrar el namespace
+        $xml = new \SimpleXMLElement($response);
+        $xml->registerXPathNamespace('ns', 'http://ar.gov.afip.dif.FEV1/');
+
+        // Buscar los valores dentro del XML
+        $resultado_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Resultado');
+        $cae_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAE');
+        $cae_vencimiento_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAEFchVto');
+        $observaciones_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Observaciones/ns:Obs/ns:Msg');
+
+        // Verificar si los nodos existen antes de acceder a ellos
+        $resultado = isset($resultado_nodes[0]) ? (string) $resultado_nodes[0] : 'No encontrado';
+        $cae = isset($cae_nodes[0]) ? (string) $cae_nodes[0] : 'No encontrado';
+        $cae_vencimiento = isset($cae_vencimiento_nodes[0]) ? (string) $cae_vencimiento_nodes[0] : 'No encontrado';
+        // Capturar mensaje de error si la factura fue rechazada
+        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : '';
+        //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
+    if($resultado == 'A'){ 
+        $caeModel->save([
+            'nro_factura'=> $id_cae_siguiente,
+            'tipo_factura'=> 'A',
+            'cae'       => $cae,
+            'vto_cae'   => $cae_vencimiento
+        ]); // Muestra los errores si la inserción falla
+        //Rescato el id del ultimo cae generado y guardado en la DB.
+        $new_cae = $caeModel->getInsertID();
+        //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
+        $ventaModel->facturado($id_cabecera,$new_cae,$IVA,$totalMasIVA);
+
+    }else{ 
+        //print_r($response);
+        //exit;
+        $ventaModel->update($id_cabecera,['estado' => 'Error_factura']);
+        //Si tiene una R en resultado redirecciona por rechazado
+        session()->setFlashdata('msgEr', 'No se pudo facturar, Motivo: ' . $mensaje_error . ' La venta se guardó para facturar despues de corregir el error.');
+        return redirect()->to(base_url('catalogo'));
+    }
+        // Mostrar los datos obtenidos
+        //echo "Resultado: $resultado\n";
+        //echo "CAE: $cae\n";
+        //echo "Vencimiento CAE: $cae_vencimiento\n";
+        $this->generarTicketFacturaA($id_cabecera);
+}
+
+
+//Genera el ticket factura tipo A
+public function generarTicketFacturaA($id_cabecera)
+{
+    // Cargar los modelos necesarios
+    $Us_Model = new Usuarios_model;
+    $ventaModel = new \App\Models\Cabecera_model();
+    $detalleModel = new \App\Models\VentaDetalle_model();
+    $productoModel = new \App\Models\Productos_model();
+    $clienteModel = new \App\Models\Clientes_model();
+    $caeModel = new \App\Models\Cae_model();
+
+    // Obtener los detalles de la venta y el CAE
+    $cabecera = $ventaModel->find($id_cabecera);
+    $detalle_CAE = $caeModel->find($cabecera['id_cae']);
+    $detalles = $detalleModel->where('venta_id', $id_cabecera)->findAll();
+
+    $session = session();
+    $cd_efectivo =$session->get('cd_efectivo');
+    $cajero_nombre = $session->get('nombre');
+
+    $CostoEnvio = $cabecera['costo_envio'];
+   
+    // Actualizar el campo costo_envio a 0 porque se muestra una sola vez.
+    $ventaModel->update($id_cabecera, ['costo_envio' => 0]);
+
+    // Obtener los productos relacionados
+    $productos = [];
+    foreach ($detalles as $detalle) {
+        $productos[$detalle['producto_id']] = $productoModel->find($detalle['producto_id']);
+    }
+
+    $total_venta = $cabecera['total_bonificado'];
+    $IVA = $cabecera['iva_cobrado'];
+    $SubTotalSinIVA = $total_venta - $IVA;
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+
+    // Obtener el nombre del vendedor    
+    $vendedor = $Us_Model->find($cabecera['id_usuario']);
+    $nombreVendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
+
+    // Crear el HTML para la vista previa
+    ob_start();
+    ?>
+    <html>
+    <head>
+        <style>
+            /* Estilos CSS para la factura */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                width: 220px;
+            }
+            .ticket {
+                width: 100%;
+                font-size: 12px;
+            }
+            h1 {
+                font-size: 18px;
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h3 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            h4 {
+                text-align: center;
+                margin: 3px 0;
+                font-weight: bold;
+            }
+            .ticket p {
+                margin: 2px 0;
+                font-size: 10px;
+                font-weight: bold;
+                text-align: justify;
+            }
+            .ticket hr {
+                border: 0.5px solid #000;
+                margin: 5px 0;
+            }
+            .ticket .header,
+            .ticket .footer {
+                text-align: center;
+                font-size: 10px;
+            }
+            .ticket .details {
+                margin-top: 3px;
+                font-size: 10px;
+            }
+            .ticket .details td {
+                padding: 0px;
+            }
+            .ticket .details th {
+                text-align: left;
+                padding-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ticket">
+            <!-- Cabecera del ticket -->
+            <h1>MULTIRRUBRO BLASS</h1>
+            <p>GONZALEZ EMMANUEL ALEJANDRO</p>
+            <p>CUIT Nro: 20-36955726-3</p>
+            <p>Domicilio: Belgrano 2077, Corrientes (3400)</p>
+            <p>Cel: 3794-095020</p>
+            <p>Inicio de actividades: 01/02/2023</p>
+            <p>Ingresos Brutos: 20-36955726-3</p>
+            <p>Resp. Inscripto</p>
+            <hr>
+
+            <!-- Información de la venta -->
+            <p>Fecha y Hora: <?= ($cabecera['tipo_compra'] == 'Pedido') ? date('d-m-Y H:i:s') : $cabecera['fecha'] . ' ' . $cabecera['hora']; ?></p>
+            <p>Factura A (Cod 001)</p>
+            <p>P.Venta: 004    NroFactura: <?= $detalle_CAE['id_cae'] ?></p>
+            
+            <p>Cliente: <?= $cliente['cuil'] > 0 ? $cliente['nombre'] . ' Cuil: ' . $cliente['cuil'] : 'Consumidor Final Cuil: 0' ?></p>
+            <p>Atendido por: <?= $nombreVendedor ?></p>
+            <p>Cajero: <?= $cajero_nombre ?></p>
+            <hr>
+
+            <!-- Detalle de la compra -->
+            <div class="details" style="width: 100%; font-size: 10px;">
+                <h3>Detalle de la Compra</h3>
+                <h4>COD: <?= $cabecera['id'] ?></h4>
+                <?php foreach ($detalles as $detalle): ?>
+                    <div>
+                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
+                    </div>
+                <?php endforeach; ?>            
+            </div>
+
+            <!-- Totales -->
+            <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
+            <p>Descuento:
+            <?php
+            if ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') {
+                $descuento = ($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'];
+                echo '$' . number_format($descuento, 2);
+            } else {
+                echo '$0.00';
+            }
+            ?>
+            </p>
+
+            <p>Adicional por Tarjeta:
+            <?php
+            if (!empty($cabecera['monto_tarjetaC']) && ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto')) {
+                $adicional = $cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1);
+                echo '$' . number_format($adicional, 2);
+            } else {
+                echo '$0.00';
+            }
+            ?>
+            </p>
+            <p>Sub Total: $<?= number_format($SubTotalSinIVA, 2) ?></p> <!-- Como ya fue actualizado el campo de cabecera de precio bonificado, se resta el IVA para ver el subtotal solo con descuento efectivo y adicion de tarjeta-->  
+            <p>IVA: $<?= number_format($cabecera['iva_cobrado'], 2) ?></p>
+            <p>Total a Pagar: $<?= number_format($cabecera['total_bonificado'], 2) ?></p>            
+            <?php if ($CostoEnvio > 0): ?>
+            <p>Costo de Envio: $ <?= $CostoEnvio ?></p>
+            <?php endif; ?>            
+            <hr>
+            
+            <p>Reg. Transparencia fiscal al consumidor</p>
+            <p>Ley 27.743</p>
+            <p>IVA CONTENIDO 21%: $ <?= number_format($cabecera['iva_cobrado'], 2) ?></p>
+            <p>IVA CONTENIDO 10.05%: $0.00</p>
+            <p>Otros Imp. Nac. Indirectos: $0.00</p>
+            <p>Tipo de pago: <?=$cabecera['tipo_pago'];?></p>
+            <p>Referencia electronica del Comprobante:</p>
+            <p>CAE: <?= $detalle_CAE['cae'] ?>   Vto: <?= date('d-m-Y', strtotime($detalle_CAE['vto_cae'])) ?></p>
+            
+            <hr>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <p>Importante:</p>
+                <p>La mercaderia viaja por cuenta y riesgo del comprador.</p>
+                <p>Es responsabilidad del cliente controlar su compra antes de salir del local.</p>
+                <p>Su compra tiene 48hs para cambio ante fallas previas del producto.</p>
+                <p>Instagram: @Blass.Multirrubro</p>
+                <p>Facebook: Blass Multirrubro</p>
+                <h3>Muchas Gracias por su Compra.!</h3>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    // Generar el PDF
+    $html = ob_get_clean();
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->render();
+    
+    // Guardar el archivo PDF en un archivo temporal
+    $output = $dompdf->output();
+    $tempFolder = 'path/to/temp/folder';  // Ruta de la carpeta temporal
+    $tempFile = $tempFolder . '/ticket.pdf';  // Ruta completa del archivo PDF
+    
+    // Crear la carpeta si no existe
+    if (!is_dir($tempFolder)) {
+        mkdir($tempFolder, 0777, true);  // Crea la carpeta con permisos 0777 (lectura, escritura y ejecución)
+    }
+    
+    // Guardar el archivo PDF en la carpeta temporal
+    file_put_contents($tempFile, $output);
+    session()->setFlashdata('msg', 'Imprimiendo Ticket.!');
+
+     // Obtener el perfil del usuario desde la sesión
+    $perfil = session()->get('perfil_id');
+    
+    // Redirigir a una página de confirmación con JavaScript
+        echo "<script type='text/javascript'>
+        // Descargar el archivo PDF
+        window.location.href = '" . base_url('descargar_ticket') . "';
+
+        // Pasar el valor de perfil desde PHP a JavaScript
+        var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+
+        // Redirigir a la página de referencia después de la descarga o a otra según perfil
+        window.setTimeout(function() {
+            if (perfil == 3) {
+                 window.location.href = '" . base_url('caja') . "'; // Redirigir al perfil 3
+            } else if (document.referrer) {
+                window.location.href = document.referrer; // Volver a la página anterior
+            }
+        }, 500);  // 0.5 segundos de espera para asegurar que la descarga termine
+        </script>";
+        exit;
+
+}
 
 //Aqui va el xml de factura para enviar a ARCA
 //re copiar abajo $TA,$id_cabecera
-public function facturar($TA = null,$id_cabecera = null) {
+public function facturar_tipo_B($TA = null,$id_cabecera = null) {
+    $session = session();
+    $session->remove(['tipo_factura']);
     $ventaModel = new \App\Models\Cabecera_model();
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
@@ -1875,7 +2391,7 @@ public function facturar($TA = null,$id_cabecera = null) {
         //Rescato el id del ultimo cae generado y guardado en la DB.
         $new_cae = $caeModel->getInsertID();
         //asignamos el id_cae a la venta y cambiamos el estado a Facturado.
-        $ventaModel->facturado($id_cabecera,$new_cae,$IVA);
+        $ventaModel->facturado($id_cabecera,$new_cae,$IVA,$total_venta); //Paso $total_venta porque factura B no se modifica el total como en la A
 
     }else{ 
         //print_r($response);
@@ -1889,12 +2405,12 @@ public function facturar($TA = null,$id_cabecera = null) {
         //echo "Resultado: $resultado\n";
         //echo "CAE: $cae\n";
         //echo "Vencimiento CAE: $cae_vencimiento\n";
-        $this->generarTicketFacturaC($id_cabecera);
+        $this->generarTicketFacturaB($id_cabecera);
 }
 
 
 //Genera el ticket factura tipo C
-public function generarTicketFacturaC($id_cabecera)
+public function generarTicketFacturaB($id_cabecera)
 {
     // Cargar los modelos necesarios
     $Us_Model = new Usuarios_model;
@@ -2057,7 +2573,7 @@ public function generarTicketFacturaC($id_cabecera)
             
             <p>Reg. Transparencia fiscal al consumidor</p>
             <p>Ley 27.743</p>
-            <p>IVA CONTENIDO: $ <?= number_format($cabecera['total_bonificado'] * 0.21, 2) ?></p>
+            <p>IVA CONTENIDO: $ <?= number_format($cabecera['iva_cobrado'], 2) ?></p>
             <p>Otros Imp. Nac. Indirectos: $0.00</p>
             <p>Tipo de pago: <?=$cabecera['tipo_pago'];?></p>
             <p>Referencia electronica del Comprobante:</p>

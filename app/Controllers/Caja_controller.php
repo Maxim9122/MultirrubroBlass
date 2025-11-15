@@ -78,7 +78,7 @@ class Caja_controller extends Controller{
     $US_model = new Usuarios_model();
     // Obtener los datos de la cabecera de la venta para obtener el id_cliente
     $cabecera = $cabecera_model->find($id_vta);
-    if($cabecera['estado'] == 'Pendiente'){
+    if($cabecera['estado'] == 'Pendiente' || $cabecera['estado'] == 'Error_factura'){
     // Actualizar el estado del pedido a "Cobrando"
     $cabecera_model->update($id_vta, ['estado' => 'Cobrando']);
 
