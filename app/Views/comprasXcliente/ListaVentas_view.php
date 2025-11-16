@@ -217,7 +217,7 @@
 
               </td>
               <?php 
-                if ($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Cancelado' && $vta['estado'] != 'Modificada_SF') { 
+                if ($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Nota_Credito' && $vta['estado'] != 'Cancelado' && $vta['estado'] != 'Modificada_SF') { 
                     $TotalRecaudado += $vta['total_bonificado']; 
                 } 
 
