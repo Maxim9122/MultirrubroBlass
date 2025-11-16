@@ -1129,7 +1129,7 @@ public function ListCompraDetalle($id)
 
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
     $facturacion = $this->request->getPost('tipo_proceso');
-    
+    //print_r($facturacion);exit;
     //Si el tipo de proceso es para facturar tipo A y el estado es Cobrando se manda a facturar.
     if($estado == 'Cobrando' && $facturacion == "facturaA"){
                 
@@ -1247,8 +1247,9 @@ public function ListCompraDetalle($id)
                 $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
             
-            $cart->destroy();            
-            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
+            $cart->destroy();       
+            // Redirige a imprimir el ticket indicando que viene del panel de cobro y no de la lista de ventas     
+            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido. '/' . $facturacion);
         }
         
 
@@ -1292,14 +1293,14 @@ public function ListCompraDetalle($id)
     }
 
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
-    // Redirige a la vista de la factura
+    // Redirige a imprimir el ticket indicando que viene del panel de cobro y no de la lista de ventas
     return redirect()->to('Carrito_controller/generarTicket/' . $id_cabecera);
 }
 
 
 
 //Genera ticket venta normal
-public function generarTicket($id_cabecera)
+public function generarTicket($id_cabecera,$tipoTicket=null)
 {
     // Cargar los modelos necesarios
     $Us_Model = new \App\Models\Usuarios_model();
@@ -1307,7 +1308,7 @@ public function generarTicket($id_cabecera)
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
-    
+    //print_r($tipoTicket);exit;
     $session = session();
     $cajero_nombre = $session->get('nombre');
     $cd_efectivo =$session->get('cd_efectivo');
@@ -1418,7 +1419,7 @@ public function generarTicket($id_cabecera)
             <p>Cel: 3794-095020</p>
             <p>Inicio de actividades: 01/02/2023</p>
             <p>Ingresos Brutos: 20-36955726-3</p>
-            <p>Resp. Monotributo</p>
+            <p>Resp. Inscripto</p>
             <hr>
 
             <!-- Información de la venta -->
@@ -1512,25 +1513,31 @@ public function generarTicket($id_cabecera)
 
      // Obtener el perfil del usuario desde la sesión
     $perfil = session()->get('perfil_id');
-    
+
     // Redirigir a una página de confirmación con JavaScript
-        echo "<script type='text/javascript'>
+    echo "<script type='text/javascript'>
         // Descargar el archivo PDF
         window.location.href = '" . base_url('descargar_ticket') . "';
 
-        // Pasar el valor de perfil desde PHP a JavaScript
-        var perfil = " . $perfil . "; // Asignar el perfil de PHP a la variable JS
+        // Pasar los valores de PHP a JavaScript
+        var perfil = " . $perfil . ";
+        var tipoTicket = '" . $tipoTicket . "';
 
-        // Redirigir a la página de referencia después de la descarga o a otra según perfil
+        // Redirigir según condiciones
         window.setTimeout(function() {
-            if (perfil == 3) {
-                window.location.href = document.referrer; // Volver a la página anterior
-            } else if (document.referrer) {
+
+            if (perfil == 3 && tipoTicket === 'ticket') {
+                window.location.href = '" . base_url('caja') . "';
+                return;
+            }
+
+            if (document.referrer) {
                 window.location.href = document.referrer; // Volver a la página anterior
             }
+
         }, 500);  // 0.5 segundos de espera para asegurar que la descarga termine
-        </script>";
-        exit;
+    </script>";
+    exit;
 
 }
 
