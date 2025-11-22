@@ -50,6 +50,25 @@ class Database extends Config
         'port'     => 3306,
     ];
 
+    public $mb2 = [
+        'DSN'      => '',
+        'hostname' => '193.203.175.194',
+        'username' => 'u180193398_multirrubro2',
+        'password' => 'Darkelemento0!',
+        'database' => 'u180193398_multirrubro2',
+        'DBDriver' => 'MySQLi',
+        'DBPrefix' => '',
+        'pConnect' => false,
+        'DBDebug'  => (ENVIRONMENT !== 'production'),
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'port'     => 3306,
+    ];
     /**
      * This database connection is used when
      * running PHPUnit database tests.
