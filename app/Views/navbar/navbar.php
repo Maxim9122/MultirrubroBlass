@@ -49,6 +49,263 @@
 
 </style>
 
+<style>
+/* Indicador círculo pequeño */
+.chat-indicator {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background: gray;
+    border-radius: 50%;
+    margin-left: 6px;
+    transition: 0.3s;
+}
+
+/* Indicador activo */
+.chat-indicator.new {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+}
+
+/* Burbuja de aviso */
+.chat-burbuja {
+    position: absolute;
+    top: -25px;
+    right: -10px;
+    background: #ff4444;
+    color: white;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    animation: burbujaIn 0.3s ease-out;
+    white-space: nowrap;
+    z-index: 99999;
+}
+
+/* Animación de aparición */
+@keyframes burbujaIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Fondo del modal */
+.modal-chat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+/* Caja del modal */
+.modal-chat {
+    background: white;
+    padding: 20px;
+    width: 400px;
+    border-radius: 10px;
+    border: 3px solid #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+    transform-origin: center;
+}
+
+/* Chat */
+.chat-mensajes {
+    border: 1px solid #ccc;
+    height: 250px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8f8f8;
+}
+
+.chat-input {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    padding: 3px;
+}
+
+/* Botones alineados a la derecha */
+.chat-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    color: white;
+}
+
+/* Animaciones modal */
+@keyframes zoomIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes zoomOut {
+    from { transform: scale(1); opacity: 1; }
+    to   { transform: scale(0.5); opacity: 0; }
+}
+
+</style>
+
+<div id="modalChat" class="modal-chat-overlay">
+    <div class="modal-chat">
+        <h3 style="margin-bottom:10px;">Blass Chat 💬</h3>
+
+        <div id="chatMensajes" class="chat-mensajes"></div>
+
+        <textarea id="chatTexto" class="chat-input" placeholder="Escribir mensaje..."></textarea>
+
+        <div class="chat-botones">
+            <button onclick="cerrarModalChat()" class="btn" style="background: gray;">Cerrar</button>
+            <button onclick="enviarMensajeChat()" class="btn">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let ultimoID = 0; // Guarda el id del último mensaje cargado
+
+// ---------- ABRIR MODAL ----------
+// Muestra el chat y marca mensajes como leídos
+function abrirModalChat() {
+    const modal = document.getElementById('modalChat');
+    const caja = document.querySelector('.modal-chat');
+
+    modal.style.display = 'flex';
+    caja.style.animation = "zoomIn 0.25s ease forwards";
+
+    cargarMensajes().then(() => {
+        limpiarIndicador();
+
+        // MARCAR MENSAJES COMO LEÍDOS EN LA DB
+        fetch("<?= base_url('chat/marcarLeido') ?>", {
+            method: "POST",
+            body: new URLSearchParams({ ultimoID: ultimoID })
+        });
+    });
+
+    setTimeout(() => {
+        document.getElementById("chatTexto").focus();
+    }, 80);
+}
+
+// ---------- CERRAR MODAL ----------
+function cerrarModalChat() {
+    const modal = document.getElementById('modalChat');
+    const caja = document.querySelector('.modal-chat');
+
+    caja.style.animation = "zoomOut 0.25s ease forwards";
+
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 250);
+}
+
+// ---------- ENTER para enviar - ESC para cerrar ----------
+document.addEventListener("keydown", function(e) {
+    const modal = document.getElementById("modalChat");
+    if (modal.style.display !== "flex") return;
+
+    if (e.key === "Escape") cerrarModalChat();
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        enviarMensajeChat();
+    }
+});
+
+// ---------- RESTAURAR INDICADOR AL CARGAR LA PÁGINA ----------
+window.addEventListener("DOMContentLoaded", () => {
+    // se puede mantener luz si había mensajes nuevos
+    if (document.getElementById("chatNotification") && document.getElementById("chatBurbuja")) {
+        document.getElementById("chatNotification").classList.remove("new");
+        document.getElementById("chatBurbuja").style.display = "none";
+    }
+});
+
+// ---------- LIMPIAR INDICADOR ----------
+function limpiarIndicador() {
+    document.getElementById("chatNotification").classList.remove("new");
+    document.getElementById("chatBurbuja").style.display = "none";
+}
+
+// ---------- CARGAR MENSAJES ----------
+async function cargarMensajes() {
+    const response = await fetch("<?= base_url('chat/listar') ?>");
+    const data = await response.json();
+
+    let contenedor = document.getElementById("chatMensajes");
+    contenedor.innerHTML = "";
+
+    data.forEach(msg => {
+        let f = new Date(msg.fecha);
+        let dia = String(f.getDate()).padStart(2, '0');
+        let mes = String(f.getMonth() + 1).padStart(2, '0');
+        let año = f.getFullYear();
+        let hora = String(f.getHours()).padStart(2, '0');
+        let min  = String(f.getMinutes()).padStart(2, '0');
+        let fechaFormateada = `${hora}:${min}`;
+
+        contenedor.innerHTML += `
+            <div style="margin-bottom:8px;">
+                <strong>${msg.usuario}</strong>: ${msg.mensaje}
+                <div style="font-size:12px;color:#669;">${fechaFormateada}</div>
+            </div>
+        `;
+
+        ultimoID = msg.id;
+    });
+
+    contenedor.scrollTop = contenedor.scrollHeight;
+}
+
+// ---------- ENVIAR MENSAJE ----------
+function enviarMensajeChat() {
+    let texto = document.getElementById("chatTexto").value;
+    if (texto.trim() === "") return;
+
+    fetch("<?= base_url('chat/enviar') ?>", {
+        method: "POST",
+        body: new URLSearchParams({ mensaje: texto })
+    })
+    .then(() => {
+        document.getElementById("chatTexto").value = "";
+        cargarMensajes();
+    });
+}
+
+// ---------- NOTIFICACIÓN DE MENSAJES NUEVOS ----------
+setInterval(() => {
+    fetch("<?= base_url('chat/nuevos') ?>")
+        .then(r => r.json())
+        .then(data => {
+            const burbuja = document.getElementById("chatBurbuja");
+            if (data.hayNuevos) {
+                document.getElementById("chatNotification")?.classList.add("new");
+
+                if (burbuja) {
+                    burbuja.textContent = `Mensaje de "${data.usuario}"`;
+                    burbuja.style.display = "block";
+                }
+            }
+        });
+}, 5000);
+</script>
+
+
 <body>
 
 <?php $session = session();
@@ -85,11 +342,23 @@
         <!-- Botón de hamburguesa -->
         <button class="toggleNavBar" id="toggleNavBar">
             &#9776; <!-- Icono de hamburguesa -->
-        </button>
-
+        </button>        
         <div id="navBar" class="navBar">
             <ul class="navList flex">
+        <?php if($perfil) { ?> 
+        <li class="nnavItem">
+          <button id="btnChatInterno" class="btn" onclick="abrirModalChat()" style="position: relative;">
+              Chat
+              <!-- Indicador -->
+              <span id="chatNotification" class="chat-indicator"></span>
 
+              <!-- Burbuja de aviso -->
+              <span id="chatBurbuja" class="chat-burbuja" style="display:none;">
+                  Hay mensajes nuevos
+              </span>
+          </button>
+        </li>
+        <?php } ?> 
         <?php if( ($perfil =='1')) { ?>          
           
           <li class="nnavItem">
@@ -165,12 +434,12 @@
         <?php endif; ?>
 
 
-
+          
           </li>
           <?php if($perfil == 3) { ?>
           <li class="nnavItem">
             <a class="btn" href="<?php echo base_url('caja');?>">CAJA</a>            
-          </li>
+          </li>          
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
           </li>          

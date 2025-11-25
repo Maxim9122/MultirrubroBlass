@@ -197,6 +197,12 @@ $routes->get('generarTicketFacturaB/(:num)', 'Carrito_controller::generarTicketF
 //NOTAS DE CREDITO
 $routes->get('NotaCredito/(:num)', 'NotasDe_Creditos_controller::verificarTA_NotaCredito/$1');
 
+//CHATs
+$routes->get('chat/listar', 'Chat_Controller::listar');
+$routes->post('chat/enviar', 'Chat_Controller::enviar');
+$routes->get('chat/ultimo', 'Chat_Controller::ultimo');
+$routes->get('chat/nuevos', 'Chat_Controller::nuevos');       // Ver si hay mensajes nuevos
+$routes->post('chat/marcarLeido', 'Chat_Controller::marcarLeido'); 
 /*
 	
 */
