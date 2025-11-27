@@ -15,19 +15,45 @@ class Chat_Controller extends BaseController
     // ---------- LISTAR MENSAJES DEL DÍA ----------
     public function listar()
     {
-        $model = new Chat_model();
+    $session = session();
+    $usuario = $session->get('nombre');
 
-        $hoy = date('Y-m-d');
-        $inicio = $hoy . ' 00:00:00';
-        $fin    = $hoy . ' 23:59:59';
+    $model = new Chat_model();
 
-        $mensajes = $model
+    // Rango del día
+    $hoy = date('Y-m-d');
+    $inicio = $hoy . ' 00:00:00';
+    $fin    = $hoy . ' 23:59:59';
+
+    // Obtener último leido para este usuario (0 si no hay registro)
+    $ultimoLeidoRow = $model->getUltimoLeido($usuario);
+    $ultimoLeido = $ultimoLeidoRow['ultimo_leido'] ?? 0;
+
+    // 1) Mensajes del día que YA FUERON leídos (id <= ultimo_leido)
+    $mensajesLeidosHoy = [];
+    if ($ultimoLeido > 0) {
+        $mensajesLeidosHoy = $model
             ->where('fecha >=', $inicio)
             ->where('fecha <=', $fin)
+            ->where('id <=', $ultimoLeido)
             ->orderBy('id', 'ASC')
             ->findAll();
+    }
 
-        return $this->response->setJSON($mensajes);
+    // 2) Mensajes del día que SON NUEVOS para este usuario (id > ultimo_leido)
+    $mensajesNuevosHoy = $model
+        ->where('fecha >=', $inicio)
+        ->where('fecha <=', $fin)
+        ->where('id >', $ultimoLeido)
+        ->orderBy('id', 'ASC')
+        ->findAll();
+
+    // Respuesta: dos grupos separados + ultimoLeido por si lo necesitás en la vista
+    return $this->response->setJSON([
+        'leidosHoy'    => $mensajesLeidosHoy,
+        'nuevosHoy'    => $mensajesNuevosHoy,
+        'ultimoLeido'  => $ultimoLeido
+    ]);
     }
 
     // ---------- ENVIAR MENSAJE ----------

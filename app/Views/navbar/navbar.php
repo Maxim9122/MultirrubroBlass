@@ -250,11 +250,11 @@ async function cargarMensajes() {
     let contenedor = document.getElementById("chatMensajes");
     contenedor.innerHTML = "";
 
-    data.forEach(msg => {
+    // ----------------------------
+    // 1) MENSAJES LEÍDOS DEL DÍA
+    // ----------------------------
+    data.leidosHoy.forEach(msg => {
         let f = new Date(msg.fecha);
-        let dia = String(f.getDate()).padStart(2, '0');
-        let mes = String(f.getMonth() + 1).padStart(2, '0');
-        let año = f.getFullYear();
         let hora = String(f.getHours()).padStart(2, '0');
         let min  = String(f.getMinutes()).padStart(2, '0');
         let fechaFormateada = `${hora}:${min}`;
@@ -266,11 +266,31 @@ async function cargarMensajes() {
             </div>
         `;
 
-        ultimoID = msg.id;
+        ultimoID = msg.id; // el último leído
+    });
+
+    // ----------------------------------------
+    // 2) MENSAJES NUEVOS (REMARK EN VERDE)
+    // ----------------------------------------
+    data.nuevosHoy.forEach(msg => {
+        let f = new Date(msg.fecha);
+        let hora = String(f.getHours()).padStart(2, '0');
+        let min  = String(f.getMinutes()).padStart(2, '0');
+        let fechaFormateada = `${hora}:${min}`;
+
+        contenedor.innerHTML += `
+            <div style="margin-bottom:5px; background:#d7ffd7; padding:3px; border-radius:4px;">
+                <strong>${msg.usuario}</strong>: ${msg.mensaje}
+                <div style="font-size:12px;color:#335;">${fechaFormateada} — <span style="color:green;font-weight:bold;font-size:8px;">Nuevo</span></div>
+            </div>
+        `;
+
+        ultimoID = msg.id; // el último nuevo
     });
 
     contenedor.scrollTop = contenedor.scrollHeight;
 }
+
 
 // ---------- ENVIAR MENSAJE ----------
 function enviarMensajeChat() {
