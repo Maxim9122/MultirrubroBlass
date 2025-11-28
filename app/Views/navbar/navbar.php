@@ -12,7 +12,12 @@
   <script src="<?php echo base_url('./assets/js/a25933befb.js');?>" crossorigin="anonymous"></script>
   
 </head>
-
+<?php $session = session();
+          $nombre= $session->get('nombre');
+          $perfil=$session->get('perfil_id');
+          $id=$session->get('id');
+          $estado =$session->get('estado'); 
+          ?>
 <style>
 .cart-container {
     position: relative;
@@ -175,7 +180,9 @@
         </div>
     </div>
 </div>
-
+<script>
+    const usuarioLogueado = "<?= $session->get('nombre') ?>";
+</script>
 <script>
 let ultimoID = 0; // Guarda el id del último mensaje cargado
 
@@ -270,23 +277,31 @@ async function cargarMensajes() {
     });
 
     // ----------------------------------------
-    // 2) MENSAJES NUEVOS (REMARK EN VERDE)
-    // ----------------------------------------
-    data.nuevosHoy.forEach(msg => {
-        let f = new Date(msg.fecha);
-        let hora = String(f.getHours()).padStart(2, '0');
-        let min  = String(f.getMinutes()).padStart(2, '0');
-        let fechaFormateada = `${hora}:${min}`;
+// 2) MENSAJES NUEVOS (REMARK EN VERDE)
+// ----------------------------------------
+data.nuevosHoy.forEach(msg => {
+    let f = new Date(msg.fecha);
+    let hora = String(f.getHours()).padStart(2, '0');
+    let min  = String(f.getMinutes()).padStart(2, '0');
+    let fechaFormateada = `${hora}:${min}`;
 
-        contenedor.innerHTML += `
-            <div style="margin-bottom:5px; background:#d7ffd7; padding:3px; border-radius:4px;">
-                <strong>${msg.usuario}</strong>: ${msg.mensaje}
-                <div style="font-size:12px;color:#335;">${fechaFormateada} — <span style="color:green;font-weight:bold;font-size:8px;">Nuevo</span></div>
-            </div>
-        `;
+    // Es mensaje propio → no marcar como nuevo
+    let esPropio = (msg.usuario === usuarioLogueado);
 
-        ultimoID = msg.id; // el último nuevo
-    });
+    // Estilo: si es propio, NO color verde
+    let estiloFondo = esPropio ? "" : "background:#d7ffd7;";
+    let etiquetaNuevo = esPropio ? "" : `<span style="color:green;font-weight:bold;font-size:8px;">Nuevo</span>`;
+
+    contenedor.innerHTML += `
+        <div style="margin-bottom:5px; ${estiloFondo} padding:3px; border-radius:4px;">
+            <strong>${msg.usuario}</strong>: ${msg.mensaje}
+            <div style="font-size:12px;color:#335;">${fechaFormateada} ${etiquetaNuevo}</div>
+        </div>
+    `;
+
+    ultimoID = msg.id;
+});
+
 
     contenedor.scrollTop = contenedor.scrollHeight;
 }
@@ -327,14 +342,6 @@ setInterval(() => {
 
 
 <body>
-
-<?php $session = session();
-          $nombre= $session->get('nombre');
-          $perfil=$session->get('perfil_id');
-          $id=$session->get('id');
-          $estado =$session->get('estado'); 
-          ?>
-
 <section class="navBarSection">
     <div class="headernav">
         <div class="logoDiv">
