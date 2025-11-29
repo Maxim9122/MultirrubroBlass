@@ -92,24 +92,31 @@ class Chat_Controller extends BaseController
 
     $model = new Chat_model();
 
-    // Último mensaje leído por el usuario
+    // Último leido por el usuario
     $ultimoLeido = $model->getUltimoLeido($usuarioActual)['ultimo_leido'] ?? 0;
 
-    // Mensajes nuevos de otros usuarios
+    // Limites de hoy
+    $hoy = date('Y-m-d');
+    $inicio = $hoy . ' 00:00:00';
+    $fin    = $hoy . ' 23:59:59';
+
+    // Mensajes nuevos SOLO de hoy y de otros usuarios
     $mensajesNuevos = $model
         ->where('id >', $ultimoLeido)
         ->where('usuario !=', $usuarioActual)
+        ->where('fecha >=', $inicio)
+        ->where('fecha <=', $fin)
         ->orderBy('id', 'ASC')
         ->findAll();
 
-    // Obtener el nombre del usuario del último mensaje no leído
+    // Nombre del último usuario
     $nombreUsuario = '';
     if (!empty($mensajesNuevos)) {
         $ultimoMensaje = end($mensajesNuevos);
         $nombreUsuario = $ultimoMensaje['usuario'];
     }
 
-    // Último ID del chat
+    // Último ID global (por si lo necesitás)
     $ultimoMensajeGlobal = $model->getUltimoMensaje();
 
     return $this->response->setJSON([
