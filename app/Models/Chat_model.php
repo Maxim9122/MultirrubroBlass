@@ -7,7 +7,7 @@ class Chat_model extends Model
     protected $DBGroup = 'ChatsDB_Belgrano';
     protected $table = 'chat_interno';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['usuario', 'mensaje', 'fecha'];
+    protected $allowedFields = ['usuario', 'mensaje', 'fecha', 'local'];
 
     // Obtener el último mensaje del chat
     public function getUltimoMensaje() {

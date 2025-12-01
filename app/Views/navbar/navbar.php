@@ -164,6 +164,24 @@
     to   { transform: scale(0.5); opacity: 0; }
 }
 
+.badgeLocal {
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Belgrano */
+.local-belgrano {
+    background: #0055ff20;
+    color: #0055ff;
+}
+
+/* Independiente */
+.local-independ {
+    background: #ff550020;
+    color: #ff0000;
+}
 </style>
 
 <div id="modalChat" class="modal-chat-overlay">
@@ -182,6 +200,7 @@
 </div>
 <script>
     const usuarioLogueado = "<?= $session->get('nombre') ?>";
+    const localUsuario    = "Belgrano"; //LOCAL
 </script>
 <script>
 let ultimoID = 0; // Guarda el id del último mensaje cargado
@@ -249,6 +268,18 @@ function limpiarIndicador() {
     document.getElementById("chatBurbuja").style.display = "none";
 }
 
+//Estilos de la palabra Locales segun el local
+function getLocalClass(local) {
+    if (!local) return "badgeLocal";
+
+    const nombre = local.toLowerCase();
+
+    if (nombre.includes("belgrano")) return "badgeLocal local-belgrano";
+    if (nombre.includes("independ")) return "badgeLocal local-independ";
+
+    return "badgeLocal"; // default
+}
+
 // ---------- CARGAR MENSAJES ----------
 async function cargarMensajes() {
     const response = await fetch("<?= base_url('chat/listar') ?>");
@@ -269,7 +300,9 @@ async function cargarMensajes() {
         contenedor.innerHTML += `
             <div style="margin-bottom:8px;">
                 <strong>${msg.usuario}</strong>: ${msg.mensaje}
-                <div style="font-size:12px;color:#669;">${fechaFormateada}</div>
+                <div style="font-size:12px;color:#669;">
+                    ${fechaFormateada} | <span class="${getLocalClass(msg.local)}">${msg.local}</span>
+                </div>
             </div>
         `;
 
@@ -295,7 +328,9 @@ data.nuevosHoy.forEach(msg => {
     contenedor.innerHTML += `
         <div style="margin-bottom:5px; ${estiloFondo} padding:3px; border-radius:4px;">
             <strong>${msg.usuario}</strong>: ${msg.mensaje}
-            <div style="font-size:12px;color:#335;">${fechaFormateada} ${etiquetaNuevo}</div>
+            <div style="font-size:12px;color:#335;">
+                ${fechaFormateada} | <span class="${getLocalClass(msg.local)}">${msg.local}</span> ${etiquetaNuevo}
+            </div>
         </div>
     `;
 
@@ -314,7 +349,10 @@ function enviarMensajeChat() {
 
     fetch("<?= base_url('chat/enviar') ?>", {
         method: "POST",
-        body: new URLSearchParams({ mensaje: texto })
+        body: new URLSearchParams({
+            mensaje: texto,
+            local: localUsuario // <--- AGREGADO
+        })
     })
     .then(() => {
         document.getElementById("chatTexto").value = "";

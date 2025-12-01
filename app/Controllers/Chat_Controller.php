@@ -69,7 +69,8 @@ class Chat_Controller extends BaseController
         $model->save([
             'usuario' => $usuario,
             'mensaje' => $this->request->getPost('mensaje'),
-            'fecha'   => $fechaLocal
+            'fecha'   => $fechaLocal,
+            'local'   => $this->request->getPost('local') // <--- NUEVO
         ]);
 
         return $this->response->setJSON(['status' => 'ok']);
