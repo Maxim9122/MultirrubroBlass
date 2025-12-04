@@ -2272,12 +2272,18 @@ public function facturar_tipo_B($TA = null,$id_cabecera = null) {
     //exit;
     // Obtener los detalles de la venta
     
-    //print_r($cabecera);
-    //exit;
     //Obtengo el total de la venta, con descuento o sin
-    $total_venta = $cabecera['total_bonificado'];
-    $IVA = number_format($total_venta * 0.21, 2, '.', '');
-    $totalMasIVA = $total_venta + $IVA;
+    $total_venta = $cabecera['total_bonificado']; // ESTE es el total con IVA incluido (lo que vos cobrás).
+
+    // Calcular el neto e IVA como exige ARCA cuando el precio es final IVA incluido
+    $neto = round($total_venta / 1.21, 2);
+    $IVA = round($total_venta - $neto, 2);
+
+    // Para AFIP/ARCA, el total informado siempre es el total que cobrás
+    $totalMasIVA = $total_venta;
+
+    //print_r($totalMasIVA);
+    //print_r($neto);
     //print_r($IVA); exit;
     //Obtengo la fecha
     $fecha_venta = $cabecera['fecha'];
@@ -2336,19 +2342,19 @@ public function facturar_tipo_B($TA = null,$id_cabecera = null) {
                 <ar:CbteDesde>' . $id_cae_siguiente . '</ar:CbteDesde> <!-- Nuevo comprobante: debe ser mayor al anterior -->
                 <ar:CbteHasta>' . $id_cae_siguiente . '</ar:CbteHasta> <!-- Debe ser igual al número de <CbteDesde> -->
                 <ar:CbteFch>' . $fecha_formateadaF . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
-                <ar:ImpTotal>' . $totalMasIVA . '</ar:ImpTotal> <!-- Suma de ImpNeto + IVA -->
+                <ar:ImpTotal>' . $totalMasIVA . '</ar:ImpTotal>
                 <ar:ImpTotConc>0</ar:ImpTotConc>
-                <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
-                <ar:ImpIVA>' .$IVA.  '</ar:ImpIVA> <!-- Total del iba (ImpNeto * 0.21)--> 
+                <ar:ImpNeto>' . $neto . '</ar:ImpNeto>
+                <ar:ImpIVA>' . $IVA . '</ar:ImpIVA>
                 <ar:MonId>PES</ar:MonId>
                 <ar:MonCotiz>1</ar:MonCotiz>
                 <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> <!--5 para facturas B y C, el 1 para las Facturas A -->
                 <ar:Iva>
-                    <ar:AlicIva>
-                        <ar:Id>5</ar:Id> <!--Codigo de IVA 21% -->
-                        <ar:BaseImp>' . $total_venta . '</ar:BaseImp> <!-- Importe Neto de la venta-->
-                        <ar:Importe>' .$IVA. '</ar:Importe> <!-- Importe del IVA 21% -->
-                    </ar:AlicIva>                
+                <ar:AlicIva>
+                    <ar:Id>5</ar:Id> <!-- IVA 21% -->
+                    <ar:BaseImp>' . $neto . '</ar:BaseImp>
+                    <ar:Importe>' . $IVA . '</ar:Importe>
+                </ar:AlicIva>
             </ar:Iva>
             </ar:FECAEDetRequest>
         </ar:FeDetReq>
