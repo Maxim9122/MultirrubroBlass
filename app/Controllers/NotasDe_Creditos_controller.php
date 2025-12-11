@@ -22,6 +22,66 @@ class NotasDe_Creditos_controller extends Controller{
            helper(['form', 'url']);
 	}
 
+    public function NotasCredito()
+{
+    $session = session();
+    $perfil = $session->get('perfil_id');
+
+    if (!$session->has('id')) {
+        return redirect()->to(base_url('login'));
+    }
+
+    if ($perfil == 2) { 
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    // MODELO
+    $cabeceraModel = new Cabecera_model();
+
+    // OBTENER TODAS LAS VENTAS QUE CORRESPONDEN A NOTA DE CRÉDITO
+    $ventas = $cabeceraModel->getVentasConClientes();
+
+    // SI NO HAY VENTAS → volver
+    if (!$ventas) {
+        session()->setFlashdata('msg', 'No hay facturas para procesar.');
+        return redirect()->to(base_url('compras'));
+    }
+
+    // -------------------------------------
+    // 🔥 CARGAMOS TA.xml UNA SOLA VEZ
+    // -------------------------------------
+    $taPath = ROOTPATH . 'writable/facturacionARCA/TA.xml';
+    $xml = simplexml_load_file($taPath);
+
+    $TA = [
+        'token' => (string)$xml->credentials->token,
+        'sign'  => (string)$xml->credentials->sign
+    ];
+    //print_r($TA);exit;
+    // -------------------------------------
+    // 🔥 PROCESAR CADA VENTA EN LOTE
+    // -------------------------------------
+    foreach ($ventas as $venta) {
+
+        $resultado = $this->NotaCredito_tipo_B($TA, $venta['id']);
+
+        // Si algo falló, cortamos el lote
+        if ($resultado['estado'] === 'error') {
+
+            session()->setFlashdata(
+                'msgEr',
+                "Error en Venta ID {$venta['id']}: " . $resultado['mensaje']
+            );
+
+            return redirect()->to(base_url('compras'));
+        }
+    }
+
+    session()->setFlashdata('msg', 'Lote de notas de crédito procesado con éxito.');
+    return redirect()->to(base_url('compras'));
+}
+
+
 	//Verifica que todo este bien para Facturar
 public function verificarTA_NotaCredito($id_cabecera = null) {
  
@@ -461,9 +521,9 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
             <ar:Auth>
                 <ar:Token>' . $token . '</ar:Token>
                 <ar:Sign>' . $sign . '</ar:Sign>
-                <ar:Cuit>20369557263</ar:Cuit>
+                <ar:Cuit>27405910530</ar:Cuit>
             </ar:Auth>
-            <ar:PtoVta>4</ar:PtoVta>
+            <ar:PtoVta>3</ar:PtoVta>
             <ar:CbteTipo>8</ar:CbteTipo>
         </ar:FECompUltimoAutorizado>
     </soapenv:Body>
@@ -511,14 +571,11 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
     // Obtener los detalles de la venta   
     
     //Obtengo el total de la venta, con descuento o sin
-    $total_venta = $cabecera['total_bonificado']; // ESTE es el total con IVA incluido (lo que vos cobrás).
-
-    // Calcular el neto e IVA como exige ARCA cuando el precio es final IVA incluido
-    $neto = round($total_venta / 1.21, 2);
-    $IVA = round($total_venta - $neto, 2);
-
-    // Para AFIP/ARCA, el total informado siempre es el total que cobrás
-    $totalMasIVA = $total_venta;
+    $total_venta = $cabecera['total_bonificado']; //Le resto el iva cobrado para la Nota de credito
+    //print_r($total_venta); exit;
+    
+    $IVA = number_format($total_venta * 0.21, 2, '.', '');
+    $totalMasIVA = $total_venta + $IVA;
     //print_r($IVA); exit;
     //Obtengo la fecha
     $fecha_YMD = date('Ymd');
@@ -560,12 +617,12 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
                 <ar:Auth>
                     <ar:Token>' . $token . '</ar:Token>
                     <ar:Sign>' . $sign . '</ar:Sign>
-                    <ar:Cuit>20369557263</ar:Cuit>
+                    <ar:Cuit>27405910530</ar:Cuit>
                 </ar:Auth>
                 <ar:FeCAEReq>
         <ar:FeCabReq>
             <ar:CantReg>1</ar:CantReg>
-            <ar:PtoVta>4</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
+            <ar:PtoVta>3</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
             <ar:CbteTipo>8</ar:CbteTipo> <!-- Nota Credito, 3 para FACTURA A, 8 es B -->
         </ar:FeCabReq>
         <ar:FeDetReq>
@@ -578,7 +635,7 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
                         <ar:CbtesAsoc>
                             <ar:CbteAsoc>
                                 <ar:Tipo>6</ar:Tipo> <!-- 1 = Factura B -->
-                                <ar:PtoVta>4</ar:PtoVta> <!-- Mismo punto de venta -->
+                                <ar:PtoVta>3</ar:PtoVta> <!-- Mismo punto de venta -->
                                 <ar:Nro>' .$NumFactura. '</ar:Nro> <!-- Número de la factura A original a dar de baja -->
                             </ar:CbteAsoc>
                         </ar:CbtesAsoc>
@@ -589,16 +646,16 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
                 <ar:CbteFch>' . $fecha_YMD . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
                 <ar:ImpTotal>' . $totalMasIVA . '</ar:ImpTotal>
                 <ar:ImpTotConc>0</ar:ImpTotConc>
-                <ar:ImpNeto>' . $neto . '</ar:ImpNeto>
-                <ar:ImpIVA>' . $IVA . '</ar:ImpIVA>
+                <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
+                <ar:ImpIVA>' .$IVA.  '</ar:ImpIVA> <!-- Total del iba (ImpNeto * 0.21)--> 
                 <ar:MonId>PES</ar:MonId>
                 <ar:MonCotiz>1</ar:MonCotiz>
                 <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> <!--5 para facturas B y C, el 1 para las Facturas A -->
                 <ar:Iva>
                     <ar:AlicIva>
-                        <ar:Id>5</ar:Id> <!-- IVA 21% -->
-                        <ar:BaseImp>' . $neto . '</ar:BaseImp>
-                        <ar:Importe>' . $IVA . '</ar:Importe>
+                        <ar:Id>5</ar:Id> <!--Codigo de IVA 21% -->
+                        <ar:BaseImp>' . $total_venta . '</ar:BaseImp> <!-- Importe Neto de la venta-->
+                        <ar:Importe>' .$IVA. '</ar:Importe> <!-- Importe del IVA 21% -->
                     </ar:AlicIva>                
             </ar:Iva>
             </ar:FECAEDetRequest>
@@ -654,15 +711,19 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
         //cambiamos el estado de la venta a Nota_Credito.
         $ventaModel->update($id_cabecera,['estado' => 'Nota_Credito']);
 
-		session()->setFlashdata('msg', 'Nota de Credito generada con Exito!');    
-    }else{ 
-     
-        //Si tiene una R en resultado redirecciona por rechazado
-        session()->setFlashdata('msgEr', 'No se pudo generar la Nota de Credito, Motivo: ' . $mensaje_error . '--Reintente');
-        return redirect()->to(base_url('compras'));
-    }
-          
-        //$this->generarTicketFacturaA($id_cabecera);
-        return redirect()->to(base_url('compras'));
+		return [
+                'estado'  => 'ok',
+                'id'      => $id_cabecera,
+                'mensaje' => 'Nota de crédito generada.'
+            ];
+
+            } else {
+
+                return [
+                    'estado'  => 'error',
+                    'id'      => $id_cabecera,
+                    'mensaje' => $mensaje_error
+                ];
+            }
     }
 }

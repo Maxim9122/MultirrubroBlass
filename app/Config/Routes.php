@@ -203,6 +203,11 @@ $routes->post('chat/enviar', 'Chat_Controller::enviar');
 $routes->get('chat/ultimo', 'Chat_Controller::ultimo');
 $routes->get('chat/nuevos', 'Chat_Controller::nuevos');       // Ver si hay mensajes nuevos
 $routes->post('chat/marcarLeido', 'Chat_Controller::marcarLeido'); 
+
+
+//URGENTE NOTAS CRED
+$routes->get('notas_credito', 'NotasDe_Creditos_controller::NotasCredito');
+
 /*
 	
 */
