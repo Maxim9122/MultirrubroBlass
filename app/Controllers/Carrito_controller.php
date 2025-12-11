@@ -1207,6 +1207,11 @@ public function ListCompraDetalle($id)
         //Si el perfil es vendedor guarda la compra con el estado Pendiente
         
         if($perfil == 2){ 
+             // ⚠️ Verificar si el carrito está vacío
+        if (!$cart || count($cart->contents()) == 0) {
+            session()->setFlashdata('msgEr', 'Evite registrar una misma venta muchas veces, no presione muchas veces el boton de registrar ni se apresure!');
+            return redirect()->to('catalogo');
+        }
         // Guardar cabecera de la venta tipo compra normal
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
