@@ -265,7 +265,6 @@ $resto_desc_pago_efec = 0;
                     <td>Precio</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
-                    <td>Sub.Tot. Efectivo(-5%)</td>
                     <td>Eliminar?</td>
                 </tr>
                 
@@ -318,11 +317,7 @@ $resto_desc_pago_efec = 0;
 
                         <td class="separador" style="color: #ffff;">
                         $ <?php echo number_format($item['subtotal'], 2, '.', ','); ?>
-                        </td>
-
-                        <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'] / $cd_efectivo, 2, '.', ','); ?>
-                        </td>
+                        </td>                      
 
                         <td class="imagenCarrito separador" style="color: #ffff;">
                             <?php // Imagen para Eliminar Item
@@ -488,12 +483,7 @@ $resto_desc_pago_efec = 0;
                                 <?php //Gran Total
                                 echo number_format($gran_total, 2);
                                 ?>
-                            </h4>
-                            <h4 class="totalVenta" style="margin-top:3px;">Total Con Descuento Efectivo: $
-                                <?php //Gran Total
-                                echo number_format($gran_total / $cd_efectivo, 2);
-                                ?>
-                            </h4>
+                            </h4>                            
                             <h4 class="totalVenta" style="margin-top:3px;">Total En Tarjeta: $
                                 <?php //Gran Total
                                 echo number_format($gran_total * 1.1, 2);
