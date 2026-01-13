@@ -263,7 +263,6 @@ $resto_desc_pago_efec = 0;
                     <td class="ocultar-en-movil">ID</td>
                     <td>Nombre</td>
                     <td>Precio</td>
-                    <td>Precio Efectivo(-5%)</td>
                     <td>Cantidad</td>
                     <td>Subtotal</td>
                     <td>Sub.Tot. Efectivo(-5%)</td>
@@ -293,11 +292,7 @@ $resto_desc_pago_efec = 0;
 
                         <td class="separador"  style="color: #ffff;">
                         $ <?php  echo number_format($item['price'], 2, '.', ',');?>
-                        </td>
-
-                        <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'] / $cd_efectivo, 2, '.', ',');?>
-                        </td>     
+                        </td>                         
 
                         <td class="separador" style="color: #ffff;">
                         <?php 

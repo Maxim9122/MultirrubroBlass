@@ -313,7 +313,6 @@ function cerrarMensaje() {
       <tr class="colorTexto2">
          <th>Nombre</th>
          <th>Precio Venta</th>
-         <th>Precio Efectivo(-5%)</th>
          <th class="ocultar-en-movil">Categoría</th>
          <th>Imagen</th>
          <th>Stock</th>
@@ -327,7 +326,6 @@ function cerrarMensaje() {
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
          <td>$ <?php echo number_format($prod['precio_vta'], 2, '.', ','); ?></td>
-         <td>$ <?php echo number_format($prod['precio_vta'] / $cd_efectivo, 2, '.', ','); ?></td>
          <?php 
          $categoria_nombre = 'Desconocida';
          foreach ($categorias as $categoria) {
