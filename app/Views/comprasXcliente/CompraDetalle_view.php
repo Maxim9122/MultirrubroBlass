@@ -74,6 +74,7 @@ $vta_num = 0;
     <thead>
       <tr>
           <th>Nro Factura</th>
+          <th>Tipo Factura</th>
           <th>CAE</th>
           <th>Vencimiento CAE</th>
       </tr>
@@ -81,6 +82,7 @@ $vta_num = 0;
     <tbody>
       <tr>
           <td><?php echo $vta['id_cae']; ?></td>
+          <td><?php echo $vta['tipo_factura']; ?></td>
           <td><?php echo $vta['cae']; ?></td>                   
           <td><?php echo $VTO_CAE; ?></td>
       </tr>

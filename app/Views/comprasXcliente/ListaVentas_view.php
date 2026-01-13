@@ -19,7 +19,7 @@
     <script>
         setTimeout(function() {
             document.getElementById('flash-message').style.display = 'none';
-        }, 3000); // 3000 milisegundos = 3 segundos
+        }, 5000); // 3000 milisegundos = 3 segundos
 
         function cerrarMensaje() {
         document.getElementById("flash-message-Error").style.display = "none";
@@ -120,6 +120,8 @@
                     echo 'green';
                 } elseif ($vta['estado'] == 'Modificada_SF') {
                     echo 'orange';
+                } elseif ($vta['estado'] == 'Nota_Credito') {
+                    echo 'red';
                 } else {
                     echo 'transparent'; // Fondo transparente si no coincide con ninguna condición
                 }
@@ -134,6 +136,8 @@
                     echo 'green';
                 } elseif ($vta['estado'] == 'Modificada_SF') {
                     echo 'orange';
+                } elseif ($vta['estado'] == 'Nota_Credito') {
+                    echo 'red';
                 } else {
                     echo 'transparent'; // Fondo transparente si no coincide con ninguna condición
                 }
@@ -152,9 +156,32 @@
             </li>
             <li>
                 <?php if($vta['estado'] == 'Facturada'){?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
-                        Imp.Factura
+                    <?php if($vta['tipo_factura'] == 'A') {?>
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaA/'.$vta['id']); ?>">
+                        ImpFact_A
                     </a>
+                    <?php }else if($vta['tipo_factura'] == 'B') {?>
+                        <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaB/'.$vta['id']); ?>">
+                        ImpFact_B
+                        </a>
+                    <?php }?>
+            </li>
+            <li>
+                <?php if($vta['tipo_factura'] == 'A') { ?>
+                    <a onclick="return confirmarNotaCredito(event, this)" 
+                    class="btnDesplegable" 
+                    style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" 
+                    href="<?php echo base_url('NotaCredito/'.$vta['id']); ?>">
+                        NotaCred_A
+                    </a>
+                <?php } else if($vta['tipo_factura'] == 'B') { ?>
+                    <a onclick="return confirmarNotaCredito(event, this)" 
+                    class="btnDesplegable" 
+                    style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" 
+                    href="<?php echo base_url('NotaCredito/'.$vta['id']); ?>">
+                        NotaCred_B
+                    </a>
+                <?php } ?>
             </li>
             <li>      
                 <?php  } if($vta['estado'] == 'Sin_Facturar' || $vta['estado'] == 'Modificada_SF'){  ?>
@@ -180,7 +207,7 @@
                 <?php  } ?>
             <li>      
                 <?php } if($vta['estado'] == 'Error_factura') { ?>
-                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('verificarTA/'.$vta['id']); ?>">
+                    <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('cargarVenta/'.$vta['id']); ?>">
                         Re.Facturar
                     </a>
                 <?php } ?> 
@@ -190,7 +217,7 @@
 
               </td>
               <?php 
-                if ($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Cancelado' && $vta['estado'] != 'Modificada_SF') { 
+                if ($vta['estado'] != 'Error_factura' && $vta['estado'] != 'Nota_Credito' && $vta['estado'] != 'Cancelado' && $vta['estado'] != 'Modificada_SF') { 
                     $TotalRecaudado += $vta['total_bonificado']; 
                 } 
 
@@ -627,6 +654,32 @@ window.onclick = function(event) {
   });
 
   const formattedDate = formatter.format(today).split('/').reverse().join('-'); // Formato YYYY-MM-DD
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function confirmarNotaCredito(event, link) {
+    event.preventDefault(); // Bloquea SIEMPRE el click
+    const url = link.getAttribute('href');
+
+    Swal.fire({
+        title: "¿Generar Nota de Crédito?",
+        text: "Se creará una Nota de Crédito para esta factura.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, continuar",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url; 
+        }
+    });
+
+    return false; // Garantiza que NO navegue por su cuenta
+}
 </script>
 
 

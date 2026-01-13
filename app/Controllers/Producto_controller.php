@@ -163,57 +163,157 @@ class Producto_controller extends Controller{
 
     
 
-	public function ProductoValidation() {
-        $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
-        $input = $this->validate([
-            'codigo_barra' => 'is_unique[productos.codigo_barra]',
-            'nombre'   => 'required|min_length[3]',          
-            'categoria_id' => 'required|min_length[1]|max_length[20]',
-            'precio'    => 'required|min_length[2]|max_length[10]',
-            'precio_vta'  => 'required|min_length[2]',
-            'stock'     => 'required|min_length[1]|max_length[10]',
-            'stock_min'     => 'required|min_length[1]|max_length[10]',
-            
+public function ProductoValidation()
+    {
+    $session = session();
+
+    // Verificar sesión
+    if (!$session->has('id')) { 
+        return redirect()->to(base_url('login'));
+    }
+    
+    // ---------------------------------------------
+    // VALIDACIÓN dinámica del código de barras
+    // ---------------------------------------------
+    $reglas = [
+        'nombre'       => 'required|min_length[3]|is_unique[productos.nombre]',
+        'categoria_id' => 'required|min_length[1]|max_length[20]',
+        'precio'       => 'required|min_length[2]|max_length[10]',
+        'precio_vta'   => 'required|min_length[2]',
+        'stock'        => 'required|min_length[1]|max_length[10]',
+        'stock_mb2'    => 'required|min_length[1]|max_length[10]',
+        //'stock_mb3'    => 'required|min_length[1]|max_length[10]',
+        'stock_min'    => 'required|min_length[1]|max_length[10]',
+    ];
+
+    $codigoBarra = $this->request->getVar('codigo_barra');
+
+    // Si el código de barras tiene 7 dígitos o más → aplicar is_unique
+    if (strlen($codigoBarra) >= 7) {
+        $reglas['codigo_barra'] = 'is_unique[productos.codigo_barra]';
+    }
+
+    // Ejecutar validación
+    if (!$this->validate($reglas)) {
+    // redirijo atrás guardando los datos del formulario en session (old())
+    return redirect()->back()->withInput();
+    }
+
+    // ---------------------------------------------
+    // SUBIR IMAGEN LOCAL
+    // ---------------------------------------------
+    $img = $this->request->getFile('imagen');
+    $nombre_aleatorio = $img->getRandomName();
+
+    $img->move(ROOTPATH . 'assets/uploads', $nombre_aleatorio);
+
+    // ---------------------------------------------
+    // GUARDAR PRODUCTO LOCAL
+    // ---------------------------------------------
+    $ProductoModel = new Productos_model();
+
+    $ProductoModel->save([
+        'nombre'        => $this->request->getVar('nombre'),
+        'descripcion'   => $this->request->getVar('descripcion'),
+        'imagen'        => $nombre_aleatorio,
+        'categoria_id'  => $this->request->getVar('categoria_id'),
+        'precio'        => $this->request->getVar('precio'),
+        'precio_vta'    => $this->request->getVar('precio_vta'),
+        'stock'         => $this->request->getVar('stock'),
+        'stock_min'     => $this->request->getVar('stock_min'),
+        'codigo_barra'  => $codigoBarra,
+        'eliminado'     => 'NO',
+    ]);
+
+    $localIndependencia = $this->request->getPost('local_independencia');
+    //$localTercero = $this->request->getPost('local_tercero');
+    
+    If($localIndependencia == 1){ 
+    // ---------------------------------------------
+    // REVISAR SI YA EXISTE EN HOSTINGER
+    // ---------------------------------------------
+    //print_r($localIndependencia);exit;
+    $ProductoExt = new \App\Models\MB2_model();
+
+    $codigoBarra = $this->request->getVar('codigo_barra');
+    $nombreProd  = $this->request->getVar('nombre');
+
+    // FILTRO INTELIGENTE PARA HOSTINGER
+    if (strlen($codigoBarra) > 6) {
+        // Código válido → buscar por código o por nombre
+        $existeExt = $ProductoExt
+                        ->where('codigo_barra', $codigoBarra)
+                        ->orWhere('nombre', $nombreProd)
+                        ->first();
+    } else {
+        // Código corto → ignorar código, buscar solo por nombre
+        $existeExt = $ProductoExt
+                        ->where('nombre', $nombreProd)
+                        ->first();
+    }
+
+    // ---------------------------------------------
+    // INSERTAR PRODUCTO EN HOSTINGER (solo si no existe)
+    // ---------------------------------------------
+    if (!$existeExt) {
+
+        // GUARDAR PRODUCTO EN HOSTINGER MB2
+        $ProductoExt->save([
+            'nombre'        => $this->request->getVar('nombre'),
+            'descripcion'   => $this->request->getVar('descripcion'),
+            'imagen'        => $nombre_aleatorio,
+            'categoria_id'  => $this->request->getVar('categoria_id'),
+            'precio'        => $this->request->getVar('precio'),
+            'precio_vta'    => $this->request->getVar('precio_vta'),
+            'stock'         => $this->request->getVar('stock_mb2'), //Stock para MB2
+            'stock_min'     => $this->request->getVar('stock_min'),
+            'codigo_barra'  => $codigoBarra,
+            'eliminado'     => 'NO'
         ]);
-        $ProductoModel = new Productos_model();
-        
-        if (!$input) {
-            $Model = new categoria_model();
-            $eliminado = 'NO';
-            $data['categorias']= $Model->getProdBaja($eliminado);//trae la categoria del db
-            
-            $data['titulo']='Nuevo Producto'; 
-               echo view('navbar/navbar');
-               echo view('header/header',$data);
-                echo view('admin/nuevoProducto_view',['validation' => $this->validator]);
-                echo view('footer/footer');
-        } else {
 
-        	$img = $this->request->getFile('imagen');
-        	$nombre_aleatorio= $img->getRandomName();
-        	$img->move(ROOTPATH.'assets/uploads',$nombre_aleatorio);
+        // ---------------------------------------------
+        // SUBIR IMAGEN A HOSTINGER SOLO SI EL PRODUCTO NO EXISTÍA
+        // ---------------------------------------------
+        $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
 
-            $ProductoModel->save([
-                'nombre' => $this->request->getVar('nombre'),
-                'descripcion' => $this->request->getVar('descripcion'),
-                'imagen' => $img->getName(),
-                'categoria_id' => $this->request->getVar('categoria_id'),
-                'precio' => $this->request->getVar('precio'),
-                'precio_vta'  => $this->request->getVar('precio_vta'),
-                'stock' => $this->request->getVar('stock'),
-                'stock_min' => $this->request->getVar('stock_min'),
-                'codigo_barra' => $this->request->getVar('codigo_barra'),
-                'eliminado' => 'NO',
-                
-            ]);  
-            session()->setFlashdata('msg','Producto Creado con Éxito!');
-             return redirect()->to(base_url('nuevoProducto'));
+        if (file_exists($rutaLocal)) {
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://multirrubroblass2.shop/api/upload-image",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => [
+                    'imagen' => new \CURLFile($rutaLocal)
+                ]
+            ]);
+
+            $response = curl_exec($curl);
+            $curlError = curl_error($curl);
+            curl_close($curl);
+
+            if ($curlError) {
+                session()->setFlashdata(
+                    'msg',
+                    'Producto creado localmente y en Hostinger, pero NO se pudo subir la imagen remotamente.'
+                );
+                return redirect()->to(base_url('nuevoProducto'));
+            }
         }
     }
+    }
+
+    // ---------------------------------------------
+    // FINAL
+    // ---------------------------------------------
+    session()->setFlashdata('msg', 'Producto creado con éxito en ambos ambientes (si correspondía) + imagen sincronizada.');
+    return redirect()->to(base_url('nuevoProducto'));
+    }
+
+
+
+
     // verifica los datos de la categoria nueva
     public function categoriaValidation() {
         $session = session();

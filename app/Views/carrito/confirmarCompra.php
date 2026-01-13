@@ -181,7 +181,7 @@ endif;
             <?php if ($perfil == 3): ?><!-- Filtro cajero-->
 
                 <tr>
-                <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente:</strong></td>
+                <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente (CUIT):</strong></td>
                 <td>
                     <?php if ($clientes): ?>
                         <select name="cliente_id" class="selector">
@@ -236,7 +236,7 @@ endif;
                 </tr>
                 
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-5%):</strong></td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo:</strong></td>
                     <td>
                         <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
                     </td>
@@ -281,6 +281,20 @@ endif;
                 </tr>   
                 
                 <?php if ($estado == 'Cobrando') {  ?>
+                <tr>
+                    <td style="color: rgb(192, 250, 214);">
+                        <strong>
+                            <label style="color: rgb(192, 250, 214);">
+                                Ver IVA (Factura A)
+                                <input type="checkbox" id="mostrarTotalIVA" style="transform: scale(1.2); margin-right: 8px;">                                
+                            </label>
+                        </strong>
+                    </td>
+                    <td>
+                        <span id="totalConIVA" style="color: yellow; font-weight: bold;"> - </span>
+                    </td>
+                </tr>
+
                 <tr>
                 <td style="color: rgb(192, 250, 214);"><strong>Con Envío:</strong></td>
                 <td>
@@ -640,23 +654,39 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 <div id="confirmationModalPerfil3" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <p>¿Desea facturar (Factura tipo C) o solo imprimir ticket?</p>
-        <button id="invoiceArca" class="btn">Facturar C (Arca)</button>
+        <p>¿Desea facturar o solo imprimir ticket?</p>
+
+        <button id="invoiceArca_A" class="btn">Factura A (Arca)</button>
         <br><br>
+
+        <button id="invoiceArca_B" class="btn">Factura B (Arca)</button>
+        <br><br>
+
         <button id="printTicket" class="btn">Imprimir Presupuesto</button>
-
     </div>
 </div>
 
-<!-- Segundo modal (Confirmación de facturación) -->
-<div id="confirmationFacturaModal" class="modal">
+<!-- Modal confirmación Factura A -->
+<div id="confirmationFacturaModal_A" class="modal">
     <div class="modal-content">
-        <span class="closeFactura">&times;</span>
-        <p>¿Estás seguro de que deseas FACTURAR.? (Factura tipo C)</p>
-        <button id="confirmFactura" class="btn">Sí, Facturar</button>
-        <button id="cancelFactura" class="btn danger">Cancelar</button>
+        <span class="closeFacturaA">&times;</span>
+        <p>¿Estás seguro de que deseas FACTURAR? (Factura tipo A)</p>
+        <p>RECUERDE SELECCIONAR UN CUIT VALIDO PARA FACTURA A.!</p>
+        <button id="confirmFactura_A" class="btn">Sí, Facturar</button>
+        <button id="cancelFactura_A" class="btn danger">Cancelar</button>
     </div>
 </div>
+
+<!-- Modal confirmación Factura B -->
+<div id="confirmationFacturaModal_B" class="modal">
+    <div class="modal-content">
+        <span class="closeFacturaB">&times;</span>
+        <p>¿Estás seguro de que deseas FACTURAR? (Factura tipo B)</p>
+        <button id="confirmFactura_B" class="btn">Sí, Facturar</button>
+        <button id="cancelFactura_B" class="btn danger">Cancelar</button>
+    </div>
+</div>
+
 
 
 
@@ -786,20 +816,34 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
 
 <!-- Script para el manejo del modal del Cajero (perfil 3)-->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
+    // Modales
     const modalConfirmacionPerfil3 = document.getElementById("confirmationModalPerfil3");
-    const modalFactura = document.getElementById("confirmationFacturaModal");
-    const btnConfirmarPerfil3 = document.querySelector("input[name='confirmarPerfil3']");
-    const btnInvoiceArca = document.getElementById("invoiceArca");
-    const btnPrintTicket = document.getElementById("printTicket");
-    const spanClosePerfil3 = document.getElementsByClassName("close")[0];
+    const modalFactura_A = document.getElementById("confirmationFacturaModal_A");
+    const modalFactura_B = document.getElementById("confirmationFacturaModal_B");
 
-    const spanCloseFactura = document.getElementsByClassName("closeFactura")[0];
-    const btnConfirmFactura = document.getElementById("confirmFactura");
-    const btnCancelFactura = document.getElementById("cancelFactura");
+    // Botones principales
+    const btnConfirmarPerfil3 = document.querySelector("input[name='confirmarPerfil3']");
+    const btnInvoiceArca_A = document.getElementById("invoiceArca_A");
+    const btnInvoiceArca_B = document.getElementById("invoiceArca_B");
+    const btnPrintTicket = document.getElementById("printTicket");
+
+    // Cierres
+    const spanClosePerfil3 = document.getElementsByClassName("close")[0];
+    const spanCloseFacturaA = document.getElementsByClassName("closeFacturaA")[0];
+    const spanCloseFacturaB = document.getElementsByClassName("closeFacturaB")[0];
+
+    // Botones de confirmación y cancelación
+    const btnConfirmFactura_A = document.getElementById("confirmFactura_A");
+    const btnCancelFactura_A = document.getElementById("cancelFactura_A");
+
+    const btnConfirmFactura_B = document.getElementById("confirmFactura_B");
+    const btnCancelFactura_B = document.getElementById("cancelFactura_B");
+
+    // Campo oculto
     const tipoProcesoInput = document.querySelector("input[name='tipo_proceso']");
 
-
+    // Funciones de apertura/cierre
     function abrirModal(modal) {
         modal.style.display = "block";
         setTimeout(() => modal.classList.add("show"), 10);
@@ -810,67 +854,79 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         setTimeout(() => modal.style.display = "none", 300);
     }
 
+    // Abrir modal principal
     btnConfirmarPerfil3.addEventListener("click", function (event) {
         event.preventDefault();
         abrirModal(modalConfirmacionPerfil3);
-
     });
 
-    btnInvoiceArca.addEventListener("click", function (event) {
+    // Selección Factura A
+    btnInvoiceArca_A.addEventListener("click", function (event) {
+        //event.preventDefault();
+        //cerrarModal(modalConfirmacionPerfil3);
+        //setTimeout(() => abrirModal(modalFactura_A), 300);
+    });
+
+    // Selección Factura B
+    btnInvoiceArca_B.addEventListener("click", function (event) {
         event.preventDefault();
-
         cerrarModal(modalConfirmacionPerfil3);
-
-        setTimeout(() => abrirModal(modalFactura), 300);
+        setTimeout(() => abrirModal(modalFactura_B), 300);
     });
 
+    // Imprimir ticket directo
     btnPrintTicket.addEventListener("click", function () {
         tipoProcesoInput.value = "ticket";
         document.querySelector("form").submit();
     });
 
-    btnConfirmFactura.addEventListener("click", function () {
-        tipoProcesoInput.value = "factura";
+    // Confirmar Factura A
+    btnConfirmFactura_A.addEventListener("click", function () {
+        tipoProcesoInput.value = "facturaA";
         document.querySelector("form").submit();
     });
 
-    btnCancelFactura.addEventListener("click", function () {
-        cerrarModal(modalFactura);
+    // Confirmar Factura B
+    btnConfirmFactura_B.addEventListener("click", function () {
+        tipoProcesoInput.value = "facturaB";
+        document.querySelector("form").submit();
+    });
 
+    // Cancelar Factura A
+    btnCancelFactura_A.addEventListener("click", function () {
+        cerrarModal(modalFactura_A);
         setTimeout(() => abrirModal(modalConfirmacionPerfil3), 300);
     });
 
-    spanClosePerfil3.addEventListener("click", function () {
-        cerrarModal(modalConfirmacionPerfil3);
-
+    // Cancelar Factura B
+    btnCancelFactura_B.addEventListener("click", function () {
+        cerrarModal(modalFactura_B);
+        setTimeout(() => abrirModal(modalConfirmacionPerfil3), 300);
     });
 
-    spanCloseFactura.addEventListener("click", function () {
-        cerrarModal(modalFactura);
-    });
+    // Cierres por íconos (X)
+    spanClosePerfil3.addEventListener("click", () => cerrarModal(modalConfirmacionPerfil3));
+    spanCloseFacturaA.addEventListener("click", () => cerrarModal(modalFactura_A));
+    spanCloseFacturaB.addEventListener("click", () => cerrarModal(modalFactura_B));
 
+    // Clic fuera del modal
     window.addEventListener("click", function (event) {
-
-        if (event.target == modalConfirmacionPerfil3) {
-            cerrarModal(modalConfirmacionPerfil3);
-
-        }
-        if (event.target == modalFactura) {
-            cerrarModal(modalFactura);
-        }
+        if (event.target === modalConfirmacionPerfil3) cerrarModal(modalConfirmacionPerfil3);
+        if (event.target === modalFactura_A) cerrarModal(modalFactura_A);
+        if (event.target === modalFactura_B) cerrarModal(modalFactura_B);
     });
 
+    // Escape cierra los modales
     window.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
-
             cerrarModal(modalConfirmacionPerfil3);
-
-            cerrarModal(modalFactura);
+            cerrarModal(modalFactura_A);
+            cerrarModal(modalFactura_B);
         }
     });
 });
-
 </script>
+
 
 
 <style>
@@ -990,4 +1046,104 @@ window.onclick = function(event) {
         cerrarModal();
     }
 };
+</script>
+
+<!-- SCRIPT PARA CALCULO DE IVA EN PANTALLA-->
+ <script>
+// ---------- Helpers de parseo ----------
+function parseFormattedNumber(str) {
+    // Recibe strings como "1.234,56" o "$1.234,56" o "1234.56" y devuelve Number
+    if (!str && str !== 0) return 0;
+    // Quitar signo $ y espacios
+    str = String(str).trim().replace(/\$/g, '').replace(/\s/g,'');
+    // Si usa coma como decimal (de-DE): "1.234,56"
+    // Primero detectar si tiene coma y punto
+    if (str.indexOf(',') !== -1 && str.indexOf('.') !== -1) {
+        // Asumimos formato "1.234,56" => quitar puntos y cambiar coma por punto
+        str = str.replace(/\./g, '').replace(',', '.');
+    } else if (str.indexOf(',') !== -1 && str.indexOf('.') === -1) {
+        // "1234,56" -> cambiar coma por punto
+        str = str.replace(',', '.');
+    } else {
+        // "1234.56" o "1234" -> nada
+        str = str.replace(/,/g, ''); // por si usaron coma mal
+    }
+    const n = parseFloat(str);
+    return isNaN(n) ? 0 : n;
+}
+
+function readSpanValor(id) {
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    return parseFormattedNumber(el.textContent || el.innerText || '');
+}
+
+function readInputValor(id) {
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    return parseFormattedNumber(el.value || el.getAttribute('value') || '');
+}
+
+// ---------- Recalcular total con IVA (usa el span de tarjeta con +10%) ----------
+function calcularTotalConIVA() {
+    const incluirIVA = document.getElementById('mostrarTotalIVA') && document.getElementById('mostrarTotalIVA').checked;
+    const pagoTransferencia = readInputValor('pagoTransferencia'); // input transferencia
+    // Leer el monto CON +10% desde el span (montoTarjetaCreditoAdvertencia)
+    const pagoTarjetaCon10 = readSpanValor('montoTarjetaCreditoAdvertencia'); // <- importante
+    const pagoEfectivo = readInputValor('pagoEfectivo'); // ojo: este campo está formateado, lo parseamos
+
+    const totalPagos = pagoTransferencia + pagoTarjetaCon10 + pagoEfectivo;
+    const spanTotal = document.getElementById('totalConIVA');
+
+    if (!spanTotal) return;
+
+    if (!incluirIVA) {
+        spanTotal.textContent = '-';
+        return;
+    }
+
+    const totalFinal = totalPagos * 0.21; // aplicar IVA 21% solo muestra el IVA
+    spanTotal.textContent = `$${totalFinal.toLocaleString('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`;
+}
+
+// ---------- Integración con eventos ----------
+// Asegurate que el checkbox exista antes de agregar listeners
+document.addEventListener('DOMContentLoaded', function () {
+    const checkbox = document.getElementById('mostrarTotalIVA');
+    if (checkbox) {
+        checkbox.addEventListener('change', calcularTotalConIVA);
+    }
+
+    // Inputs que afectan el cálculo
+    const ids = ['pagoTransferencia', 'pagoTarjetaCredito', 'pagoEfectivo'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function () {
+            // Si cambió el input tarjeta, es probable que la función
+            // calcularMontoEfectivo() también actualice el span montoTarjetaCreditoAdvertencia.
+            // Llamamos a calcularMontoEfectivo si existe, para mantener consistencia.
+            if (typeof calcularMontoEfectivo === 'function') {
+                try { calcularMontoEfectivo(); } catch(e){ /* ignore */ }
+            } else {
+                // Si no existe calcularMontoEfectivo, al menos recalculamos el total con lo que haya.
+                calcularTotalConIVA();
+            }
+        });
+    });
+
+    // También recalcular al cargar la página
+    calcularTotalConIVA();
+});
+
+// ---------- IMPORTANTE ----------
+// Llamá a calcularTotalConIVA() desde el final de calcularMontoEfectivo()
+// para que cuando el span (montoTarjetaCreditoAdvertencia) se actualice, el total se actualice también.
+// Ejemplo (al final de tu función calcularMontoEfectivo()):
+//    document.getElementById('montoTarjetaCreditoAdvertencia').textContent = `$${...}`;
+//    calcularTotalConIVA();
+
 </script>
