@@ -236,7 +236,7 @@ endif;
                 </tr>
                 
                 <tr>
-                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo (-5%):</strong></td>
+                    <td style="color: rgb(192, 250, 214);"><strong>Monto en Efectivo:</strong></td>
                     <td>
                         <input class="selector" type="text" id="pagoEfectivo" name="pagoEfectivo" placeholder="Monto en $" maxlength="15" readonly>
                     </td>

@@ -356,9 +356,9 @@ $resto_desc_pago_efec = 0;
                                     <?php
                                     echo number_format($pago_efec, 2 , '.', ',');
                                     ?>
-                                    (Equivale a $ <?php //Gran Total
+                                    <!-- (Equivale a $ <?php //Gran Total
                                     echo number_format(($pago_efec * $cd_efectivo), 2 , '.', ',');
-                                    ?>)                    
+                                    ?>) -->                    
                                 </h4>
                                 <h4 class="total_ant_pagos"> Pago Transferencia: $
                                     <?php
@@ -393,7 +393,7 @@ $resto_desc_pago_efec = 0;
                                 <label style="color:orange;" for="tipo_pago">Paga la Diferencia Con:</label>
                                 <select class="total_ant" id="tipo_pago" name="tipo_pago_dif" onchange="calcularDiferencia()">
                                     <option value="Transferencia">Transferencia</option>
-                                    <option value="Efectivo">Efectivo (Descuento)</option>
+                                    <option value="Efectivo">Efectivo</option>
                                     <option value="Tarjeta">Tarjeta (+10% Adicional)</option>
                                 </select> 
                           <?php  } ?>         

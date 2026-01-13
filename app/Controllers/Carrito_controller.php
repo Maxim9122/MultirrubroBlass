@@ -1446,13 +1446,13 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
                 <?php endforeach; ?>            
             </div>
 
-            <!-- Totales -->
+            <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento: 
             <?= ($cabecera['tipo_pago'] == 'Efectivo' || $cabecera['tipo_pago'] == 'Mixto') 
                 ? '$' . number_format(($cabecera['monto_efectivo'] * $cd_efectivo) - $cabecera['monto_efectivo'], 2) 
                 : '$0.00' ?>
-            </p>
+            </p> -->
             <p>Adicional por Tarjeta: 
             <?= ($cabecera['tipo_pago'] == 'Tarjeta' || $cabecera['tipo_pago'] == 'Mixto') 
                 ? '$' . number_format($cabecera['monto_tarjetaC'] - ($cabecera['monto_tarjetaC'] / 1.1), 2) 
@@ -2077,7 +2077,7 @@ public function generarTicketFacturaA($id_cabecera)
                 <?php endforeach; ?>            
             </div>
 
-            <!-- Totales -->
+            <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento:
             <?php
@@ -2088,7 +2088,7 @@ public function generarTicketFacturaA($id_cabecera)
                 echo '$0.00';
             }
             ?>
-            </p>
+            </p> -->
 
             <p>Adicional por Tarjeta:
             <?php
@@ -2560,7 +2560,7 @@ public function generarTicketFacturaB($id_cabecera)
                 <?php endforeach; ?>            
             </div>
 
-            <!-- Totales -->
+            <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
             <p>Descuento:
             <?php
@@ -2571,7 +2571,7 @@ public function generarTicketFacturaB($id_cabecera)
                 echo '$0.00';
             }
             ?>
-            </p>
+            </p> -->
 
             <p>Adicional por Tarjeta:
             <?php
