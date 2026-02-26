@@ -134,6 +134,9 @@ $routes->get('/eliminadosCateg', 'Producto_controller::ListaCategElim');
 $routes->get('/habilitarCateg/(:num)', 'Producto_controller::habilitarCateg/$1');
 $routes->get('/StockBajo', 'Producto_controller::ProductosStockBajo');
 
+$routes->post('producto/getTiposPrecio', 'Producto_controller::getTiposPrecio');
+$routes->post('producto/updateTiposPrecio', 'Producto_controller::updateTiposPrecio');
+$routes->post('producto/getPrecioPromo', 'Producto_controller::getPrecioPromo');
 
 
 

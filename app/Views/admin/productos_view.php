@@ -293,7 +293,15 @@
                     <input type="number" step="0.01" name="precio_vta" value="<?php echo $prod['precio_vta']; ?>" 
                         class="form-control form-control-sm d-inline" style="width: 110px; text-align:center;">
                     <input type="hidden" name="id_prod" value="<?php echo $prod['id']; ?>">
+                    
+                       <button type="button"
+                            class="btn-tipos-precio"
+                            data-id="<?= $prod['id']; ?>">
+                        P
+                    </button>
+                   
             </td>
+  
              <?php 
              $categoria_nombre = 'Desconocida';
              foreach ($categorias as $categoria) {
@@ -363,6 +371,183 @@
 <div class="paginacion-productos">
     <?= $pager->links() ?>
 </div>
+
+<!-- ================= MODAL TIPOS DE PRECIO ================= -->
+<div id="modalTiposPrecio" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999;">
+
+    <div style="
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        background:#fff;
+        width:650px;
+        border-radius:10px;
+        padding:20px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    ">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">Editar Tipos de Precio</h3>
+            <span id="cerrarModal" style="cursor:pointer; font-size:22px; font-weight:bold;">&times;</span>
+        </div>
+
+        <form id="formTiposPrecio">
+
+            <input type="hidden" id="producto_id_hidden" name="producto_id">
+
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th style="border:1px solid #ddd; padding:8px;">Nombre</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Precio</th>
+                        <th style="border:1px solid #ddd; padding:8px;">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody id="contenidoTiposPrecio"></tbody>
+            </table>
+
+            <div style="text-align:right; margin-top:15px;">
+                <button type="submit" style="
+                    padding:8px 15px;
+                    background:#28a745;
+                    color:white;
+                    border:none;
+                    border-radius:5px;
+                    cursor:pointer;
+                ">
+                    Guardar Cambios
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+<!-- ========================================================== -->
+ <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const modal = document.getElementById("modalTiposPrecio");
+    const cerrar = document.getElementById("cerrarModal");
+    const tbody = document.getElementById("contenidoTiposPrecio");
+    const form = document.getElementById("formTiposPrecio");
+    const productoHidden = document.getElementById("producto_id_hidden");
+
+    // ABRIR MODAL
+    document.querySelectorAll(".btn-tipos-precio").forEach(function(boton){
+
+        boton.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+            let idProd = this.getAttribute("data-id");
+            productoHidden.value = idProd;
+
+            fetch("<?= base_url('producto/getTiposPrecio'); ?>", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "id_prod=" + idProd
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                tbody.innerHTML = "";
+
+                if(data.length > 0){
+
+                    data.forEach(function(item){
+
+                        tbody.innerHTML += `
+                        <tr>
+                            <td style="border:1px solid #ddd; padding:8px;">
+                                ${item.nom_precio}
+                                <input type="hidden" name="ids[]" value="${item.id ?? ''}">
+                                <input type="hidden" name="nombres[]" value="${item.nom_precio}">
+                            </td>
+
+                            <td style="border:1px solid #ddd; padding:8px;">
+                                <input type="number"
+                                       step="0.01"
+                                       name="precios[]"
+                                       value="${item.precio ?? ''}"
+                                       style="width:100%;">
+                            </td>
+
+                            <td style="border:1px solid #ddd; padding:8px;">
+                                <input type="number"
+                                       name="cantidades[]"
+                                       value="${item.cantidad ?? ''}"
+                                       style="width:100%;">
+                            </td>
+                        </tr>
+                        `;
+                    });
+
+                } else {
+
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3" style="padding:10px;">
+                                No hay tipos de precio
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                modal.style.display = "block";
+
+            });
+
+        });
+
+    });
+
+    // GUARDAR CAMBIOS
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        fetch("<?= base_url('producto/updateTiposPrecio'); ?>", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if(data.status === "ok"){
+                alert("Precios actualizados correctamente");
+                modal.style.display = "none";
+            } else {
+                alert("Error al actualizar");
+            }
+
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Error en la petición");
+        });
+
+    });
+
+    // CERRAR CON X
+    cerrar.addEventListener("click", function(){
+        modal.style.display = "none";
+    });
+
+    // CERRAR HACIENDO CLICK AFUERA
+    modal.addEventListener("click", function(e){
+        if(e.target === modal){
+            modal.style.display = "none";
+        }
+    });
+
+});
+</script>
 
 <script src="<?php echo base_url('./assets/js/jquery-3.5.1.slim.min.js');?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url('./assets/css/jquery.dataTables.min.css');?>">

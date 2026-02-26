@@ -166,7 +166,35 @@ tbody td {
     }
 }
 
+.selector-precio {
+    max-width: 170px;
+    padding: 3px 5px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
 
+/* Hover */
+.selector-precio:hover {
+    border-color: #4CAF50;
+    background-color: #ffffff;
+}
+
+/* Focus */
+.selector-precio:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Opciones */
+.selector-precio option {
+    font-weight: 500;
+}
 
 </style>
 <script>
@@ -178,27 +206,26 @@ tbody td {
     }, 1000); // Se oculta después de 1.5 segundos
 </script>
 
-<?php if (session()->getFlashdata('msg')): ?>
-        <div id="flash-message" class="flash-message success">
-            <?= session()->getFlashdata('msg') ?>
-        </div>
-    <?php endif; ?>   
-    <script>
-        setTimeout(function() {
-            document.getElementById('flash-message').style.display = 'none';
-        }, 1000); // 1000 milisegundos = 1 segundos
-    </script>
 
-<?php if (session("msgEr")): ?>
-    <div id="flash-message-Error" class="flash-message danger">
-        <?php echo session("msgEr"); ?>
-        <button class="close-btn" onclick="cerrarMensaje()">×</button>
-    </div>
-<?php endif; ?>
 <script>
-function cerrarMensaje() {
-    document.getElementById("flash-message-Error").style.display = "none";
-}
+    function cerrarMensaje() {
+        document.getElementById("flash-message-Error").style.display = "none";
+    }
+    // Ocultar mensaje de éxito después de 3 segundos
+    setTimeout(function() {
+        const successMessage = document.getElementById('flash-message-success');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 3000);
+
+    // Ocultar mensaje de error después de 3 segundos
+    setTimeout(function() {
+        const errorMessage = document.getElementById('flash-message-danger');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 3000);
 </script>
 
 
@@ -325,7 +352,39 @@ function cerrarMensaje() {
       <?php foreach($productos as $prod): ?>
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
-         <td>$ <?php echo number_format($prod['precio_vta'], 2, '.', ','); ?></td>
+ <td>
+
+   <select class="selector-precio"
+        data-id="<?= $prod['id']; ?>"
+        data-precio-normal="<?= $prod['precio_vta']; ?>"
+        data-stock-normal="<?= $prod['stock']; ?>">
+
+    <!-- Precio normal -->
+    <option value="normal"
+            data-precio="<?= $prod['precio_vta']; ?>"
+            data-cantidad="<?= $prod['stock']; ?>">
+        Normal
+    </option>
+
+    <!-- Tipos de precio -->
+    <?php if(isset($tipos[$prod['id']])): ?>
+        <?php foreach($tipos[$prod['id']] as $tipo): ?>
+            <option value="<?= $tipo['nom_precio']; ?>"
+                    data-precio="<?= $tipo['precio']; ?>"
+                    data-cantidad="<?= $tipo['cantidad']; ?>">
+                <?= $tipo['nom_precio']; ?> (<?= $tipo['cantidad']; ?>)
+            </option>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+</select>
+
+    <div id="precio_mostrar_<?= $prod['id']; ?>" 
+         class="precio-dinamico">
+        $ <?= number_format($prod['precio_vta'], 2, '.', ','); ?>
+    </div>
+
+</td>
          <?php 
          $categoria_nombre = 'Desconocida';
          foreach ($categorias as $categoria) {
@@ -356,17 +415,21 @@ function cerrarMensaje() {
                <button class="btn danger" disabled>Sin Stock</button>
             <?php } else if ($session && ($perfil == 2 || $perfil == 1 || $perfil == 3)) { ?>
                
-               <!-- Formulario para agregar al carrito -->
-               <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
-               <?php echo form_hidden('id', $prod['id']); ?>
-               <?php echo form_hidden('nombre', $prod['nombre']); ?>
-               <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
-               
-               <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
-               <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
-               <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">Agregar</button>
-               <?php  } ?>
-               <?php echo form_close(); ?>
+                <?php echo form_open('Carrito_agrega', ['class' => 'form-carrito']); ?>
+                <?php echo form_hidden('id', $prod['id']); ?>
+                <?php echo form_hidden('nombre', $prod['nombre']); ?>
+                <?php echo form_hidden('precio_vta', $prod['precio_vta']); ?>
+
+
+                <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
+
+                <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
+                <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">
+                    Agregar
+                </button>
+                <?php } ?>
+
+                <?php echo form_close(); ?>
 
             <?php } else { ?>
                <input class="margen" id="btnAdvertencia" type="button" onclick="alert('¡Debe registrarse o Logearse para Comprar!')" value="Desea Comprar?" />
@@ -414,13 +477,7 @@ document.addEventListener("DOMContentLoaded", function() {
             let stockMax = parseInt(cantidadInput.getAttribute("max"));
 
             // Verifica que la cantidad no sea mayor al stock
-            if (parseInt(cantidadInput.value) > stockMax) {
-                alert("No puedes agregar más de " + stockMax + " unidades.");
-                cantidadInput.value = stockMax; // Ajusta la cantidad al máximo permitido
-                cantidadHidden.value = stockMax;
-                event.preventDefault(); // Evita que se envíe el formulario
-                return;
-            }
+           
 
             // Actualiza el input hidden antes de enviar
             cantidadHidden.value = cantidadInput.value;
@@ -567,6 +624,54 @@ document.addEventListener("DOMContentLoaded", function() {
     input.focus();
 });
 
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    document.querySelectorAll(".selector-precio").forEach(function(select){
+
+        select.addEventListener("change", function(){
+
+            let idProd = this.dataset.id;
+            let optionSeleccionada = this.options[this.selectedIndex];
+
+            let nuevoPrecio = parseFloat(optionSeleccionada.dataset.precio);
+            let nuevaCantidad = parseInt(optionSeleccionada.dataset.cantidad);
+
+            let inputCantidad = document.getElementById("cantidad_" + idProd);
+            let inputTipoPrecio = document.getElementById("tipo_precio_" + idProd);
+
+            // 🔥 Actualizar precio visual
+            actualizarPrecio(idProd, nuevoPrecio);
+
+            // 🔥 Actualizar máximo permitido
+            inputCantidad.max = nuevaCantidad;
+
+            // 🔥 Guardar tipo de precio en hidden
+            if(inputTipoPrecio){
+                inputTipoPrecio.value = this.value;
+            }
+
+        });
+
+    });
+
+    function actualizarPrecio(idProd, nuevoPrecio){
+
+        document.getElementById("precio_mostrar_" + idProd)
+            .innerHTML = "$ " + parseFloat(nuevoPrecio).toFixed(2);
+
+        document.querySelectorAll('.form-carrito').forEach(function(form){
+            if(form.querySelector('input[name="id"]').value == idProd){
+                form.querySelector('input[name="precio_vta"]').value = nuevoPrecio;
+            }
+        });
+
+    }
+
+});
 </script>
 
 <br><br>

@@ -8,11 +8,11 @@
 <?php endif; ?>
 
 <?php if (session("msgEr")): ?>
-    <div id="flash-message-Error" class="flash-message danger">
+    <div id="flash-message-error" class="flash-message danger">
         <?php echo nl2br(session("msgEr")); ?>
         <button class="close-btn" onclick="cerrarMensaje()">×</button>
     </div>
-<?php endif; ?> 
+<?php endif; ?>
 
 <script>
     function cerrarMensaje() {
@@ -273,64 +273,63 @@ $resto_desc_pago_efec = 0;
                 $gastos = 0;
                 $i = 1;
 
-                foreach ($carrito as $item):
-                    echo form_hidden('cart[' . $item['id'] . '][id]', $item['id']);
-                    echo form_hidden('cart[' . $item['id'] . '][rowid]', $item['rowid']);
-                    echo form_hidden('cart[' . $item['id'] . '][name]', $item['name']);
-                    echo form_hidden('cart[' . $item['id'] . '][price]', $item['price']);
-                    echo form_hidden('cart[' . $item['id'] . '][qty]', $item['qty']);
+                
+$i = 1; // Contador de filas
+foreach ($carrito as $item):
+    // Usar rowid como índice para los inputs
+    $rowid = $item['rowid'];
+?>
+    <?php
+        echo form_hidden("cart[$rowid][id]", $item['id']);
+        echo form_hidden("cart[$rowid][rowid]", $item['rowid']);
+        echo form_hidden("cart[$rowid][name]", $item['name']);
+        echo form_hidden("cart[$rowid][price]", $item['price']);
+        echo form_hidden("cart[$rowid][qty]", $item['qty']);
+    ?>
+    <tr style="color: black; background-color:#4f4e4e;">
+        <td class="separador ocultar-en-movil" style="color: #ffff;">
+            <?= $i++; ?>
+        </td>
+        <td class="separador" style="color: #ffff;">
+            <?= esc($item['name']); ?>
+        </td>
+        <td class="separador" style="color: #ffff;">
+            $ <?= number_format($item['price'], 2, '.', ','); ?> 
+            (<?= $item['options']['cantidadXpromo'] ?? 1; ?>u)
+        </td>
+        <td class="separador" style="color: #ffff;">
+            <?php if ($item['id'] < 10000): ?>
+                <?= form_input([
+                    'name'  => "cart[$rowid][qty]",
+                    'value' => $item['qty'],
+                    'type'  => 'number',
+                    'min'   => '1',
+                    'maxlength' => '3',
+                    'size'  => '1',
+                    'style' => 'text-align: right; width: 50px;',
+                    'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
+                ]); ?>
+                <span class="stock-disponible">
+                    (Mas <?= $item['options']['stock'] ?? 0; ?> Disponibles)
+                </span>
+            <?php else: ?>
+                <?= number_format($item['qty']); ?>
+            <?php endif; ?>
+        </td>
+        <?php $gran_total += $item['subtotal']; ?>
+        <td class="separador" style="color: #ffff;">
+            $ <?= number_format($item['subtotal'], 2, '.', ','); ?>
+        </td>
+        <td class="imagenCarrito separador" style="color: #ffff;">
+            <?php
+                $path = '<img src="'.base_url('assets/img/icons/basura3.png').'" width="10px" height="10px">';
+                echo anchor('carrito_elimina/'.$rowid, $path);
             ?>
-                    <tr style="color: black;  background-color:#4f4e4e;" >
-                        
-                        <td  class="separador ocultar-en-movil" style="color: #ffff;">
-                            <?php echo $i++; ?>
-                        </td>
-                        <td class="separador" style="color: #ffff;">
-                            <?php echo $item['name']; ?>
-                        </td>
-
-                        <td class="separador"  style="color: #ffff;">
-                        $ <?php  echo number_format($item['price'], 2, '.', ',');?>
-                        </td>                         
-
-                        <td class="separador" style="color: #ffff;">
-                        <?php 
-                            if ($item['id'] < 10000) {
-                                echo form_input([
-                                    'name' => 'cart[' . $item['id'] . '][qty]',
-                                    'value' => $item['qty'],
-                                    'type' => 'number',
-                                    'min' => '1',
-                                    'maxlength' => '3',
-                                    'size' => '1',
-                                    'style' => 'text-align: right; width: 50px;',
-                                    'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
-                                ]);?>
-                                <span class="stock-disponible"> (Mas <?php echo  $item['options']['stock']; ?> Disponibles ) </span>
-                            <?php } else {
-                                echo number_format($item['qty']);
-                            }
-                            ?>
-                        </td>
-                        
-                            <?php $gran_total = $gran_total + $item['subtotal']; ?>
-
-                        <td class="separador" style="color: #ffff;">
-                        $ <?php echo number_format($item['subtotal'], 2, '.', ','); ?>
-                        </td>                      
-
-                        <td class="imagenCarrito separador" style="color: #ffff;">
-                            <?php // Imagen para Eliminar Item
-                                $path = '<img src= '. base_url('assets/img/icons/basura3.png') . ' width="10px" height="10px">';
-                                echo anchor('carrito_elimina/'. $item['rowid'], $path);
-                            ?>
-                            
-                        </td>
-                        
-                    </tr>
-                    
-                <?php
-                endforeach;
+        </td>
+    </tr>
+<?php
+endforeach;
+?>
                 ?>
 
                     <?php if ($estado == 'Modificando_SF'): ?>
@@ -669,4 +668,28 @@ $resto_desc_pago_efec = 0;
 
 </script>
 
+<script>
+    function cerrarMensaje() {
+        const errorMessage = document.getElementById("flash-message-error");
+        if (errorMessage) {
+            errorMessage.style.display = "none";
+        }
+    }
+
+    // Ocultar mensaje de éxito después de 3 segundos
+    setTimeout(function() {
+        const successMessage = document.getElementById('flash-message-success');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 3000);
+
+    // Ocultar mensaje de error después de 5 segundos
+    setTimeout(function() {
+        const errorMessage = document.getElementById('flash-message-error');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 5000);
+</script>
 <br>

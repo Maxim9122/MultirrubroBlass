@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 Use App\Models\Productos_model;
+Use App\Models\Tipos_precio_model;
 Use App\Models\categoria_model;
 use CodeIgniter\Controller; 
 
@@ -165,153 +166,199 @@ class Producto_controller extends Controller{
 
 public function ProductoValidation()
     {
-    $session = session();
+        $session = session();
 
-    // Verificar sesión
-    if (!$session->has('id')) { 
-        return redirect()->to(base_url('login'));
-    }
-    
-    // ---------------------------------------------
-    // VALIDACIÓN dinámica del código de barras
-    // ---------------------------------------------
-    $reglas = [
-        'nombre'       => 'required|min_length[3]|is_unique[productos.nombre]',
-        'categoria_id' => 'required|min_length[1]|max_length[20]',
-        'precio'       => 'required|min_length[2]|max_length[10]',
-        'precio_vta'   => 'required|min_length[2]',
-        'stock'        => 'required|min_length[1]|max_length[10]',
-        'stock_mb2'    => 'required|min_length[1]|max_length[10]',
-        //'stock_mb3'    => 'required|min_length[1]|max_length[10]',
-        'stock_min'    => 'required|min_length[1]|max_length[10]',
-    ];
+        // Verificar sesión
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login'));
+        }
+        
+        // ---------------------------------------------
+        // VALIDACIÓN dinámica del código de barras
+        // ---------------------------------------------
+        $reglas = [
+            'nombre'       => 'required|min_length[3]|is_unique[productos.nombre]',
+            'categoria_id' => 'required|min_length[1]|max_length[20]',
+            'precio'       => 'required|min_length[2]|max_length[10]',
+            'precio_vta'   => 'required|min_length[2]',
+            'stock'        => 'required|min_length[1]|max_length[10]',
+            'stock_mb2'    => 'required|min_length[1]|max_length[10]',
+            'stock_min'    => 'required|min_length[1]|max_length[10]',
+        ];
 
-    $codigoBarra = $this->request->getVar('codigo_barra');
+        $codigoBarra = $this->request->getVar('codigo_barra');
 
-    // Si el código de barras tiene 7 dígitos o más → aplicar is_unique
-    if (strlen($codigoBarra) >= 7) {
-        $reglas['codigo_barra'] = 'is_unique[productos.codigo_barra]';
-    }
+        if (strlen($codigoBarra) >= 7) {
+            $reglas['codigo_barra'] = 'is_unique[productos.codigo_barra]';
+        }
 
-    // Ejecutar validación
-    if (!$this->validate($reglas)) {
-    // redirijo atrás guardando los datos del formulario en session (old())
-    return redirect()->back()->withInput();
-    }
+        if (!$this->validate($reglas)) {
+            return redirect()->back()->withInput();
+        }
 
-    // ---------------------------------------------
-    // SUBIR IMAGEN LOCAL
-    // ---------------------------------------------
-    $img = $this->request->getFile('imagen');
-    $nombre_aleatorio = $img->getRandomName();
+        // ---------------------------------------------
+        // SUBIR IMAGEN LOCAL
+        // ---------------------------------------------
+        $img = $this->request->getFile('imagen');
+        $nombre_aleatorio = $img->getRandomName();
+        $img->move(ROOTPATH . 'assets/uploads', $nombre_aleatorio);
 
-    $img->move(ROOTPATH . 'assets/uploads', $nombre_aleatorio);
+        // ---------------------------------------------
+        // GUARDAR PRODUCTO LOCAL
+        // ---------------------------------------------
+        $ProductoModel = new Productos_model();
 
-    // ---------------------------------------------
-    // GUARDAR PRODUCTO LOCAL
-    // ---------------------------------------------
-    $ProductoModel = new Productos_model();
-
-    $ProductoModel->save([
-        'nombre'        => $this->request->getVar('nombre'),
-        'descripcion'   => $this->request->getVar('descripcion'),
-        'imagen'        => $nombre_aleatorio,
-        'categoria_id'  => $this->request->getVar('categoria_id'),
-        'precio'        => $this->request->getVar('precio'),
-        'precio_vta'    => $this->request->getVar('precio_vta'),
-        'stock'         => $this->request->getVar('stock'),
-        'stock_min'     => $this->request->getVar('stock_min'),
-        'codigo_barra'  => $codigoBarra,
-        'eliminado'     => 'NO',
-    ]);
-
-    $localIndependencia = $this->request->getPost('local_independencia');
-    //$localTercero = $this->request->getPost('local_tercero');
-    
-    If($localIndependencia == 1){ 
-    // ---------------------------------------------
-    // REVISAR SI YA EXISTE EN HOSTINGER
-    // ---------------------------------------------
-    //print_r($localIndependencia);exit;
-    $ProductoExt = new \App\Models\MB2_model();
-
-    $codigoBarra = $this->request->getVar('codigo_barra');
-    $nombreProd  = $this->request->getVar('nombre');
-
-    // FILTRO INTELIGENTE PARA HOSTINGER
-    if (strlen($codigoBarra) > 6) {
-        // Código válido → buscar por código o por nombre
-        $existeExt = $ProductoExt
-                        ->where('codigo_barra', $codigoBarra)
-                        ->orWhere('nombre', $nombreProd)
-                        ->first();
-    } else {
-        // Código corto → ignorar código, buscar solo por nombre
-        $existeExt = $ProductoExt
-                        ->where('nombre', $nombreProd)
-                        ->first();
-    }
-
-    // ---------------------------------------------
-    // INSERTAR PRODUCTO EN HOSTINGER (solo si no existe)
-    // ---------------------------------------------
-    if (!$existeExt) {
-
-        // GUARDAR PRODUCTO EN HOSTINGER MB2
-        $ProductoExt->save([
+        $ProductoModel->save([
             'nombre'        => $this->request->getVar('nombre'),
             'descripcion'   => $this->request->getVar('descripcion'),
             'imagen'        => $nombre_aleatorio,
             'categoria_id'  => $this->request->getVar('categoria_id'),
             'precio'        => $this->request->getVar('precio'),
             'precio_vta'    => $this->request->getVar('precio_vta'),
-            'stock'         => $this->request->getVar('stock_mb2'), //Stock para MB2
+            'stock'         => $this->request->getVar('stock'),
             'stock_min'     => $this->request->getVar('stock_min'),
             'codigo_barra'  => $codigoBarra,
-            'eliminado'     => 'NO'
+            'eliminado'     => 'NO',
         ]);
 
+        $idProductoNuevo = $ProductoModel->getInsertID();
+
         // ---------------------------------------------
-        // SUBIR IMAGEN A HOSTINGER SOLO SI EL PRODUCTO NO EXISTÍA
+        // GUARDAR TIPOS DE PRECIO LOCAL
         // ---------------------------------------------
-        $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
+        $TiposPrecioModel = new Tipos_precio_model();
 
-        if (file_exists($rutaLocal)) {
+        $precioPromo1   = $this->request->getVar('precio_promo1');
+        $cantidadPromo1 = $this->request->getVar('cantidad_promo1');
 
-            $curl = curl_init();
+        $precioPromo2   = $this->request->getVar('precio_promo2');
+        $cantidadPromo2 = $this->request->getVar('cantidad_promo2');
 
-            curl_setopt_array($curl, [
-                CURLOPT_URL => "https://multirrubroblass2.shop/api/upload-image",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => [
-                    'imagen' => new \CURLFile($rutaLocal)
-                ]
+        $precioOutlet   = $this->request->getVar('precio_outlet');
+
+        if (!empty($precioPromo1) && !empty($cantidadPromo1)) {
+            $TiposPrecioModel->save([
+                'id_prod'    => $idProductoNuevo,
+                'nom_precio' => 'PROMO1',
+                'precio'     => $precioPromo1,
+                'cantidad'   => $cantidadPromo1,
             ]);
-
-            $response = curl_exec($curl);
-            $curlError = curl_error($curl);
-            curl_close($curl);
-
-            if ($curlError) {
-                session()->setFlashdata(
-                    'msg',
-                    'Producto creado localmente y en Hostinger, pero NO se pudo subir la imagen remotamente.'
-                );
-                return redirect()->to(base_url('nuevoProducto'));
-            }
         }
-    }
-    }
 
-    // ---------------------------------------------
-    // FINAL
-    // ---------------------------------------------
-    session()->setFlashdata('msg', 'Producto creado con éxito en ambos ambientes (si correspondía) + imagen sincronizada.');
-    return redirect()->to(base_url('nuevoProducto'));
+        if (!empty($precioPromo2) && !empty($cantidadPromo2)) {
+            $TiposPrecioModel->save([
+                'id_prod'    => $idProductoNuevo,
+                'nom_precio' => 'PROMO2',
+                'precio'     => $precioPromo2,
+                'cantidad'   => $cantidadPromo2,
+            ]);
+        }
+
+        if (!empty($precioOutlet)) {
+            $TiposPrecioModel->save([
+                'id_prod'    => $idProductoNuevo,
+                'nom_precio' => 'OUTLET',
+                'precio'     => $precioOutlet,
+                'cantidad'   => 1,
+            ]);
+        }
+
+        // ---------------------------------------------
+        // GUARDAR EN MB2 SI CORRESPONDE
+        // ---------------------------------------------
+      /*  $localIndependencia = $this->request->getPost('local_independencia');
+
+        if ($localIndependencia == 1) {
+
+            $ProductoExt = new \App\Models\MB2_model();
+            $nombreProd  = $this->request->getVar('nombre');
+
+            if (strlen($codigoBarra) > 6) {
+                $existeExt = $ProductoExt
+                                ->where('codigo_barra', $codigoBarra)
+                                ->orWhere('nombre', $nombreProd)
+                                ->first();
+            } else {
+                $existeExt = $ProductoExt
+                                ->where('nombre', $nombreProd)
+                                ->first();
+            }
+
+            if (!$existeExt) {
+
+                $ProductoExt->save([
+                    'nombre'        => $this->request->getVar('nombre'),
+                    'descripcion'   => $this->request->getVar('descripcion'),
+                    'imagen'        => $nombre_aleatorio,
+                    'categoria_id'  => $this->request->getVar('categoria_id'),
+                    'precio'        => $this->request->getVar('precio'),
+                    'precio_vta'    => $this->request->getVar('precio_vta'),
+                    'stock'         => $this->request->getVar('stock_mb2'),
+                    'stock_min'     => $this->request->getVar('stock_min'),
+                    'codigo_barra'  => $codigoBarra,
+                    'eliminado'     => 'NO'
+                ]);
+
+                $idProductoMB2 = $ProductoExt->getInsertID();
+
+                // TIPOS PRECIO MB2
+                $TiposPrecioMB2 = new \App\Models\MB2_TiposPrecio_model();
+
+                if (!empty($precioPromo1) && !empty($cantidadPromo1)) {
+                    $TiposPrecioMB2->save([
+                        'id_prod'    => $idProductoMB2,
+                        'nom_precio' => 'PROMO1',
+                        'precio'     => $precioPromo1,
+                        'cantidad'   => $cantidadPromo1,
+                    ]);
+                }
+
+                if (!empty($precioPromo2) && !empty($cantidadPromo2)) {
+                    $TiposPrecioMB2->save([
+                        'id_prod'    => $idProductoMB2,
+                        'nom_precio' => 'PROMO2',
+                        'precio'     => $precioPromo2,
+                        'cantidad'   => $cantidadPromo2,
+                    ]);
+                }
+
+                if (!empty($precioOutlet)) {
+                    $TiposPrecioMB2->save([
+                        'id_prod'    => $idProductoMB2,
+                        'nom_precio' => 'OUTLET',
+                        'precio'     => $precioOutlet,
+                        'cantidad'   => null,
+                    ]);
+                }
+
+                // SUBIR IMAGEN A HOSTINGER
+                $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
+
+                if (file_exists($rutaLocal)) {
+
+                    $curl = curl_init();
+
+                    curl_setopt_array($curl, [
+                        CURLOPT_URL => "https://multirrubroblass2.shop/api/upload-image",
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => [
+                            'imagen' => new \CURLFile($rutaLocal)
+                        ]
+                    ]);
+
+                    curl_exec($curl);
+                    curl_close($curl);
+                }
+            }
+        } */
+
+        // ---------------------------------------------
+        // FINAL
+        // ---------------------------------------------
+        session()->setFlashdata('msg', 'Producto creado con éxito.');
+        return redirect()->to(base_url('nuevoProducto'));
     }
-
-
 
 
     // verifica los datos de la categoria nueva
@@ -388,6 +435,122 @@ public function ProductoValidation()
        
     } 
 
+public function getPrecioPromo()
+{
+    $id_prod = $this->request->getPost('id_prod');
+    $tipo    = $this->request->getPost('tipo');
+
+    // Validación básica
+    if (empty($id_prod) || empty($tipo)) {
+        return $this->response->setJSON([
+            'precio'   => null,
+            'cantidad' => null
+        ]);
+    }
+
+    $model = new \App\Models\Tipos_precio_model();
+
+    $promo = $model->where('id_prod', $id_prod)
+                   ->where('nom_precio', $tipo)
+                   ->first();
+
+    if ($promo) {
+
+        return $this->response->setJSON([
+            'precio'   => $promo['precio'],
+            'cantidad' => $promo['cantidad'] // 👈 ahora también mandamos la cantidad
+        ]);
+
+    }
+
+    return $this->response->setJSON([
+        'precio'   => null,
+        'cantidad' => null
+    ]);
+}
+
+public function getTiposPrecio()
+{
+    $id_prod = $this->request->getPost('id_prod');
+
+    $model = new \App\Models\Tipos_precio_model();
+    $existentes = $model->where('id_prod', $id_prod)->findAll();
+
+    // Tipos FIJOS del sistema
+    $tiposFijos = ['PROMO1', 'PROMO2', 'OUTLET'];
+
+    $resultado = [];
+
+    foreach ($tiposFijos as $nombre) {
+
+        $encontrado = null;
+
+        foreach ($existentes as $row) {
+            if ($row['nom_precio'] === $nombre) {
+                $encontrado = $row;
+                break;
+            }
+        }
+
+        if ($encontrado) {
+            $resultado[] = $encontrado;
+        } else {
+            $resultado[] = [
+                'id' => '',
+                'nom_precio' => $nombre,
+                'precio' => '',
+                'cantidad' => ''
+            ];
+        }
+    }
+
+    return $this->response->setJSON($resultado);
+}
+
+public function updateTiposPrecio()
+{
+    $producto_id = $this->request->getPost('producto_id');
+    $ids = $this->request->getPost('ids');
+    $nombres = $this->request->getPost('nombres');
+    $precios = $this->request->getPost('precios');
+    $cantidades = $this->request->getPost('cantidades');
+
+    $model = new \App\Models\Tipos_precio_model();
+
+    for ($i = 0; $i < count($nombres); $i++) {
+
+        if ($precios[$i] === '' || $cantidades[$i] === '') {
+            continue;
+        }
+
+        if (!empty($ids[$i])) {
+
+            $model->update($ids[$i], [
+                'precio' => $precios[$i],
+                'cantidad' => $cantidades[$i]
+            ]);
+
+        } else {
+
+            // Antes de insertar verificamos que no exista ya
+            $existe = $model->where('id_prod', $producto_id)
+                            ->where('nom_precio', $nombres[$i])
+                            ->first();
+
+            if (!$existe) {
+                $model->insert([
+                    'id_prod' => $producto_id,
+                    'nom_precio' => $nombres[$i],
+                    'precio' => $precios[$i],
+                    'cantidad' => $cantidades[$i]
+                ]);
+            }
+        }
+    }
+
+    return $this->response->setJSON(['status' => 'ok']);
+}
+
     // muestra las categorias 
     public function ListaCategorias(){
         $session = session();
@@ -409,50 +572,89 @@ public function ProductoValidation()
        
     }
 
-	public function ProductosDisp() {
+	public function ProductosDisp()
+{
     $session = session();
     $cart = \Config\Services::cart();
-		$carrito['carrito']=$cart->contents();
+    $carrito['carrito'] = $cart->contents();
 
     if (!$session->has('id')) {
         return redirect()->to(base_url('login'));
     }
 
+    // ===============================
+    // CATEGORÍAS
+    // ===============================
     $Model = new categoria_model();
     $dato['categorias'] = $Model->getCategoria();
 
+    // ===============================
+    // PRODUCTOS PAGINADOS
+    // ===============================
     $ProductosModel = new Productos_model();
     $eliminado = 'NO';
 
-    // Capturamos la página actual de paginación (por defecto 1 si no existe)
     $page = $this->request->getGet('page') ?? 1;
-
     $busqueda = $this->request->getGet('search');
-    // Pasamos la página actual para que paginate sepa cuál devolver
-    $productos = $ProductosModel->getProductosPaginados($eliminado, $busqueda, $page);
 
+    $productos = $ProductosModel->getProductosPaginados($eliminado, $busqueda, $page);
     $pager = $ProductosModel->getPager();
 
-    // Productos con stock bajo (igual que antes)
-    $productos_bajo_stock = array_filter($productos, function($producto) {
+    // ===============================
+    // TRAER TIPOS DE PRECIO (NUEVO)
+    // ===============================
+    $tiposModel = new \App\Models\Tipos_precio_model();
+    $tipos = [];
+
+    if (!empty($productos)) {
+
+        // Obtener IDs de productos paginados
+        $ids = array_column($productos, 'id');
+
+        // Buscar todos los tipos de precio de esos productos
+        $tiposData = $tiposModel
+            ->whereIn('id_prod', $ids)
+            ->findAll();
+
+        // Agrupar por producto
+        foreach ($tiposData as $tipo) {
+            $tipos[$tipo['id_prod']][] = $tipo;
+        }
+    }
+
+    // ===============================
+    // STOCK BAJO
+    // ===============================
+    $productos_bajo_stock = array_filter($productos, function ($producto) {
         return $producto['stock'] <= $producto['stock_min'];
     });
 
     if (!empty($productos_bajo_stock)) {
-        $session->setFlashdata('mensaje_stock', '¡Atención! Algunos productos tienen stock bajo o nulo.');
+        $session->setFlashdata(
+            'mensaje_stock',
+            '¡Atención! Algunos productos tienen stock bajo o nulo.'
+        );
     }
 
+    // ===============================
+    // DATOS A LA VISTA
+    // ===============================
     $dato1['titulo'] = 'Productos Disponibles';
-    $data['productos'] = $productos;
-    $data['pager'] = $pager;
-    $data['page'] = $page;  // <-- enviar la página actual a la vista
 
+    $data['productos'] = $productos;
+    $data['tipos'] = $tipos; // 👈 NUEVO
+    $data['pager'] = $pager;
+    $data['page'] = $page;
+
+    // ===============================
+    // VISTAS
+    // ===============================
     echo view('navbar/navbar');
-    echo view('header/header', $dato1);        
+    echo view('header/header', $dato1);
     echo view('productos/listar', $data + $dato);
-    echo view('carrito/ProductosEnCarrito',$carrito);
+    echo view('carrito/ProductosEnCarrito', $carrito);
     echo view('footer/footer');
-    }
+}
     
 
     public function ProductosStockBajo(){

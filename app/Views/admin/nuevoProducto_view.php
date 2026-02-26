@@ -205,15 +205,62 @@ $id = $session->get('id');
                     <?= $validation->getError('precio') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio')}</div>" : "" ?>
                 </div>
 
-                <div class="form-row">
-                    <div class="mb-2">
-                        <label>Precio de Venta</label>
-                        <input name="precio_vta" type="text" required maxlength="20"
-                            value="<?= old('precio_vta') ?>"
-                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
-                        <?= $validation->getError('precio_vta') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_vta')}</div>" : "" ?>
-                    </div>
-                </div>
+               <div class="form-row">
+    <div class="mb-2">
+        <label>Precio de Venta</label>
+        <input name="precio_vta" type="text" required maxlength="20"
+            value="<?= old('precio_vta') ?>"
+            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+        <?= $validation->getError('precio_vta') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_vta')}</div>" : "" ?>
+    </div>
+
+     <!-- PROMO 1 -->
+    <div class="mb-2">
+        <label>Promo 1</label>
+        <div style="display:flex; gap:10px;">
+            <input name="precio_promo1" type="text" maxlength="20"
+                placeholder="Precio"
+                value="<?= old('precio_promo1') ?>"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+
+            <input name="cantidad_promo1" type="text" maxlength="11"
+                placeholder="Cantidad"
+                value="<?= old('cantidad_promo1') ?>"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+
+        <?= $validation->getError('precio_promo1') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_promo1')}</div>" : "" ?>
+        <?= $validation->getError('cantidad_promo1') ? "<div class='alert alert-danger mt-2'>{$validation->getError('cantidad_promo1')}</div>" : "" ?>
+    </div>
+
+
+    <!-- PROMO 2 -->
+    <div class="mb-2">
+        <label>Promo 2</label>
+        <div style="display:flex; gap:10px;">
+            <input name="precio_promo2" type="text" maxlength="20"
+                placeholder="Precio"
+                value="<?= old('precio_promo2') ?>"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+
+            <input name="cantidad_promo2" type="text" maxlength="11"
+                placeholder="Cantidad"
+                value="<?= old('cantidad_promo2') ?>"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+
+        <?= $validation->getError('precio_promo2') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_promo2')}</div>" : "" ?>
+        <?= $validation->getError('cantidad_promo2') ? "<div class='alert alert-danger mt-2'>{$validation->getError('cantidad_promo2')}</div>" : "" ?>
+    </div>
+    <!-- OUTLET -->
+    <div class="mb-2">
+        <label>Precio Outlet</label>
+        <input name="precio_outlet" type="text" maxlength="20"
+            value="<?= old('precio_outlet') ?>"
+            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+        <?= $validation->getError('precio_outlet') ? "<div class='alert alert-danger mt-2'>{$validation->getError('precio_outlet')}</div>" : "" ?>
+    </div>
+</div>
 
                 <div class="mb-2">
                     <label>Stock Belgrano</label>
