@@ -135,9 +135,12 @@ endif;
                                     <?php foreach ($ventas as $venta): ?>
                                         <tr>
                                             <td>
-                                                <?= $venta['nombre'] ?> 
-                                                (<?= $venta['nom_precio'] ?> 
-                                                <?= ($venta['cantidad_tipo_precio'] > 1) ? $venta['cantidad_tipo_precio'] . 'u' : '' ?>)
+                                                <?= $venta['nombre'] ?>
+
+                                                <?php if (in_array($venta['nom_precio'], ['OUTLET', 'PROMO1', 'PROMO2'])): ?>
+                                                    (<?= $venta['nom_precio'] ?>
+                                                    <?= ($venta['cantidad_tipo_precio'] > 1) ? $venta['cantidad_tipo_precio'] . 'u' : '' ?>)
+                                                <?php endif; ?>
                                             </td>
                                             <td><?= $venta['cantidad'] ?></td>
                                             <td><?= number_format($venta['precio'], 2) ?></td>

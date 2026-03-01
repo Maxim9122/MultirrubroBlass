@@ -146,6 +146,7 @@ class Cabecera_model extends Model
  
     public function getDetallesVenta($idVenta)
 {
+    
     $db = db_connect();
     $builder = $db->table('ventas_detalle u');
     
@@ -178,7 +179,7 @@ class Cabecera_model extends Model
     $builder->join('productos d', 'u.producto_id = d.id');
 
     // 🔹 JOIN con tipos_precio
-    $builder->join('tipos_precio tp', 'tp.id = u.tipo_precio');
+    $builder->join('tipos_precio tp', 'tp.id = u.tipo_precio', 'left');
 
     // Relación con ventas_cabecera
     $builder->join('ventas_cabecera v', 'u.venta_id = v.id');
@@ -187,6 +188,8 @@ class Cabecera_model extends Model
     $builder->join('cae c', 'v.id_cae = c.id_cae', 'left');
 
     $result = $builder->get();
+//print_r($result->getResultArray());
+//exit;
     
     return $result->getResultArray();
 }
