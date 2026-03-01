@@ -266,11 +266,15 @@ public function ProductoValidation()
         // ---------------------------------------------
         // GUARDAR EN MB2 SI CORRESPONDE
         // ---------------------------------------------
-      /*  $localIndependencia = $this->request->getPost('local_independencia');
+      $localIndependencia = $this->request->getPost('local_independencia');
 
         if ($localIndependencia == 1) {
 
-            $ProductoExt = new \App\Models\MB2_model();
+            $dbExt = \Config\Database::connect('mb2');
+
+            $ProductoExt = new \App\Models\Productos_model($dbExt);
+            $TiposPrecioMB2 = new \App\Models\Tipos_precio_model($dbExt);
+
             $nombreProd  = $this->request->getVar('nombre');
 
             if (strlen($codigoBarra) > 6) {
@@ -286,6 +290,7 @@ public function ProductoValidation()
 
             if (!$existeExt) {
 
+                // INSERT PRODUCTO MB2
                 $ProductoExt->save([
                     'nombre'        => $this->request->getVar('nombre'),
                     'descripcion'   => $this->request->getVar('descripcion'),
@@ -301,9 +306,7 @@ public function ProductoValidation()
 
                 $idProductoMB2 = $ProductoExt->getInsertID();
 
-                // TIPOS PRECIO MB2
-                $TiposPrecioMB2 = new \App\Models\MB2_TiposPrecio_model();
-
+                // INSERT TIPOS PRECIO MB2
                 if (!empty($precioPromo1) && !empty($cantidadPromo1)) {
                     $TiposPrecioMB2->save([
                         'id_prod'    => $idProductoMB2,
@@ -327,31 +330,11 @@ public function ProductoValidation()
                         'id_prod'    => $idProductoMB2,
                         'nom_precio' => 'OUTLET',
                         'precio'     => $precioOutlet,
-                        'cantidad'   => null,
+                        'cantidad'   => 1,
                     ]);
-                }
-
-                // SUBIR IMAGEN A HOSTINGER
-                $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
-
-                if (file_exists($rutaLocal)) {
-
-                    $curl = curl_init();
-
-                    curl_setopt_array($curl, [
-                        CURLOPT_URL => "https://multirrubroblass2.shop/api/upload-image",
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_POST => true,
-                        CURLOPT_POSTFIELDS => [
-                            'imagen' => new \CURLFile($rutaLocal)
-                        ]
-                    ]);
-
-                    curl_exec($curl);
-                    curl_close($curl);
                 }
             }
-        } */
+        }
 
         // ---------------------------------------------
         // FINAL

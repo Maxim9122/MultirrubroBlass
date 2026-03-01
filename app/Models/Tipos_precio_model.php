@@ -5,6 +5,6 @@ class Tipos_precio_model extends Model
 {
 	protected $table = 'tipos_precio';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_prod','cae','nom_precio','precio','cantidad'];
+    protected $allowedFields = ['id_prod','nom_precio','precio','cantidad'];
 
 }

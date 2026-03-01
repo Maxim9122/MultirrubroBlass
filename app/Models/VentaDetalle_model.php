@@ -5,7 +5,7 @@ class VentaDetalle_model extends Model
 {
 	protected $table = 'ventas_detalle';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id','venta_id','producto_id', 'cantidad', 'precio', 'total'];
+    protected $allowedFields = ['id','venta_id','producto_id', 'cantidad', 'precio', 'total','tipo_precio'];
 
     public function getVtaDetalle($id){
 

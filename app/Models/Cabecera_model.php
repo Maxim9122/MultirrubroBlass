@@ -145,7 +145,7 @@ class Cabecera_model extends Model
     }
  
     public function getDetallesVenta($idVenta)
-    {
+{
     $db = db_connect();
     $builder = $db->table('ventas_detalle u');
     
@@ -154,7 +154,9 @@ class Cabecera_model extends Model
         d.nombre, 
         u.cantidad, 
         u.precio, 
-        u.total,
+        u.total, 
+        tp.nom_precio, 
+        tp.cantidad AS cantidad_tipo_precio,
         v.total_bonificado, 
         v.motivo,
         v.total_anterior,
@@ -168,22 +170,25 @@ class Cabecera_model extends Model
         c.tipo_factura, 
         c.cae, 
         c.vto_cae
-                  ');
+    ');
     
     $builder->where('u.venta_id', $idVenta);
     
     // Relación con productos
     $builder->join('productos d', 'u.producto_id = d.id');
 
+    // 🔹 JOIN con tipos_precio
+    $builder->join('tipos_precio tp', 'tp.id = u.tipo_precio');
+
     // Relación con ventas_cabecera
     $builder->join('ventas_cabecera v', 'u.venta_id = v.id');
 
-    // LEFT JOIN con la tabla CAE para incluir ventas sin facturar
+    // LEFT JOIN con la tabla CAE
     $builder->join('cae c', 'v.id_cae = c.id_cae', 'left');
 
     $result = $builder->get();
     
-    return $result->getResultArray(); // Devuelve todos los resultados como array
+    return $result->getResultArray();
 }
 
 

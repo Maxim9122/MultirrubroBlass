@@ -134,7 +134,11 @@ endif;
                                 <tbody>
                                     <?php foreach ($ventas as $venta): ?>
                                         <tr>
-                                            <td><?= $venta['nombre'] ?></td>
+                                            <td>
+                                                <?= $venta['nombre'] ?> 
+                                                (<?= $venta['nom_precio'] ?> 
+                                                <?= ($venta['cantidad_tipo_precio'] > 1) ? $venta['cantidad_tipo_precio'] . 'u' : '' ?>)
+                                            </td>
                                             <td><?= $venta['cantidad'] ?></td>
                                             <td><?= number_format($venta['precio'], 2) ?></td>
                                             <td><?= number_format($venta['precio'] * $venta['cantidad'], 2) ?></td>

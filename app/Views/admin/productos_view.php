@@ -161,6 +161,34 @@
     }
 }
 
+.btn-tipos-precio {
+    width: 18px;
+    height: 20px;
+    border: 1px solid #28a745;   /* borde verde */
+    background-color: #ffffff;   /* fondo blanco */
+    color: #28a745;              /* letra verde */
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover */
+.btn-tipos-precio:hover {
+    background-color: #28a745;   /* fondo verde */
+    color: #ffffff;              /* letra blanca */
+    transform: scale(1.12);      /* pequeño zoom */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* Click */
+.btn-tipos-precio:active {
+    transform: scale(1.05);
+}
 </style>
 
 <script>

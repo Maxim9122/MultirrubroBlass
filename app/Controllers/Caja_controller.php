@@ -136,74 +136,94 @@ class Caja_controller extends Controller{
 
 
     //Funcion para modificar la venta
-    public function cargar_Venta_en_Carrito($id_pedido)
+   public function cargar_Venta_en_Carrito($id_pedido)
 {
     $session = session();
     $cart = \Config\Services::cart();
-    $US_model = new Usuarios_model();
-    $detalle_model = new VentaDetalle_model();
-    $cabecera_model = new Cabecera_model(); // Asegúrate de tener este modelo
+
+    $US_model       = new Usuarios_model();
+    $detalle_model  = new VentaDetalle_model();
+    $cabecera_model = new Cabecera_model();
     $producto_model = new Productos_model();
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
 
-    // Obtener los datos de la cabecera de la venta para obtener el id_cliente
     $cabecera = $cabecera_model->find($id_pedido);
-    if($cabecera['estado'] == 'Pendiente'){
-    $id_vendedor = $cabecera ? $cabecera['id_usuario'] : null;
-    $vendedor = $US_model->find($id_vendedor);
-    $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
-    $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
-    $id_pedido = $cabecera ? $cabecera['id'] : null;
-    $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
-    $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
-    $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
-    $total_venta = $cabecera ? $cabecera['total_venta'] : null;
-    $session->set([
-        'id_vendedor' => $id_vendedor,
-        'nombre_vendedor' => $nombre_vendedor,
-        'id_cliente' => $id_cliente,
-        'id_pedido' => $id_pedido,
-        'fecha_pedido' => $fecha_pedido,
-        'tipo_compra' => $tipo_compra,
-        'tipo_pago' => $tipo_pago,
-        'total_venta' => $total_venta,
-        'estado' => 'Modificando'
-    ]);
-    // Obtener los productos del pedido
-    $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
 
-    // Limpiar el carrito antes de cargar los productos
-    $cart->destroy();
+    if ($cabecera['estado'] == 'Pendiente') {
 
+        $id_vendedor = $cabecera ? $cabecera['id_usuario'] : null;
+        $vendedor = $US_model->find($id_vendedor);
+        $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
 
-    if (!$detalles) {
-        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
-        return redirect()->to($this->request->getHeader('referer')->getValue());
-    }
+        $id_cliente   = $cabecera['id_cliente'] ?? null;
+        $id_pedido    = $cabecera['id'] ?? null;
+        $fecha_pedido = $cabecera['fecha_pedido'] ?? null;
+        $tipo_compra  = $cabecera['tipo_compra'] ?? null;
+        $tipo_pago    = $cabecera['tipo_pago'] ?? null;
+        $total_venta  = $cabecera['total_venta'] ?? null;
 
-    // Actualizar el estado de la Venta a "Modificando"
-    $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
+        $session->set([
+            'id_vendedor'     => $id_vendedor,
+            'nombre_vendedor' => $nombre_vendedor,
+            'id_cliente'      => $id_cliente,
+            'id_pedido'       => $id_pedido,
+            'fecha_pedido'    => $fecha_pedido,
+            'tipo_compra'     => $tipo_compra,
+            'tipo_pago'       => $tipo_pago,
+            'total_venta'     => $total_venta,
+            'estado'          => 'Modificando'
+        ]);
 
-    foreach ($detalles as $detalle) {
-        $producto = $producto_model->find($detalle['producto_id']);
-        if ($producto) {
+        $detalles = $detalle_model
+            ->where('venta_id', $id_pedido)
+            ->findAll();
+
+        $cart->destroy();
+
+        if (!$detalles) {
+            session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+            return redirect()->to($this->request->getHeader('referer')->getValue());
+        }
+
+        $cabecera_model->update($id_pedido, ['estado' => 'Modificando']);
+
+        foreach ($detalles as $detalle) {
+
+            $producto = $producto_model->find($detalle['producto_id']);
+            if (!$producto) continue;
+
+            $tipoPrecioId = (int)$detalle['tipo_precio'];
+            $cantidadPromo = 1;
+
+            // 🔥 Reconstruir promo desde tipos_precio
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                }
+            }
+
             $cart->insert([
                 'id'    => $producto['id'],
-                'qty'   => $detalle['cantidad'],
+                'qty'   => $detalle['cantidad'], // lo que eligió el cliente
                 'price' => $detalle['precio'],
                 'name'  => $producto['nombre'],
-                'options' => array(
-                    'stock' => $producto['stock'],                   
-                )
+                'options' => [
+                    'stock'           => $producto['stock'],
+                    'cantidadXpromo'  => $cantidadPromo,
+                    'tipo_precio_id'  => $tipoPrecioId
+                ]
             ]);
         }
+
+        return redirect()->to('CarritoList');
     }
-    // Redirigir a la vista de edición del pedido
-    return redirect()->to('CarritoList');
-    }
-    
+
     session()->setFlashdata('msg', 'Esta Venta ya esta siendo Modificada por otro Cajero!');
     return redirect()->to('caja');
-    }
+}
 
 //Cancelar la modificacion de la Venta
 public function cancelar_edicion_Venta($id_pedido){
@@ -236,38 +256,61 @@ public function Venta_cancelar($id_pedido)
         return redirect()->to(base_url('catalogo'));
     }
 
-    $cabecera_model = new Cabecera_model();
-    $detalle_model = new VentaDetalle_model();
-    $producto_model = new Productos_model();
+    $cabecera_model     = new Cabecera_model();
+    $detalle_model      = new VentaDetalle_model();
+    $producto_model     = new Productos_model();
+    $TiposPrecio_model  = new \App\Models\Tipos_precio_model();
 
-    // Obtener los detalles de la Venta
+    // Obtener los detalles de la venta
     $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
 
     if (!$detalles) {
-        // Eliminar físicamente la cabecera si no hay detalles
+        // Si no hay detalles, eliminar cabecera (error de venta duplicada)
         $cabecera_model->delete($id_pedido);
 
         session()->setFlashdata('msg', 'Se Elimino Error de Venta Duplicada.');
         return redirect()->to($this->request->getHeader('referer')->getValue());
     }
 
-    // Restaurar el stock de cada producto
+    // 🔥 Restaurar stock correctamente considerando promociones
     foreach ($detalles as $detalle) {
+
         $producto = $producto_model->find($detalle['producto_id']);
-        if ($producto) {
-            $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-            $producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
+        if (!$producto) continue;
+
+        $tipoPrecioId  = (int)$detalle['tipo_precio'];
+        $cantidadPromo = 1;
+
+        // Si tiene promo, buscar cantidad en tipos_precio
+        if ($tipoPrecioId > 0) {
+
+            $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+            if ($promo && isset($promo['cantidad']) && $promo['cantidad'] > 0) {
+                $cantidadPromo = (int)$promo['cantidad'];
+            }
         }
+
+        // 🔥 Calcular unidades reales vendidas
+        $unidadesReales = (int)$detalle['cantidad'] * $cantidadPromo;
+
+        // 🔥 Devolver stock real
+        $nuevo_stock = $producto['stock'] + $unidadesReales;
+
+        $producto_model->update($detalle['producto_id'], [
+            'stock' => $nuevo_stock
+        ]);
     }
 
-    // Actualizar el estado del pedido a "Cancelado"
-    $cabecera_model->update($id_pedido, ['estado' => 'Cancelado']);
+    // Actualizar estado del pedido
+    $cabecera_model->update($id_pedido, [
+        'estado' => 'Cancelado'
+    ]);
 
-    session()->setFlashdata('msg', 'Venta cancelada y stock restaurado.');
+    session()->setFlashdata('msg', 'Venta cancelada y stock restaurado correctamente.');
 
     return redirect()->to($this->request->getHeader('referer')->getValue());
 }
-
 
 
 //Modificar Venta Sin_Facturar
@@ -275,83 +318,103 @@ public function cargar_Venta_Sin_Facturar($id_pedido)
 {
     $session = session();
     $cart = \Config\Services::cart();
-    $US_model = new Usuarios_model();
-    $detalle_model = new VentaDetalle_model();
-    $cabecera_model = new Cabecera_model(); // Asegúrate de tener este modelo
+
+    $US_model       = new Usuarios_model();
+    $detalle_model  = new VentaDetalle_model();
+    $cabecera_model = new Cabecera_model();
     $producto_model = new Productos_model();
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
 
-    // Obtener los datos de la cabecera de la venta para obtener el id_cliente
     $cabecera = $cabecera_model->find($id_pedido);
-    if($cabecera['estado'] == 'Sin_Facturar' || $cabecera['estado'] == 'Modificada_SF'){
-    $id_vendedor = $cabecera ? $cabecera['id_usuario'] : null;
-    $vendedor = $US_model->find($id_vendedor);
-    $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
-    $id_cliente = $cabecera ? $cabecera['id_cliente'] : null;
-    $id_pedido = $cabecera ? $cabecera['id'] : null;
-    $fecha_pedido = $cabecera ? $cabecera['fecha_pedido'] : null;
-    $tipo_compra = $cabecera ? $cabecera['tipo_compra'] : null;
-    $tipo_pago = $cabecera ? $cabecera['tipo_pago'] : null;
-    $total_venta = $cabecera ? $cabecera['total_venta'] : null;
-    $total_bonificado = $cabecera ? $cabecera['total_bonificado'] : null;
-    $total_anterior = $cabecera ? $cabecera['total_anterior'] : null;
 
-    $pago_efec = $cabecera ? $cabecera['monto_efectivo'] : null;
-    $pago_transfer = $cabecera ? $cabecera['monto_transferencia'] : null;
-    $pago_tarjeta = $cabecera ? $cabecera['monto_tarjetaC'] : null;
+    if ($cabecera['estado'] == 'Sin_Facturar' || $cabecera['estado'] == 'Modificada_SF') {
 
-    $session->set([
-        'id_vendedor' => $id_vendedor,
-        'nombre_vendedor' => $nombre_vendedor,
-        'id_cliente' => $id_cliente,
-        'id_pedido' => $id_pedido,
-        'fecha_pedido' => $fecha_pedido,
-        'tipo_compra' => $tipo_compra,
-        'tipo_pago' => $tipo_pago,
-        'total_venta' => $total_venta,
-        'total_bonificado' => $total_bonificado,
-        'total_anterior' => $total_anterior,
-        'pago_efec' => $pago_efec,
-        'pago_transfer' => $pago_transfer,
-        'pago_tarjeta' => $pago_tarjeta,
-        'estado' => 'Modificando_SF'
-    ]);
-    // Obtener los productos del pedido
-    $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
+        $id_vendedor = $cabecera['id_usuario'] ?? null;
+        $vendedor = $US_model->find($id_vendedor);
+        $nombre_vendedor = $vendedor ? $vendedor['nombre'] : 'No encontrado';
 
-    // Limpiar el carrito antes de cargar los productos
-    $cart->destroy();
+        $id_cliente        = $cabecera['id_cliente'] ?? null;
+        $id_pedido         = $cabecera['id'] ?? null;
+        $fecha_pedido      = $cabecera['fecha_pedido'] ?? null;
+        $tipo_compra       = $cabecera['tipo_compra'] ?? null;
+        $tipo_pago         = $cabecera['tipo_pago'] ?? null;
+        $total_venta       = $cabecera['total_venta'] ?? null;
+        $total_bonificado  = $cabecera['total_bonificado'] ?? null;
+        $total_anterior    = $cabecera['total_anterior'] ?? null;
 
+        $pago_efec     = $cabecera['monto_efectivo'] ?? null;
+        $pago_transfer = $cabecera['monto_transferencia'] ?? null;
+        $pago_tarjeta  = $cabecera['monto_tarjetaC'] ?? null;
 
-    if (!$detalles) {
-        session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
-        return redirect()->to($this->request->getHeader('referer')->getValue());
-    }
+        $session->set([
+            'id_vendedor'     => $id_vendedor,
+            'nombre_vendedor' => $nombre_vendedor,
+            'id_cliente'      => $id_cliente,
+            'id_pedido'       => $id_pedido,
+            'fecha_pedido'    => $fecha_pedido,
+            'tipo_compra'     => $tipo_compra,
+            'tipo_pago'       => $tipo_pago,
+            'total_venta'     => $total_venta,
+            'total_bonificado'=> $total_bonificado,
+            'total_anterior'  => $total_anterior,
+            'pago_efec'       => $pago_efec,
+            'pago_transfer'   => $pago_transfer,
+            'pago_tarjeta'    => $pago_tarjeta,
+            'estado'          => 'Modificando_SF'
+        ]);
 
+        // Obtener detalles
+        $detalles = $detalle_model
+            ->where('venta_id', $id_pedido)
+            ->findAll();
 
-    // Actualizar el estado de la Venta a "Modificando"
-    $cabecera_model->update($id_pedido, ['estado' => 'Modificando_SF']);
+        $cart->destroy();
 
-    foreach ($detalles as $detalle) {
-        $producto = $producto_model->find($detalle['producto_id']);
-        if ($producto) {
+        if (!$detalles) {
+            session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+            return redirect()->to($this->request->getHeader('referer')->getValue());
+        }
+
+        // Cambiar estado a Modificando_SF
+        $cabecera_model->update($id_pedido, ['estado' => 'Modificando_SF']);
+
+        foreach ($detalles as $detalle) {
+
+            $producto = $producto_model->find($detalle['producto_id']);
+            if (!$producto) continue;
+
+            $tipoPrecioId = (int)($detalle['tipo_precio'] ?? 0);
+            $cantidadPromo = 1;
+
+            // 🔥 Reconstruir promo desde tipos_precio
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                }
+            }
+
             $cart->insert([
                 'id'    => $producto['id'],
-                'qty'   => $detalle['cantidad'],
+                'qty'   => $detalle['cantidad'], // cantidad elegida por cliente
                 'price' => $detalle['precio'],
                 'name'  => $producto['nombre'],
-                'options' => array(
-                    'stock' => $producto['stock'],                   
-                )
+                'options' => [
+                    'stock'          => $producto['stock'],
+                    'cantidadXpromo' => $cantidadPromo,
+                    'tipo_precio_id' => $tipoPrecioId
+                ]
             ]);
         }
+
+        return redirect()->to('CarritoList');
     }
-    // Redirigir a la vista de edición del pedido
-    return redirect()->to('CarritoList');
-    }
-    
+
     session()->setFlashdata('msg', 'Esta Venta ya esta siendo Modificada por otro Cajero!');
     return redirect()->to('compras');
-    }
+}
 
     //Cancelar la modificacion de la Venta Sin Facturar
 public function cancelar_edicion_Venta_SF($id_pedido){

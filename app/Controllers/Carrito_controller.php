@@ -142,116 +142,131 @@ public function ListCompraDetalle($id)
 public function add()
 {
    $session = session();
-$estado = $session->get('estado');
-$id_pedido = $session->get('id_pedido');
+   $estado = $session->get('estado');
+   $id_pedido = $session->get('id_pedido');
 
-$producto_id = $this->request->getPost('id');
-$nombre      = $this->request->getPost('nombre');
-$precio      = $this->request->getPost('precio_vta');
-$cantidad    = ($this->request->getPost('cantidad') ?? 1);
+   $producto_id = $this->request->getPost('id');
+   $nombre      = $this->request->getPost('nombre');
+   $precio      = $this->request->getPost('precio_vta');
+   $cantidad    = ($this->request->getPost('cantidad') ?? 1);
 
-$prodModel = new Productos_model();
-$producto  = $prodModel->getProducto($producto_id);
+   $prodModel = new Productos_model();
+   $producto  = $prodModel->getProducto($producto_id);
 
-if (!$producto) {
-    $session->setFlashdata('msgEr', 'Producto no encontrado.');
-    return redirect()->to(base_url('catalogo'));
+   if (!$producto) {
+       $session->setFlashdata('msgEr', 'Producto no encontrado.');
+       return redirect()->to(base_url('catalogo'));
+   }
+
+   $stock_actual = (int)$producto['stock'];
+
+   $VentaDetalle_model = new VentaDetalle_model();
+   $TiposPrecio_model  = new \App\Models\Tipos_precio_model();
+
+   $cantidad_reservada = 0;
+
+   // 🔹 Si estamos modificando una venta existente
+   if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
+
+       $detalles = $VentaDetalle_model
+           ->where('venta_id', $id_pedido)
+           ->where('producto_id', $producto_id)
+           ->findAll();
+
+       foreach ($detalles as $det) {
+
+           $tipoPrecioId = $det['tipo_precio_id'] ?? 0;
+
+           if ($tipoPrecioId > 0) {
+               $promo = $TiposPrecio_model->find($tipoPrecioId);
+               $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+           } else {
+               $multiplicador = 1;
+           }
+
+           $cantidad_reservada += $det['cantidad'] * $multiplicador;
+       }
+   }
+
+   // 🔹 Stock real disponible
+   $stock_disponible = $stock_actual + $cantidad_reservada;
+
+   if ($stock_disponible <= 0) {
+       $session->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
+       return redirect()->to(base_url('catalogo'));
+   }
+
+   // 🔹 Detectar si es promo según precio seleccionado
+   $promo = $TiposPrecio_model
+       ->where('id_prod', $producto_id)
+       ->where('precio', $precio)
+       ->first();
+
+   $cantidadPromo = ($promo) ? (int)$promo['cantidad'] : 1;
+   $tipoPrecioId  = ($promo) ? (int)$promo['id'] : 0;
+
+   // 🔹 Calcular unidades reales a descontar
+   $unidades_reales = $cantidad * $cantidadPromo;
+
+   $cart = \Config\Services::cart();
+   $cart_items = $cart->contents();
+
+   $total_en_carrito = 0;
+
+   foreach ($cart_items as $item) {
+       if ($item['id'] == $producto_id) {
+           $cantidadItem = (int)($item['options']['cantidadXpromo'] ?? 1);
+           $total_en_carrito += $item['qty'] * $cantidadItem;
+       }
+   }
+
+   // 🔹 Validación real de stock
+   if (($unidades_reales + $total_en_carrito) > $stock_disponible) {
+       $session->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
+       return redirect()->to(base_url('catalogo'));
+   }
+
+   // 🔹 Verificar si ya existe misma combinación producto + precio
+   $producto_encontrado = false;
+
+   foreach ($cart_items as $item) {
+
+       if (
+           $item['id'] == $producto_id &&
+           $item['price'] == $precio
+       ) {
+
+           $nueva_cantidad = $item['qty'] + $cantidad;
+
+           $cart->update([
+               'rowid' => $item['rowid'],
+               'qty'   => $nueva_cantidad
+           ]);
+
+           $producto_encontrado = true;
+           break;
+       }
+   }
+
+   // 🔹 Insertar si no existe
+   if (!$producto_encontrado) {
+
+       $cart->insert([
+           'id'    => $producto_id,
+           'qty'   => $cantidad,
+           'price' => $precio,
+           'name'  => $nombre,
+           'options' => [
+               'cantidadXpromo' => $cantidadPromo,
+               'tipo_precio_id' => $tipoPrecioId,
+               'stock'          => $stock_disponible
+           ]
+       ]);
+   }
+
+   $session->setFlashdata('msg', 'Producto Agregado!');
+   return redirect()->to(base_url('catalogo'));
 }
-
-$stock_actual = (int)$producto['stock'];
-
-$VentaDetalle_model = new VentaDetalle_model();
-$cantidad_reservada = 0;
-
-// 🔹 Si estamos modificando una venta existente
-if ($estado == 'Modificando' || $estado == 'Modificando_SF') {
-    $row = $VentaDetalle_model
-        ->where('venta_id', $id_pedido)
-        ->where('producto_id', $producto_id)
-        ->select('cantidad_real')
-        ->get()
-        ->getRowArray();
-
-    $cantidad_reservada = (int)($row['cantidad_real'] ?? 0);
-}
-
-// Stock disponible real
-$stock_disponible = $stock_actual + $cantidad_reservada;
-
-// 🔹 Validar stock mínimo
-if ($stock_disponible <= 0) {
-    $session->setFlashdata('msgEr', 'No hay Stock Disponible para este Producto.');
-    return redirect()->to(base_url('catalogo'));
-}
-
-// 🔹 Detectar si hay precio promocional
-$tiposModel = new \App\Models\Tipos_precio_model();
-$promo = $tiposModel
-    ->where('id_prod', $producto_id)
-    ->where('precio', $precio)
-    ->first();
-
-$cantidadPromo = ($promo) ? (int)$promo['cantidad'] : 1;
-
-// 🔹 Calcular unidades reales
-$unidades_reales = $cantidad * $cantidadPromo;
-
-// 🔹 Obtener carrito
-$cart = \Config\Services::cart();
-$cart_items = $cart->contents();
-
-// 🔹 Acumular unidades ya en carrito para este producto
-$total_en_carrito = 0;
-
-foreach ($cart_items as $item) {
-    if ($item['id'] == $producto_id) {
-        $cantidadItem = (int)$item['options']['cantidadXpromo'] ?? 1;
-        $total_en_carrito += $item['qty'] * $cantidadItem;
-    }
-}
-
-// 🔹 Verificar stock considerando lo que ya está en el carrito
-if (($unidades_reales + $total_en_carrito) > $stock_disponible) {
-    $session->setFlashdata('msgEr', 'No puedes agregar más productos de los disponibles en stock.');
-    return redirect()->to(base_url('catalogo'));
-}
-
-// 🔹 Buscar si ya existe en carrito para actualizar
-$producto_encontrado = false;
-
-foreach ($cart_items as $item) {
-    if ($item['id'] == $producto_id && $item['price'] == $precio) {
-
-        $nueva_cantidad = $item['qty'] + $cantidad;
-
-        $cart->update([
-            'rowid' => $item['rowid'],
-            'qty'   => $nueva_cantidad
-        ]);
-
-        $producto_encontrado = true;
-        break;
-    }
-}
-
-// 🔹 Si no existe en carrito → Insertar nuevo
-if (!$producto_encontrado) {
-    $cart->insert([
-        'id'    => $producto_id,
-        'qty'   => $cantidad,
-        'price' => $precio,
-        'name'  => $nombre,
-        'options' => [
-            'cantidadXpromo' => $cantidadPromo,
-            'stock'          => $stock_disponible
-        ]
-    ]);
-}
-
-$session->setFlashdata('msg', 'Producto Agregado!');
-return redirect()->to(base_url('catalogo'));
-}
-
 
 	//Agrega elemento al carrito desde confirmar
 	function agregar()
@@ -317,115 +332,136 @@ return redirect()->to(base_url('catalogo'));
      //Actualizamos los importes del carrito y cantidades   
         if ($accion == 'actualizar') {
      $session = session();
-        $id_pedido = $session->get('id_pedido');
+$id_pedido = $session->get('id_pedido');
 
-        $cart = \Config\Services::cart();
-        $cart_info = $this->request->getPost('cart'); 
-        $cart_contents = $cart->contents();
+$cart = \Config\Services::cart();
+$cart_info = $this->request->getPost('cart'); 
+$cart_contents = $cart->contents();
 
-        $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model     = new Productos_model();
+$VentaDetalle_model = new VentaDetalle_model();
+$Producto_model     = new Productos_model();
+$TiposPrecio_model  = new \App\Models\Tipos_precio_model();
 
-        $errores_stock = [];
-        $impactoTotal  = []; // acumulador real por producto
+$errores_stock = [];
+$impactoTotal  = []; // acumulador real por producto
 
-        // ============================
-        // 1️⃣ CALCULAR IMPACTO TOTAL
-        // ============================
 
-        foreach ($cart_info as $rowid => $item_post) {
+// ============================
+// 1️⃣ CALCULAR IMPACTO TOTAL
+// ============================
 
-            if (!isset($cart_contents[$rowid])) {
-                continue;
+foreach ($cart_info as $rowid => $item_post) {
+
+    if (!isset($cart_contents[$rowid])) {
+        continue;
+    }
+
+    $item = $cart_contents[$rowid];
+    $id_producto = $item['id'];
+    $qty   = (int)$item_post['qty'];
+
+    // cantidad real por promo desde carrito
+    $cantidadPromo = (isset($item['options']['cantidadXpromo']) && (int)$item['options']['cantidadXpromo'] > 0)
+                     ? (int)$item['options']['cantidadXpromo']
+                     : 1;
+
+    $unidades_reales = $qty * $cantidadPromo;
+
+    $impactoTotal[$id_producto] = ($impactoTotal[$id_producto] ?? 0) + $unidades_reales;
+}
+
+
+// ============================
+// 2️⃣ VALIDAR STOCK REAL TOTAL
+// ============================
+
+foreach ($impactoTotal as $id_producto => $totalUnidadesSolicitadas) {
+
+    $producto = $Producto_model->find($id_producto);
+    if (!$producto) continue;
+
+    $stock_actual = (int)$producto['stock'];
+    $nombre_producto = $producto['nombre'];
+
+    $cantidad_reservada = 0;
+
+    if ($id_pedido) {
+
+        $detallesAnteriores = $VentaDetalle_model
+            ->where('venta_id', $id_pedido)
+            ->where('producto_id', $id_producto)
+            ->findAll();
+
+        foreach ($detallesAnteriores as $detalle) {
+
+            $cantidadDetalle = (int)$detalle['cantidad'];
+            $tipoPrecioId    = (int)$detalle['tipo_precio'];
+
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                    $cantidad_reservada += $cantidadDetalle * $cantidadPromo;
+                } else {
+                    $cantidad_reservada += $cantidadDetalle;
+                }
+
+            } else {
+                $cantidad_reservada += $cantidadDetalle;
             }
-
-            $item = $cart_contents[$rowid];
-            $id_producto = $item['id'];
-            $qty   = (int)$item_post['qty'];
-
-            // obtener cantidad real por pack/promoción
-            $cantidadPromo = (isset($item['options']['cantidadXpromo']) && (int)$item['options']['cantidadXpromo'] > 0)
-                             ? (int)$item['options']['cantidadXpromo']
-                             : 1;
-
-            $unidades_reales = $qty * $cantidadPromo;
-
-            // acumular impacto total por producto
-            $impactoTotal[$id_producto] = ($impactoTotal[$id_producto] ?? 0) + $unidades_reales;
         }
+    }
 
-        // ============================
-        // 2️⃣ VALIDAR STOCK REAL TOTAL
-        // ============================
+    $stock_disponible = $stock_actual + $cantidad_reservada;
 
-        foreach ($impactoTotal as $id_producto => $totalUnidadesSolicitadas) {
+    if ($totalUnidadesSolicitadas > $stock_disponible) {
+        $errores_stock[] = 
+            "Producto: <strong>$nombre_producto</strong><br>
+             Unidades solicitadas: <strong>$totalUnidadesSolicitadas</strong><br>
+             Stock disponible real: <strong>$stock_disponible</strong>";
+    }
+}
 
-            $producto = $Producto_model->find($id_producto);
 
-            if (!$producto) continue;
+// ============================
+// 3️⃣ SI HAY ERRORES → CANCELAR
+// ============================
 
-            $stock_actual = (int)$producto['stock'];
-            $nombre_producto = $producto['nombre'];
+if (!empty($errores_stock)) {
 
-            $cantidad_reservada = 0;
+    $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br><br>"
+                     . implode("<br><br>", $errores_stock);
 
-            if ($id_pedido) {
-                $rowReserva = $VentaDetalle_model
-                    ->where('venta_id', $id_pedido)
-                    ->where('producto_id', $id_producto)
-                    ->selectSum('cantidad_real')
-                    ->get()
-                    ->getRowArray();
+    $session->setFlashdata('msgEr', $mensaje_error);
+    return redirect()->to(base_url('catalogo'));
+}
 
-                $cantidad_reservada = (int)($rowReserva['cantidad_real'] ?? 0);
-            }
 
-            $stock_disponible = $stock_actual + $cantidad_reservada;
+// ============================
+// 4️⃣ ACTUALIZAR CANTIDADES
+// ============================
 
-            if ($totalUnidadesSolicitadas > $stock_disponible) {
-                $errores_stock[] = 
-                    "Producto: <strong>$nombre_producto</strong><br>
-                     Unidades solicitadas: <strong>$totalUnidadesSolicitadas</strong><br>
-                     Stock disponible real: <strong>$stock_disponible</strong>";
-            }
-        }
+foreach ($cart_info as $rowid => $item_post) {
 
-        // ============================
-        // 3️⃣ SI HAY ERRORES → CANCELAR
-        // ============================
+    if (!isset($cart_contents[$rowid])) continue;
 
-        if (!empty($errores_stock)) {
-            $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br><br>"
-                             . implode("<br><br>", $errores_stock);
+    $qty = (int)$item_post['qty'];
 
-            $session->setFlashdata('msgEr', $mensaje_error);
-            return redirect()->to(base_url('catalogo'));
-        }
+    $cart->update([
+        'rowid' => $rowid,
+        'qty'   => $qty
+    ]);
+}
 
-        // ============================
-        // 4️⃣ ACTUALIZAR CANTIDADES
-        // ============================
-
-        foreach ($cart_info as $rowid => $item_post) {
-
-            if (!isset($cart_contents[$rowid])) continue;
-
-            $qty = (int)$item_post['qty'];
-
-            $cart->update([
-                'rowid' => $rowid,
-                'qty'   => $qty
-            ]);
-        }
-
-        $session->setFlashdata('msg', 'Carrito Actualizado!');
-        return redirect()->to(base_url('catalogo'));
-
+$session->setFlashdata('msg', 'Carrito Actualizado!');
+return redirect()->to(base_url('catalogo'));
 
 //Esta parte es para avanzar a CasiListo primero vuelve a validar el $cart
         } elseif ($accion == 'confirmar') {
             
-           $cart = \Config\Services::cart();
+ $cart = \Config\Services::cart();
 $cart_info     = $this->request->getPost('cart');
 $cart_contents = $cart->contents();
 
@@ -434,6 +470,7 @@ $id_pedido  = $session->get('id_pedido');
 
 $VentaDetalle_model = new VentaDetalle_model();
 $Producto_model     = new Productos_model();
+$TiposPrecio_model  = new \App\Models\Tipos_precio_model();
 
 $errores_stock = [];
 $impactoTotal  = []; // acumulador real por producto
@@ -453,14 +490,12 @@ foreach ($cart_info as $rowid => $item_post) {
     $id_producto  = $item['id'];
     $qty          = (int)$item_post['qty'];
 
-    // Detectar cantidad por promo si existe
     $cantidadPromo = (isset($item['options']['cantidadXpromo']) && (int)$item['options']['cantidadXpromo'] > 0)
                      ? (int)$item['options']['cantidadXpromo']
                      : 1;
 
     $unidades_reales = $qty * $cantidadPromo;
 
-    // Acumular impacto total por producto
     $impactoTotal[$id_producto] = ($impactoTotal[$id_producto] ?? 0) + $unidades_reales;
 }
 
@@ -481,14 +516,33 @@ foreach ($impactoTotal as $id_producto => $totalUnidadesSolicitadas) {
 
     if ($id_pedido) {
 
-        $rowReserva = $VentaDetalle_model
+        $detallesAnteriores = $VentaDetalle_model
             ->where('venta_id', $id_pedido)
             ->where('producto_id', $id_producto)
-            ->selectSum('cantidad_real') // IMPORTANTE usar cantidad_real
-            ->get()
-            ->getRowArray();
+            ->findAll();
 
-        $cantidad_reservada = (int)($rowReserva['cantidad_real'] ?? 0);
+        foreach ($detallesAnteriores as $detalle) {
+
+            $cantidadDetalle = (int)$detalle['cantidad'];
+            $tipoPrecioId    = (int)$detalle['tipo_precio'];
+
+            // 🔥 Si es promo
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                    $cantidad_reservada += $cantidadDetalle * $cantidadPromo;
+                } else {
+                    $cantidad_reservada += $cantidadDetalle;
+                }
+
+            } else {
+                // 🔥 No es promo
+                $cantidad_reservada += $cantidadDetalle;
+            }
+        }
     }
 
     $stock_disponible = $stock_actual + $cantidad_reservada;
@@ -548,150 +602,204 @@ return redirect()->to(base_url('casiListo'));
 
 //Si el proceso es de una Venta que se esta modificando entra aqui.
         } elseif ($accion == 'modificar') {
-        $Producto_model = new Productos_model();
-        $VentaDetalle_model = new VentaDetalle_model();
-        $session = session();
-        $cart = \Config\Services::cart();
-    
-    // Recibe los datos del carrito, calcula y actualiza
-        $cart_info = $this->request->getPost('cart');
-        $id_pedido = $session->get('id_pedido');
-        
-    //Array para guardar todos los productos que tengan stock no disponible
-    $errores_stock = [];
-    foreach ($cart_info as $id => $carrito) {   
-       $id_producto = $carrito['id'];
+       $Producto_model = new Productos_model();
+$VentaDetalle_model = new VentaDetalle_model();
+$TiposPrecio_model = new \App\Models\Tipos_precio_model();
+$session = session();
+$cart = \Config\Services::cart();
 
-       // Obtener el stock actual desde la base de datos
-       $producto = $Producto_model->find($id_producto);
-       $stock_actual = $producto['stock'];
-       $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+// Recibe los datos del carrito
+$cart_info = $this->request->getPost('cart');
+$id_pedido = $session->get('id_pedido');
 
-       // Obtener la cantidad que ya estaba reservada en la venta anterior
-       $cantidad_reservada = $VentaDetalle_model
-           ->where('venta_id', $id_pedido)
-           ->where('producto_id', $id_producto)
-           ->select('cantidad')
-           ->get()
-           ->getRowArray()['cantidad'] ?? 0;
+// Array para guardar productos sin stock suficiente
+$errores_stock = [];
 
-       // Calcular el stock disponible para esta modificación
-       $stock_disponible = $stock_actual + $cantidad_reservada;
+foreach ($cart_info as $id => $carrito) {
 
-       $rowid = $carrito['rowid'];
-       $price = $carrito['price'];
-       $amount = $price * $carrito['qty'];
-       $qty = $carrito['qty'];
+    $id_producto = $carrito['id'];
+    $rowid = $carrito['rowid'];
+    $price = $carrito['price'];
+    $qty = $carrito['qty'];
 
-       // Validar contra el stock disponible, considerando lo ya reservado
-       if ($qty <= $stock_disponible && $qty >= 1) { 
-           $cart->update([
-               'rowid'   => $rowid,
-               'price'   => $price,
-               'amount'  => $amount,
-               'qty'     => $qty
-           ]);	    	
-       } else {
-           // Agregar el producto a la lista de errores
-           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
-       }                
-       }
+    $producto = $Producto_model->find($id_producto);
 
-       // Si hay errores de stock, mostrar mensaje y redirigir
-       if (!empty($errores_stock)) {
-           $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
-           session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('catalogo');
-       }
-        
-       // Inicializar la variable para la suma total de la venta
-       $total_venta = 0;
+    if (!$producto) continue;
 
-       // Recorrer el carrito y calcular el total
-       foreach ($cart->contents() as $item) {
-           $total_venta += $item['subtotal']; // Sumar cada subtotal (precio * cantidad)
-       }
+    $stock_actual = (int)$producto['stock'];
+    $nombre_producto = $producto['nombre'];
 
-        $id_vendedor = $session->get('id_vendedor');
-        $id_cliente = $session->get('id_cliente');        
-        $fecha_pedido = $session->get('fecha_pedido');
-        $tipo_compra = $session->get('tipo_compra');
+    // 🔹 Calcular cantidad reservada REAL (con promo)
+    $detalles_anteriores = $VentaDetalle_model
+        ->where('venta_id', $id_pedido)
+        ->where('producto_id', $id_producto)
+        ->findAll();
 
-        // Establecer zona horaria y obtener fecha/hora en formato correcto
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
-        $hora = date('H:i:s'); // Formato TIME
-        $fecha = date('d-m-Y'); // Formato DATE
+    $cantidad_reservada = 0;
 
-        // Actualizar Venta existente con los nuevos datos
-        if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
-            // Cargar los modelos necesarios para trabajar con los detalles y la cabecera
-            $VentaDetalle_model = new VentaDetalle_model();
-            $Producto_model = new Productos_model();
-            $Cabecera_model = new Cabecera_model();
+    foreach ($detalles_anteriores as $det) {
 
-            // Actualizar la cabecera de la venta con los nuevos datos
-            $cabecera_model = new Cabecera_model();
-            $cabecera_model->update($id_pedido, [
-        'fecha' => $fecha, // Actualizamos la fecha
-        'hora' => $hora, // Actualizamos la hora
-        'id_cliente' => $id_cliente, // Actualizamos el id del cliente
-        'id_usuario' => $id_vendedor, // Actualizamos el id del usuario (vendedor)
-        'total_venta' => $total_venta, // Actualizamos el total de la venta
-        'total_bonificado' => $total_venta, // Actualizamos el total con descuento (si aplica)
-        'tipo_compra' => 'Compra_Normal', // Actualizamos el tipo de compra (Pedido o Compra_Normal)
-        'estado' => 'Pendiente', // Mantenemos el estado como "Pendiente" (puede cambiar según el flujo)
+        $tipoPrecioId = $det['tipo_precio'] ?? 0;
+
+        if ($tipoPrecioId > 0) {
+            $promo = $TiposPrecio_model->find($tipoPrecioId);
+            $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+        } else {
+            $multiplicador = 1;
+        }
+
+        $cantidad_reservada += $det['cantidad'] * $multiplicador;
+    }
+
+    $stock_disponible = $stock_actual + $cantidad_reservada;
+
+    // 🔹 Obtener multiplicador del carrito
+    $cantidadXpromo = (int)($carrito['options']['cantidadXpromo'] ?? 1);
+    $unidades_reales = $qty * $cantidadXpromo;
+
+    if ($unidades_reales <= $stock_disponible && $qty >= 1) {
+
+        $amount = $price * $qty;
+
+        $cart->update([
+            'rowid'   => $rowid,
+            'price'   => $price,
+            'amount'  => $amount,
+            'qty'     => $qty
         ]);
 
-        // Obtener los productos del pedido anterior
-        $productos_anteriores = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-    
-        // 1️⃣ **Devolver stock del pedido anterior**
-        foreach ($productos_anteriores as $detalle) {
-            $producto = $Producto_model->find($detalle['producto_id']);
-            if ($producto) {
-                $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-                $Producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
-            }
+    } else {
+
+        $errores_stock[] =
+            "Producto: <strong>$nombre_producto</strong> - 
+            Cantidad solicitada: <strong>$qty</strong> 
+            (Unidades reales: $unidades_reales) - 
+            Stock disponible real: <strong>$stock_disponible</strong>";
+    }
+}
+
+// 🔴 Si hay errores
+if (!empty($errores_stock)) {
+
+    $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" .
+        implode("<br>", $errores_stock);
+
+    session()->setFlashdata('msgEr', $mensaje_error);
+    return redirect()->to('catalogo');
+}
+
+
+// 🔹 Calcular total venta
+$total_venta = 0;
+foreach ($cart->contents() as $item) {
+    $total_venta += $item['subtotal'];
+}
+
+$id_vendedor = $session->get('id_vendedor');
+$id_cliente = $session->get('id_cliente');
+$fecha_pedido = $session->get('fecha_pedido');
+$tipo_compra = $session->get('tipo_compra');
+
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+$hora = date('H:i:s');
+$fecha = date('d-m-Y');
+
+
+// 🔵 ACTUALIZAR VENTA EXISTENTE
+if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
+
+    $Cabecera_model = new Cabecera_model();
+
+    // 1️⃣ Actualizar cabecera
+    $Cabecera_model->update($id_pedido, [
+        'fecha' => $fecha,
+        'hora' => $hora,
+        'id_cliente' => $id_cliente,
+        'id_usuario' => $id_vendedor,
+        'total_venta' => $total_venta,
+        'total_bonificado' => $total_venta,
+        'tipo_compra' => 'Compra_Normal',
+        'estado' => 'Pendiente',
+    ]);
+
+    // 2️⃣ Obtener productos anteriores
+    $productos_anteriores = $VentaDetalle_model
+        ->where('venta_id', $id_pedido)
+        ->findAll();
+
+    // 3️⃣ DEVOLVER STOCK REAL (con promo)
+    foreach ($productos_anteriores as $detalle) {
+
+        $producto = $Producto_model->find($detalle['producto_id']);
+        if (!$producto) continue;
+
+        $tipoPrecioId = $detalle['tipo_precio'] ?? 0;
+
+        if ($tipoPrecioId > 0) {
+            $promo = $TiposPrecio_model->find($tipoPrecioId);
+            $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+        } else {
+            $multiplicador = 1;
         }
-        
-    // Eliminar los detalles de la venta anterior para luego agregar los nuevos detalles del carrito
+
+        $unidades_reales = $detalle['cantidad'] * $multiplicador;
+
+        $nuevo_stock = $producto['stock'] + $unidades_reales;
+
+        $Producto_model->update(
+            $detalle['producto_id'],
+            ['stock' => $nuevo_stock]
+        );
+    }
+
+    // 4️⃣ Eliminar detalles anteriores
     $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
 
-    // Insertar los nuevos detalles del carrito en la base de datos
-    if ($cart) {
-        foreach ($cart->contents() as $item) {
-            // Guardar cada producto del carrito como un nuevo detalle de la venta
-            $VentaDetalle_model->save([
-                'venta_id' => $id_pedido,  // Usamos el id del pedido existente para vincular el detalle
-                'producto_id' => $item['id'], // Producto id desde el carrito
-                'cantidad' => $item['qty'], // Cantidad del producto en el carrito
-                'precio' => $item['price'], // Precio del producto
-                'total' => $item['subtotal'], // Total por ese producto (precio * cantidad)
-            ]);
+    // 5️⃣ Insertar nuevos detalles y descontar stock real
+    foreach ($cart->contents() as $item) {
 
-            // Actualizar el stock de cada producto después de la venta
-            $producto = $Producto_model->find($item['id']); // Obtener el producto desde la base de datos
-            if ($producto && isset($producto['stock'])) {
-                // Restar la cantidad vendida del stock del producto
-                $stock_edit = $producto['stock'] - $item['qty'];
-                $Producto_model->update($item['id'], ['stock' => $stock_edit]); // Actualizamos el stock en la base de datos
-            }
-            }
-        }
+        $cantidadXpromo = (int)($item['options']['cantidadXpromo'] ?? 1);
+        $tipoPrecioId = (int)($item['options']['tipo_precio_id'] ?? 0);
 
-       $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
-        // Limpiar el carrito después de guardar los datos
-        $cart->destroy();
+        $VentaDetalle_model->save([
+            'venta_id' => $id_pedido,
+            'producto_id' => $item['id'],
+            'cantidad' => $item['qty'],
+            'precio' => $item['price'],
+            'total' => $item['subtotal'],
+            'tipo_precio' => $tipoPrecioId
+        ]);
 
-        // Redirigir al usuario con un mensaje de éxito según el tipo de compra
-        session()->setFlashdata('msg', 'Venta Actualizada con Éxito!');
-        return redirect()->to('caja');
-        }
+        $producto = $Producto_model->find($item['id']);
+        if (!$producto) continue;
 
+        $unidades_reales = $item['qty'] * $cantidadXpromo;
+
+        $stock_edit = $producto['stock'] - $unidades_reales;
+
+        $Producto_model->update(
+            $item['id'],
+            ['stock' => $stock_edit]
+        );
+    }
+
+    // Limpiar sesión
+    $session->remove([
+        'estado','id_vendedor','nombre_vendedor',
+        'id_cliente','id_pedido','fecha_pedido',
+        'tipo_compra','tipo_pago','total_venta'
+    ]);
+
+    $cart->destroy();
+
+    session()->setFlashdata('msg', 'Venta Actualizada con Éxito!');
+    return redirect()->to('caja');
+}
 //Modifica y guarda los cambios de la venta realizada Sin Facturar
         } elseif ($accion == 'GuardarCambios'){
             $Producto_model = new Productos_model();
             $VentaDetalle_model = new VentaDetalle_model();
+            $TiposPrecio_model = new \App\Models\Tipos_precio_model();
             $cart = \Config\Services::cart();           
             $session = session();
            
@@ -703,44 +811,73 @@ return redirect()->to(base_url('casiListo'));
             $id_pedido = $session->get('id_pedido');
             $tipo_pago_Modif = '';            
 
-            //Array para guardar todos los productos que tengan stock no disponible
+          // Array para guardar todos los productos que tengan stock no disponible
             $errores_stock = [];
-         foreach ($cart_info as $id => $carrito) {   
-            $id_producto = $carrito['id'];
 
-            // Obtener el stock actual desde la base de datos
-            $producto = $Producto_model->find($id_producto);
-            $stock_actual = $producto['stock'];
-            $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
+            foreach ($cart_info as $id => $carrito) {
 
-            // Obtener la cantidad que ya estaba reservada en la venta anterior
-            $cantidad_reservada = $VentaDetalle_model
-                ->where('venta_id', $id_pedido)
-                ->where('producto_id', $id_producto)
-                ->select('cantidad')
-                ->get()
-                ->getRowArray()['cantidad'] ?? 0;
+                $id_producto = $carrito['id'];
 
-            // Calcular el stock disponible para esta modificación
-            $stock_disponible = $stock_actual + $cantidad_reservada;
+                // Obtener producto
+                $producto = $Producto_model->find($id_producto);
+                if (!$producto) continue;
 
-            $rowid = $carrito['rowid'];
-            $price = $carrito['price'];
-            $amount = $price * $carrito['qty'];
-            $qty = $carrito['qty'];
+                $stock_actual = (int)$producto['stock'];
+                $nombre_producto = $producto['nombre'];
 
-            // Validar contra el stock disponible, considerando lo ya reservado
-            if ($qty <= $stock_disponible && $qty >= 1) { 
-                $cart->update([
-                    'rowid'   => $rowid,
-                    'price'   => $price,
-                    'amount'  => $amount,
-                    'qty'     => $qty
-                ]);	    	
-            } else {
-                // Agregar el producto a la lista de errores
-                $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
-            }                
+                // 🔹 Calcular cantidad reservada REAL (con promo)
+                $detalles_anteriores = $VentaDetalle_model
+                    ->where('venta_id', $id_pedido)
+                    ->where('producto_id', $id_producto)
+                    ->findAll();
+
+                $cantidad_reservada = 0;
+
+                foreach ($detalles_anteriores as $det) {
+
+                    $tipoPrecioId = $det['tipo_precio'] ?? 0;
+
+                    if ($tipoPrecioId > 0) {
+                        $promo = $TiposPrecio_model->find($tipoPrecioId);
+                        $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+                    } else {
+                        $multiplicador = 1;
+                    }
+
+                    $cantidad_reservada += $det['cantidad'] * $multiplicador;
+                }
+
+                // 🔹 Stock disponible real
+                $stock_disponible = $stock_actual + $cantidad_reservada;
+
+                $rowid = $carrito['rowid'];
+                $price = $carrito['price'];
+                $qty   = (int)$carrito['qty'];
+
+                // 🔹 Obtener multiplicador desde carrito
+                $cantidadXpromo = (int)($carrito['options']['cantidadXpromo'] ?? 1);
+                $unidades_reales = $qty * $cantidadXpromo;
+
+                // 🔹 Validación REAL de stock
+                if ($unidades_reales <= $stock_disponible && $qty >= 1) {
+
+                    $amount = $price * $qty;
+
+                    $cart->update([
+                        'rowid'   => $rowid,
+                        'price'   => $price,
+                        'amount'  => $amount,
+                        'qty'     => $qty
+                    ]);
+
+                } else {
+
+                    $errores_stock[] =
+                        "Producto: <strong>$nombre_producto</strong> - 
+                        Cantidad solicitada: <strong>$qty</strong> 
+                        (Unidades reales: $unidades_reales) - 
+                        Stock disponible real: <strong>$stock_disponible</strong>";
+                }
             }
 
             // Si hay errores de stock, mostrar mensaje y redirigir
@@ -897,112 +1034,107 @@ return redirect()->to(base_url('casiListo'));
             // Actualizar el pedido o Venta existente con los nuevos datos
             if ($estado == 'Modificando_SF') {
 
-            
-                $Producto_model = new Productos_model();
-                $VentaDetalle_model = new VentaDetalle_model();
-                $cart = \Config\Services::cart();
-                $session = session();
-                
-                // Recibe los datos del carrito, calcula y actualiza
-                $cart_info = $this->request->getPost('cart');               
-                
-                $id_pedido = $session->get('id_pedido');                
-                
-                // Obtener los detalles originales de la venta
-                $detalles_originales = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-                
-                // Crear un array para facilitar la búsqueda de detalles originales
-                $detalles_originales_map = [];
-                foreach ($detalles_originales as $detalle) {
-                    $detalles_originales_map[$detalle['producto_id']] = $detalle;
+            $Producto_model = new Productos_model();
+            $VentaDetalle_model = new VentaDetalle_model();
+            $TiposPrecio_model = new \App\Models\Tipos_precio_model();
+            $Cabecera_model = new Cabecera_model();
+            $cart = \Config\Services::cart();
+            $session = session();
+
+            $cart_info = $this->request->getPost('cart');
+            $id_pedido = $session->get('id_pedido');
+
+            // 🔹 1️⃣ Obtener detalles originales
+            $detalles_originales = $VentaDetalle_model
+                ->where('venta_id', $id_pedido)
+                ->findAll();
+
+            // 🔹 2️⃣ DEVOLVER STOCK REAL (con promo)
+            foreach ($detalles_originales as $detalle) {
+
+                $producto = $Producto_model->find($detalle['producto_id']);
+                if (!$producto) continue;
+
+                $tipoPrecioId = $detalle['tipo_precio'] ?? 0;
+
+                if ($tipoPrecioId > 0) {
+                    $promo = $TiposPrecio_model->find($tipoPrecioId);
+                    $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+                } else {
+                    $multiplicador = 1;
                 }
-                
-                // Recorrer el carrito y manejar el stock según los casos
-                foreach ($cart_info as $id => $carrito) {
-                    $id_producto = $carrito['id'];
-                    $cantidad_original = isset($detalles_originales_map[$id_producto]) ? $detalles_originales_map[$id_producto]['cantidad'] : 0;
-                    $cantidad_nueva = $carrito['qty'];
-                
-                    // Obtener el stock actual desde la base de datos
-                    $producto = $Producto_model->find($id_producto);
-                    $stock_actual = $producto['stock'];
-                
-                    if ($cantidad_original > 0) {
-                        // Caso 1: Reducción de la cantidad
-                        if ($cantidad_nueva < $cantidad_original) {
-                            // Devolver la cantidad original al stock
-                            $stock_actual += $cantidad_original;
-                
-                            // Restar la cantidad actual del carrito más la diferencia
-                            $diferencia = $cantidad_original - $cantidad_nueva;
-                            $stock_actual -= ($cantidad_nueva + $diferencia);
-                        }
-                        // Caso 2: Eliminación del producto (no se hace nada, ya que no se devuelve al stock)
-                        // Caso 3: Aumento de la cantidad
-                        elseif ($cantidad_nueva > $cantidad_original) {
-                            // Devolver la cantidad original al stock
-                            $stock_actual += $cantidad_original;
-                
-                            // Restar la nueva cantidad del stock
-                            $stock_actual -= $cantidad_nueva;
-                        }
-                        // Caso 4: No se modifica la cantidad (cantidad_nueva == cantidad_original)
-                        elseif ($cantidad_nueva == $cantidad_original) {
-                            // Devolver la cantidad original al stock
-                            $stock_actual += $cantidad_original;
-                
-                            // Restar la misma cantidad del stock (la cantidad actual del carrito)
-                            $stock_actual -= $cantidad_nueva;
-                        }
-                    } else {
-                        // Caso 5: Nuevo producto
-                        $stock_actual -= $cantidad_nueva; // Restar la cantidad del stock
-                    }
-                
-                    // Actualizar el stock en la base de datos
-                    $Producto_model->update($id_producto, ['stock' => $stock_actual]);
-                }
-                
-                // Eliminar los detalles originales de la venta
-                $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
-                
-                // Insertar los nuevos detalles del carrito en la base de datos
-                foreach ($cart->contents() as $item) {
-                    $VentaDetalle_model->save([
-                        'venta_id' => $id_pedido,
-                        'producto_id' => $item['id'],
-                        'cantidad' => $item['qty'],
-                        'precio' => $item['price'],
-                        'total' => $item['subtotal'],
-                    ]);
-                }
-                //print_r($nuevoPago_Tarjeta);
-                //exit;
-                // Actualizar la cabecera de la venta con los nuevos datos
-                $cabecera_model = new Cabecera_model();
-                $cabecera_model->update($id_pedido, [                    
-                    'fecha_pedido' => $fecha,                    
-                    'hora_entrega' => $hora,
-                    'id_cliente' => $session->get('id_cliente'),
-                    'id_usuario' => $session->get('id_vendedor'),
-                    'tipo_pago' => $tipo_pago_Modif,
-                    'total_venta' => $total_venta,
-                    'total_bonificado' => $total_bonificado_OK,
-                    'motivo' => $motivo,
-                    'total_anterior' => $total_anterior_bonif,
-                    'monto_efectivo' => $nuevoPago_Efec,
-                    'monto_transferencia' => $nuevoPago_Transfer,
-                    'monto_tarjetaC' => $nuevoPago_Tarjeta,
-                    'estado' => 'Modificada_SF',
-                ]);
-                
-                // Limpiar la sesión y el carrito
-                $session->remove(['pago_efec','pago_transfer','pago_tarjeta','estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago', 'total_venta', 'total_bonificado', 'total_anterior']);
-                $cart->destroy();
-                
-                // Redirigir al usuario con un mensaje de éxito
-                return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
+
+                $unidades_reales = $detalle['cantidad'] * $multiplicador;
+
+                $nuevo_stock = $producto['stock'] + $unidades_reales;
+
+                $Producto_model->update(
+                    $detalle['producto_id'],
+                    ['stock' => $nuevo_stock]
+                );
             }
+
+            // 🔹 3️⃣ Eliminar detalles originales
+            $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
+
+            // 🔹 4️⃣ Insertar nuevos detalles y descontar stock REAL
+            foreach ($cart->contents() as $item) {
+
+                $cantidadXpromo = (int)($item['options']['cantidadXpromo'] ?? 1);
+                $tipoPrecioId = (int)($item['options']['tipo_precio_id'] ?? 0);
+
+                $VentaDetalle_model->save([
+                    'venta_id' => $id_pedido,
+                    'producto_id' => $item['id'],
+                    'cantidad' => $item['qty'],
+                    'precio' => $item['price'],
+                    'total' => $item['subtotal'],
+                    'tipo_precio' => $tipoPrecioId
+                ]);
+
+                $producto = $Producto_model->find($item['id']);
+                if (!$producto) continue;
+
+                $unidades_reales = $item['qty'] * $cantidadXpromo;
+
+                $stock_edit = $producto['stock'] - $unidades_reales;
+
+                $Producto_model->update(
+                    $item['id'],
+                    ['stock' => $stock_edit]
+                );
+            }
+
+            // 🔹 5️⃣ Actualizar cabecera
+            $Cabecera_model->update($id_pedido, [
+                'fecha_pedido' => $fecha,
+                'hora_entrega' => $hora,
+                'id_cliente' => $session->get('id_cliente'),
+                'id_usuario' => $session->get('id_vendedor'),
+                'tipo_pago' => $tipo_pago_Modif,
+                'total_venta' => $total_venta,
+                'total_bonificado' => $total_bonificado_OK,
+                'motivo' => $motivo,
+                'total_anterior' => $total_anterior_bonif,
+                'monto_efectivo' => $nuevoPago_Efec,
+                'monto_transferencia' => $nuevoPago_Transfer,
+                'monto_tarjetaC' => $nuevoPago_Tarjeta,
+                'estado' => 'Modificada_SF',
+            ]);
+
+            // 🔹 6️⃣ Limpiar sesión y carrito
+            $session->remove([
+                'pago_efec','pago_transfer','pago_tarjeta',
+                'estado','id_vendedor','nombre_vendedor',
+                'id_cliente','id_pedido','fecha_pedido',
+                'tipo_compra','tipo_pago','total_venta',
+                'total_bonificado','total_anterior'
+            ]);
+
+            $cart->destroy();
+
+            return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido);
+        }
         }
     }
 
@@ -1041,6 +1173,7 @@ return redirect()->to(base_url('casiListo'));
     $perfil = $session->get('perfil_id');
     $estado = $session->get('estado');    
     $id_pedido = $this->request->getPost('id_pedido');
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
     
     //print_r($facturacion);
     //exit;
@@ -1150,120 +1283,253 @@ return redirect()->to(base_url('casiListo'));
     $VentaDetalle_model = new VentaDetalle_model();
     //Array para guardar todos los productos que tengan stock no disponible
     $cart = \Config\Services::cart();
-    $cart_info = $cart->contents(); // Obtiene los productos del carrito almacenados en la sesión
+$cart_info = $cart->contents(); // Obtiene los productos del carrito almacenados en la sesión
 
-    $errores_stock = [];
-    foreach ($cart_info as $id => $carrito) {   
-       $id_producto = $carrito['id'];
+$errores_stock = [];
+$impactoTotal  = [];
 
-       // Obtener el stock actual desde la base de datos
-       $producto = $Producto_model->find($id_producto);
-       $stock_actual = $producto['stock'];
-       $nombre_producto = $producto['nombre']; // Obtener el nombre del producto
 
-       // Obtener la cantidad que ya estaba reservada en la venta anterior
-       $cantidad_reservada = $VentaDetalle_model
-           ->where('venta_id', $id_pedido)
-           ->where('producto_id', $id_producto)
-           ->select('cantidad')
-           ->get()
-           ->getRowArray()['cantidad'] ?? 0;
+// ======================================================
+// 1️⃣ CALCULAR IMPACTO TOTAL REAL POR PRODUCTO
+// ======================================================
 
-       // Calcular el stock disponible para esta modificación
-       $stock_disponible = $stock_actual + $cantidad_reservada;
+foreach ($cart_info as $item) {
 
-       $rowid = $carrito['rowid'];
-       $price = $carrito['price'];
-       $amount = $price * $carrito['qty'];
-       $qty = $carrito['qty'];
+    $id_producto = $item['id'];
+    $qty         = (int)$item['qty'];
 
-       // Validar contra el stock disponible, considerando lo ya reservado
-       if ($qty <= $stock_disponible && $qty >= 1) { 
-           $cart->update([
-               'rowid'   => $rowid,
-               'price'   => $price,
-               'amount'  => $amount,
-               'qty'     => $qty
-           ]);	    	
-       } else {
-           // Agregar el producto a la lista de errores
-           $errores_stock[] = "Producto: <strong>$nombre_producto</strong> - Cantidad solicitada: <strong>$qty</strong> - Stock disponible: $cantidad_reservada(reservados) mas $stock_actual <strong>($stock_disponible)</strong>";
-       }                
-       }
+    // Detectar cantidad por promo si existe
+    $cantidadPromo = (isset($item['options']['cantidadXpromo']) && (int)$item['options']['cantidadXpromo'] > 0)
+        ? (int)$item['options']['cantidadXpromo']
+        : 1;
 
-       // Si hay errores de stock, mostrar mensaje y redirigir
-       if (!empty($errores_stock)) {
-           $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br>" . implode("<br>", $errores_stock);
-           session()->setFlashdata('msgEr', $mensaje_error);
-           return redirect()->to('catalogo');
-       }
-    
+    $unidades_reales = $qty * $cantidadPromo;
+
+    // Acumular impacto total por producto
+    $impactoTotal[$id_producto] = ($impactoTotal[$id_producto] ?? 0) + $unidades_reales;
+}
+
+
+// ======================================================
+// 2️⃣ VALIDAR STOCK REAL TOTAL
+// ======================================================
+
+foreach ($impactoTotal as $id_producto => $totalUnidadesSolicitadas) {
+
+    // Obtener el stock actual desde la base de datos
+    $producto = $Producto_model->find($id_producto);
+    if (!$producto) continue;
+
+    $stock_actual    = (int)$producto['stock'];
+    $nombre_producto = $producto['nombre'];
+
+    // Obtener la cantidad que ya estaba reservada en la venta anterior
+    $cantidad_reservada = 0;
+
+     if ($id_pedido) {
+
+        $detallesAnteriores = $VentaDetalle_model
+            ->where('venta_id', $id_pedido)
+            ->where('producto_id', $id_producto)
+            ->findAll();
+
+        foreach ($detallesAnteriores as $detalle) {
+
+            $cantidadDetalle = (int)$detalle['cantidad'];
+            $tipoPrecioId    = (int)$detalle['tipo_precio'];
+
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                    $cantidad_reservada += $cantidadDetalle * $cantidadPromo;
+                } else {
+                    $cantidad_reservada += $cantidadDetalle;
+                }
+
+            } else {
+                $cantidad_reservada += $cantidadDetalle;
+            }
+        }
+    }
+
+    // Calcular stock disponible real
+    $stock_disponible = $stock_actual + $cantidad_reservada;
+
+    // Validar contra stock disponible real
+    if ($totalUnidadesSolicitadas > $stock_disponible) {
+
+        $errores_stock[] =
+            "Producto: <strong>$nombre_producto</strong><br>
+             Unidades solicitadas reales: <strong>$totalUnidadesSolicitadas</strong><br>
+             Stock disponible real: <strong>$stock_disponible</strong>";
+    }
+}
+
+
+// ======================================================
+// 3️⃣ SI HAY ERRORES → CANCELAR
+// ======================================================
+
+if (!empty($errores_stock)) {
+
+    $mensaje_error = "Los siguientes productos no tienen suficiente Stock:<br><br>"
+        . implode("<br><br>", $errores_stock);
+
+    session()->setFlashdata('msgEr', $mensaje_error);
+    return redirect()->to('catalogo');
+}
+
+
+// ======================================================
+// 4️⃣ ACTUALIZAR CARRITO (SOLO SI TODO ES VÁLIDO)
+// ======================================================
+
+foreach ($cart_info as $item) {
+
+    $rowid = $item['rowid'];
+    $price = $item['price'];
+    $qty   = (int)$item['qty'];
+    $amount = $price * $qty;
+
+    $cart->update([
+        'rowid'  => $rowid,
+        'price'  => $price,
+        'amount' => $amount,
+        'qty'    => $qty
+    ]);
+}    
     
     // Si se encontró un id de pedido y estado modificando, actualizar el pedido existente con los nuevos datos
     if ($estado == 'Modificando' && $tipo_compra == 'Pedido') {
-        // Cargar modelos
-        $VentaDetalle_model = new VentaDetalle_model();
-        $Producto_model = new Productos_model();
-        $Cabecera_model = new Cabecera_model();
-    
-        // Obtener los productos del pedido anterior
-        $productos_anteriores = $VentaDetalle_model->where('venta_id', $id_pedido)->findAll();
-    
-        // 1️⃣ **Devolver stock del pedido anterior**
-        foreach ($productos_anteriores as $detalle) {
-            $producto = $Producto_model->find($detalle['producto_id']);
-            if ($producto) {
-                $nuevo_stock = $producto['stock'] + $detalle['cantidad'];
-                $Producto_model->update($detalle['producto_id'], ['stock' => $nuevo_stock]);
-            }
-        }
-    
-        // 2️⃣ **Eliminar los detalles anteriores**
-        $VentaDetalle_model->where('venta_id', $id_pedido)->delete();
-    
-        // 3️⃣ **Actualizar la cabecera del pedido**
-        $Cabecera_model->update($id_pedido, [
-            'fecha' => $fecha,
-            'hora' => $hora,
-            'id_cliente' => $id_cliente,
-            'total_venta' => $total,
-            'total_bonificado' => $total_conDescuento,
-            'tipo_compra' => 'Pedido',
-            'estado' => 'Pendiente',
-            'fecha_pedido' => $fecha_pedido_formateada
-        ]);
-    
-        // 4️⃣ **Reservar las nuevas cantidades y actualizar stock**
-        if ($cart) {
-            foreach ($cart->contents() as $item) {
-                // Guardar los nuevos detalles de la venta
-                $VentaDetalle_model->save([
-                    'venta_id' => $id_pedido,
-                    'producto_id' => $item['id'],
-                    'cantidad' => $item['qty'],
-                    'precio' => $item['price'],
-                    'total' => $item['subtotal'],
-                ]);
-    
-                // Restar la nueva cantidad del stock
-                $producto = $Producto_model->find($item['id']);
-                if ($producto) {
-                    $nuevo_stock = $producto['stock'] - $item['qty'];
-                    $Producto_model->update($item['id'], ['stock' => $nuevo_stock]);
-                }
-            }
-        }
-    
-        // Limpiar sesión y carrito
-        $session->remove(['estado', 'id_vendedor', 'nombre_vendedor', 'id_cliente_pedido', 'id_pedido', 'fecha_pedido', 'tipo_compra', 'tipo_pago']);
-        $cart->destroy();
-    
-        session()->setFlashdata('msg', 'Pedido actualizado con éxito!');
-        return redirect()->to('pedidos');
-    }
-    
 
-    
+    // Cargar modelos
+    $VentaDetalle_model = new VentaDetalle_model();
+    $Producto_model     = new Productos_model();
+    $Cabecera_model     = new Cabecera_model();
+    $TiposPrecio_model  = new \App\Models\Tipos_precio_model();
+
+    // Obtener los productos del pedido anterior
+    $productos_anteriores = $VentaDetalle_model
+        ->where('venta_id', $id_pedido)
+        ->findAll();
+
+    // 1️⃣ Devolver stock del pedido anterior (calculando real)
+    foreach ($productos_anteriores as $detalle) {
+
+        $producto = $Producto_model->find($detalle['producto_id']);
+        if (!$producto) continue;
+
+        $cantidadDetalle = (int)$detalle['cantidad'];
+        $tipoPrecioId    = (int)$detalle['tipo_precio'];
+
+        // 🔥 calcular unidades reales
+        if ($tipoPrecioId > 0) {
+
+            $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+            if ($promo && $promo['cantidad'] > 0) {
+                $cantidadPromo = (int)$promo['cantidad'];
+                $unidades_reales = $cantidadDetalle * $cantidadPromo;
+            } else {
+                $unidades_reales = $cantidadDetalle;
+            }
+
+        } else {
+            $unidades_reales = $cantidadDetalle;
+        }
+
+        $nuevo_stock = $producto['stock'] + $unidades_reales;
+
+        $Producto_model->update($detalle['producto_id'], [
+            'stock' => $nuevo_stock
+        ]);
+    }
+
+    // 2️⃣ Eliminar los detalles anteriores
+    $VentaDetalle_model
+        ->where('venta_id', $id_pedido)
+        ->delete();
+
+    // 3️⃣ Actualizar cabecera del pedido
+    $Cabecera_model->update($id_pedido, [
+        'fecha'            => $fecha,
+        'hora'             => $hora,
+        'id_cliente'       => $id_cliente,
+        'total_venta'      => $total,
+        'total_bonificado' => $total_conDescuento,
+        'tipo_compra'      => 'Pedido',
+        'estado'           => 'Pendiente',
+        'fecha_pedido'     => $fecha_pedido_formateada
+    ]);
+
+    // 4️⃣ Insertar nuevos detalles y descontar stock real
+    if ($cart) {
+
+        foreach ($cart->contents() as $item) {
+
+            $cantidad = (int)$item['qty'];
+            $tipoPrecioId = (int)($item['options']['tipo_precio_id'] ?? 0);
+
+            // 🔥 Calcular unidades reales
+            if ($tipoPrecioId > 0) {
+
+                $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                if ($promo && $promo['cantidad'] > 0) {
+                    $cantidadPromo = (int)$promo['cantidad'];
+                    $unidades_reales = $cantidad * $cantidadPromo;
+                } else {
+                    $unidades_reales = $cantidad;
+                }
+
+            } else {
+                $unidades_reales = $cantidad;
+            }
+
+            // 🔥 Guardar detalle con tipo_precio
+            $VentaDetalle_model->save([
+                'venta_id'    => $id_pedido,
+                'producto_id' => $item['id'],
+                'cantidad'    => $cantidad,
+                'precio'      => $item['price'],
+                'total'       => $item['subtotal'],
+                'tipo_precio' => $tipoPrecioId
+            ]);
+
+            // 🔥 Descontar stock real
+            $producto = $Producto_model->find($item['id']);
+            if ($producto) {
+
+                $nuevo_stock = $producto['stock'] - $unidades_reales;
+
+                $Producto_model->update($item['id'], [
+                    'stock' => $nuevo_stock
+                ]);
+            }
+        }
+    }
+
+    // Limpiar sesión y carrito
+    $session->remove([
+        'estado',
+        'id_vendedor',
+        'nombre_vendedor',
+        'id_cliente_pedido',
+        'id_pedido',
+        'fecha_pedido',
+        'tipo_compra',
+        'tipo_pago'
+    ]);
+
+    $cart->destroy();
+
+    session()->setFlashdata('msg', 'Pedido actualizado con éxito!');
+    return redirect()->to('pedidos');
+}
+
 
     //Identifico si es una compra para facturar si este campo viene con el dato "Factura"
     $facturacion = $this->request->getPost('tipo_proceso');
@@ -1397,32 +1663,62 @@ return redirect()->to(base_url('casiListo'));
         
 
     }
+// Obtener ID de la nueva cabecera guardada
+$id_cabecera = $cabecera_model->getInsertID();
 
-    // Obtener ID de la nueva cabecera guardada
-    $id_cabecera = $cabecera_model->getInsertID();
+// Guardar detalles de la venta si el carrito no está vacío
+if ($cart):
 
-    // Guardar detalles de la venta si el carrito no está vacío
-    if ($cart):
-        foreach ($cart->contents() as $item):
-            $VentaDetalle_model = new VentaDetalle_model();
-            $VentaDetalle_model->save([
-                'venta_id'    => $id_cabecera,
-                'producto_id' => $item['id'],
-                'cantidad'    => $item['qty'],
-                'precio'      => $item['price'],
-                'total'       => $item['subtotal'],
-            ]);
+    $VentaDetalle_model = new VentaDetalle_model();
+    $Producto_model     = new Productos_model();
+    $TiposPrecio_model  = new \App\Models\Tipos_precio_model();
 
-            // Actualizar stock del producto
-            $Producto_model = new Productos_model();
-            $producto = $Producto_model->find($item['id']); // Asegúrate de usar el método correcto para obtener datos
+    foreach ($cart->contents() as $item):
 
-            if ($producto && isset($producto['stock'])) {
-                $stock_edit = $producto['stock'] - $item['qty'];
-                $Producto_model->update($item['id'], ['stock' => $stock_edit]);
+        $cantidad      = (int)$item['qty'];
+        $tipoPrecioId  = (int)($item['options']['tipo_precio_id'] ?? 0);
+
+        // 🔥 Calcular unidades reales
+        if ($tipoPrecioId > 0) {
+
+            $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+            if ($promo && $promo['cantidad'] > 0) {
+                $cantidadPromo   = (int)$promo['cantidad'];
+                $unidades_reales = $cantidad * $cantidadPromo;
+            } else {
+                $unidades_reales = $cantidad;
             }
-        endforeach;
-    endif;
+
+        } else {
+            $unidades_reales = $cantidad;
+        }
+
+        // 🔥 Guardar detalle con tipo_precio
+        $VentaDetalle_model->save([
+            'venta_id'    => $id_cabecera,
+            'producto_id' => $item['id'],
+            'cantidad'    => $cantidad,
+            'precio'      => $item['price'],
+            'total'       => $item['subtotal'],
+            'tipo_precio' => $tipoPrecioId
+        ]);
+
+        // 🔥 Actualizar stock real
+        $producto = $Producto_model->find($item['id']);
+
+        if ($producto && isset($producto['stock'])) {
+
+            $stock_edit = $producto['stock'] - $unidades_reales;
+
+            $Producto_model->update($item['id'], [
+                'stock' => $stock_edit
+            ]);
+        }
+
+    endforeach;
+
+endif;
     
     // Limpiar el carrito y redirigir con mensaje
     $cart->destroy();
@@ -1451,6 +1747,7 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
     $detalleModel = new \App\Models\VentaDetalle_model();
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
     //print_r($tipoTicket);exit;
     $session = session();
     $cajero_nombre = $session->get('nombre');
@@ -1575,14 +1872,52 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
-                <h3>Productos Adquiridos</h3>
-                <h4>COD: <?= $cabecera['id'] ?></h4>
-                <?php foreach ($detalles as $detalle): ?>
-                    <div>
-                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
-                    </div>
-                <?php endforeach; ?>            
-            </div>
+            <h3>Detalle de la Compra</h3>
+            <h4>COD: <?= $cabecera['id'] ?></h4>
+
+            <?php foreach ($detalles as $detalle): ?>
+
+                <?php
+                    $tipoPrecioId  = (int)($detalle['tipo_precio'] ?? 0);
+                    $cantidadPromo = 1;
+                    $textoPromo    = '';
+                    $indicador     = ''; // ← NUEVO
+
+                    if ($tipoPrecioId > 0) {
+                        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                        if ($promo) {
+
+                            // Cantidad promo
+                            if (isset($promo['cantidad']) && $promo['cantidad'] > 0) {
+                                $cantidadPromo = (int)$promo['cantidad'];
+                                $textoPromo = ($cantidadPromo > 1) ? " ({$cantidadPromo}u)" : '';
+                            }
+
+                            // 🔹 Indicador P / O
+                            if (isset($promo['nom_precio'])) {
+                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
+                                    $indicador = 'P';
+                                } elseif ($promo['nom_precio'] === 'OUTLET') {
+                                    $indicador = 'O';
+                                }
+                            }
+                        }
+                    }
+                ?>
+
+                <div>
+                    <p>
+                        <?= $indicador ? '[' . $indicador . '] ' : '' ?>
+                        (<?= $detalle['cantidad'] ?>)
+                        <?= $productos[$detalle['producto_id']]['nombre'] ?>
+                        <?= $textoPromo ?>
+                        x $<?= number_format($detalle['precio'], 2) ?>
+                    </p>
+                </div>
+
+            <?php endforeach; ?>
+        </div>
 
             <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
@@ -2089,6 +2424,7 @@ public function generarTicketFacturaA($id_cabecera)
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     $caeModel = new \App\Models\Cae_model();
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
 
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
@@ -2206,14 +2542,52 @@ public function generarTicketFacturaA($id_cabecera)
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
-                <h3>Detalle de la Compra</h3>
-                <h4>COD: <?= $cabecera['id'] ?></h4>
-                <?php foreach ($detalles as $detalle): ?>
-                    <div>
-                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
-                    </div>
-                <?php endforeach; ?>            
-            </div>
+            <h3>Detalle de la Compra</h3>
+            <h4>COD: <?= $cabecera['id'] ?></h4>
+
+            <?php foreach ($detalles as $detalle): ?>
+
+                <?php
+                    $tipoPrecioId  = (int)($detalle['tipo_precio'] ?? 0);
+                    $cantidadPromo = 1;
+                    $textoPromo    = '';
+                    $indicador     = ''; // ← NUEVO
+
+                    if ($tipoPrecioId > 0) {
+                        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                        if ($promo) {
+
+                            // Cantidad promo
+                            if (isset($promo['cantidad']) && $promo['cantidad'] > 0) {
+                                $cantidadPromo = (int)$promo['cantidad'];
+                                $textoPromo = ($cantidadPromo > 1) ? " ({$cantidadPromo}u)" : '';
+                            }
+
+                            // 🔹 Indicador P / O
+                            if (isset($promo['nom_precio'])) {
+                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
+                                    $indicador = 'P';
+                                } elseif ($promo['nom_precio'] === 'OUTLET') {
+                                    $indicador = 'O';
+                                }
+                            }
+                        }
+                    }
+                ?>
+
+                <div>
+                    <p>
+                        <?= $indicador ? '[' . $indicador . '] ' : '' ?>
+                        (<?= $detalle['cantidad'] ?>)
+                        <?= $productos[$detalle['producto_id']]['nombre'] ?>
+                        <?= $textoPromo ?>
+                        x $<?= number_format($detalle['precio'], 2) ?>
+                    </p>
+                </div>
+
+            <?php endforeach; ?>
+        </div>
 
             <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
@@ -2575,6 +2949,7 @@ public function generarTicketFacturaB($id_cabecera)
     $productoModel = new \App\Models\Productos_model();
     $clienteModel = new \App\Models\Clientes_model();
     $caeModel = new \App\Models\Cae_model();
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
 
     // Obtener los detalles de la venta y el CAE
     $cabecera = $ventaModel->find($id_cabecera);
@@ -2689,14 +3064,52 @@ public function generarTicketFacturaB($id_cabecera)
 
             <!-- Detalle de la compra -->
             <div class="details" style="width: 100%; font-size: 10px;">
-                <h3>Detalle de la Compra</h3>
-                <h4>COD: <?= $cabecera['id'] ?></h4>
-                <?php foreach ($detalles as $detalle): ?>
-                    <div>
-                        <p>(<?= $detalle['cantidad'] ?>) <?= $productos[$detalle['producto_id']]['nombre'] ?> x $<?= number_format($detalle['precio'], 2) ?></p>
-                    </div>
-                <?php endforeach; ?>            
-            </div>
+            <h3>Detalle de la Compra</h3>
+            <h4>COD: <?= $cabecera['id'] ?></h4>
+
+            <?php foreach ($detalles as $detalle): ?>
+
+                <?php
+                    $tipoPrecioId  = (int)($detalle['tipo_precio'] ?? 0);
+                    $cantidadPromo = 1;
+                    $textoPromo    = '';
+                    $indicador     = ''; // ← NUEVO
+
+                    if ($tipoPrecioId > 0) {
+                        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+                        if ($promo) {
+
+                            // Cantidad promo
+                            if (isset($promo['cantidad']) && $promo['cantidad'] > 0) {
+                                $cantidadPromo = (int)$promo['cantidad'];
+                                $textoPromo = ($cantidadPromo > 1) ? " ({$cantidadPromo}u)" : '';
+                            }
+
+                            // 🔹 Indicador P / O
+                            if (isset($promo['nom_precio'])) {
+                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
+                                    $indicador = 'P';
+                                } elseif ($promo['nom_precio'] === 'OUTLET') {
+                                    $indicador = 'O';
+                                }
+                            }
+                        }
+                    }
+                ?>
+
+                <div>
+                    <p>
+                        <?= $indicador ? '[' . $indicador . '] ' : '' ?>
+                        (<?= $detalle['cantidad'] ?>)
+                        <?= $productos[$detalle['producto_id']]['nombre'] ?>
+                        <?= $textoPromo ?>
+                        x $<?= number_format($detalle['precio'], 2) ?>
+                    </p>
+                </div>
+
+            <?php endforeach; ?>
+        </div>
 
             <!-- Totales 
             <p>Subtotal sin descuentos: $<?= number_format($cabecera['total_venta'], 2) ?></p>
