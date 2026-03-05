@@ -249,7 +249,7 @@ public function ProductoValidation()
     }
 
     // ---------------------------------------------
-    // GUARDAR EN MB2 SI CORRESPONDE
+    // GUARDAR EN MB2 (HOSTINGER) SI CORRESPONDE
     // ---------------------------------------------
     $localIndependencia = $this->request->getPost('local_independencia');
 
@@ -262,21 +262,10 @@ public function ProductoValidation()
 
         $nombreProd = $this->request->getVar('nombre');
 
-        // Buscar si ya existe en MB2 por código de barra O por nombre
-        // Se usan consultas separadas para evitar problemas con orWhere
-        $existeExt = null;
-
-        //if (strlen($codigoBarra) > 6) {
-        //    $existeExt = $ProductoExt
-        //                    ->where('codigo_barra', $codigoBarra)
-         //                   ->first();
-        //}
-
-        if (!$existeExt) {
-            $existeExt = $ProductoExt
-                            ->where('nombre', $nombreProd)
-                            ->first();
-        }
+        // Buscar por nombre solamente para evitar problemas con orWhere
+        $existeExt = $ProductoExt
+                        ->where('nombre', $nombreProd)
+                        ->first();
 
         if (!$existeExt) {
 
@@ -312,6 +301,26 @@ public function ProductoValidation()
                     'cantidad'   => $cantidadPromo2,
                 ]);
             }
+
+            // ---------------------------------------------
+            // ENVIAR IMAGEN A HOSTINGER VÍA API
+            // ---------------------------------------------
+            $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
+
+            if (file_exists($rutaLocal)) {
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL            => 'https://multirrubroblass2.shop/api/upload-image',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST           => true,
+                    CURLOPT_POSTFIELDS     => [
+                        'imagen' => new \CURLFile($rutaLocal, mime_content_type($rutaLocal), $nombre_aleatorio)
+                    ]
+                ]);
+                curl_exec($curl);
+                curl_close($curl);
+                
+            }
         }
     }
 
@@ -321,38 +330,6 @@ public function ProductoValidation()
     session()->setFlashdata('msg', 'Producto creado con éxito.');
     return redirect()->to(base_url('nuevoProducto'));
 }
-
-
-    // verifica los datos de la categoria nueva
-    public function categoriaValidation() {
-        $session = session();
-        // Verifica si el usuario está logueado
-        if (!$session->has('id')) { 
-            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
-        }
-        $input = $this->validate([
-            'descripcion'   => 'required'
-        ]);
-        $categoriaModel = new categoria_model();
-        
-        if (!$input) {
-               $data['titulo']='Nuevo Categoria';
-               echo view('navbar/navbar');
-               echo view('header/header',$data);
-                echo view('admin/nuevoCategoria_view',['validation' => $this->validator]);
-                echo view('footer/footer');
-        } else {
-
-        	
-
-            $categoriaModel->save([
-                'descripcion' => $this->request->getVar('descripcion'),
-                'eliminado' => "No" 
-            ]);  
-            session()->setFlashdata('msg','Producto Creado con Éxito!');
-             return redirect()->to(base_url('Lista_Productos'));
-        }
-    }
 
    public function ListaProductos(){
         $session = session();

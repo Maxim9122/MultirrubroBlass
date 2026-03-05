@@ -39,6 +39,22 @@ $id = $session->get('id');
 
 <?php $validation = \Config\Services::validation(); ?>
 
+<!-- Mensaje flash de éxito -->
+<?php if (session()->getFlashdata('msg')): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        Swal.fire({
+            title: '¡Éxito!',
+            text: '<?= session()->getFlashdata('msg') ?>',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#50fa7b',
+        });
+    });
+</script>
+<?php endif; ?>
+
 <div class="nuevoTurno">
 <h2>Registrar Nuevo Producto</h2>
 <br>
@@ -46,7 +62,8 @@ $id = $session->get('id');
 <form id="productoForm" method="post" enctype="multipart/form-data" action="<?= base_url('ProductoValidation') ?>">
 <?= csrf_field(); ?>
 
-<input type="hidden" name="local_independencia" id="local_independencia" value="1">
+<!-- Este campo se maneja desde el popup -->
+<input type="hidden" name="local_independencia" id="local_independencia" value="0">
 
 <!-- FILA 1 -->
 <div class="form-row">
@@ -163,7 +180,7 @@ $id = $session->get('id');
 
 <div align="end">
     <a href="<?= base_url('Lista_Productos'); ?>" class="btn">Cancelar</a>
-    <button type="submit" class="btn">Guardar</button>
+    <button type="button" class="btn" onclick="abrirPopupGuardar()">Guardar</button>
 </div>
 
 </form>
@@ -172,3 +189,39 @@ $id = $session->get('id');
 <?php } else { ?>
 <h2>Su perfil no tiene acceso a esta parte.</h2>
 <?php } ?>
+
+<!-- SWEETALERT2 Y SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function abrirPopupGuardar() {
+
+    // Validar el formulario nativo antes de abrir el popup
+    const form = document.getElementById('productoForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    Swal.fire({
+        title: '¿Guardar en Independencia también?',
+        text: 'El producto se guardará en Belgrano. ¿Desea guardarlo también en el local Independencia?',
+        icon: 'question',
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Sí, en ambos',
+        denyButtonText: 'Solo Belgrano',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#50fa7b',
+        denyButtonColor: '#8be9fd',
+        cancelButtonColor: '#ff5555',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('local_independencia').value = 1;
+            form.submit();
+        } else if (result.isDenied) {
+            document.getElementById('local_independencia').value = 0;
+            form.submit();
+        }
+    });
+}
+</script>
