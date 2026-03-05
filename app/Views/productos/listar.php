@@ -352,32 +352,48 @@ tbody td {
       <?php foreach($productos as $prod): ?>
       <tr>
          <td><?php echo $prod['nombre']; ?></td>
- <td>
+        <td>
 
-   <select class="selector-precio"
-        data-id="<?= $prod['id']; ?>"
-        data-precio-normal="<?= $prod['precio_vta']; ?>"
-        data-stock-normal="<?= $prod['stock']; ?>">
+        <select class="selector-precio"
+                data-id="<?= $prod['id']; ?>"
+                data-precio-normal="<?= $prod['precio_vta']; ?>"
+                data-stock-normal="<?= $prod['stock']; ?>">
 
-    <!-- Precio normal -->
-    <option value="normal"
-            data-precio="<?= $prod['precio_vta']; ?>"
-            data-cantidad="<?= $prod['stock']; ?>">
-        Normal
-    </option>
-
-    <!-- Tipos de precio -->
-    <?php if(isset($tipos[$prod['id']])): ?>
-        <?php foreach($tipos[$prod['id']] as $tipo): ?>
-            <option value="<?= $tipo['nom_precio']; ?>"
-                    data-precio="<?= $tipo['precio']; ?>"
-                    data-cantidad="<?= $tipo['cantidad']; ?>">
-                <?= $tipo['nom_precio']; ?> (<?= $tipo['cantidad']; ?>)
+            <!-- Precio normal -->
+            <option value="normal"
+                    data-precio="<?= $prod['precio_vta']; ?>"
+                    data-cantidad="1">
+                Normal
             </option>
-        <?php endforeach; ?>
-    <?php endif; ?>
 
-</select>
+            <!-- Tipos de precio -->
+            <?php if(isset($tipos[$prod['id']])): ?>
+                <?php foreach($tipos[$prod['id']] as $tipo): ?>
+
+                    <?php if($tipo['nom_precio'] == 'NORMAL') continue; ?>
+
+                    <?php
+                        $textoCantidad = $tipo['cantidad'];
+
+                        if ($tipo['nom_precio'] == 'PROMO1') {
+                            $textoCantidad = 'Llevando 3 o más / CM';
+                        } elseif ($tipo['nom_precio'] == 'PROMO2') {
+                            $textoCantidad = 'Llevando 10 o más / CM300';
+                        } elseif ($tipo['nom_precio'] == 'OUTLET') {
+                            $textoCantidad = '';
+                        }
+                    ?>
+
+                    <option value="<?= $tipo['id']; ?>"
+                            data-precio="<?= $tipo['precio']; ?>"
+                            data-cantidad="<?= $tipo['cantidad']; ?>">
+                            (<?= $textoCantidad; ?>)
+                    </option>
+
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+        </select>
 
     <div id="precio_mostrar_<?= $prod['id']; ?>" 
          class="precio-dinamico">

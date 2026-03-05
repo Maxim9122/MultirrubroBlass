@@ -293,10 +293,58 @@ foreach ($carrito as $item):
         <td class="separador" style="color: #ffff;">
             <?= esc($item['name']); ?>
         </td>
-        <td class="separador" style="color: #ffff;">
-            $ <?= number_format($item['price'], 2, '.', ','); ?> 
-            (<?= $item['options']['cantidadXpromo'] ?? 1; ?>u)
-        </td>
+        <!-- tipos precio-->
+         <td class="separador" style="color: #ffff;">
+
+            <?php
+                $tipoActual = $item['options']['tipo_precio_id'] ?? 0;
+            ?>
+
+            <select class="selector-precio-carrito"
+                data-rowid="<?= $rowid; ?>"
+                data-id="<?= $item['id']; ?>">
+
+            <?php if(isset($tipos[$item['id']])): ?>
+                <?php foreach($tipos[$item['id']] as $tipo): ?>
+
+                    <?php
+                        if ($tipo['nom_precio'] == 'PROMO1') {
+                            $textoCantidad = 'Llevando 3 o más /CM';
+                        } elseif ($tipo['nom_precio'] == 'PROMO2') {
+                            $textoCantidad = 'Llevando 10 o más /CM300';
+                        } elseif ($tipo['nom_precio'] == 'OUTLET') {
+                            $textoCantidad = 'Precio Mayorista';
+                        } elseif ($tipo['nom_precio'] == 'NORMAL') {
+                            $textoCantidad = 'Normal';
+                        } else {
+                            $textoCantidad = $tipo['nom_precio'];
+                        }
+                    ?>
+
+                    <option value="<?= $tipo['id']; ?>"
+                            data-precio="<?= $tipo['precio']; ?>"
+                            <?= ($tipoActual == $tipo['id'] ? 'selected' : '') ?>>
+
+                        <?= $textoCantidad ?>
+
+                    </option>
+
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+        </select>
+
+            <div id="precio_mostrar_<?= $rowid; ?>">
+                $ <?= number_format($item['price'], 2, '.', ','); ?>
+            </div>
+
+            <input type="hidden"
+                name="cart[<?= $rowid ?>][tipo_precio_id]"
+                id="tipo_precio_<?= $rowid ?>"
+                value="<?= $tipoActual ?>">
+
+            </td>
+
         <td class="separador" style="color: #ffff;">
             <?php if ($item['id'] < 10000): ?>
                 <?= form_input([
@@ -691,5 +739,35 @@ endforeach;
             errorMessage.style.display = 'none';
         }
     }, 5000);
+</script>
+
+<script>
+document.addEventListener("change", function(e){
+
+    if(e.target.classList.contains("selector-precio-carrito")){
+
+        let select = e.target;
+        let rowid  = select.dataset.rowid;
+        let precio = parseFloat(select.options[select.selectedIndex].dataset.precio);
+        let tipoId = select.value;        
+        // actualizar precio visual
+        document.getElementById("precio_mostrar_" + rowid)
+            .innerHTML = "$ " + precio.toFixed(2);
+
+        // actualizar hidden tipo_precio_id
+        document.getElementById("tipo_precio_" + rowid)
+            .value = tipoId;
+
+        // actualizar input price si lo enviás en el form
+        let inputPrice = document.querySelector(
+            'input[name="cart['+rowid+'][price]"]'
+        );
+
+        if(inputPrice){
+            inputPrice.value = precio;
+        }
+    }    
+
+});
 </script>
 <br>

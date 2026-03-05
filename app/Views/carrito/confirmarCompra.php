@@ -137,9 +137,20 @@ endif;
                                             <td>
                                                 <?= $venta['nombre'] ?>
 
-                                                <?php if (in_array($venta['nom_precio'], ['OUTLET', 'PROMO1', 'PROMO2'])): ?>
-                                                    (<?= $venta['nom_precio'] ?>
-                                                    <?= ($venta['cantidad_tipo_precio'] > 1) ? $venta['cantidad_tipo_precio'] . 'u' : '' ?>)
+                                                <?php 
+                                                    $textoPromo = '';
+
+                                                    if ($venta['nom_precio'] == 'PROMO1') {
+                                                        $textoPromo = 'Llevando 3 o más / CM';
+                                                    } elseif ($venta['nom_precio'] == 'PROMO2') {
+                                                        $textoPromo = 'Llevando 10 o más / CM300';
+                                                    } elseif ($venta['nom_precio'] == 'OUTLET') {
+                                                        $textoPromo = 'Precio Mayorista';
+                                                    }
+                                                ?>
+
+                                                <?php if ($textoPromo != ''): ?>
+                                                    (<?= $textoPromo; ?>)
                                                 <?php endif; ?>
                                             </td>
                                             <td><?= $venta['cantidad'] ?></td>
@@ -185,27 +196,53 @@ endif;
                 <td style="color:#ffff;"><strong><?php echo $nombre_cli ?></strong></td>
             </tr>  
             <?php endif; ?>
-            <?php if ($perfil == 3): ?><!-- Filtro cajero-->
-
+            <?php if ($perfil == 3): ?> <!--Filtro para el cajero -->
                 <tr>
-                <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente (CUIT):</strong></td>
-                <td>
-                    <?php if ($clientes): ?>
-                        <select name="cliente_id" class="selector">
-                            <option value="Anonimo">Consumidor Final</option>
-                            <?php foreach ($clientes as $cl): ?>
-                                <option value="<?php echo $cl['id_cliente']; ?>" <?php echo $cl['id_cliente'] == $id_cliente ? 'selected' : ''; ?>>
-                                    <?php echo $cl['nombre']; ?>
-                                    <?php echo "Cuil:" . $cl['cuil']; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    <?php else: ?>
-                        <span>No hay clientes disponibles</span>
-                    <?php endif; ?>
-                </td>
-                 </tr>
-                 <?php endif; ?><!-- Fin del if filtro cajero-->
+                    <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente (CUIT):</strong></td>
+                    <td>
+                        <?php if ($clientes): ?>
+                            <!-- Input visible de búsqueda -->
+                            <div style="position: relative;">
+                                <input 
+                                    type="text" 
+                                    id="clienteBuscador" 
+                                    class="selector" 
+                                    placeholder="Buscar cliente por nombre o CUIL..." 
+                                    autocomplete="off"
+                                    oninput="filtrarClientes(this.value)"
+                                    onfocus="filtrarClientes(this.value)"
+                                >
+                                <!-- Campo oculto que guarda el valor real -->
+                                <input type="hidden" name="cliente_id" id="clienteIdHidden" value="Anonimo">
+                                
+                                <!-- Dropdown de resultados -->
+                                <div id="clienteDropdown" style="
+                                    display: none;
+                                    position: absolute;
+                                    top: 100%;
+                                    left: 0;
+                                    width: 100%;
+                                    max-height: 200px;
+                                    overflow-y: auto;
+                                    background: #282a36;
+                                    border: 2px solid #50fa7b;
+                                    border-radius: 0 0 5px 5px;
+                                    z-index: 999;
+                                ">
+                                    <!-- Opción default -->
+                                    <div class="cliente-opcion" 
+                                        onclick="seleccionarCliente('Anonimo', 'Consumidor Final')"
+                                        style="padding:8px 12px; cursor:pointer; color:#f8f8f2; border-bottom:1px solid #444;">
+                                        Consumidor Final
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <span>No hay clientes disponibles</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endif; ?><!-- Fin del if filtro cajero-->
 
 
                  <?php if ($perfil == 2 && $estado == ''): ?><!-- Filtro Vendedor-->
@@ -1154,3 +1191,89 @@ document.addEventListener('DOMContentLoaded', function () {
 //    calcularTotalConIVA();
 
 </script>
+
+<script>
+// ---- Datos de clientes desde PHP ----
+const listaClientes = [
+    { id: 'Anonimo', nombre: 'Consumidor Final', cuil: '' },
+    <?php foreach ($clientes as $cl): ?>
+    {
+        id: <?= json_encode($cl['id_cliente']) ?>,
+        nombre: <?= json_encode($cl['nombre']) ?>,
+        cuil: <?= json_encode($cl['cuil']) ?>
+    },
+    <?php endforeach; ?>
+];
+
+// Preseleccionar si ya hay cliente en sesión
+const clientePreseleccionado = <?= json_encode($id_cliente) ?>;
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Si ya hay cliente seleccionado, mostrar su nombre en el input
+    if (clientePreseleccionado) {
+        const encontrado = listaClientes.find(c => c.id == clientePreseleccionado);
+        if (encontrado) {
+            document.getElementById('clienteBuscador').value = 
+                encontrado.id === 'Anonimo' 
+                    ? encontrado.nombre 
+                    : `${encontrado.nombre} - CUIL: ${encontrado.cuil}`;
+            document.getElementById('clienteIdHidden').value = encontrado.id;
+        }
+    }
+
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function (e) {
+        const buscador = document.getElementById('clienteBuscador');
+        const dropdown = document.getElementById('clienteDropdown');
+        if (buscador && dropdown && !buscador.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+});
+
+function filtrarClientes(query) {
+    const dropdown = document.getElementById('clienteDropdown');
+    const termino = query.toLowerCase().trim();
+    
+    // Filtrar lista
+    const resultados = listaClientes.filter(c => 
+        c.nombre.toLowerCase().includes(termino) || 
+        c.cuil.toLowerCase().includes(termino)
+    );
+
+    // Limpiar y rearmar el dropdown
+    dropdown.innerHTML = '';
+
+    if (resultados.length === 0) {
+        dropdown.innerHTML = '<div style="padding:8px 12px; color:#ff5555;">Sin resultados</div>';
+    } else {
+        resultados.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'cliente-opcion';
+            div.style.cssText = 'padding:8px 12px; cursor:pointer; color:#f8f8f2; border-bottom:1px solid #444;';
+            div.textContent = c.id === 'Anonimo' 
+                ? 'Consumidor Final' 
+                : `${c.nombre} - CUIL: ${c.cuil}`;
+            div.addEventListener('click', () => seleccionarCliente(c.id, c.nombre, c.cuil));
+            div.addEventListener('mouseover', () => div.style.backgroundColor = '#44475a');
+            div.addEventListener('mouseout', () => div.style.backgroundColor = '');
+            dropdown.appendChild(div);
+        });
+    }
+
+    dropdown.style.display = 'block';
+}
+
+function seleccionarCliente(id, nombre, cuil = '') {
+    document.getElementById('clienteIdHidden').value = id;
+    document.getElementById('clienteBuscador').value = 
+        id === 'Anonimo' ? 'Consumidor Final' : `${nombre} - CUIL: ${cuil}`;
+    document.getElementById('clienteDropdown').style.display = 'none';
+}
+</script>
+
+<style>
+.cliente-opcion:hover {
+    background-color: #44475a !important;
+}
+</style>

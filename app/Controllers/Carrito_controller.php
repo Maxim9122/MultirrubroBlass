@@ -128,15 +128,70 @@ public function ListCompraDetalle($id)
     echo view('footer/footer');
 }
 
-    public function productosAgregados(){
-        $cart = \Config\Services::cart();
-		$carrito['carrito']=$cart->contents();
-        $data['titulo']='Productos en el Carrito'; 
-		echo view('navbar/navbar');
-        echo view('header/header',$data);        
-        echo view('carrito/ProductosEnCarrito',$carrito);
-        echo view('footer/footer');
+   public function productosAgregados()
+{
+    $cart = \Config\Services::cart();
+    $cartContents = $cart->contents();
+
+    $TiposPrecio_model = new \App\Models\Tipos_precio_model();
+    $Producto_model    = new \App\Models\Productos_model();
+
+    $tipos = [];
+    $idsProductos = [];
+
+    foreach ($cartContents as $item) {
+        $idsProductos[] = $item['id'];
     }
+
+    $idsProductos = array_unique($idsProductos);
+
+    if (!empty($idsProductos)) {
+
+        // 🔹 Traer productos (para precio normal)
+        $productos = $Producto_model
+            ->whereIn('id', $idsProductos)
+            ->findAll();
+
+        $productosIndexados = [];
+        foreach ($productos as $prod) {
+            $productosIndexados[$prod['id']] = $prod;
+        }
+
+        // 🔹 Traer promos
+        $tiposData = $TiposPrecio_model
+            ->whereIn('id_prod', $idsProductos)
+            ->findAll();
+
+        foreach ($tiposData as $tipo) {
+            $tipos[$tipo['id_prod']][] = $tipo;
+        }
+
+        // 🔥 Agregar NORMAL manualmente
+        foreach ($idsProductos as $idProd) {
+
+            if (!isset($productosIndexados[$idProd])) continue;
+
+            $tipos[$idProd][] = [
+                'id'         => 0,
+                'id_prod'    => $idProd,
+                'precio'     => $productosIndexados[$idProd]['precio_vta'],
+                'cantidad'   => 1,
+                'nom_precio' => 'NORMAL'
+            ];
+        }
+    }
+
+    $data = [
+        'titulo'  => 'Productos en el Carrito',
+        'carrito' => $cartContents,
+        'tipos'   => $tipos
+    ];
+
+    echo view('navbar/navbar');
+    echo view('header/header', $data);
+    echo view('carrito/ProductosEnCarrito', $data);
+    echo view('footer/footer');
+}
 
     //Agrega elemento al carrito
 public function add()
@@ -440,18 +495,54 @@ if (!empty($errores_stock)) {
 
 
 // ============================
-// 4️⃣ ACTUALIZAR CANTIDADES
+// 4️⃣ ACTUALIZAR CANTIDADES Y TIPO PRECIO
 // ============================
 
 foreach ($cart_info as $rowid => $item_post) {
 
     if (!isset($cart_contents[$rowid])) continue;
 
-    $qty = (int)$item_post['qty'];
+    $itemActual = $cart_contents[$rowid];
 
+    $qty = (int)$item_post['qty'];
+    $tipoPrecioId = isset($item_post['tipo_precio_id'])
+                    ? (int)$item_post['tipo_precio_id']
+                    : 0;
+
+    $precioFinal = 0;
+    $cantidadPromo = 1;
+
+    // 🔹 Si seleccionó promo
+    if ($tipoPrecioId > 0) {
+
+        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+        if ($promo) {
+            $precioFinal   = (float)$promo['precio'];
+            $cantidadPromo = (int)$promo['cantidad'];
+        }
+
+    } else {
+
+        // 🔥 ES PRECIO NORMAL → buscar precio_vta
+        $producto = $Producto_model->find($itemActual['id']);
+
+        if ($producto) {
+            $precioFinal   = (float)$producto['precio_vta'];
+            $cantidadPromo = 1;
+        }
+    }
+
+    // 🔹 Actualizar carrito completo
     $cart->update([
         'rowid' => $rowid,
-        'qty'   => $qty
+        'qty'   => $qty,
+        'price' => $precioFinal,
+        'options' => [
+            'cantidadXpromo' => $cantidadPromo,
+            'tipo_precio_id' => $tipoPrecioId,
+            'stock'          => $itemActual['options']['stock'] ?? 0
+        ]
     ]);
 }
 
@@ -570,28 +661,56 @@ if (!empty($errores_stock)) {
     return redirect()->to(base_url('catalogo'));
 }
 
-
 // =====================================
-// 4️⃣ ACTUALIZAR CARRITO
+// 4️⃣ ACTUALIZAR CARRITO (CORREGIDO)
 // =====================================
 
 foreach ($cart_info as $rowid => $item_post) {
 
     if (!isset($cart_contents[$rowid])) continue;
 
-    $qty   = (int)$item_post['qty'];
-    $item  = $cart_contents[$rowid];
-    $price = $item['price'];
-    $amount = $price * $qty;
+    $itemActual = $cart_contents[$rowid];
+
+    $qty = (int)$item_post['qty'];
+    $tipoPrecioId = isset($item_post['tipo_precio_id'])
+                    ? (int)$item_post['tipo_precio_id']
+                    : ($itemActual['options']['tipo_precio_id'] ?? 0);
+
+    $precioFinal   = 0;
+    $cantidadPromo = 1;
+
+    // 🔥 Si es promo
+    if ($tipoPrecioId > 0) {
+
+        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+        if ($promo) {
+            $precioFinal   = (float)$promo['precio'];
+            $cantidadPromo = (int)$promo['cantidad'];
+        }
+
+    } else {
+
+        // 🔥 PRECIO NORMAL
+        $producto = $Producto_model->find($itemActual['id']);
+
+        if ($producto) {
+            $precioFinal   = (float)$producto['precio_vta'];
+            $cantidadPromo = 1;
+        }
+    }
 
     $cart->update([
-        'rowid'  => $rowid,
-        'price'  => $price,
-        'amount' => $amount,
-        'qty'    => $qty
+        'rowid' => $rowid,
+        'qty'   => $qty,
+        'price' => $precioFinal,
+        'options' => [
+            'cantidadXpromo' => $cantidadPromo,
+            'tipo_precio_id' => $tipoPrecioId,
+            'stock'          => $itemActual['options']['stock'] ?? 0
+        ]
     ]);
 }
-
 
 // =====================================
 // 5️⃣ REDIRECCIÓN FINAL
@@ -615,21 +734,48 @@ $id_pedido = $session->get('id_pedido');
 // Array para guardar productos sin stock suficiente
 $errores_stock = [];
 
-foreach ($cart_info as $id => $carrito) {
+foreach ($cart_info as $rowid => $carrito) {
 
-    $id_producto = $carrito['id'];
-    $rowid = $carrito['rowid'];
-    $price = $carrito['price'];
-    $qty = $carrito['qty'];
+    if (!$cart->getItem($rowid)) continue;
+
+    $itemActual  = $cart->getItem($rowid);
+    $id_producto = $itemActual['id'];
+    $qty         = (int)$carrito['qty'];
 
     $producto = $Producto_model->find($id_producto);
-
     if (!$producto) continue;
 
-    $stock_actual = (int)$producto['stock'];
+    $stock_actual    = (int)$producto['stock'];
     $nombre_producto = $producto['nombre'];
 
-    // 🔹 Calcular cantidad reservada REAL (con promo)
+    // 🔹 Obtener tipo precio desde POST
+    $tipoPrecioId = isset($carrito['tipo_precio_id'])
+                    ? (int)$carrito['tipo_precio_id']
+                    : 0;
+
+    $precioFinal   = 0;
+    $cantidadXpromo = 1;
+
+    // 🔹 Si seleccionó promo
+    if ($tipoPrecioId > 0) {
+
+        $promo = $TiposPrecio_model->find($tipoPrecioId);
+
+        if ($promo) {
+            $precioFinal   = (float)$promo['precio'];
+            $cantidadXpromo = (int)$promo['cantidad'];
+        }
+
+    } else {
+        // 🔥 Precio normal
+        $precioFinal   = (float)$producto['precio_vta'];
+        $cantidadXpromo = 1;
+    }
+
+    // ===============================
+    // 🔹 CALCULAR STOCK REAL
+    // ===============================
+
     $detalles_anteriores = $VentaDetalle_model
         ->where('venta_id', $id_pedido)
         ->where('producto_id', $id_producto)
@@ -639,11 +785,11 @@ foreach ($cart_info as $id => $carrito) {
 
     foreach ($detalles_anteriores as $det) {
 
-        $tipoPrecioId = $det['tipo_precio'] ?? 0;
+        $tipoPrecioAnterior = (int)($det['tipo_precio'] ?? 0);
 
-        if ($tipoPrecioId > 0) {
-            $promo = $TiposPrecio_model->find($tipoPrecioId);
-            $multiplicador = $promo ? (int)$promo['cantidad'] : 1;
+        if ($tipoPrecioAnterior > 0) {
+            $promoAnterior = $TiposPrecio_model->find($tipoPrecioAnterior);
+            $multiplicador = $promoAnterior ? (int)$promoAnterior['cantidad'] : 1;
         } else {
             $multiplicador = 1;
         }
@@ -653,19 +799,23 @@ foreach ($cart_info as $id => $carrito) {
 
     $stock_disponible = $stock_actual + $cantidad_reservada;
 
-    // 🔹 Obtener multiplicador del carrito
-    $cantidadXpromo = (int)($carrito['options']['cantidadXpromo'] ?? 1);
     $unidades_reales = $qty * $cantidadXpromo;
+
+    // ===============================
+    // 🔹 VALIDAR STOCK
+    // ===============================
 
     if ($unidades_reales <= $stock_disponible && $qty >= 1) {
 
-        $amount = $price * $qty;
-
         $cart->update([
-            'rowid'   => $rowid,
-            'price'   => $price,
-            'amount'  => $amount,
-            'qty'     => $qty
+            'rowid' => $rowid,
+            'price' => $precioFinal,
+            'qty'   => $qty,
+            'options' => [
+                'tipo_precio_id' => $tipoPrecioId,
+                'cantidadXpromo' => $cantidadXpromo,
+                'stock'          => $itemActual['options']['stock'] ?? 0
+            ]
         ]);
 
     } else {
@@ -1896,10 +2046,19 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
 
                             // 🔹 Indicador P / O
                             if (isset($promo['nom_precio'])) {
-                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
-                                    $indicador = 'P';
-                                } elseif ($promo['nom_precio'] === 'OUTLET') {
-                                    $indicador = 'O';
+
+                                switch ($promo['nom_precio']) {
+                                    case 'PROMO1':
+                                        $indicador = 'P1';
+                                        break;
+
+                                    case 'PROMO2':
+                                        $indicador = 'P2';
+                                        break;
+
+                                    case 'OUTLET':
+                                        $indicador = 'PM';
+                                        break;
                                 }
                             }
                         }
@@ -1911,7 +2070,7 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
                         <?= $indicador ? '[' . $indicador . '] ' : '' ?>
                         (<?= $detalle['cantidad'] ?>)
                         <?= $productos[$detalle['producto_id']]['nombre'] ?>
-                        <?= $textoPromo ?>
+                        <!-- <?= $textoPromo ?> -->
                         x $<?= number_format($detalle['precio'], 2) ?>
                     </p>
                 </div>
@@ -2566,10 +2725,19 @@ public function generarTicketFacturaA($id_cabecera)
 
                             // 🔹 Indicador P / O
                             if (isset($promo['nom_precio'])) {
-                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
-                                    $indicador = 'P';
-                                } elseif ($promo['nom_precio'] === 'OUTLET') {
-                                    $indicador = 'O';
+
+                                switch ($promo['nom_precio']) {
+                                    case 'PROMO1':
+                                        $indicador = 'P1';
+                                        break;
+
+                                    case 'PROMO2':
+                                        $indicador = 'P2';
+                                        break;
+
+                                    case 'OUTLET':
+                                        $indicador = 'PM';
+                                        break;
                                 }
                             }
                         }
@@ -2581,7 +2749,7 @@ public function generarTicketFacturaA($id_cabecera)
                         <?= $indicador ? '[' . $indicador . '] ' : '' ?>
                         (<?= $detalle['cantidad'] ?>)
                         <?= $productos[$detalle['producto_id']]['nombre'] ?>
-                        <?= $textoPromo ?>
+                        <!-- <?= $textoPromo ?> -->
                         x $<?= number_format($detalle['precio'], 2) ?>
                     </p>
                 </div>
@@ -3086,12 +3254,22 @@ public function generarTicketFacturaB($id_cabecera)
                                 $textoPromo = ($cantidadPromo > 1) ? " ({$cantidadPromo}u)" : '';
                             }
 
-                            // 🔹 Indicador P / O
+                            // 🔹 Indicador P / PM                   
+
                             if (isset($promo['nom_precio'])) {
-                                if (in_array($promo['nom_precio'], ['PROMO1', 'PROMO2'])) {
-                                    $indicador = 'P';
-                                } elseif ($promo['nom_precio'] === 'OUTLET') {
-                                    $indicador = 'O';
+
+                                switch ($promo['nom_precio']) {
+                                    case 'PROMO1':
+                                        $indicador = 'P1';
+                                        break;
+
+                                    case 'PROMO2':
+                                        $indicador = 'P2';
+                                        break;
+
+                                    case 'OUTLET':
+                                        $indicador = 'PM';
+                                        break;
                                 }
                             }
                         }
@@ -3103,7 +3281,7 @@ public function generarTicketFacturaB($id_cabecera)
                         <?= $indicador ? '[' . $indicador . '] ' : '' ?>
                         (<?= $detalle['cantidad'] ?>)
                         <?= $productos[$detalle['producto_id']]['nombre'] ?>
-                        <?= $textoPromo ?>
+                        <!-- <?= $textoPromo ?> -->
                         x $<?= number_format($detalle['precio'], 2) ?>
                     </p>
                 </div>

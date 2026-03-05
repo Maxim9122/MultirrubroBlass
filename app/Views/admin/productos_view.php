@@ -368,10 +368,9 @@
                     ✏️ Editar
                 </a>
 
-                <a class="btn btn-outline-danger" href="<?php echo base_url('deleteProd/'.$prod['id']); ?>">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                    </svg> Eliminar
+                <a class="btn btn-outline-danger"
+                href="<?= base_url('deleteProd/'.$prod['id']); ?>?page=<?= $page ?? 1 ?>&search=<?= esc($request->getGet('search')) ?>">
+                Eliminar
                 </a>
             </div>
         </td>
@@ -442,8 +441,7 @@
                     color:white;
                     border:none;
                     border-radius:5px;
-                    cursor:pointer;
-                ">
+                    cursor:pointer;">
                     Guardar Cambios
                 </button>
             </div>
@@ -453,7 +451,8 @@
     </div>
 </div>
 <!-- ========================================================== -->
- <script>
+
+<script>
 document.addEventListener("DOMContentLoaded", function(){
 
     const modal = document.getElementById("modalTiposPrecio");
@@ -488,10 +487,24 @@ document.addEventListener("DOMContentLoaded", function(){
 
                     data.forEach(function(item){
 
+                        // 🔥 SOLO MOSTRAR PROMO1 Y PROMO2
+                        if(item.nom_precio !== 'PROMO1' && item.nom_precio !== 'PROMO2'){
+                            return;
+                        }
+
+                        let cantidadDefault = (item.cantidad && item.cantidad > 0) ? item.cantidad : 1;
+
+                        let texto = '';
+                        if(item.nom_precio === 'PROMO1'){
+                            texto = 'Llevando 3 o más / CM';
+                        }else if(item.nom_precio === 'PROMO2'){
+                            texto = 'Llevando 10 o más / CM300';
+                        }
+
                         tbody.innerHTML += `
                         <tr>
                             <td style="border:1px solid #ddd; padding:8px;">
-                                ${item.nom_precio}
+                                ${texto}
                                 <input type="hidden" name="ids[]" value="${item.id ?? ''}">
                                 <input type="hidden" name="nombres[]" value="${item.nom_precio}">
                             </td>
@@ -507,8 +520,10 @@ document.addEventListener("DOMContentLoaded", function(){
                             <td style="border:1px solid #ddd; padding:8px;">
                                 <input type="number"
                                        name="cantidades[]"
-                                       value="${item.cantidad ?? ''}"
-                                       style="width:100%;">
+                                       min="1"
+                                       value="${cantidadDefault}"
+                                       style="width:100%;"
+                                       oninput="if(this.value < 1) this.value = 1;">
                             </td>
                         </tr>
                         `;
@@ -562,12 +577,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
 
-    // CERRAR CON X
+    // CERRAR
     cerrar.addEventListener("click", function(){
         modal.style.display = "none";
     });
 
-    // CERRAR HACIENDO CLICK AFUERA
     modal.addEventListener("click", function(e){
         if(e.target === modal){
             modal.style.display = "none";
