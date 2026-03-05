@@ -266,11 +266,11 @@ public function ProductoValidation()
         // Se usan consultas separadas para evitar problemas con orWhere
         $existeExt = null;
 
-        if (strlen($codigoBarra) > 6) {
-            $existeExt = $ProductoExt
-                            ->where('codigo_barra', $codigoBarra)
-                            ->first();
-        }
+        //if (strlen($codigoBarra) > 6) {
+        //    $existeExt = $ProductoExt
+        //                    ->where('codigo_barra', $codigoBarra)
+         //                   ->first();
+        //}
 
         if (!$existeExt) {
             $existeExt = $ProductoExt
