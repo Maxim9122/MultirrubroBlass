@@ -439,7 +439,7 @@ tbody td {
 
                 <input type="hidden" name="cantidad" id="inputCantidad_<?php echo $prod['id']; ?>" value="1">
 
-                <?php if($perfil == 2 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
+                <?php if($perfil == 3 || $estado == 'Modificando' || $estado == 'Modificando_SF') {?>
                 <button type="submit" class="btn btn-agregar" data-id="<?php echo $prod['id']; ?>">
                     Agregar
                 </button>

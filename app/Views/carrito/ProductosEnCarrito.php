@@ -568,7 +568,7 @@ endforeach;
                         </button>                        
                                 
                             <br><br>
-                            <?php if(($tipo_compra == 'Pedido' || $perfil == 2) && ($estado == '' || $estado == 'Modificando')) { ?>
+                            <?php if(($tipo_compra == 'Pedido' || $perfil == 3) && ($estado == '' || $estado == 'Modificando')) { ?>
                         <!-- " Confirmar orden envia a carrito_controller/muestra_compra  -->
                         <a href="javascript:void(0);" class="success" onclick="setAccion('confirmar')">Continuar Compra</a>
                                 
