@@ -1334,22 +1334,24 @@ if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
     //id del vendedor
     $id_usuario = $session->get('id');
 
-    if(!$id_pedido){    
+    //Rescato el tipo de compra (Pedido o Compra_Normal)
+    $tipo_compra = $this->request->getVar('tipo_compra');
+    //print_r($tipo_compra);exit;
+    if($tipo_compra == 'Pedido'){    
     //Nombre provisorio del cliente para identificar venta
     $bombre_provisorios_cliente = $this->request->getPost('nombre_prov');    
     if (!$bombre_provisorios_cliente) {
-        session()->setFlashdata('msgEr', 'El Campo nombre cliente es Obligatorio!');
+        session()->setFlashdata('msgEr', 'El Campo nombre cliente para Pedidos es Obligatorio!');
         return redirect()->to('casiListo');
     }
     }
-
-    
+    //print_r($tipo_compra);exit;    
     //id del cliente seleccionado o se selecciona Consumidor final por defecto.
     $id_cliente = $this->request->getPost('cliente_id');
-    if (!$id_cliente) {
+    if (!$id_cliente || $id_cliente = 'Anonimo') {
         $id_cliente = 1; // Valor por defecto si no se envía cliente_id
     }
-
+    
     function convertirAFloat($numero) {
         if (empty($numero)) {
             return 0.0; // Si el valor es vacío, devuelve 0.0
@@ -1411,8 +1413,7 @@ if ($id_pedido > 0 && $tipo_compra == 'Compra_Normal') {
     date_default_timezone_set('America/Argentina/Buenos_Aires');
     $hora = date('H:i:s'); // Formato TIME
     $fecha = date('d-m-Y'); // Formato DATE
-    //Rescato el tipo de compra (Pedido o Compra_Normal)
-    $tipo_compra = $this->request->getVar('tipo_compra');
+    
     //$tipo_compra = $this->request->getPost('tipo_compra_input');
     
     //Si no se selecciono una fecha se asigna la fecha de hoy por defecto para el pedido.
@@ -1760,28 +1761,36 @@ foreach ($cart_info as $item) {
     } else {
         //Si el perfil es vendedor guarda la compra con el estado Pendiente
         
-        if($perfil == 2){ 
+        if($perfil == 3 && $estado == ''){ 
              // ⚠️ Verificar si el carrito está vacío
         if (!$cart || count($cart->contents()) == 0) {
             session()->setFlashdata('msgEr', 'Evite registrar una misma venta muchas veces, no presione muchas veces el boton de registrar ni se apresure!');
             return redirect()->to('catalogo');
         }
+        //print_r($monto_tarjetaC); exit;
         // Guardar cabecera de la venta tipo compra normal
         $cabecera_model = new Cabecera_model();
         $ventas_id = $cabecera_model->save([
-            'fecha'        => $fecha,
-            'hora'         => $hora,
+            'fecha_pedido'      => $fecha_pedido_formateada,
+            'fecha'             => $fecha,                                      
+            'hora'              => $hora,
+            'hora_entrega'      => $hora,           
             'id_cliente'   => $id_cliente,
-            'nombre_prov_client' => $bombre_provisorios_cliente,
+            'nombre_prov_client' => '',//$bombre_provisorios_cliente,
             'id_usuario'   => $id_usuario,
             'total_venta'  => $total,            
             'total_bonificado' => $total_conDescuento,
             'tipo_compra' => $tipo_compra,
-            'estado' => 'Pendiente'
-        ]);
+            'costo_envio'       => $costo_envio,
+            'monto_efectivo'    => $monto_en_Efectivo,
+            'monto_transferencia' => $monto_transferencia,
+            'monto_tarjetaC' => $monto_tarjetaC,
+            'tipo_pago'         => $tipo_pago_cobro,
+            'estado' => 'Sin_Facturar'
+        ]);           
         }
         
-        if($perfil == 3){ 
+        if($perfil == 3 && $id_pedido > 0){ 
             // Se está cobrando una venta
             if($estado == 'Cobrando'){
                 $Cabecera_model = new Cabecera_model();                
@@ -1806,7 +1815,14 @@ foreach ($cart_info as $item) {
                 $session->remove(['estado','id_vendedor', 'nombre_vendedor', 'id_cliente', 'id_pedido', 'fecha_pedido','tipo_compra','tipo_pago','total_venta']);
             }
             
-            $cart->destroy();       
+            $cart->destroy(); 
+            if ($facturacion == "facturaC"){
+                    $session->set([        
+                                'tipo_factura' => 'C'
+                                ]);
+                    //Una vez guardada la compra manda a verificar la factura en ARCA.
+                    return redirect()->to('Carrito_controller/verificarTA/' . $id_pedido);
+            }      
             // Redirige a imprimir el ticket indicando que viene del panel de cobro y no de la lista de ventas     
             return redirect()->to('Carrito_controller/generarTicket/' . $id_pedido. '/' . $facturacion);
         }
@@ -1880,6 +1896,14 @@ endif;
         session()->setFlashdata('msg', 'Compra Registrada con Exito!');
         return redirect()->to('catalogo');
     }
+    //print_r($id_cabecera);exit;
+    if ($facturacion == "facturaC"){
+            $session->set([        
+                        'tipo_factura' => 'C'
+                        ]);
+            //Una vez guardada la compra manda a verificar la factura en ARCA.
+            return redirect()->to('Carrito_controller/verificarTA/' . $id_cabecera);
+    }
 
     session()->setFlashdata('msg', 'Compra Guardada con Éxito!');
     // Redirige a imprimir el ticket indicando que viene del panel de cobro y no de la lista de ventas
@@ -1905,7 +1929,7 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
     
-    $CostoEnvio = $cabecera['costo_envio'];
+    $CostoEnvio = $cabecera['costo_envio'] ?? 0; //Costo envio 0 por defecto.
    
     // Actualizar el campo costo_envio a 0 porque se muestra una sola vez.
     $ventaModel->update($id_cabecera, ['costo_envio' => 0]);
@@ -1920,7 +1944,7 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
     }
 
     // Obtener la información del cliente
-    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    $cliente = $clienteModel->find($cabecera['id_cliente']) ?? 1; //Si no tiene Id LE ASIGNAMOS 1 CF
 
     // Obtener el nombre del vendedor    
     $vendedor = $Us_Model->find($cabecera['id_usuario']);
@@ -2163,8 +2187,8 @@ public function generarTicket($id_cabecera,$tipoTicket=null)
         // Redirigir según condiciones
         window.setTimeout(function() {
 
-            if (perfil == 3 && tipoTicket === 'ticket') {
-                window.location.href = '" . base_url('caja') . "';
+            if (perfil == 3) {
+                window.location.href = '" . base_url('catalogo') . "';
                 return;
             }
 
@@ -2191,7 +2215,6 @@ public function descargar_ticket()
 
 //Verifica que todo este bien para Facturar
 public function verificarTA($id_cabecera = null) {
- 
     $ventaModel = new \App\Models\Cabecera_model();
     // Obtener los detalles de la venta
     $cabecera = $ventaModel->find($id_cabecera);
@@ -2203,6 +2226,7 @@ public function verificarTA($id_cabecera = null) {
     }
     //$id_cabecera = 252;
     $session = session();
+    
         // Verifica si el usuario está logueado
         if (!$session->has('id')) { 
             return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
@@ -2265,6 +2289,9 @@ public function verificarTA($id_cabecera = null) {
        }
        if ($tipo_factura == 'B'){        
          $this->facturar_tipo_B($TA,$id_cabecera);
+       }
+       if ($tipo_factura == 'C'){        
+         $this->facturar_tipo_C($TA,$id_cabecera);
        }
         
         session()->setFlashdata('msg', 'La Factura se realizo con Exito.!');

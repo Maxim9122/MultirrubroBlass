@@ -198,7 +198,7 @@ endif;
             <?php endif; ?>
             <?php if ($perfil == 3): ?> <!--Filtro para el cajero -->
                 <tr>
-                    <td style="color:rgb(192, 250, 214);"><strong>Tipo Cliente (CUIT):</strong></td>
+                    <td style="color:rgb(192, 250, 214);"><strong>Cliente Factura (CUIT):</strong></td>
                     <td>
                         <?php if ($clientes): ?>
                             <!-- Input visible de búsqueda -->
@@ -245,10 +245,10 @@ endif;
                 <?php endif; ?><!-- Fin del if filtro cajero-->
 
 
-                 <?php if ($perfil == 2 && $estado == ''): ?><!-- Filtro Vendedor-->
+                 <?php if ($perfil == 3 && $estado == ''): ?><!-- Filtro Vendedor-->
             </tr>
                 <tr>
-                <td style="color:rgb(192, 250, 214);"><strong>Nombre Identificador del Cliente:</strong></td>
+                <td style="color:rgb(192, 250, 214);"><strong>Nombre del Cliente (Pedidos):</strong></td>
                 <td>
                     
                 <input class="selector" type="text" name="nombre_prov" placeholder="Ingrese nombre cliente" maxlength="20" required>
@@ -257,7 +257,7 @@ endif;
                  </tr>
                  <?php endif; ?><!-- Fin del if filtro vendedor-->
 
-                 <?php if ($perfil == 3 && $estado == 'Cobrando'): ?>
+                 <?php if ($perfil == 3): ?>
                           
                 <tr>
                     <td style="color: rgb(192, 250, 214);"><strong>Monto en Tarjeta de Crédito</strong></td>
@@ -324,7 +324,7 @@ endif;
                 </td>
                 </tr>   
                 
-                <?php if ($estado == 'Cobrando') {  ?>
+                <?php if ($perfil == 3) {  ?>
                 <tr>
                     <td style="color: rgb(192, 250, 214);">
                         <strong>
@@ -389,10 +389,18 @@ endif;
             <?php echo form_hidden('id_pedido', $id_pedido); ?>
             <?php echo form_hidden('tipo_proceso', ''); ?>
 
-            <?php if ($perfil == 2 || $estado == 'Modificando'): ?>
-                <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn">
+            <?php if ($perfil == 3 || $estado == 'Modificando'): ?>
+
+                <input type="submit" name="confirmarPerfil2" value="Confirmar" class="btn" 
+                    id="btnConfirmarPerfil2" style="display: none;">
+
+                <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn" 
+                    id="btnConfirmarPerfil3Normal" style="display: none;">
+
             <?php elseif ($perfil == 3 && $estado == 'Cobrando'): ?>
+
                 <input type="submit" name="confirmarPerfil3" value="Confirmar" class="btn">
+
             <?php endif; ?>
 
             </section>
@@ -700,17 +708,28 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         <span class="close">&times;</span>
         <p>¿Desea facturar o solo imprimir ticket?</p>
 
-        <button id="invoiceArca_A" class="btn">Factura A (Arca)</button>
+        <!-- FACTURA C: Activa -->
+        <button id="invoiceArca_C" class="btn">Factura C (Arca)</button>
         <br><br>
 
+        <!-- FACTURA A: Deshabilitada (descomentar el bloque para habilitar) -->
+        <!-- 
+        <button id="invoiceArca_A" class="btn">Factura A (Arca)</button>
+        <br><br>
+        -->
+
+        <!-- FACTURA B: Deshabilitada (descomentar el bloque para habilitar) -->
+        <!--
         <button id="invoiceArca_B" class="btn">Factura B (Arca)</button>
         <br><br>
+        -->
 
         <button id="printTicket" class="btn">Imprimir Presupuesto</button>
     </div>
 </div>
 
-<!-- Modal confirmación Factura A -->
+<!-- Modal confirmación Factura A (Deshabilitado) -->
+<!-- 
 <div id="confirmationFacturaModal_A" class="modal">
     <div class="modal-content">
         <span class="closeFacturaA">&times;</span>
@@ -720,8 +739,10 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         <button id="cancelFactura_A" class="btn danger">Cancelar</button>
     </div>
 </div>
+-->
 
-<!-- Modal confirmación Factura B -->
+<!-- Modal confirmación Factura B (Deshabilitado) -->
+<!--
 <div id="confirmationFacturaModal_B" class="modal">
     <div class="modal-content">
         <span class="closeFacturaB">&times;</span>
@@ -730,9 +751,17 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         <button id="cancelFactura_B" class="btn danger">Cancelar</button>
     </div>
 </div>
+-->
 
-
-
+<!-- Modal confirmación Factura C -->
+<div id="confirmationFacturaModal_C" class="modal">
+    <div class="modal-content">
+        <span class="closeFacturaC">&times;</span>
+        <p>¿Estás seguro de que deseas FACTURAR? (Factura tipo C)</p>
+        <button id="confirmFactura_C" class="btn">Sí, Facturar</button>
+        <button id="cancelFactura_C" class="btn danger">Cancelar</button>
+    </div>
+</div>
 
 <!-- Modal para Perfil 2 (Registrar Compra) -->
 <div id="confirmationModalPerfil2" class="modal">
@@ -742,53 +771,223 @@ $totalVenta = ($gran_total > 0) ? $gran_total : $total_venta;
         <button id="confirmarRegistro" class="btn">Sí, Registrar</button>
     </div>
 </div>
-        <!-- Script Modal perfil 2 -->
+
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
-    const modalConfirmacionPerfil2 = document.getElementById("confirmationModalPerfil2");
-    const btnConfirmarPerfil2 = document.querySelector("input[name='confirmarPerfil2']");
-    const spanClosePerfil2 = document.getElementById("closePerfil2"); // Cambiado a ID
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ─── Referencias comunes 8XkABnXEYCgUBFAN2oyjC9M4uF1JqisFK9Sf8JpN4Cdr
+    const tipoCompraSelect  = document.getElementById("tipoCompra");
+    const fechaPedidoFila   = document.getElementById("fechaPedidoFila");
+
+    const btnPerfil2        = document.getElementById("btnConfirmarPerfil2");
+    const btnPerfil3Normal  = document.getElementById("btnConfirmarPerfil3Normal");
+
+    // Modales perfil 3
+    const modalPerfil3      = document.getElementById("confirmationModalPerfil3");
+    const modalFactura_C    = document.getElementById("confirmationFacturaModal_C");
+
+    // Modales perfil 3 deshabilitados (descomentar para habilitar) ─────
+    // const modalFactura_A = document.getElementById("confirmationFacturaModal_A");
+    // const modalFactura_B = document.getElementById("confirmationFacturaModal_B");
+
+    // Modales perfil 2
+    const modalPerfil2      = document.getElementById("confirmationModalPerfil2");
+
+    // Botones dentro de modal perfil 3
+    const btnInvoiceArca_C  = document.getElementById("invoiceArca_C");
+    const btnPrintTicket    = document.getElementById("printTicket");
+
+    // Botones deshabilitados (descomentar para habilitar) ─────────────
+    // const btnInvoiceArca_A = document.getElementById("invoiceArca_A");
+    // const btnInvoiceArca_B = document.getElementById("invoiceArca_B");
+
+    // Botones dentro de modal Factura C
+    const btnConfirmFactura_C = document.getElementById("confirmFactura_C");
+    const btnCancelFactura_C  = document.getElementById("cancelFactura_C");
+
+    // Botones deshabilitados (descomentar para habilitar) ─────────────
+    // const btnConfirmFactura_A = document.getElementById("confirmFactura_A");
+    // const btnCancelFactura_A  = document.getElementById("cancelFactura_A");
+    // const btnConfirmFactura_B = document.getElementById("confirmFactura_B");
+    // const btnCancelFactura_B  = document.getElementById("cancelFactura_B");
+
+    // Botones dentro de modal perfil 2
     const btnConfirmarRegistro = document.getElementById("confirmarRegistro");
 
+    // Cierres
+    const spanClosePerfil3  = document.getElementsByClassName("close")[0];
+    const spanCloseFacturaC = document.getElementsByClassName("closeFacturaC")[0];
+    const spanClosePerfil2  = document.getElementById("closePerfil2");
+
+    // Cierres deshabilitados (descomentar para habilitar) ─────────────
+    // const spanCloseFacturaA = document.getElementsByClassName("closeFacturaA")[0];
+    // const spanCloseFacturaB = document.getElementsByClassName("closeFacturaB")[0];
+
+    // Campo oculto tipo proceso
+    const tipoProcesoInput  = document.querySelector("input[name='tipo_proceso']");
+
+    // ─── Helpers de modal ─────────────────────────────────────────────
     function abrirModal(modal) {
+        if (!modal) return;
         modal.style.display = "block";
         setTimeout(() => modal.classList.add("show"), 10);
     }
 
     function cerrarModal(modal) {
+        if (!modal) return;
         modal.classList.remove("show");
         setTimeout(() => modal.style.display = "none", 300);
     }
 
-    // Abrir modal al hacer clic en "Confirmar"
-    btnConfirmarPerfil2.addEventListener("click", function (event) {
-        event.preventDefault();
-        abrirModal(modalConfirmacionPerfil2);
+    // ─── Control de botones y fecha según tipo de compra ──────────────
+    function actualizarVistaPorTipo() {
+        const esPedido = tipoCompraSelect && tipoCompraSelect.value === "Pedido";
+
+        if (fechaPedidoFila) {
+            fechaPedidoFila.style.display = esPedido ? "table-row" : "none";
+        }
+
+        if (btnPerfil2)       btnPerfil2.style.display       = esPedido ? "inline-block" : "none";
+        if (btnPerfil3Normal) btnPerfil3Normal.style.display = esPedido ? "none" : "inline-block";
+    }
+
+    if (tipoCompraSelect) {
+        actualizarVistaPorTipo();
+        tipoCompraSelect.addEventListener("change", actualizarVistaPorTipo);
+    }
+
+    // ─── Lógica modal Perfil 3 ────────────────────────────────────────
+    if (btnPerfil3Normal) {
+        btnPerfil3Normal.addEventListener("click", function (e) {
+            e.preventDefault();
+            abrirModal(modalPerfil3);
+        });
+    }
+
+    // Factura C
+    if (btnInvoiceArca_C) {
+        btnInvoiceArca_C.addEventListener("click", function (e) {
+            e.preventDefault();
+            cerrarModal(modalPerfil3);
+            setTimeout(() => abrirModal(modalFactura_C), 300);
+        });
+    }
+
+    if (btnConfirmFactura_C) {
+        btnConfirmFactura_C.addEventListener("click", function () {
+            tipoProcesoInput.value = "facturaC";
+            document.querySelector("form").submit();
+        });
+    }
+
+    if (btnCancelFactura_C) {
+        btnCancelFactura_C.addEventListener("click", function () {
+            cerrarModal(modalFactura_C);
+            setTimeout(() => abrirModal(modalPerfil3), 300);
+        });
+    }
+
+    if (spanCloseFacturaC) {
+        spanCloseFacturaC.addEventListener("click", () => cerrarModal(modalFactura_C));
+    }
+
+    // Factura A deshabilitada (descomentar bloque completo para habilitar) ──
+    /*
+    if (btnInvoiceArca_A) {
+        btnInvoiceArca_A.addEventListener("click", function (e) {
+            e.preventDefault();
+            cerrarModal(modalPerfil3);
+            setTimeout(() => abrirModal(modalFactura_A), 300);
+        });
+    }
+    if (btnConfirmFactura_A) {
+        btnConfirmFactura_A.addEventListener("click", function () {
+            tipoProcesoInput.value = "facturaA";
+            document.querySelector("form").submit();
+        });
+    }
+    if (btnCancelFactura_A) {
+        btnCancelFactura_A.addEventListener("click", function () {
+            cerrarModal(modalFactura_A);
+            setTimeout(() => abrirModal(modalPerfil3), 300);
+        });
+    }
+    if (spanCloseFacturaA) spanCloseFacturaA.addEventListener("click", () => cerrarModal(modalFactura_A));
+    */
+
+    // Factura B deshabilitada (descomentar bloque completo para habilitar) ──
+    /*
+    if (btnInvoiceArca_B) {
+        btnInvoiceArca_B.addEventListener("click", function (e) {
+            e.preventDefault();
+            cerrarModal(modalPerfil3);
+            setTimeout(() => abrirModal(modalFactura_B), 300);
+        });
+    }
+    if (btnConfirmFactura_B) {
+        btnConfirmFactura_B.addEventListener("click", function () {
+            tipoProcesoInput.value = "facturaB";
+            document.querySelector("form").submit();
+        });
+    }
+    if (btnCancelFactura_B) {
+        btnCancelFactura_B.addEventListener("click", function () {
+            cerrarModal(modalFactura_B);
+            setTimeout(() => abrirModal(modalPerfil3), 300);
+        });
+    }
+    if (spanCloseFacturaB) spanCloseFacturaB.addEventListener("click", () => cerrarModal(modalFactura_B));
+    */
+
+    // Imprimir ticket
+    if (btnPrintTicket) {
+        btnPrintTicket.addEventListener("click", function () {
+            tipoProcesoInput.value = "ticket";
+            document.querySelector("form").submit();
+        });
+    }
+
+    if (spanClosePerfil3) spanClosePerfil3.addEventListener("click", () => cerrarModal(modalPerfil3));
+
+    // ─── Lógica modal Perfil 2 ────────────────────────────────────────
+    if (btnPerfil2) {
+        btnPerfil2.addEventListener("click", function (e) {
+            e.preventDefault();
+            abrirModal(modalPerfil2);
+        });
+    }
+
+    if (btnConfirmarRegistro) {
+        btnConfirmarRegistro.addEventListener("click", function () {
+            document.querySelector("form").submit();
+        });
+    }
+
+    if (spanClosePerfil2) {
+        spanClosePerfil2.addEventListener("click", () => cerrarModal(modalPerfil2));
+    }
+
+    // ─── Clic fuera del modal y Escape ────────────────────────────────
+    window.addEventListener("click", function (e) {
+        if (e.target === modalPerfil3)   cerrarModal(modalPerfil3);
+        if (e.target === modalFactura_C) cerrarModal(modalFactura_C);
+        if (e.target === modalPerfil2)   cerrarModal(modalPerfil2);
+        // Deshabilitados:
+        // if (e.target === modalFactura_A) cerrarModal(modalFactura_A);
+        // if (e.target === modalFactura_B) cerrarModal(modalFactura_B);
     });
 
-    // Cerrar modal al hacer clic en "Sí, Registrar"
-    btnConfirmarRegistro.addEventListener("click", function () {
-        document.querySelector("form").submit();
-    });
-
-    // Cerrar modal al hacer clic en la "X"
-    spanClosePerfil2.addEventListener("click", function () {
-        cerrarModal(modalConfirmacionPerfil2);
-    });
-
-    // Cerrar modal al hacer clic fuera del contenido
-    window.addEventListener("click", function (event) {
-        if (event.target == modalConfirmacionPerfil2) {
-            cerrarModal(modalConfirmacionPerfil2);
+    window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            cerrarModal(modalPerfil3);
+            cerrarModal(modalFactura_C);
+            cerrarModal(modalPerfil2);
+            // Deshabilitados:
+            // cerrarModal(modalFactura_A);
+            // cerrarModal(modalFactura_B);
         }
     });
 
-    // Cerrar modal al presionar la tecla Escape
-    window.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            cerrarModal(modalConfirmacionPerfil2);
-        }
-    });
 });
 </script>
 
@@ -868,8 +1067,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Botones principales
     const btnConfirmarPerfil3 = document.querySelector("input[name='confirmarPerfil3']");
-    const btnInvoiceArca_A = document.getElementById("invoiceArca_A");
-    const btnInvoiceArca_B = document.getElementById("invoiceArca_B");
+    //const btnInvoiceArca_A = document.getElementById("invoiceArca_A");
+    //const btnInvoiceArca_B = document.getElementById("invoiceArca_B");
     const btnPrintTicket = document.getElementById("printTicket");
 
     // Cierres
