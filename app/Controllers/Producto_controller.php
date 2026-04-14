@@ -179,6 +179,7 @@ public function ProductoValidation()
         'precio_vta'   => 'required|min_length[2]',
         'stock'        => 'required|min_length[1]|max_length[10]',
         'stock_mb2'    => 'required|min_length[1]|max_length[10]',
+        'stock_mb3'    => 'required|min_length[1]|max_length[10]',
         'stock_min'    => 'required|min_length[1]|max_length[10]',
     ];
 
@@ -200,7 +201,7 @@ public function ProductoValidation()
     $img->move(ROOTPATH . 'assets/uploads', $nombre_aleatorio);
 
     // ---------------------------------------------
-    // GUARDAR PRODUCTO LOCAL
+    // GUARDAR PRODUCTO LOCAL (BELGRANO)
     // ---------------------------------------------
     $ProductoModel = new Productos_model();
 
@@ -220,7 +221,7 @@ public function ProductoValidation()
     $idProductoNuevo = $ProductoModel->getInsertID();
 
     // ---------------------------------------------
-    // GUARDAR TIPOS DE PRECIO LOCAL
+    // GUARDAR TIPOS DE PRECIO LOCAL (BELGRANO)
     // ---------------------------------------------
     $TiposPrecioModel = new Tipos_precio_model();
 
@@ -249,7 +250,7 @@ public function ProductoValidation()
     }
 
     // ---------------------------------------------
-    // GUARDAR EN MB2 (HOSTINGER) SI CORRESPONDE
+    // GUARDAR EN MB2 (INDEPENDENCIA) SI CORRESPONDE
     // ---------------------------------------------
     $localIndependencia = $this->request->getPost('local_independencia');
 
@@ -262,7 +263,6 @@ public function ProductoValidation()
 
         $nombreProd = $this->request->getVar('nombre');
 
-        // Buscar por nombre solamente para evitar problemas con orWhere
         $existeExt = $ProductoExt
                         ->where('nombre', $nombreProd)
                         ->first();
@@ -303,7 +303,7 @@ public function ProductoValidation()
             }
 
             // ---------------------------------------------
-            // ENVIAR IMAGEN A HOSTINGER VÍA API
+            // ENVIAR IMAGEN A INDEPENDENCIA VÍA API
             // ---------------------------------------------
             $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
 
@@ -319,7 +319,80 @@ public function ProductoValidation()
                 ]);
                 curl_exec($curl);
                 curl_close($curl);
-                
+            }
+        }
+    }
+
+    // ---------------------------------------------
+    // GUARDAR EN MB3 (GUEMES) SI CORRESPONDE
+    // ---------------------------------------------
+    $localGuemes = $this->request->getPost('local_guemes');
+
+    if ($localGuemes == 1) {
+
+        $dbExt3 = \Config\Database::connect('mb3');
+
+        $ProductoExt3    = new \App\Models\Productos_model($dbExt3);
+        $TiposPrecioMB3  = new \App\Models\Tipos_precio_model($dbExt3);
+
+        $nombreProd = $this->request->getVar('nombre');
+
+        $existeExt3 = $ProductoExt3
+                        ->where('nombre', $nombreProd)
+                        ->first();
+
+        if (!$existeExt3) {
+
+            $ProductoExt3->save([
+                'nombre'        => $this->request->getVar('nombre'),
+                'descripcion'   => $this->request->getVar('descripcion'),
+                'imagen'        => $nombre_aleatorio,
+                'categoria_id'  => $this->request->getVar('categoria_id'),
+                'precio'        => $this->request->getVar('precio'),
+                'precio_vta'    => $this->request->getVar('precio_vta'),
+                'stock'         => $this->request->getVar('stock_mb3'),
+                'stock_min'     => $this->request->getVar('stock_min'),
+                'codigo_barra'  => $codigoBarra,
+                'eliminado'     => 'NO'
+            ]);
+
+            $idProductoMB3 = $ProductoExt3->getInsertID();
+
+            if (!empty($precioPromo1)) {
+                $TiposPrecioMB3->save([
+                    'id_prod'    => $idProductoMB3,
+                    'nom_precio' => 'PROMO1',
+                    'precio'     => $precioPromo1,
+                    'cantidad'   => $cantidadPromo1,
+                ]);
+            }
+
+            if (!empty($precioPromo2)) {
+                $TiposPrecioMB3->save([
+                    'id_prod'    => $idProductoMB3,
+                    'nom_precio' => 'PROMO2',
+                    'precio'     => $precioPromo2,
+                    'cantidad'   => $cantidadPromo2,
+                ]);
+            }
+
+            // ---------------------------------------------
+            // ENVIAR IMAGEN A GUEMES VÍA API
+            // ---------------------------------------------
+            $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
+
+            if (file_exists($rutaLocal)) {
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL            => 'https://multirrubroblass3.shop/api/upload-image', 
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST           => true,
+                    CURLOPT_POSTFIELDS     => [
+                        'imagen' => new \CURLFile($rutaLocal, mime_content_type($rutaLocal), $nombre_aleatorio)
+                    ]
+                ]);
+                curl_exec($curl);
+                curl_close($curl);
             }
         }
     }

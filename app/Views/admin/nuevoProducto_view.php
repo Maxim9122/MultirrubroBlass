@@ -62,8 +62,9 @@ $id = $session->get('id');
 <form id="productoForm" method="post" enctype="multipart/form-data" action="<?= base_url('ProductoValidation') ?>">
 <?= csrf_field(); ?>
 
-<!-- Este campo se maneja desde el popup -->
+<!-- Campos ocultos para los locales -->
 <input type="hidden" name="local_independencia" id="local_independencia" value="0">
+<input type="hidden" name="local_guemes" id="local_guemes" value="0">
 
 <!-- FILA 1 -->
 <div class="form-row">
@@ -168,7 +169,15 @@ $id = $session->get('id');
     </div>
 
     <div class="mb-2">
-        <label>Stock Mínimo (Ambos)</label>
+        <label>Stock Guemes</label>
+        <input name="stock_mb3" type="text" required maxlength="11"
+            value="<?= old('stock_mb3') ?>"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <?= $validation->getError('stock_mb3') ? "<div class='alert alert-danger mt-2'>{$validation->getError('stock_mb3')}</div>" : "" ?>
+    </div>
+
+    <div class="mb-2">
+        <label>Stock Mínimo (Todos)</label>
         <input name="stock_min" type="text" required maxlength="11"
             value="<?= old('stock_min') ?>"
             oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -203,23 +212,44 @@ function abrirPopupGuardar() {
     }
 
     Swal.fire({
-        title: '¿Guardar en Independencia también?',
-        text: 'El producto se guardará en Belgrano. ¿Desea guardarlo también en el local Independencia?',
+        title: '¿En qué locales guardar?',
+        text: 'El producto se guardará en Belgrano. ¿Desea guardarlo también en otros locales?',
         icon: 'question',
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Sí, en ambos',
+        confirmButtonText: 'En los tres locales',
         denyButtonText: 'Solo Belgrano',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#50fa7b',
         denyButtonColor: '#8be9fd',
         cancelButtonColor: '#ff5555',
+        footer:
+            '<button id="btn-independencia" style="margin:4px;padding:6px 12px;border-radius:6px;background:#f1fa8c;border:none;cursor:pointer;">Belgrano + Independencia</button>' +
+            '<button id="btn-guemes"        style="margin:4px;padding:6px 12px;border-radius:6px;background:#ffb86c;border:none;cursor:pointer;">Belgrano + Guemes</button>',
+        didOpen: () => {
+            document.getElementById('btn-independencia').addEventListener('click', () => {
+                document.getElementById('local_independencia').value = 1;
+                document.getElementById('local_guemes').value = 0;
+                Swal.close();
+                form.submit();
+            });
+            document.getElementById('btn-guemes').addEventListener('click', () => {
+                document.getElementById('local_independencia').value = 0;
+                document.getElementById('local_guemes').value = 1;
+                Swal.close();
+                form.submit();
+            });
+        }
     }).then((result) => {
         if (result.isConfirmed) {
+            // Los tres locales
             document.getElementById('local_independencia').value = 1;
+            document.getElementById('local_guemes').value = 1;
             form.submit();
         } else if (result.isDenied) {
+            // Solo Belgrano
             document.getElementById('local_independencia').value = 0;
+            document.getElementById('local_guemes').value = 0;
             form.submit();
         }
     });
