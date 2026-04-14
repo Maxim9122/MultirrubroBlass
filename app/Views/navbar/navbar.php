@@ -185,8 +185,8 @@
 
 /* Guemes */
 .local-guemes {
-    background: #39ff1420;
-    color: #39ff14;
+    background: #8fe4688c;
+    color: #31572a;
 }
 </style>
 
