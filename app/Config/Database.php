@@ -49,47 +49,6 @@ class Database extends Config
         'failover' => [],
         'port'     => 3306,
     ];
-//Config DB para registro de productos con copia en MultirrubroBlass2
-    public $mb2 = [
-        'DSN'      => '',
-        'hostname' => '193.203.175.194',
-        'username' => 'u180193398_multirrubro2',
-        'password' => 'Darkelemento0!',
-        'database' => 'u180193398_multirrubro2',
-        'DBDriver' => 'MySQLi',
-        'DBPrefix' => '',
-        'pConnect' => false,
-        'DBDebug'  => (ENVIRONMENT !== 'production'),
-        'charset'  => 'utf8',
-        'DBCollat' => 'utf8_general_ci',
-        'swapPre'  => '',
-        'encrypt'  => false,
-        'compress' => false,
-        'strictOn' => false,
-        'failover' => [],
-        'port'     => 3306,
-    ];
-
-//Config DB para registro de productos con copia en MultirrubroBlass3
-    public $mb3 = [
-        'DSN'      => '',
-        'hostname' => '193.203.175.194',
-        'username' => 'u180193398_multirrubro3',
-        'password' => 'Darkelemento0!',
-        'database' => 'u180193398_multirrubro3',
-        'DBDriver' => 'MySQLi',
-        'DBPrefix' => '',
-        'pConnect' => false,
-        'DBDebug'  => (ENVIRONMENT !== 'production'),
-        'charset'  => 'utf8',
-        'DBCollat' => 'utf8_general_ci',
-        'swapPre'  => '',
-        'encrypt'  => false,
-        'compress' => false,
-        'strictOn' => false,
-        'failover' => [],
-        'port'     => 3306,
-    ];
 
 // Esta config es solo para los locales que usaran el chat
     public $ChatsDB_Belgrano = [

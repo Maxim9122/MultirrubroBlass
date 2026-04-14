@@ -196,6 +196,7 @@ $routes->get('verificarTA/(:num)','Carrito_controller::verificarTA/$1');
 $routes->get('generarTicket/(:num)', 'Carrito_controller::generarTicket/$1');
 $routes->get('generarTicketFacturaA/(:num)', 'Carrito_controller::generarTicketFacturaA/$1');
 $routes->get('generarTicketFacturaB/(:num)', 'Carrito_controller::generarTicketFacturaB/$1');
+$routes->get('generarTicketFacturaC/(:num)', 'Carrito_controller::generarTicketFacturaC/$1');
 
 //NOTAS DE CREDITO
 $routes->get('NotaCredito/(:num)', 'NotasDe_Creditos_controller::verificarTA_NotaCredito/$1');

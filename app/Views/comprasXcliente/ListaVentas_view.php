@@ -160,9 +160,9 @@
                     <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaA/'.$vta['id']); ?>">
                         ImpFact_A
                     </a>
-                    <?php }else if($vta['tipo_factura'] == 'B') {?>
-                        <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaB/'.$vta['id']); ?>">
-                        ImpFact_B
+                    <?php }else if($vta['tipo_factura'] == 'C') {?>
+                        <a class="btnDesplegable" style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" href="<?php echo base_url('generarTicketFacturaC/'.$vta['id']); ?>">
+                        ImpFact_C
                         </a>
                     <?php }?>
             </li>
@@ -174,12 +174,12 @@
                     href="<?php echo base_url('NotaCredito/'.$vta['id']); ?>">
                         NotaCred_A
                     </a>
-                <?php } else if($vta['tipo_factura'] == 'B') { ?>
+                <?php } else if($vta['tipo_factura'] == 'C') { ?>
                     <a onclick="return confirmarNotaCredito(event, this)" 
                     class="btnDesplegable" 
                     style="color:#ffff; background:#3c3d3c; border-radius:10px; padding:8px;" 
                     href="<?php echo base_url('NotaCredito/'.$vta['id']); ?>">
-                        NotaCred_B
+                        NotaCred_C
                     </a>
                 <?php } ?>
             </li>

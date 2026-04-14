@@ -62,7 +62,7 @@ $id = $session->get('id');
 <form id="productoForm" method="post" enctype="multipart/form-data" action="<?= base_url('ProductoValidation') ?>">
 <?= csrf_field(); ?>
 
-<!-- Este campo se maneja desde el popup -->
+<!-- Independencia siempre guarda solo en su local -->
 <input type="hidden" name="local_independencia" id="local_independencia" value="0">
 
 <!-- FILA 1 -->
@@ -149,10 +149,10 @@ $id = $session->get('id');
     </div>
 </div>
 
-<!-- FILA 5 -->
+<!-- FILA 5 — Solo stock de Independencia -->
 <div class="form-row">
     <div class="mb-2">
-        <label>Stock Belgrano</label>
+        <label>Stock</label>
         <input name="stock" type="text" required maxlength="11"
             value="<?= old('stock') ?>"
             oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -160,15 +160,7 @@ $id = $session->get('id');
     </div>
 
     <div class="mb-2">
-        <label>Stock Independencia</label>
-        <input name="stock_mb2" type="text" required maxlength="11"
-            value="<?= old('stock_mb2') ?>"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-        <?= $validation->getError('stock_mb2') ? "<div class='alert alert-danger mt-2'>{$validation->getError('stock_mb2')}</div>" : "" ?>
-    </div>
-
-    <div class="mb-2">
-        <label>Stock Mínimo (Ambos)</label>
+        <label>Stock Mínimo</label>
         <input name="stock_min" type="text" required maxlength="11"
             value="<?= old('stock_min') ?>"
             oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -190,12 +182,10 @@ $id = $session->get('id');
 <h2>Su perfil no tiene acceso a esta parte.</h2>
 <?php } ?>
 
-<!-- SWEETALERT2 Y SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function abrirPopupGuardar() {
 
-    // Validar el formulario nativo antes de abrir el popup
     const form = document.getElementById('productoForm');
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -203,23 +193,16 @@ function abrirPopupGuardar() {
     }
 
     Swal.fire({
-        title: '¿Guardar en Independencia también?',
-        text: 'El producto se guardará en Belgrano. ¿Desea guardarlo también en el local Independencia?',
+        title: '¿Confirmar registro?',
+        text: 'El producto se guardará en Guemes.',
         icon: 'question',
-        showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Sí, en ambos',
-        denyButtonText: 'Solo Belgrano',
+        confirmButtonText: 'Sí, Guardar',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#50fa7b',
-        denyButtonColor: '#8be9fd',
         cancelButtonColor: '#ff5555',
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById('local_independencia').value = 1;
-            form.submit();
-        } else if (result.isDenied) {
-            document.getElementById('local_independencia').value = 0;
             form.submit();
         }
     });

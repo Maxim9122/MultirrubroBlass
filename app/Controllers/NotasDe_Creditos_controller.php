@@ -96,6 +96,9 @@ public function verificarTA_NotaCredito($id_cabecera = null) {
        if ($tipo_factura == 'B'){        
          $this->NotaCredito_tipo_B($TA,$id_cabecera);
        }
+       if ($tipo_factura == 'C'){        
+         $this->NotaCredito_tipo_C($TA,$id_cabecera);
+       }
         
         session()->setFlashdata('msg', 'La Nota de Credito se realizo con Exito.!');
         return redirect()->to(base_url('compras'));
@@ -643,6 +646,252 @@ public function NotaCredito_tipo_B($TA = null,$id_cabecera = null) {
         $notaCredModel->save([
             'nro_notaCred'=> $id_siguienteNotaCred,
             'tipo_FactNotaCred'=> 'B',
+            'cae_notaCred'       => $cae,
+            'vto_notaCred'   => $cae_vencimiento
+        ]); // Muestra los errores si la inserción falla
+        //Rescato el id de la ultima Nota de credito generada y guardado en la DB.
+        $Nro_new_NotaCred = $notaCredModel->getInsertID();
+        $NumCae_Vta = $cabecera['id_cae'];
+        //Guardamos el numero de Nota de credito en el Numero de Cae correspondiente
+        $caeModel->update($NumCae_Vta,['id_notaCred' => $Nro_new_NotaCred]);
+        //cambiamos el estado de la venta a Nota_Credito.
+        $ventaModel->update($id_cabecera,['estado' => 'Nota_Credito']);
+
+		session()->setFlashdata('msg', 'Nota de Credito generada con Exito!');    
+    }else{ 
+     
+        //Si tiene una R en resultado redirecciona por rechazado
+        session()->setFlashdata('msgEr', 'No se pudo generar la Nota de Credito, Motivo: ' . $mensaje_error . '--Reintente');
+        return redirect()->to(base_url('compras'));
+    }
+          
+        //$this->generarTicketFacturaA($id_cabecera);
+        return redirect()->to(base_url('compras'));
+    }
+
+    //re copiar abajo $TA,$id_cabecera
+public function NotaCredito_tipo_C($TA = null,$id_cabecera = null) {
+    $session = session();    
+    $ventaModel = new \App\Models\Cabecera_model();
+    // Obtener los detalles de la venta
+    $cabecera = $ventaModel->find($id_cabecera);
+    //print_r($cabecera);
+    //exit;   
+    $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        } 
+    if ($id_cabecera === null) {
+        //session()->setFlashdata('msgEr', 'No se puede facturar sin enviar una Venta.');
+        return redirect()->to(base_url('catalogo'));
+    }
+
+    $notaCredModel = new \App\Models\NotaCredito_model();
+    // Cargar los modelos necesarios 
+    $clienteModel = new \App\Models\Clientes_model();
+    //Obtengo el ultimo id del cae    
+    $caeModel = new \App\Models\Cae_model();  
+    
+    $token = $TA['token'];
+    //print_r($token);
+
+    //print_r($TA['sign']);
+    $sign = $TA['sign'];
+    //print_r($sign); 
+
+    $curl2 = curl_init();
+
+    curl_setopt_array($curl2, array(
+    CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?op=FECompUltimoAutorizado',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ar:FECompUltimoAutorizado>
+            <ar:Auth>
+                <ar:Token>' . $token . '</ar:Token>
+                <ar:Sign>' . $sign . '</ar:Sign>
+                <ar:Cuit>20121917328</ar:Cuit>
+            </ar:Auth>
+            <ar:PtoVta>2</ar:PtoVta>
+            <ar:CbteTipo>13</ar:CbteTipo>
+        </ar:FECompUltimoAutorizado>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+        CURLOPT_HTTPHEADER => array(
+        'Content-Type: text/xml; charset=utf-8',
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECompUltimoAutorizado',
+        'Cookie: f5avraaaaaaaaaaaaaaaa_session_=BEOJDNNOHIPLFGLHAMDOKCCGDEPCHDODGPFBGCEIHDPKBJFLFFNCGAGGPBMNCOHIINGDGDMMKAFOHCKFPPNAJGJNHGLDBPGNAPHONLHOAPLIMDHCHACMKOKHNOBHOHPL; TS0122d503=01229bd671776c2a22dc12ec69133d3eae55024cb502ad60642444ed6bdc8e2e89e58867b55e3cf976f4460faa4d14afa060e5516a'
+        ),
+        CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
+    ));
+
+    $response2 = curl_exec($curl2);
+    curl_close($curl2);
+    // Cargar el XML
+    $xml = simplexml_load_string($response2);
+    if ($xml === false) {
+        echo "Error al cargar el XML desde la respuesta de AFIP.<br>";
+        echo "Contenido de respuesta:<br><pre>" . htmlspecialchars($response2) . "</pre>";
+        exit;
+    }
+    // Registrar los namespaces
+    $namespaces = $xml->getNamespaces(true);
+
+    // Acceder al Body usando el namespace 'soap'
+    $body = $xml->children($namespaces['soap'])->Body;
+
+    // El contenido de 'FECompUltimoAutorizadoResponse' está en el default namespace (sin prefijo), se accede con ''
+    $response = $body->children($namespaces[''])->FECompUltimoAutorizadoResponse;
+
+    // Acceder al resultado
+    $result = $response->FECompUltimoAutorizadoResult;
+
+    // Obtener el número de comprobante
+    $ultimoNumero = (int)$result->CbteNro;
+
+    //sumamos uno al ultimo id_cae para que ARCA lo acepte porque tiene que ser de 1 en 1.
+    $id_siguienteNotaCred = $ultimoNumero + 1;
+
+    //Numero de factura en Arca
+    $NumFactura = $ventaModel->NumFactura($id_cabecera);
+    //print_r($NumFactura);
+    //exit;
+    // Obtener los detalles de la venta   
+    
+    //Obtengo el total de la venta, con descuento o sin
+    $total_venta = $cabecera['total_bonificado']; // ESTE es el total con IVA incluido (lo que vos cobrás).
+
+    // Calcular el neto e IVA como exige ARCA cuando el precio es final IVA incluido
+    //$neto = round($total_venta / 1.21, 2);
+    //$IVA = round($total_venta - $neto, 2);
+
+    // Para AFIP/ARCA, el total informado siempre es el total que cobrás
+    //$totalMasIVA = $total_venta;
+    //print_r($IVA); exit;
+    //Obtengo la fecha
+    $fecha_YMD = date('Ymd');
+    ///print_r($fecha_formateadaF);    
+    //exit;
+    // Obtener la información del cliente
+    $cliente = $clienteModel->find($cabecera['id_cliente']);
+    //Obtener el cuil del cliente
+    $cuil_cliente = $cliente['cuil'];
+    //print_r($cuil_cliente);
+    //Obtener el tipo de Documento.
+    $tipoDoc = 80; //Si tiene un cuil real
+    if($cuil_cliente == 0){
+        $tipoDoc = 99; //Si no tiene Cuil
+    }
+    //print_r($tipoDoc);
+    //exit;
+
+    $new_cae = null;
+    //echo "Token para crear la factura xml para ARCA.\n";
+    //print_r($TA['token']);    
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://servicios1.afip.gov.ar/wsfev1/service.asmx',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                      xmlns:ar="http://ar.gov.afip.dif.FEV1/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <ar:FECAESolicitar>
+                <ar:Auth>
+                    <ar:Token>' . $token . '</ar:Token>
+                    <ar:Sign>' . $sign . '</ar:Sign>
+                    <ar:Cuit>20121917328</ar:Cuit>
+                </ar:Auth>
+                <ar:FeCAEReq>
+        <ar:FeCabReq>
+            <ar:CantReg>1</ar:CantReg>
+            <ar:PtoVta>2</ar:PtoVta> <!-- El punto de venta tiene que ser uno habilitado para Factura Electronica -->
+            <ar:CbteTipo>13</ar:CbteTipo> <!-- Nota Credito, 3 para FACTURA A, 13 es C -->
+        </ar:FeCabReq>
+        <ar:FeDetReq>
+            <ar:FECAEDetRequest>
+                <ar:Concepto>1</ar:Concepto> <!-- Productos -->
+                <ar:DocTipo>' . $tipoDoc . '</ar:DocTipo> <!-- 80 CUIT, 99 Consumidor_Final-->
+                <ar:DocNro>' . $cuil_cliente . '</ar:DocNro> <!-- 0 para C_final-->
+
+                <!-- Asociación a la factura original -->
+                        <ar:CbtesAsoc>
+                            <ar:CbteAsoc>
+                                <ar:Tipo>11</ar:Tipo> <!-- 1 = Factura C -->
+                                <ar:PtoVta>2</ar:PtoVta> <!-- Mismo punto de venta -->
+                                <ar:Nro>' .$NumFactura. '</ar:Nro> <!-- Número de la factura A original a dar de baja -->
+                            </ar:CbteAsoc>
+                        </ar:CbtesAsoc>
+
+                <!-- Datos de la nueva nota de crédito -->
+                <ar:CbteDesde>' . $id_siguienteNotaCred . '</ar:CbteDesde> <!-- Correlativo (nuevo número de nota de crédito)-->
+                <ar:CbteHasta>' . $id_siguienteNotaCred . '</ar:CbteHasta>
+                <ar:CbteFch>' . $fecha_YMD . '</ar:CbteFch> <!-- Fecha dentro del rango N-5 a N+5, 5 dias antes o despues del dia vigente-->
+                <ar:ImpTotal>' . $total_venta . '</ar:ImpTotal>
+                <ar:ImpTotConc>0</ar:ImpTotConc>
+                <ar:ImpNeto>' . $total_venta . '</ar:ImpNeto>
+                <ar:MonId>PES</ar:MonId>
+                <ar:MonCotiz>1</ar:MonCotiz>
+                <ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId> <!--5 para facturas B y C, el 1 para las Facturas A -->
+            </ar:FECAEDetRequest>
+        </ar:FeDetReq>
+    </ar:FeCAEReq>
+    </ar:FECAESolicitar>
+    </soapenv:Body>
+    </soapenv:Envelope>
+    ',
+      CURLOPT_HTTPHEADER => array(
+        'SOAPAction: http://ar.gov.afip.dif.FEV1/FECAESolicitar',
+        'Content-Type: text/xml; charset=utf-8',        
+      ),
+       CURLOPT_SSL_CIPHER_LIST => 'DEFAULT:@SECLEVEL=1', // 🔧 Esta es la línea nueva para arreglar la conexion de arca
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    
+    
+    // **Extraer los datos del XML**
+    
+        // Cargar el XML y registrar el namespace
+        $xml = new \SimpleXMLElement($response);
+        $xml->registerXPathNamespace('ns', 'http://ar.gov.afip.dif.FEV1/');
+
+        // Buscar los valores dentro del XML
+        $resultado_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Resultado');
+        $cae_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAE');
+        $cae_vencimiento_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:CAEFchVto');
+        $observaciones_nodes = $xml->xpath('//ns:FECAEDetResponse/ns:Observaciones/ns:Obs/ns:Msg');
+
+        // Verificar si los nodos existen antes de acceder a ellos
+        $resultado = isset($resultado_nodes[0]) ? (string) $resultado_nodes[0] : 'No encontrado';
+        $cae = isset($cae_nodes[0]) ? (string) $cae_nodes[0] : 'No encontrado';
+        $cae_vencimiento = isset($cae_vencimiento_nodes[0]) ? (string) $cae_vencimiento_nodes[0] : 'No encontrado';
+        // Capturar mensaje de error si la factura fue rechazada
+        $mensaje_error = isset($observaciones_nodes[0]) ? (string) $observaciones_nodes[0] : '';
+        //Pregunta si fue aprobada la factura guarda si no re direcciona a otra vista.
+    if($resultado == 'A'){ 
+        $notaCredModel->save([
+            'nro_notaCred'=> $id_siguienteNotaCred,
+            'tipo_FactNotaCred'=> 'C',
             'cae_notaCred'       => $cae,
             'vto_notaCred'   => $cae_vencimiento
         ]); // Muestra los errores si la inserción falla

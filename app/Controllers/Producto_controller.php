@@ -178,7 +178,6 @@ public function ProductoValidation()
         'precio'       => 'required|min_length[2]|max_length[10]',
         'precio_vta'   => 'required|min_length[2]',
         'stock'        => 'required|min_length[1]|max_length[10]',
-        'stock_mb2'    => 'required|min_length[1]|max_length[10]',
         'stock_min'    => 'required|min_length[1]|max_length[10]',
     ];
 
@@ -193,14 +192,14 @@ public function ProductoValidation()
     }
 
     // ---------------------------------------------
-    // SUBIR IMAGEN LOCAL
+    // SUBIR IMAGEN
     // ---------------------------------------------
     $img = $this->request->getFile('imagen');
     $nombre_aleatorio = $img->getRandomName();
-    $img->move(ROOTPATH . 'assets/uploads', $nombre_aleatorio);
+    $img->move(FCPATH . 'assets/uploads', $nombre_aleatorio);
 
     // ---------------------------------------------
-    // GUARDAR PRODUCTO LOCAL
+    // GUARDAR PRODUCTO
     // ---------------------------------------------
     $ProductoModel = new Productos_model();
 
@@ -220,7 +219,7 @@ public function ProductoValidation()
     $idProductoNuevo = $ProductoModel->getInsertID();
 
     // ---------------------------------------------
-    // GUARDAR TIPOS DE PRECIO LOCAL
+    // GUARDAR TIPOS DE PRECIO
     // ---------------------------------------------
     $TiposPrecioModel = new Tipos_precio_model();
 
@@ -249,163 +248,43 @@ public function ProductoValidation()
     }
 
     // ---------------------------------------------
-    // GUARDAR EN MB2 (HOSTINGER) SI CORRESPONDE
-    // ---------------------------------------------
-    $localIndependencia = $this->request->getPost('local_independencia');
-
-    if ($localIndependencia == 1) {
-
-        $dbExt = \Config\Database::connect('mb2');
-
-        $ProductoExt    = new \App\Models\Productos_model($dbExt);
-        $TiposPrecioMB2 = new \App\Models\Tipos_precio_model($dbExt);
-
-        $nombreProd = $this->request->getVar('nombre');
-
-        // Buscar por nombre solamente para evitar problemas con orWhere
-        $existeExt = $ProductoExt
-                        ->where('nombre', $nombreProd)
-                        ->first();
-
-        if (!$existeExt) {
-
-            $ProductoExt->save([
-                'nombre'        => $this->request->getVar('nombre'),
-                'descripcion'   => $this->request->getVar('descripcion'),
-                'imagen'        => $nombre_aleatorio,
-                'categoria_id'  => $this->request->getVar('categoria_id'),
-                'precio'        => $this->request->getVar('precio'),
-                'precio_vta'    => $this->request->getVar('precio_vta'),
-                'stock'         => $this->request->getVar('stock_mb2'),
-                'stock_min'     => $this->request->getVar('stock_min'),
-                'codigo_barra'  => $codigoBarra,
-                'eliminado'     => 'NO'
-            ]);
-
-            $idProductoMB2 = $ProductoExt->getInsertID();
-
-            if (!empty($precioPromo1)) {
-                $TiposPrecioMB2->save([
-                    'id_prod'    => $idProductoMB2,
-                    'nom_precio' => 'PROMO1',
-                    'precio'     => $precioPromo1,
-                    'cantidad'   => $cantidadPromo1,
-                ]);
-            }
-
-            if (!empty($precioPromo2)) {
-                $TiposPrecioMB2->save([
-                    'id_prod'    => $idProductoMB2,
-                    'nom_precio' => 'PROMO2',
-                    'precio'     => $precioPromo2,
-                    'cantidad'   => $cantidadPromo2,
-                ]);
-            }
-
-            // ---------------------------------------------
-            // ENVIAR IMAGEN A HOSTINGER VÍA API
-            // ---------------------------------------------
-            $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
-
-            if (file_exists($rutaLocal)) {
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL            => 'https://multirrubroblass2.shop/api/upload-image',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST           => true,
-                    CURLOPT_POSTFIELDS     => [
-                        'imagen' => new \CURLFile($rutaLocal, mime_content_type($rutaLocal), $nombre_aleatorio)
-                    ]
-                ]);
-                curl_exec($curl);
-                curl_close($curl);
-                
-            }
-        }
-    }
-
-    // ---------------------------------------------
-    // GUARDAR EN MB3 (HOSTINGER) SI CORRESPONDE
-    // ---------------------------------------------
-    $localGuemes = $this->request->getPost('local_guemes');
-
-    if ($localGuemes == 1) {
-
-        $dbExt = \Config\Database::connect('mb3');
-
-        $ProductoExt    = new \App\Models\Productos_model($dbExt);
-        $TiposPrecioMB3 = new \App\Models\Tipos_precio_model($dbExt);
-
-        $nombreProd = $this->request->getVar('nombre');
-
-        // Buscar por nombre solamente para evitar problemas con orWhere
-        $existeExt = $ProductoExt
-                        ->where('nombre', $nombreProd)
-                        ->first();
-
-        if (!$existeExt) {
-
-            $ProductoExt->save([
-                'nombre'        => $this->request->getVar('nombre'),
-                'descripcion'   => $this->request->getVar('descripcion'),
-                'imagen'        => $nombre_aleatorio,
-                'categoria_id'  => $this->request->getVar('categoria_id'),
-                'precio'        => $this->request->getVar('precio'),
-                'precio_vta'    => $this->request->getVar('precio_vta'),
-                'stock'         => $this->request->getVar('stock_mb2'),
-                'stock_min'     => $this->request->getVar('stock_min'),
-                'codigo_barra'  => $codigoBarra,
-                'eliminado'     => 'NO'
-            ]);
-
-            $idProductoMB3 = $ProductoExt->getInsertID();
-
-            if (!empty($precioPromo1)) {
-                $TiposPrecioMB2->save([
-                    'id_prod'    => $idProductoMB3,
-                    'nom_precio' => 'PROMO1',
-                    'precio'     => $precioPromo1,
-                    'cantidad'   => $cantidadPromo1,
-                ]);
-            }
-
-            if (!empty($precioPromo2)) {
-                $TiposPrecioMB2->save([
-                    'id_prod'    => $idProductoMB2,
-                    'nom_precio' => 'PROMO2',
-                    'precio'     => $precioPromo2,
-                    'cantidad'   => $cantidadPromo2,
-                ]);
-            }
-
-            // ---------------------------------------------
-            // ENVIAR IMAGEN A HOSTINGER VÍA API
-            // ---------------------------------------------
-            $rutaLocal = ROOTPATH . 'assets/uploads/' . $nombre_aleatorio;
-
-            if (file_exists($rutaLocal)) {
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL            => 'https://multirrubroblass3.shop/api/upload-image',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST           => true,
-                    CURLOPT_POSTFIELDS     => [
-                        'imagen' => new \CURLFile($rutaLocal, mime_content_type($rutaLocal), $nombre_aleatorio)
-                    ]
-                ]);
-                curl_exec($curl);
-                curl_close($curl);
-                
-            }
-        }
-    }
-
-    // ---------------------------------------------
     // FINAL
     // ---------------------------------------------
     session()->setFlashdata('msg', 'Producto creado con éxito.');
     return redirect()->to(base_url('nuevoProducto'));
 }
+
+
+    // verifica los datos de la categoria nueva
+    public function categoriaValidation() {
+        $session = session();
+        // Verifica si el usuario está logueado
+        if (!$session->has('id')) { 
+            return redirect()->to(base_url('login')); // Redirige al login si no hay sesión
+        }
+        $input = $this->validate([
+            'descripcion'   => 'required'
+        ]);
+        $categoriaModel = new categoria_model();
+        
+        if (!$input) {
+               $data['titulo']='Nuevo Categoria';
+               echo view('navbar/navbar');
+               echo view('header/header',$data);
+                echo view('admin/nuevoCategoria_view',['validation' => $this->validator]);
+                echo view('footer/footer');
+        } else {
+
+        	
+
+            $categoriaModel->save([
+                'descripcion' => $this->request->getVar('descripcion'),
+                'eliminado' => "No" 
+            ]);  
+            session()->setFlashdata('msg','Producto Creado con Éxito!');
+             return redirect()->to(base_url('Lista_Productos'));
+        }
+    }
 
    public function ListaProductos(){
         $session = session();

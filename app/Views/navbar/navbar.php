@@ -182,6 +182,12 @@
     background: #ff550020;
     color: #ff0000;
 }
+
+/* Guemes */
+.local-guemes {
+    background: #39ff1420;
+    color: #39ff14;
+}
 </style>
 
 <div id="modalChat" class="modal-chat-overlay">
@@ -200,13 +206,11 @@
 </div>
 <script>
     const usuarioLogueado = "<?= $session->get('nombre') ?>";
-    const localUsuario    = "Belgrano"; //LOCAL
+    const localUsuario    = "Guemes"; //LOCAL
 </script>
 <script>
-let ultimoID = 0; // Guarda el id del último mensaje cargado
+let ultimoID = 0;
 
-// ---------- ABRIR MODAL ----------
-// Muestra el chat y marca mensajes como leídos
 function abrirModalChat() {
     const modal = document.getElementById('modalChat');
     const caja = document.querySelector('.modal-chat');
@@ -217,7 +221,6 @@ function abrirModalChat() {
     cargarMensajes().then(() => {
         limpiarIndicador();
 
-        // MARCAR MENSAJES COMO LEÍDOS EN LA DB
         fetch("<?= base_url('chat/marcarLeido') ?>", {
             method: "POST",
             body: new URLSearchParams({ ultimoID: ultimoID })
@@ -229,7 +232,6 @@ function abrirModalChat() {
     }, 80);
 }
 
-// ---------- CERRAR MODAL ----------
 function cerrarModalChat() {
     const modal = document.getElementById('modalChat');
     const caja = document.querySelector('.modal-chat');
@@ -241,7 +243,6 @@ function cerrarModalChat() {
     }, 250);
 }
 
-// ---------- ENTER para enviar - ESC para cerrar ----------
 document.addEventListener("keydown", function(e) {
     const modal = document.getElementById("modalChat");
     if (modal.style.display !== "flex") return;
@@ -253,22 +254,18 @@ document.addEventListener("keydown", function(e) {
     }
 });
 
-// ---------- RESTAURAR INDICADOR AL CARGAR LA PÁGINA ----------
 window.addEventListener("DOMContentLoaded", () => {
-    // se puede mantener luz si había mensajes nuevos
     if (document.getElementById("chatNotification") && document.getElementById("chatBurbuja")) {
         document.getElementById("chatNotification").classList.remove("new");
         document.getElementById("chatBurbuja").style.display = "none";
     }
 });
 
-// ---------- LIMPIAR INDICADOR ----------
 function limpiarIndicador() {
     document.getElementById("chatNotification").classList.remove("new");
     document.getElementById("chatBurbuja").style.display = "none";
 }
 
-//Estilos de la palabra Locales segun el local
 function getLocalClass(local) {
     if (!local) return "badgeLocal";
 
@@ -276,11 +273,11 @@ function getLocalClass(local) {
 
     if (nombre.includes("belgrano")) return "badgeLocal local-belgrano";
     if (nombre.includes("independ")) return "badgeLocal local-independ";
+    if (nombre.includes("guemes"))   return "badgeLocal local-guemes";
 
-    return "badgeLocal"; // default
+    return "badgeLocal";
 }
 
-// ---------- CARGAR MENSAJES ----------
 async function cargarMensajes() {
     const response = await fetch("<?= base_url('chat/listar') ?>");
     const data = await response.json();
@@ -288,9 +285,6 @@ async function cargarMensajes() {
     let contenedor = document.getElementById("chatMensajes");
     contenedor.innerHTML = "";
 
-    // ----------------------------
-    // 1) MENSAJES LEÍDOS DEL DÍA
-    // ----------------------------
     data.leidosHoy.forEach(msg => {
         let f = new Date(msg.fecha);
         let hora = String(f.getHours()).padStart(2, '0');
@@ -306,43 +300,34 @@ async function cargarMensajes() {
             </div>
         `;
 
-        ultimoID = msg.id; // el último leído
+        ultimoID = msg.id;
     });
 
-    // ----------------------------------------
-// 2) MENSAJES NUEVOS (REMARK EN VERDE)
-// ----------------------------------------
-data.nuevosHoy.forEach(msg => {
-    let f = new Date(msg.fecha);
-    let hora = String(f.getHours()).padStart(2, '0');
-    let min  = String(f.getMinutes()).padStart(2, '0');
-    let fechaFormateada = `${hora}:${min}`;
+    data.nuevosHoy.forEach(msg => {
+        let f = new Date(msg.fecha);
+        let hora = String(f.getHours()).padStart(2, '0');
+        let min  = String(f.getMinutes()).padStart(2, '0');
+        let fechaFormateada = `${hora}:${min}`;
 
-    // Es mensaje propio → no marcar como nuevo
-    let esPropio = (msg.usuario === usuarioLogueado);
+        let esPropio = (msg.usuario === usuarioLogueado);
+        let estiloFondo = esPropio ? "" : "background:#d7ffd7;";
+        let etiquetaNuevo = esPropio ? "" : `<span style="color:green;font-weight:bold;font-size:8px;">Nuevo</span>`;
 
-    // Estilo: si es propio, NO color verde
-    let estiloFondo = esPropio ? "" : "background:#d7ffd7;";
-    let etiquetaNuevo = esPropio ? "" : `<span style="color:green;font-weight:bold;font-size:8px;">Nuevo</span>`;
-
-    contenedor.innerHTML += `
-        <div style="margin-bottom:5px; ${estiloFondo} padding:3px; border-radius:4px;">
-            <strong>${msg.usuario}</strong>: ${msg.mensaje}
-            <div style="font-size:12px;color:#335;">
-                ${fechaFormateada} | <span class="${getLocalClass(msg.local)}">${msg.local}</span> ${etiquetaNuevo}
+        contenedor.innerHTML += `
+            <div style="margin-bottom:5px; ${estiloFondo} padding:3px; border-radius:4px;">
+                <strong>${msg.usuario}</strong>: ${msg.mensaje}
+                <div style="font-size:12px;color:#335;">
+                    ${fechaFormateada} | <span class="${getLocalClass(msg.local)}">${msg.local}</span> ${etiquetaNuevo}
+                </div>
             </div>
-        </div>
-    `;
+        `;
 
-    ultimoID = msg.id;
-});
-
+        ultimoID = msg.id;
+    });
 
     contenedor.scrollTop = contenedor.scrollHeight;
 }
 
-
-// ---------- ENVIAR MENSAJE ----------
 function enviarMensajeChat() {
     let texto = document.getElementById("chatTexto").value;
     if (texto.trim() === "") return;
@@ -351,7 +336,7 @@ function enviarMensajeChat() {
         method: "POST",
         body: new URLSearchParams({
             mensaje: texto,
-            local: localUsuario // <--- AGREGADO
+            local: localUsuario
         })
     })
     .then(() => {
@@ -360,7 +345,6 @@ function enviarMensajeChat() {
     });
 }
 
-// ---------- NOTIFICACIÓN DE MENSAJES NUEVOS ----------
 setInterval(() => {
     fetch("<?= base_url('chat/nuevos') ?>")
         .then(r => r.json())
@@ -377,7 +361,6 @@ setInterval(() => {
         });
 }, 5000);
 </script>
-
 
 <body>
 <section class="navBarSection">
@@ -502,9 +485,9 @@ setInterval(() => {
           
           </li>
           <?php if($perfil == 3) { ?>
-          <li class="nnavItem">
+          <!--<li class="nnavItem">
             <a class="btn" href="<?php echo base_url('caja');?>">CAJA</a>            
-          </li>          
+          </li> -->          
           <li class="nnavItem">
             <a class="btn signUp" href="<?php echo base_url('compras');?>">VENTAS</a>
           </li>          
