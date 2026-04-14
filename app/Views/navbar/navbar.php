@@ -182,6 +182,12 @@
     background: #ff550020;
     color: #ff0000;
 }
+
+/* Guemes */
+.local-guemes {
+    background: #8fe4688c;
+    color: #31572a;
+}
 </style>
 
 <div id="modalChat" class="modal-chat-overlay">
@@ -276,6 +282,7 @@ function getLocalClass(local) {
 
     if (nombre.includes("belgrano")) return "badgeLocal local-belgrano";
     if (nombre.includes("independ")) return "badgeLocal local-independ";
+    if (nombre.includes("guemes"))   return "badgeLocal local-guemes";
 
     return "badgeLocal"; // default
 }
