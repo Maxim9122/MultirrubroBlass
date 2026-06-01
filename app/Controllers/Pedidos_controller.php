@@ -250,10 +250,10 @@ public function cancelar_edicion($id_pedido){
         // Obtener los detalles del pedido
         $detalles = $detalle_model->where('venta_id', $id_pedido)->findAll();
     
-        if (!$detalles) {
-            session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
-            return redirect()->to($this->request->getHeader('referer')->getValue());
-        }
+        //if (!$detalles) {
+        //    session()->setFlashdata('error', 'No se encontraron productos en el pedido.');
+        //    return redirect()->to($this->request->getHeader('referer')->getValue());
+        //}
     
         // Restaurar el stock de cada producto
         foreach ($detalles as $detalle) {
